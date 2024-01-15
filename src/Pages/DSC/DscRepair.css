@@ -1,0 +1,9 @@
+
+.innerBox1{
+  box-shadow: 0 20px 00px -100px rgba(50,50,93,.25), 0 30px 00px -30px rgba(0,0,0,.3), inset 0 -10px 50px 0 rgba(10,37,64,.35);
+}
+
+
+.innerBox2{
+  box-shadow: 000px 00px 10px -000px rgba(50,50,93,.25), 0 00px 10px -10px rgba(0,0,0,.3), inset 0 -5px 10px 0 rgba(10,37,64,.35);
+}

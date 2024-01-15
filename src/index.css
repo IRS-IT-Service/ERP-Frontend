@@ -1,0 +1,64 @@
+.PlainMode {
+    position: relative;
+  }
+  
+  .plane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 100px;
+    animation: rotate 2s linear infinite;
+    animation-delay: -3s; /* Use a hyphen instead of camelCase for properties */
+  }
+  
+  @keyframes load {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    10% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    80%, 100% {
+      transform: scale(0);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes movingBell {
+    0% {
+      transform: translateX(3px);
+    }
+    50%{
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(-2px);
+    }
+  }
+
+  .notificationBell{
+    animation: movingBell 0.6s ease-in-out infinite;
+  }
+  
+  /* The selector for .plane img should be a separate rule */
+  .plane img {
+    transform: rotate(45deg);
+    width: 150px;
+  }
+
+  .custom-input::placeholder {
+    font-size: 16px;
+    font-weight: bolder;
+  }
+  

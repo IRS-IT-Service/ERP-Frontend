@@ -1,0 +1,89 @@
+import React, { useState } from "react";
+import Dispatch_Return_Grid from "./component/Dispatch_Return_Grid";
+import { Box, styled } from "@mui/material";
+import AddCustomer from "./component/AddCustomer";
+import Header from "../../components/Common/Header";
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  ...theme.mixins.toolbar,
+}));
+
+const infoDetail = [
+  {
+    name: 'Customer Details',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/customerdetail.png?updatedAt=1703066749550'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `The customer detail popup contains information about the customer, which you can view by clicking the submit button.`,
+  },
+
+  {
+    name: 'Select Button',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/selectDropdown.png?updatedAt=1703067502463'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `
+This select dropdown offers options, and upon making a selection, it will display the chosen result.`,
+  },
+];
+
+
+const Dispatch_Return = () => {
+  const description = `
+In the barcode dispatch/return feature, you can add dispatched or returned products by scanning them. Additionally, you can check and filter them using the select option.`;
+
+  const [infoOpen, setInfoOpen] = useState(false);
+  const handleClose = () => {
+    setInfoOpen(!infoOpen);
+  };
+  const handleOpen = () => {
+    setInfoOpen(true);
+  };
+  return (
+      
+    <Box
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
+    >
+      <DrawerHeader />
+      <Header
+        Name={'Barcode Dispatch Return'}
+        info={true}
+        customOnClick={handleOpen}
+      />
+      {/* Dialog info Box */}
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={infoOpen}
+        close={handleClose}
+      />
+
+      <Dispatch_Return_Grid />
+      {/* <AddCustomer/> */}
+    </Box>
+  );
+};
+
+export default Dispatch_Return;
