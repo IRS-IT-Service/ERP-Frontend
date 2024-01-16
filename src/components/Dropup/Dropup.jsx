@@ -69,6 +69,12 @@ const Dropup = () => {
   ]);
   const [dropUp, openDropUp] = useState(false);
   const [value, setValue] = useState("live status");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const handleItemClick = (item) => {
+    setSelectedItem(item === selectedItem ? null : item);
+    setValue(item);
+    console.log();
+  };
 
   /// rtk query
 
@@ -173,25 +179,26 @@ const Dropup = () => {
                 return (
                   <Box
                     key={index}
-                    onClick={() => setValue(items)}
+                    onClick={() => handleItemClick(items)}
                     sx={{
-                      flexBasis: "70%",
-                      backgroundColor: color2, // Adjust the color and opacity as needed
-                      color: "black",
-                      backdropFilter: "blur(9px)",
-                      paddingX: ".3rem",
-                      paddingY: ".3rem",
-                      cursor: "pointer",
-                      borderBottom: "1px solid ",
-                      borderTopLeftRadius: ".5rem",
-                      borderBottomLeftRadius: ".5rem",
+                      flexBasis: '70%',
+                      backgroundColor:
+                        selectedItem === items ? 'grey' : color2,
+                      color: 'black',
+                      backdropFilter: 'blur(9px)',
+                      paddingX: '.3rem',
+                      paddingY: '.3rem',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid',
+                      borderTopLeftRadius: '.5rem',
+                      borderBottomLeftRadius: '.5rem',
                     }}
                   >
                     <Typography
                       sx={{
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                        fontSize: "smaller",
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        fontSize: 'smaller',
                       }}
                     >
                       {items}
