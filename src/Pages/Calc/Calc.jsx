@@ -220,8 +220,7 @@ const Calc = () => {
   const [weightCompare, setWeightCompare] = useState({});
   const [totalWeight, setTotalWeight] = useState({});
   const [subTotalWeight, setSubTotalWeight] = useState(null);
-  const [
-    totalVolumeWeight, setTotalVolumeWeight] = useState(null);
+  const [totalVolumeWeight, setTotalVolumeWeight] = useState(null);
   const [totalActualWeight, setTotalActualWeight] = useState(null);
   const [volumeWeightRatio, setVolumeWeightRatio] = useState({});
   const [extraWeight, setExtraWeight] = useState("");
@@ -655,7 +654,7 @@ const Calc = () => {
       setRows(oneCalcData.data.Product);
       // weight
       setQty(oneCalcData.data.weightState.qty || {});
-      setDimensions(oneCalcData.data.weightState.dimefsions || {});
+      setDimensions(oneCalcData.data.weightState.dimensions || {});
       setUnit(oneCalcData.data.weightState.unit || "cf");
       setWeightUnit(oneCalcData.data.weightState.WeigftUnit || "gm");
       setCourier(oneCalcData.data.weightState.Courier || "cargo");
@@ -1831,7 +1830,7 @@ const Calc = () => {
   };
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%", }}>
+    <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%" }}>
       <DrawerHeader />
       <Header
         Name={"Price Calculator"}
