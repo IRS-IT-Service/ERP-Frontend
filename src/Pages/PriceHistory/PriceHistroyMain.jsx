@@ -107,7 +107,7 @@ const PriceHistroyMain = () => {
   return (
     <Box
       component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
+      sx={{ flexGrow: 5, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
       <Header Name={"Price History"}  info={true} customOnClick={handleOpen}/>

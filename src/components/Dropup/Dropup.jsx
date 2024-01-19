@@ -73,7 +73,7 @@ const Dropup = () => {
   const handleItemClick = (item) => {
     setSelectedItem(item === selectedItem ? null : item);
     setValue(item);
-    console.log();
+    console.log(item);
   };
 
   /// rtk query

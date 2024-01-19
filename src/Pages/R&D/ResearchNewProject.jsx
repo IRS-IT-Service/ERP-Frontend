@@ -1,0 +1,1133 @@
+import React from 'react';
+import {
+  Box,
+  styled,
+  Button,
+  Typography,
+  TextField,
+  MenuItem,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+  Table,
+  Paper,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  InputBase,
+  Stack,
+  Autocomplete,
+  Checkbox,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import Header from '../../components/Common/Header';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
+const DrawerHeader = styled('div')(({ theme }) => ({
+  ...theme.mixins.toolbar,
+}));
+
+const infoDetail = [
+  {
+    name: 'Submit Button',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/dscSubmit.png?updatedAt=1703231258665'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `When you click on Submit Button, it will show you the Final Repair Form Details GUI`,
+  },
+
+  {
+    name: 'Final Repair Form Details',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/final%20repair.png?updatedAt=1703231658883'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
+  },
+
+  {
+    name: 'Shipment Detail Tracking',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+  },
+];
+
+const ResearchNewProject = () => {
+  const description = `The Entry Form for Repairs Module is for the drone service center. Here, we enter customer details for drone services. After clicking the submit button, the data will be submitted.`;
+
+  const top100Films = [
+    {
+      title: 'The Lord of the Rings: The Return of the King',
+      year: 2003,
+    },
+    { title: 'The Good, the Bad and the Ugly', year: 1966 },
+    { title: 'Fight Club', year: 1999 },
+    {
+      title: 'The Lord of the Rings: The Fellowship of the Ring',
+      year: 2001,
+    },
+    {
+      title: 'Star Wars: Episode V - The Empire Strikes Back',
+      year: 1980,
+    },
+    { title: 'Forrest Gump', year: 1994 },
+    { title: 'Inception', year: 2010 },
+    {
+      title: 'The Lord of the Rings: The Two Towers',
+      year: 2002,
+    },
+    { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
+    { title: 'Goodfellas', year: 1990 },
+    { title: 'The Matrix', year: 1999 },
+    { title: 'Seven Samurai', year: 1954 },
+    {
+      title: 'Star Wars: Episode IV - A New Hope',
+      year: 1977,
+    },
+    { title: 'City of God', year: 2002 },
+    { title: 'Se7en', year: 1995 },
+    { title: 'The Silence of the Lambs', year: 1991 },
+    { title: "It's a Wonderful Life", year: 1946 },
+    { title: 'Life Is Beautiful', year: 1997 },
+    { title: 'The Usual Suspects', year: 1995 },
+    { title: 'Léon: The Professional', year: 1994 },
+    { title: 'Spirited Away', year: 2001 },
+    { title: 'Saving Private Ryan', year: 1998 },
+    { title: 'Once Upon a Time in the West', year: 1968 },
+    { title: 'American History X', year: 1998 },
+    { title: 'Interstellar', year: 2014 },
+    { title: 'Casablanca', year: 1942 },
+    { title: 'City Lights', year: 1931 },
+    { title: 'Psycho', year: 1960 },
+    { title: 'The Green Mile', year: 1999 },
+    { title: 'The Intouchables', year: 2011 },
+    { title: 'Modern Times', year: 1936 },
+    { title: 'Raiders of the Lost Ark', year: 1981 },
+    { title: 'Rear Window', year: 1954 },
+    { title: 'The Pianist', year: 2002 },
+    { title: 'The Departed', year: 2006 },
+    { title: 'Terminator 2: Judgment Day', year: 1991 },
+    { title: 'Back to the Future', year: 1985 },
+    { title: 'Whiplash', year: 2014 },
+    { title: 'Gladiator', year: 2000 },
+    { title: 'Memento', year: 2000 },
+    { title: 'The Prestige', year: 2006 },
+    { title: 'The Lion King', year: 1994 },
+    { title: 'Apocalypse Now', year: 1979 },
+    { title: 'Alien', year: 1979 },
+    { title: 'Sunset Boulevard', year: 1950 },
+    {
+      title:
+        'Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb',
+      year: 1964,
+    },
+  ];
+  const columns = [
+    { id: 1, label: 'SNo', minWidth: 120 },
+    { id: 2, label: 'ProjectID', minWidth: 120 },
+    { id: 3, label: 'Project Name', minWidth: 120 },
+    // {
+    //   id: 4,
+    //   label: 'Description',
+    //   minWidth: 120,
+    // },
+    {
+      id: 5,
+      label: 'Start Date ',
+      minWidth: 120,
+    },
+    {
+      id: 6,
+      label: 'End Date ',
+      minWidth: 120,
+    },
+    {
+      id: 7,
+      label: 'Add Parts ',
+      minWidth: 120,
+    },
+    {
+      id: 8,
+      label: 'Project Detail ',
+      minWidth: 120,
+    },
+  ];
+  const rows = [
+    {
+      id: 1,
+      projectId: 'Project1',
+      productName: 'New Project 1 for Motor',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 2,
+      sku: 'IRS32345673476',
+      productName: 'T Engine MQ701-S TC120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+      minWidth: 120,
+    },
+    {
+      id: 3,
+      sku: 'IRS12325456653',
+      productName: 'T Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 4,
+      sku: 'IRS22736482732',
+      productName: 'T Engine WETod-Q KV555',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 5,
+      sku: 'IRS24012433476',
+      productName: 'T Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 6,
+      sku: 'IRS35665788765',
+      productName: 'T Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 7,
+      sku: 'IRS24011002325',
+      productName: 'T Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 8,
+      sku: 'IRS2450123s335',
+      productName: 'T Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 9,
+      sku: 'IRS240110034345',
+      productName: 'T Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 10,
+      sku: 'IRS2401100535',
+      productName: 'T Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 11,
+      sku: 'IRS2401100535',
+      productName: 'T Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 12,
+      sku: 'IRS2401100535',
+      productName: 'T Motor MN801-S KV120',
+      
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+    {
+      id: 13,
+      sku: 'IRS2401100535',
+      productName: 'Tttt Motor MN801-S KV120',
+      startDate: '2023/02/2024',
+      endDate: '2023/05/06',
+    },
+  ];
+
+  const projectDetailsData = [
+    {
+      projectID: 'ProjectID',
+      projectName: 'Project Name',
+      description: 'Description',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      status: 'Status',
+      assigned: 'AssignTo',
+    },
+  ];
+  const viewBarcodeColumns = [
+    {
+      id: 'SNo',
+      sku: 'SKU',
+      productName: 'Product Name',
+      description: 'Description',
+    },
+  ];
+  const viewBarcodeRows = [
+    {
+      id: 1,
+      barcode: 'IRS110054255',
+      status: 'Mavic T12 500 TEE',
+    },
+    {
+      id: 2,
+      barcode: 'IRS110055879',
+      status: 'Phantom P12 500 PHR',
+    },
+    {
+      id: 3,
+      barcode: 'IRS110054255',
+      status: 'Tejas R32 500 TEE',
+    },
+    {
+      id: 1,
+      barcode: 'IRS110054255',
+      status: 'Mavic T12 500 TEE',
+    },
+    {
+      id: 2,
+      barcode: 'IRS110055879',
+      status: 'Phantom P12 500 PHR',
+    },
+    {
+      id: 3,
+      barcode: 'IRS110054255',
+      status: 'Tejas R32 500 TEE',
+    },
+    {
+      id: 1,
+      barcode: 'IRS110054255',
+      status: 'Mavic T12 500 TEE',
+    },
+    {
+      id: 2,
+      barcode: 'IRS110055879',
+      status: 'Phantom P12 500 PHR',
+    },
+    {
+      id: 3,
+      barcode: 'IRS110054255',
+      status: 'Tejas R32 500 TEE',
+    },
+  ];
+
+  const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+  const addPartColumns = [
+    {
+      id: 1,
+      sNo: 'Sno',
+      checkbox: 'Select',
+      barcodeNumber: 'Barcode Number',
+      isAssigned: 'Assigned To',
+    },
+  ];
+  const addPartRows = [
+    {
+      id: 1,
+
+      checkbox: <Checkbox {...label} />,
+      barcodeNumber: 'BRC11001548',
+      isAssigned: 'Assigned to Project',
+    },
+    {
+      id: 2,
+      checkbox: <Checkbox {...label} />,
+      barcodeNumber: 'BRC11001548',
+      isAssigned: 'Assigned to Project',
+    },
+    {
+      id: 3,
+      checkbox: <Checkbox {...label} />,
+      barcodeNumber: 'BRC11001548',
+      isAssigned: 'Assigned to Project',
+    },
+    {
+      id: 4,
+      checkbox: <Checkbox {...label} />,
+      barcodeNumber: 'BRC11001548',
+      isAssigned: 'Assigned to Project',
+    },
+    {
+      id: 5,
+      checkbox: <Checkbox {...label} />,
+      barcodeNumber: 'BRC11001548',
+      isAssigned: 'Assigned to Project',
+    },
+    {
+      id: 6,
+      checkbox: <Checkbox {...label} />,
+      barcodeNumber: 'BRC11001548',
+      isAssigned: 'Assigned to Project',
+    },
+  ];
+
+  const newProjectColumns = [
+    {
+      id: 1,
+      label: 'Sno',
+    },
+    {
+      id: 2,
+      label: 'Project Id',
+    },
+    {
+      id: 3,
+      label: 'Project Name',
+    },
+    {
+      id: 4,
+      label: 'Description',
+    },
+  ];
+  const newProjectRows = [
+    {
+      id: 1,
+      projectID: (
+        <TextField
+          sx={{ maxWidth: '140px' }}
+          id='outlined-basic'
+          variant='outlined'
+        />
+      ),
+      projectName: (
+        <TextField
+          id='outlined-textarea'
+          multiline
+          sx={{ maxWidth: '390px' }}
+        />
+      ),
+      description: (
+        <TextField
+          id='outlined-textarea'
+          multiline
+          sx={{ maxWidth: '390px' }}
+        />
+      ),
+    },
+  ];
+
+  const currentDate = new Date().toLocaleDateString();
+  const projectDetailHeader = [
+    {
+      id: 1,
+      label: 'ProjectID: ',
+      input: (
+        <InputBase
+          sx={{
+            borderBottom: '2px solid grey',
+            maxHeight: '20px',
+            maxWidth: '180px',
+            paddingX: '1.5%',
+          }}
+        />
+      ),
+    },
+    {
+      id: 2,
+      label: 'ProjectName: ',
+      input: (
+        <InputBase
+          sx={{
+            borderBottom: '2px solid grey',
+            maxHeight: '20px',
+            maxWidth: '180px',
+            paddingX: '1.5%',
+          }}
+        />
+      ),
+    },
+    {
+      id: 3,
+      label: 'StartDate: ',
+      input: currentDate,
+    },
+    {
+      id: 4,
+      label: 'EndDate: ',
+      input: 'Present Day',
+    },
+  ];
+
+  const newProjectDetailCloumns = [
+    {
+      id: 1,
+      label1: 'Sno',
+      label2: 'Part Name',
+      label3: `Part Barcode`,
+      label4: `Status of Part's Barcode`,
+    }
+  ];
+
+  const newProjectDetailRows = [
+    {
+      id: 1,
+      partsName: `Mavic's 12TVG`,
+      partsBarcode: `IRS29475648`,
+      status: 'In Use',
+    },
+    {
+      id: 2,
+      partsName: `Phantom's 12TVG`,
+      partsBarcode: `IRS876534345`,
+      status: 'Damage',
+    },
+    {
+      id: 3,
+      partsName: `Drone's 12TVG`,
+      partsBarcode: `IRS5425665`,
+      status: 'In Inventory',
+    },
+    {
+      id: 4,
+      partsName: `Tejas's 12TVG`,
+      partsBarcode: `IRS5454648`,
+      status: 'In Use',
+    },
+  ];
+  
+  
+  // new project openClose
+  const [newProjectDialogClose, setNewProjectDialogClose] = useState(false);
+  const openCloseNewProjectBox = () => {
+    setNewProjectDialogClose(!newProjectDialogClose);
+  };
+
+  // add part open close
+  const [openCloseAddPart, setOpenCloseAddPart] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const handleOpenCloseAddPart = (row) => {
+    setSelectedRow(row);
+    setOpenCloseAddPart(!openCloseAddPart);
+    console.log(row);
+  };
+
+  // project detail open close
+  const [openClosePD, setOpenClosePD] = useState(false);
+  // const [selectedRow, setSelectedRow] = useState(null);
+  const handleOpenClosePD = () => {
+    // setSelectedRow(row);
+    setOpenClosePD(!openClosePD);
+    console.log('hlo from PD');
+  };
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+  /// global state
+  const { themeColor } = useSelector((state) => state.ui);
+  const color = themeColor.sideBarColor1;
+
+  const [infoOpen, setInfoOpen] = useState(false);
+  const handleClose = () => {
+    setInfoOpen(!infoOpen);
+  };
+  const handleOpen = () => {
+    setInfoOpen(true);
+  };
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen(false);
+  };
+  return (
+    <Box
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
+    >
+      <DrawerHeader />
+      <Header
+        Name={`All R&D Projects`}
+        info={true}
+        customOnClick={handleOpen}
+      />
+      {/* Dialog info Box */}
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={infoOpen}
+        close={handleClose}
+      />
+
+      <Box>
+        <Box
+          sx={{
+            minWidth: '200px',
+            height: '7vh',
+            boxShadow: 4,
+            marginY: 1,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            // border: '2px solid black'
+          }}
+        >
+          <Box sx={{ minWidth: '12vw' }}>
+            <Button
+              variant='contained'
+              onClick={openCloseNewProjectBox}
+            >
+              Add New Project
+            </Button>{' '}
+          </Box>
+          <Box spacing={1} sx={{ width: 600 }}>
+            <Autocomplete
+              id='free-solo-demo'
+              freeSolo
+              options={top100Films.map((option) => option.title)}
+              sx={{ width: 500, paddingY: 0 }}
+              renderInput={(params) => (
+                <TextField {...params} label='Search New Project' sx={{}} />
+              )}
+            />
+          </Box>
+          <Box
+            sx={{
+              // border: '2px solid red',
+              minWidth: '39vw',
+              height: 'auto',
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            <Button variant='outlined'>Total Projects</Button>
+            <Button variant='outlined'>Completed Projects</Button>
+            <Button variant='outlined'>InComplete Projects</Button>
+          </Box>
+          <Dialog
+            maxWidth='xl'
+            open={newProjectDialogClose}
+            onClose={openCloseNewProjectBox}
+            // aria-labelledby='alert-dialog-title'
+            // aria-describedby='alert-dialog-description'
+          >
+            <DialogTitle
+              sx={{
+                minWidth: '60vw',
+                minHeight: '9vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'skyblue',
+              }}
+            >
+              <Typography sx={{ fontWeight: 'bold' }}>
+                Add New Project
+              </Typography>
+            </DialogTitle>
+
+            <DialogContent>
+              <TableContainer sx={{}}>
+                <Table stickyHeader aria-label='sticky table'>
+                  <TableHead>
+                    <TableRow>
+                      {newProjectColumns.map((data) => (
+                        <TableCell
+                          key={data.id}
+                          style={{
+                            width:
+                              data.id === 1
+                                ? 10
+                                : data.id === 2
+                                ? 30
+                                : data.id === 3
+                                ? 100
+                                : data.id === 4
+                                ? 50
+                                : data.id === 5
+                                ? 30
+                                : data.id === 6
+                                ? 10
+                                : data.id === 7
+                                ? 10
+                                : data.id === 8
+                                ? 10
+                                : '',
+                            textAlign:
+                              data.id === 1
+                                ? ''
+                                : data.id === 2
+                                ? ''
+                                : data.id === 3
+                                ? ''
+                                : data.id === 4
+                                ? ''
+                                : data.id === 5
+                                ? ''
+                                : data.id === 6
+                                ? ''
+                                : '',
+                          }}
+                        >
+                          {data.label}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {newProjectRows.map((data) => (
+                      <TableRow>
+                        <TableCell>{data.id}</TableCell>
+                        <TableCell>{data.projectID}</TableCell>
+                        <TableCell>{data.projectName}</TableCell>
+                        <TableCell>{data.description}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </DialogContent>
+            <DialogActions>
+              <Button>Submit</Button>
+              <Button onClick={openCloseNewProjectBox}>Close</Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+          <TableContainer sx={{ minHeight: 490, maxHeight: 490 }}>
+            <Table stickyHeader aria-label='sticky table'>
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      style={{
+                        width:
+                          column.id === 1
+                            ? 10
+                            : column.id === 2
+                            ? 30
+                            : column.id === 3
+                            ? 100
+                            : column.id === 4
+                            ? 180
+                            : column.id === 5
+                            ? 30
+                            : column.id === 6
+                            ? 10
+                            : column.id === 7
+                            ? 10
+                            : column.id === 8,
+                        textAlign:
+                          column.id === 1
+                            ? ''
+                            : column.id === 2
+                            ? ''
+                            : column.id === 3
+                            ? 'center'
+                            : column.id === 4
+                            ? 'center'
+                            : column.id === 5
+                            ? 'cyan'
+                            : column.id === 6
+                            ? 'brown'
+                            : '',
+                      }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row, index) => (
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        width: row.id === index + 1 ? 2 : '',
+                        textAlign: row.id === index + 1 ? '' : 'center',
+                      }}
+                    >
+                      {row.id}
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        width: row.id === index + 1 ? 30 : '',
+                        // backgroundColor: row.id === index + 1 ? 'red' : '',
+                        // textAlign: row.id === index + 1 ? '' : 'center',
+                      }}
+                    >
+                      {row.projectId}
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        width: row.id === index + 1 ? 100 : '',
+                        // backgroundColor: row.id === index + 1 ? 'yellow' : '',
+                      }}
+                    >
+                      {row.productName}
+                    </TableCell>
+                    {/* <TableCell
+                      style={{
+                        width: row.id === index + 1 ? 180 : '',
+                        
+                      }}
+                    >
+                      {row.description}
+                    </TableCell> */}
+                    <TableCell
+                      style={{
+                        width: row.id === index + 1 ? 50 : '',
+                        // backgroundColor: row.id === index + 1 ? 'blue' : '',
+                      }}
+                    >
+                      {row.startDate}
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        width: row.id === index + 1 ? 50 : '',
+                        // backgroundColor: row.id === index + 1 ? 'blue' : '',
+                      }}
+                    >
+                      {row.endDate}
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        width: row.id === index + 1 ? 10 : '',
+                        // backgroundColor: row.id === index + 1 ? 'cyan' : '',
+                      }}
+                    >
+                      <Button
+                        variant='contained'
+                        onClick={() => handleOpenCloseAddPart(row)}
+                      >
+                        <AddIcon />
+                      </Button>
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        width: row.id === index + 1 ? 40 : '',
+                        // backgroundColor: row.id === index + 1 ? 'brown' : '',
+                      }}
+                    >
+                      <Button variant='contained' onClick={handleOpenClosePD}>
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component='div'
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+
+        {/* Add parts */}
+        <Dialog
+          open={openCloseAddPart}
+          onClose={handleOpenCloseAddPart}
+          maxWidth='xl'
+        >
+          <DialogTitle
+            sx={{
+              minWidth: '60vw',
+              display: 'flex',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              backgroundColor: 'skyblue',
+            }}
+          >
+            <Typography sx={{ fontWeight: '600' }}>
+              All Inventory Data
+            </Typography>
+          </DialogTitle>
+
+          <DialogContent
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'start',
+            }}
+          >
+            {/* parts name */}
+            <TableContainer
+              sx={{
+                maxHeight: 490,
+                maxWidth: 475,
+                overflow: 'auto',
+                // border: '2px solid black'
+              }}
+            >
+              <Table
+                stickyHeader
+                aria-label='sticky table'
+                sx={{ border: '1px solid grey' }}
+              >
+                {viewBarcodeColumns.map((data) => (
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{data.id}</TableCell>
+                      <TableCell>{data.sku}</TableCell>
+                      <TableCell>{data.productName}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                ))}
+
+                <TableBody>
+                  {viewBarcodeRows.map((data) => (
+                    <TableRow>
+                      <TableCell>{data.id}</TableCell>
+                      <TableCell>{data.barcode}</TableCell>
+                      <TableCell>{data?.status}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            {/* parts barcode table */}
+            <TableContainer
+              sx={{
+                maxHeight: 490,
+                maxWidth: 475,
+                overflow: 'auto',
+                // border: '2px solid black'
+              }}
+            >
+              <Table
+                stickyHeader
+                aria-label='sticky table'
+                sx={{ border: '1px solid grey' }}
+              >
+                {addPartColumns.map((data) => (
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          backgroundColor: 'grey',
+                          alignContent: 'center',
+                          paddingLeft: '2%',
+                        }}
+                      >
+                        {data.sNo}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          backgroundColor: 'grey',
+                          alignContent: 'center',
+                          paddingLeft: '2%',
+                        }}
+                      >
+                        {data.checkbox}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          backgroundColor: 'grey',
+                          alignContent: 'center',
+                          paddingLeft: '2%',
+                        }}
+                      >
+                        {data.barcodeNumber}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          backgroundColor: 'grey',
+                          alignContent: 'center',
+                          paddingLeft: '2%',
+                        }}
+                      >
+                        {data.isAssigned}
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                ))}
+
+                <TableBody>
+                  {addPartRows.map((data) => (
+                    <TableRow>
+                      <TableCell>{data.id}</TableCell>
+                      <TableCell>{data.checkbox}</TableCell>
+                      <TableCell>{data.barcodeNumber}</TableCell>
+                      <TableCell>{data.isAssigned}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleOpenCloseAddPart}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Product Details */}
+        <Dialog open={openClosePD} onClose={handleOpenClosePD} maxWidth='xl'>
+          <DialogTitle
+            sx={{
+              minWidth: '60vw',
+              minHeight: '19vh',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              backgroundColor: 'skyblue',
+              // border: '2px solid black'
+            }}
+          >
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flex: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              {projectDetailHeader?.map((data) => (
+                <Box
+                  key={data.id}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography sx={{ fontWeight: '600' }}>
+                    {data.label}
+                  </Typography>
+                  <Typography>{data.input}</Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flex: 'wrap',
+                justifyContent: 'end',
+                alignItems: 'center',
+              }}
+            >
+              <Typography sx={{ fontWeight: '600' }}>Description:</Typography>
+              <InputBase
+                multiline
+                sx={{
+                  border: '2px solid grey',
+                  borderRadius: '8px',
+                  height: '7.6vh',
+                  overflowY: 'auto',
+                  whiteSpace: 'pre-line',
+                  width: '93%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  paddingX: '0.5%',
+                }}
+              />
+            </Box>
+          </DialogTitle>
+
+          <DialogContent>
+            <TableContainer sx={{}}>
+              <Table stickyHeader aria-label='sticky table'>
+                {newProjectDetailCloumns.map((data) => (
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{data.label1}</TableCell>
+                      <TableCell>{data.label2}</TableCell>
+                      <TableCell>{data.label3}</TableCell>
+                      <TableCell>{data.label4}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                ))}
+
+                <TableBody>
+                  {newProjectDetailRows.map((data) => (
+                    <TableRow>
+                      <TableCell>{data.id}</TableCell>
+                      <TableCell>{data.partsName}</TableCell>
+                      <TableCell>{data.partsBarcode}</TableCell>
+                      <TableCell
+                        sx={{
+                          backgroundColor:
+                            data?.status === 'Damage'
+                              ? 'red'
+                              : data?.status === 'In Use'
+                              ? 'yellow'
+                              : 'green',
+                          alignContent: 'right',
+                        }}
+                      >
+                        {data?.status}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleOpenClosePD}>Close</Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </Box>
+  );
+};
+
+export default ResearchNewProject;
