@@ -102,8 +102,8 @@ const ChangeProductApproval = () => {
   };
 
   const dimensionToString = (dimension) => {
-    return `${dimension.length || 0} X ${dimension.width || 0} X ${
-      dimension.height || 0
+    return `${dimension?.length || 0} X ${dimension?.width || 0} X ${
+      dimension?.height || 0
     }`;
   };
 
