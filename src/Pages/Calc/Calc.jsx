@@ -656,7 +656,7 @@ const Calc = () => {
       setQty(oneCalcData.data.weightState.qty || {});
       setDimensions(oneCalcData.data.weightState.dimensions || {});
       setUnit(oneCalcData.data.weightState.unit || "cf");
-      setWeightUnit(oneCalcData.data.weightState.WeigftUnit || "gm");
+      setWeightUnit(oneCalcData.data.weightState.WeightUnit || "gm");
       setCourier(oneCalcData.data.weightState.Courier || "cargo");
       setVolumeWeight(oneCalcData.data.weightState.volumeWeight || {});
       setActualWeight(oneCalcData.data.weightState.actualWeight || {});
