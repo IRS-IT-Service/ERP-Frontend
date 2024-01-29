@@ -196,8 +196,8 @@ const Calc = () => {
   const [testSearch, setTestSearch] = useState("");
   const filteredData = data?.data.filter(
     (item) =>
-      item.Name.toLowerCase().includes(testSearch.toLowerCase()) ||
-      item.SKU.toLowerCase().includes(testSearch.toLowerCase())
+      item.Name?.toLowerCase().includes(testSearch?.toLowerCase()) ||
+      item.SKU?.toLowerCase().includes(testSearch?.toLowerCase())
   );
 
   /// local state

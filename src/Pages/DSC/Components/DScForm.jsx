@@ -1330,7 +1330,7 @@ const DScForm = () => {
           >
             Close
           </Button>
-          <Button variant="contained" onClick={handleSubmitForm}>
+          <Button disabled={saveFormLoading} variant="contained" onClick={handleSubmitForm}>
             Submit
           </Button>
         </DialogActions>
