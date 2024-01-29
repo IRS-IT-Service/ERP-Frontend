@@ -138,7 +138,7 @@ const CreateTask = () => {
   useEffect(() => {
     setLoading(true);
     const apiUrl =
-      "https://apihr.irs.org.in/attendence/getAttendenceCurrentDay";
+      "https://api.hr.irs.org.in/attendence/getAttendenceCurrentDay";
 
     axios
       .get(apiUrl)
