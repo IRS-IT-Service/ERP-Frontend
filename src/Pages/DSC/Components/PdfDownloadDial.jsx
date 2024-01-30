@@ -25,7 +25,7 @@ const PdfDownloadDial = ({ open, close, data }) => {
 
   const handleDownloadPdf = (id) => {
     setDownloadLoading(true);
-    const pdfUrl = `${BASEURL}/dsc/DSCFormPDF/${data.Token}`;
+    const pdfUrl = `${BASEURL}dsc/DSCFormPDF/${data.Token}`;
 
     axios({
       url: pdfUrl,
