@@ -50,10 +50,6 @@ const errorMiddleware = (store) => (next) => (action) => {
       endpointName === "login"
     ) {
       toast.error("Server Down");
-    } else if (action.payload?.status === "FETCH_ERROR") {
-      store.dispatch(addError("Server Error"));
-
-      store.dispatch(logout());
     } else {
       toast.error(action.payload?.data?.message || action.payload?.error);
     }

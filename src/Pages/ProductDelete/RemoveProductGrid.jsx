@@ -142,6 +142,8 @@ const RemoveProductGrid = () => {
   const [captchaInput, setCaptchaInput] = useState("");
   const [timerError, setTimerError] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+
+
   /// rtk query
 
   const {
@@ -166,6 +168,7 @@ const RemoveProductGrid = () => {
           Name: item.Name,
           Quantity: item.ActualQuantity,
           soldCount: item.soldCount,
+          oldSoldCount: item.oldSoldCount,
           ThresholdQty: item.ThresholdQty,
           Brand: item.Brand,
           Category: item.Category,
@@ -177,6 +180,8 @@ const RemoveProductGrid = () => {
       setRows(data);
     }
   }, [allProductData]);
+
+  console.log(allProductData)
 
   /// Function
 
@@ -371,6 +376,18 @@ const RemoveProductGrid = () => {
     {
       field: "soldCount",
       headerName: "Sold Count",
+      flex: 0.3,
+      minWidth: 100,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      type: "number",
+    },
+    {
+      field: "oldSoldCount",
+      headerName: "Old Sold Count",
       flex: 0.3,
       minWidth: 100,
       maxWidth: 100,
