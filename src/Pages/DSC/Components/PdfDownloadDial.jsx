@@ -13,6 +13,7 @@ import { formateDateAndTime } from "../../../commonFunctions/commonFunctions";
 import BASEURL from "../../../constants/BaseApi";
 import axios from "axios";
 import { useSendPdfOnWhatsappDscMutation } from "../../../features/api/whatsAppApiSlice";
+import { toast } from "react-toastify";
 
 const PdfDownloadDial = ({ open, close, data }) => {
   /// initialization
@@ -52,9 +53,12 @@ const PdfDownloadDial = ({ open, close, data }) => {
         token: data.Token,
         contact: contact,
       };
-    //   const result = await sendFile(data);
+      const result = await sendFile(info);
+
+      toast.success("Pdf successfully send to whatsapp");
+      close();
     } catch (error) {
-      console.log(error);
+      console.log("serverError", error);
     }
   };
   /// RTK query
@@ -118,7 +122,7 @@ const PdfDownloadDial = ({ open, close, data }) => {
                 style: { textIndent: "10px" },
               }}
             ></TextField>
-            <Button onClick={handleSendFile} disabled>Click here</Button>
+            <Button onClick={handleSendFile}>Click here</Button>
           </div>
         </div>
       </DialogContent>
