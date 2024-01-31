@@ -8,6 +8,7 @@ import {
   Box,
   CircularProgress,
   TextField,
+  Grid,
 } from "@mui/material";
 import { formateDateAndTime } from "../../../commonFunctions/commonFunctions";
 import BASEURL from "../../../constants/BaseApi";
@@ -21,8 +22,9 @@ const PdfDownloadDial = ({ open, close, data }) => {
   const [downloadLoading, setDownloadLoading] = useState(false);
 
   // rtk query calling
-  const [sendFile, isLoading] = useSendPdfOnWhatsappDscMutation();
+  const [sendFile, { isLoading }] = useSendPdfOnWhatsappDscMutation();
 
+  // this is for download pdf file
   const handleDownloadPdf = (id) => {
     setDownloadLoading(true);
     const pdfUrl = `${BASEURL}dsc/DSCFormPDF/${data.Token}`;
@@ -47,6 +49,8 @@ const PdfDownloadDial = ({ open, close, data }) => {
         // Handle the error as needed
       });
   };
+
+  // this for sending the file to customer whatsapp
   const handleSendFile = async () => {
     try {
       const info = {
@@ -54,7 +58,6 @@ const PdfDownloadDial = ({ open, close, data }) => {
         contact: contact,
       };
       const result = await sendFile(info);
-
       toast.success("Pdf successfully send to whatsapp");
       close();
     } catch (error) {
@@ -83,48 +86,52 @@ const PdfDownloadDial = ({ open, close, data }) => {
             display: "flex",
             justifyContent: "center",
             marginTop: "5px",
+            fontWeight:"bold"
           }}
         >
           Customer Name : {data.Name}
         </span>
-        <div style={{ marginTop: "10px", padding: "10px" }}>
+        <Grid
+          container
+          sx={{ mt: "4px" }}
+          justifyContent={"center"}
+          rowGap={5}
+          paddingX={5}
+        >
           {/* downloading pdf */}
-          <div
-            style={{
-              border: "1px solid black",
-              padding: "10px",
-              display: "flex",
-              justifyContent: "space-evenly",
-              marginBottom: "20px",
-              alignItems: "center",
-            }}
-          >
-            <span>Download Pdf</span>
-            <Button onClick={handleDownloadPdf}>Click here</Button>
-          </div>
+          <Grid container sx={{border:"1px solid black"}} justifyContent={"center"} columnGap={5} alignItems={"center"} paddingY={1.2} marginTop={1}>
+            <Grid item sm={6} xl={4} >
+              <span>Download Pdf</span>
+            </Grid>
+            <Grid item sm={6} xl={3}>
+              {" "}
+              <Button onClick={handleDownloadPdf} disabled={downloadLoading}>
+                {downloadLoading ? <CircularProgress /> : "Click here"}
+              </Button>
+            </Grid>
+          </Grid>
+
           {/* send pdf directly to whatsapp */}
-          <div
-            style={{
-              border: "1px solid black",
-              padding: "10px",
-              display: "flex",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <TextField
-              id="standard-basic"
-              label="Send On WhatsApp No"
-              variant="standard"
-              defaultValue={contact}
-              onChange={(e) => setContact(e.target.value)}
-              inputProps={{
-                style: { textIndent: "10px" },
-              }}
-            ></TextField>
-            <Button onClick={handleSendFile}>Click here</Button>
-          </div>
-        </div>
+          <Grid container sx={{border:"1px solid black"}} justifyContent={"center"} columnGap={5} alignItems={"center"} paddingY={1}>
+            <Grid item sm={6} xl={4} >
+              <TextField
+                id="standard-basic"
+                label="Send On WhatsApp No"
+                variant="standard"
+                defaultValue={contact}
+                onChange={(e) => setContact(e.target.value)}
+                inputProps={{
+                  style: { textIndent: "10px" },
+                }}
+              ></TextField>
+            </Grid>
+            <Grid item sm={6} xl={3}>
+              <Button onClick={handleSendFile} disabled={isLoading}>
+                {isLoading ? <CircularProgress /> : "Send"}
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
         <Button variant="contained" onClick={close}>
