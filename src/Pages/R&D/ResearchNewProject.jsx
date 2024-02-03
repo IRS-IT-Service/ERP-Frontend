@@ -26,12 +26,17 @@ import {
   Stack,
   Autocomplete,
   Checkbox,
+  InputLabel,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Header from '../../components/Common/Header';
 import InfoDialogBox from '../../components/Common/InfoDialogBox';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -94,6 +99,51 @@ const infoDetail = [
 
 const ResearchNewProject = () => {
   const description = `The Entry Form for Repairs Module is for the drone service center. Here, we enter customer details for drone services. After clicking the submit button, the data will be submitted.`;
+
+  // create new Project row Column
+  const [createProjectForm, setCreateProjectForm] = useState({
+    projectName: '',
+    description: '',
+  });
+
+  // createNewProjectHandler to createNewProject
+  const createNewProjectHandler = (e) => {
+    const { name, value } = e.target;
+    setCreateProjectForm((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  // submit handler
+  const submitCreateProjectHandler = () => {
+    console.log(createProjectForm);
+    createProjectForm.projectName && createProjectForm.description
+      ? toast.success(`${createProjectForm.projectName} Project Added`)
+      : toast.error(`Add Project Name Description`);
+  };
+
+  // track project status
+  const [projectDetail, setProjectDetail] = useState({
+    status: '',
+  });
+
+  // change the project status
+  const handleStatusChange = (e) => {
+    const { name, value } = e.target;
+    setProjectDetail((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  // update the status
+  const updateProjectStatus = () => {
+    console.log('Updating status:', projectDetail);
+    projectDetail.status
+      ? toast.success(`Project ${projectDetail.status}`)
+      : toast.error(`Choose one`);
+  };
 
   const top100Films = [
     {
@@ -275,7 +325,7 @@ const ResearchNewProject = () => {
       id: 12,
       sku: 'IRS2401100535',
       productName: 'T Motor MN801-S KV120',
-      
+
       startDate: '2023/02/2024',
       endDate: '2023/05/06',
     },
@@ -288,23 +338,13 @@ const ResearchNewProject = () => {
     },
   ];
 
-  const projectDetailsData = [
-    {
-      projectID: 'ProjectID',
-      projectName: 'Project Name',
-      description: 'Description',
-      startDate: 'Start Date',
-      endDate: 'End Date',
-      status: 'Status',
-      assigned: 'AssignTo',
-    },
-  ];
   const viewBarcodeColumns = [
     {
       id: 'SNo',
       sku: 'SKU',
       productName: 'Product Name',
       description: 'Description',
+      button: 'Select Part',
     },
   ];
   const viewBarcodeRows = [
@@ -405,51 +445,6 @@ const ResearchNewProject = () => {
     },
   ];
 
-  const newProjectColumns = [
-    {
-      id: 1,
-      label: 'Sno',
-    },
-    {
-      id: 2,
-      label: 'Project Id',
-    },
-    {
-      id: 3,
-      label: 'Project Name',
-    },
-    {
-      id: 4,
-      label: 'Description',
-    },
-  ];
-  const newProjectRows = [
-    {
-      id: 1,
-      projectID: (
-        <TextField
-          sx={{ maxWidth: '140px' }}
-          id='outlined-basic'
-          variant='outlined'
-        />
-      ),
-      projectName: (
-        <TextField
-          id='outlined-textarea'
-          multiline
-          sx={{ maxWidth: '390px' }}
-        />
-      ),
-      description: (
-        <TextField
-          id='outlined-textarea'
-          multiline
-          sx={{ maxWidth: '390px' }}
-        />
-      ),
-    },
-  ];
-
   const currentDate = new Date().toLocaleDateString();
   const projectDetailHeader = [
     {
@@ -499,7 +494,7 @@ const ResearchNewProject = () => {
       label2: 'Part Name',
       label3: `Part Barcode`,
       label4: `Status of Part's Barcode`,
-    }
+    },
   ];
 
   const newProjectDetailRows = [
@@ -528,8 +523,7 @@ const ResearchNewProject = () => {
       status: 'In Use',
     },
   ];
-  
-  
+
   // new project openClose
   const [newProjectDialogClose, setNewProjectDialogClose] = useState(false);
   const openCloseNewProjectBox = () => {
@@ -586,6 +580,17 @@ const ResearchNewProject = () => {
   const handleClose1 = () => {
     setOpen(false);
   };
+
+  const [displayBarcode, setDisplayBarcode] = useState(false)
+  
+  const showBarcodeHandler = ()=>{
+    setDisplayBarcode(!displayBarcode);
+  }
+
+  const addBarcodeHandler = ()=>{
+    setDisplayBarcode(!displayBarcode);
+  }
+
   return (
     <Box
       component='main'
@@ -615,14 +620,10 @@ const ResearchNewProject = () => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            // border: '2px solid black'
           }}
         >
           <Box sx={{ minWidth: '12vw' }}>
-            <Button
-              variant='contained'
-              onClick={openCloseNewProjectBox}
-            >
+            <Button variant='contained' onClick={openCloseNewProjectBox}>
               Add New Project
             </Button>{' '}
           </Box>
@@ -650,19 +651,19 @@ const ResearchNewProject = () => {
             <Button variant='outlined'>Completed Projects</Button>
             <Button variant='outlined'>InComplete Projects</Button>
           </Box>
+
+          {/* add new project DialogBox */}
           <Dialog
             maxWidth='xl'
             open={newProjectDialogClose}
             onClose={openCloseNewProjectBox}
-            // aria-labelledby='alert-dialog-title'
-            // aria-describedby='alert-dialog-description'
           >
             <DialogTitle
               sx={{
-                minWidth: '60vw',
-                minHeight: '9vh',
+                minWidth: '50vw',
+                minHeight: '5vh',
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: 'space-around',
                 alignItems: 'center',
                 backgroundColor: 'skyblue',
               }}
@@ -672,76 +673,59 @@ const ResearchNewProject = () => {
               </Typography>
             </DialogTitle>
 
-            <DialogContent>
-              <TableContainer sx={{}}>
-                <Table stickyHeader aria-label='sticky table'>
-                  <TableHead>
-                    <TableRow>
-                      {newProjectColumns.map((data) => (
-                        <TableCell
-                          key={data.id}
-                          style={{
-                            width:
-                              data.id === 1
-                                ? 10
-                                : data.id === 2
-                                ? 30
-                                : data.id === 3
-                                ? 100
-                                : data.id === 4
-                                ? 50
-                                : data.id === 5
-                                ? 30
-                                : data.id === 6
-                                ? 10
-                                : data.id === 7
-                                ? 10
-                                : data.id === 8
-                                ? 10
-                                : '',
-                            textAlign:
-                              data.id === 1
-                                ? ''
-                                : data.id === 2
-                                ? ''
-                                : data.id === 3
-                                ? ''
-                                : data.id === 4
-                                ? ''
-                                : data.id === 5
-                                ? ''
-                                : data.id === 6
-                                ? ''
-                                : '',
-                          }}
-                        >
-                          {data.label}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-
-                  <TableBody>
-                    {newProjectRows.map((data) => (
-                      <TableRow>
-                        <TableCell>{data.id}</TableCell>
-                        <TableCell>{data.projectID}</TableCell>
-                        <TableCell>{data.projectName}</TableCell>
-                        <TableCell>{data.description}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+            <DialogContent
+              sx={{
+                width: 'auto',
+                minHeight: ' 10vh',
+                display: 'flex',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+              }}
+            >
+              <Box>
+                <InputLabel htmlFor='projectName'>Project Name</InputLabel>
+                <InputBase
+                  id='projectName'
+                  sx={{
+                    width: '250px',
+                    height: '40px',
+                    border: '2px solid grey',
+                    borderRadius: '5px',
+                    paddingX: '5px',
+                  }}
+                  name='projectName'
+                  value={createProjectForm.projectName}
+                  onChange={createNewProjectHandler}
+                />
+              </Box>
+              <Box>
+                <InputLabel htmlFor='projectDescription'>
+                  Project Description
+                </InputLabel>
+                <InputBase
+                  id='projectDescription'
+                  sx={{
+                    width: '600px',
+                    height: '40px',
+                    border: '2px solid grey',
+                    borderRadius: '5px',
+                    paddingX: '5px',
+                  }}
+                  name='description'
+                  value={createProjectForm.description}
+                  onChange={createNewProjectHandler}
+                />
+              </Box>
             </DialogContent>
             <DialogActions>
-              <Button>Submit</Button>
+              <Button onClick={submitCreateProjectHandler}>Submit</Button>
               <Button onClick={openCloseNewProjectBox}>Close</Button>
             </DialogActions>
           </Dialog>
         </Box>
+
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-          <TableContainer sx={{ minHeight: 490, maxHeight: 490 }}>
+          <TableContainer sx={{ maxHeight: 590 }}>
             <Table stickyHeader aria-label='sticky table'>
               <TableHead>
                 <TableRow>
@@ -788,7 +772,7 @@ const ResearchNewProject = () => {
               </TableHead>
               <TableBody>
                 {rows.map((row, index) => (
-                  <TableRow>
+                  <TableRow key={index}>
                     <TableCell
                       style={{
                         width: row.id === index + 1 ? 2 : '',
@@ -893,14 +877,14 @@ const ResearchNewProject = () => {
             }}
           >
             <Typography sx={{ fontWeight: '600' }}>
-              All Inventory Data
+              All Inventory Parts
             </Typography>
           </DialogTitle>
 
           <DialogContent
             sx={{
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               alignItems: 'start',
             }}
           >
@@ -908,9 +892,8 @@ const ResearchNewProject = () => {
             <TableContainer
               sx={{
                 maxHeight: 490,
-                maxWidth: 475,
+                maxWidth: `${displayBarcode ? '590px' : '100%'}`,
                 overflow: 'auto',
-                // border: '2px solid black'
               }}
             >
               <Table
@@ -918,22 +901,36 @@ const ResearchNewProject = () => {
                 aria-label='sticky table'
                 sx={{ border: '1px solid grey' }}
               >
-                {viewBarcodeColumns.map((data) => (
-                  <TableHead>
+                {viewBarcodeColumns.map((data, index) => (
+                  <TableHead key={index}>
                     <TableRow>
-                      <TableCell>{data.id}</TableCell>
-                      <TableCell>{data.sku}</TableCell>
-                      <TableCell>{data.productName}</TableCell>
+                      <TableCell sx={{ backgroundColor: 'grey' }}>
+                        {data.id}
+                      </TableCell>
+                      <TableCell sx={{ backgroundColor: 'grey' }}>
+                        {data.sku}
+                      </TableCell>
+                      <TableCell sx={{ backgroundColor: 'grey' }}>
+                        {data.productName}
+                      </TableCell>
+                      <TableCell sx={{ backgroundColor: 'grey' }}>
+                        {data.button}
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                 ))}
 
                 <TableBody>
-                  {viewBarcodeRows.map((data) => (
-                    <TableRow>
+                  {viewBarcodeRows.map((data, index) => (
+                    <TableRow key={index}>
                       <TableCell>{data.id}</TableCell>
                       <TableCell>{data.barcode}</TableCell>
                       <TableCell>{data?.status}</TableCell>
+                      <TableCell>
+                        <Button onClick={showBarcodeHandler}>
+                          Select Part
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -946,7 +943,7 @@ const ResearchNewProject = () => {
                 maxHeight: 490,
                 maxWidth: 475,
                 overflow: 'auto',
-                // border: '2px solid black'
+                display: `${displayBarcode ? '' : 'none'}`,
               }}
             >
               <Table
@@ -954,8 +951,8 @@ const ResearchNewProject = () => {
                 aria-label='sticky table'
                 sx={{ border: '1px solid grey' }}
               >
-                {addPartColumns.map((data) => (
-                  <TableHead>
+                {addPartColumns.map((data, index) => (
+                  <TableHead key={index}>
                     <TableRow>
                       <TableCell
                         sx={{
@@ -998,8 +995,8 @@ const ResearchNewProject = () => {
                 ))}
 
                 <TableBody>
-                  {addPartRows.map((data) => (
-                    <TableRow>
+                  {addPartRows.map((data, index) => (
+                    <TableRow key={{ index }}>
                       <TableCell>{data.id}</TableCell>
                       <TableCell>{data.checkbox}</TableCell>
                       <TableCell>{data.barcodeNumber}</TableCell>
@@ -1011,6 +1008,7 @@ const ResearchNewProject = () => {
             </TableContainer>
           </DialogContent>
           <DialogActions>
+            <Button onClick={showBarcodeHandler}>Submit</Button>
             <Button onClick={handleOpenCloseAddPart}>Close</Button>
           </DialogActions>
         </Dialog>
@@ -1085,8 +1083,8 @@ const ResearchNewProject = () => {
           <DialogContent>
             <TableContainer sx={{}}>
               <Table stickyHeader aria-label='sticky table'>
-                {newProjectDetailCloumns.map((data) => (
-                  <TableHead>
+                {newProjectDetailCloumns.map((data, index) => (
+                  <TableHead key={index}>
                     <TableRow>
                       <TableCell>{data.label1}</TableCell>
                       <TableCell>{data.label2}</TableCell>
@@ -1097,8 +1095,8 @@ const ResearchNewProject = () => {
                 ))}
 
                 <TableBody>
-                  {newProjectDetailRows.map((data) => (
-                    <TableRow>
+                  {newProjectDetailRows.map((data, index) => (
+                    <TableRow key={index}>
                       <TableCell>{data.id}</TableCell>
                       <TableCell>{data.partsName}</TableCell>
                       <TableCell>{data.partsBarcode}</TableCell>
@@ -1121,7 +1119,34 @@ const ResearchNewProject = () => {
               </Table>
             </TableContainer>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ justifyContent: 'space-between' }}>
+            <RadioGroup
+              aria-label='status'
+              name='status'
+              value={projectDetail.status}
+              onChange={handleStatusChange}
+              row
+            >
+              <FormControlLabel
+                value='Complete'
+                control={<Radio />}
+                label='Complete'
+              />
+              <FormControlLabel
+                value='Incomplete'
+                control={<Radio />}
+                label='Incomplete'
+              />
+              <FormControlLabel
+                value='InProgress'
+                control={<Radio />}
+                label='In Progress'
+              />
+              <Button variant='outlined' onClick={updateProjectStatus}>
+                Update
+              </Button>
+            </RadioGroup>
+
             <Button onClick={handleOpenClosePD}>Close</Button>
           </DialogActions>
         </Dialog>

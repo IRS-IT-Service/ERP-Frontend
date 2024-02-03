@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react';
 import {
   Box,
   styled,
@@ -29,6 +29,7 @@ import Header from '../../components/Common/Header';
 import InfoDialogBox from '../../components/Common/InfoDialogBox';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
+import { useGetAllRDInventoryQuery } from '../../features/api/barcodeApiSlice';
 const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -92,186 +93,64 @@ const infoDetail = [
 const AllInventoryData = () => {
   const description = `The Entry Form for Repairs Module is for the drone service center. Here, we enter customer details for drone services. After clicking the submit button, the data will be submitted.`;
 
-const columns = [
-  { id: 1, label: 'SNo', minWidth: 120 },
-  { id: 2, label: 'SKU', minWidth: 120 },
-  { id: 3, label: 'Product Name', minWidth: 120 },
-  {
-    id: 4,
-    label: 'Quantity',
-    minWidth: 120,
-  },
-  {
-    id: 5,
-    label: 'View Barcode ',
-    minWidth: 120,
-  },
-];
-const rows = [
-  {
-    id: 1,
-    sku: 'IRS2401102013',
-    productName: 'T Motor TWE801-D DP120',
-    qty: '4',
-    minWidth: 120,
-  },
-  {
-    id: 2,
-    sku: 'IRS32345673476',
-    productName: 'T Engine MQ701-S TC120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 3,
-    sku: 'IRS12325456653',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 4,
-    sku: 'IRS22736482732',
-    productName: 'T Engine WETod-Q KV555',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 5,
-    sku: 'IRS24012433476',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 6,
-    sku: 'IRS35665788765',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 7,
-    sku: 'IRS24011002325',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 8,
-    sku: 'IRS2450123s335',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 9,
-    sku: 'IRS240110034345',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 10,
-    sku: 'IRS2401100535',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 11,
-    sku: 'IRS2401100535',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 12,
-    sku: 'IRS2401100535',
-    productName: 'T Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-  {
-    id: 13,
-    sku: 'IRS2401100535',
-    productName: 'Tttt Motor MN801-S KV120',
-    qty: '4',
-    viewBarcode: 'View',
-    minWidth: 120,
-  },
-];
+  //alInventoryData rtk
+  const { data: inventoryData } = useGetAllRDInventoryQuery();
+  const columns = [
+    { id: 1, label: 'SNo', minWidth: 120 },
+    { id: 2, label: 'SKU', minWidth: 120 },
+    { id: 3, label: 'Part Name', minWidth: 120 },
+    {
+      id: 4,
+      label: 'Quantity',
+      minWidth: 120,
+    },
+    {
+      id: 5,
+      label: 'View Barcode ',
+      minWidth: 120,
+    },
+  ];
 
-const viewBarcodeColumns = [
-  {
-    id: 'SNo',
-    barcode: 'Barcode',
-    issueDate: 'Issue Date',
-    status: 'Status',
-    assigned: 'AssignTo',
-  },
-];
+  const [rows, setRows] = useState([]);
+  useEffect(() => {
+    if (inventoryData?.status === true) {
+      const updatedRows = inventoryData?.data?.map((data) => ({
+        id: data._id,
+        sku: data.SKU,
+        name: data.Name,
+        quantity: data.Quantity,
+        barcode: (data?.Barcode || []).map((barcodeData) => ({
+          barcodeSKU: barcodeData?.SKU,
+          Barcode: barcodeData?.Barcode,
+        })),
+      }));
+      setRows(updatedRows);
+    }
+  }, [inventoryData]);
 
-const viewBarcodeRows = [
-  {
-    id: 1,
-    barcode: 'Barcode1',
-    issueDate: '20/2/2024',
-    assigned: 'Project1',
-    status: 'In Inventory',
-  },
-  {
-    id: 2,
-    barcode: 'Barcode2',
-    issueDate: '22/2/2024',
-    assigned: 'Project2',
-    status: 'Damage',
-  },
-  {
-    id: 3,
-    barcode: 'Barcode3',
-    issueDate: '10/2/2024',
-    assigned: 'Project3',
-    status: 'Damage',
-  },
-];
+  useEffect(() => {
+    console.log(rows);
+  }, [rows]);
+ 
+  const viewBarcodeColumns = [
+    {
+      id: 'SNo',
+      barcode: 'Barcode',
+      issueDate: 'Issue Date',
+      status: 'Status',
+      assigned: 'AssignTo',
+    },
+  ];
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  
 
-
- const [openDialog, setOpenDialog] = useState(false);
- const [selectedRow, setSelectedRow] = useState(null);
-
- const handleClickOpen1 = (row) => {
-   setSelectedRow(row);
-   setOpenDialog(true);
-   console.log(row);
- };
-
- const handleClose2 = () => {
-   setOpenDialog(false);
-  //  setSelectedRow(null);
- };
-const [page, setPage] = React.useState(0);
-const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-const handleChangePage = (event, newPage) => {
-  setPage(newPage);
-};
-
-const handleChangeRowsPerPage = (event) => {
-  setRowsPerPage(+event.target.value);
-  setPage(0);
-};
+  const handleClickOpen1 = (data) => {
+    setSelectedRow(data)
+    setOpenDialog(!openDialog);
+  };
+  console.log(selectedRow)
+  
   /// global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
@@ -284,15 +163,6 @@ const handleChangeRowsPerPage = (event) => {
     setInfoOpen(true);
   };
 
-   const [open, setOpen] = React.useState(false);
-
-   const handleClickOpen = () => {
-     setOpen(true);
-   };
-
-   const handleClose1 = () => {
-     setOpen(false);
-   };
   return (
     <Box
       component='main'
@@ -313,78 +183,15 @@ const handleChangeRowsPerPage = (event) => {
       />
 
       <Box>
-        <Box
-          sx={{
-            minWidth: '200px',
-            height: '7vh',
-            boxShadow: 4,
-            marginY: 1,
-            display: 'flex',
-            justifyContent: 'start',
-            alignItems: 'center',
-            // border: '2px solid black'
-          }}
-        >
-          <Button variant='contained' onClick={handleClickOpen}>
-            Add Parts
-            <AddIcon />
-          </Button>
-          <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby='alert-dialog-title'
-            aria-describedby='alert-dialog-description'
-            // sx={{
-            //   width: '500px', // Set your desired width
-            //   height: '300px', // Set your desired height
-            // }}
-          >
-            <DialogTitle
-              id='alert-dialog-title'
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              {'Scan Parts to Add Parts'}
-            </DialogTitle>
-            <DialogContent
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Typography>Scan Parts Barcode </Typography>
-              <InputBase
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100px',
-                  height: '40px',
-                  border: '2px solid black',
-                }}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose1}>Disagree</Button>
-              <Button onClick={handleClose1} autoFocus>
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Box>
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-          <TableContainer sx={{ minHeight: 490, maxHeight: 490 }}>
+          <TableContainer sx={{ maxHeight: 690 }}>
             <Table stickyHeader aria-label='sticky table'>
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
                     <TableCell
                       key={column.id}
-                      style={{ minWidth: column.minWidth }}
+                      style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
                     >
                       {column.label}
                     </TableCell>
@@ -392,24 +199,16 @@ const handleChangeRowsPerPage = (event) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow>
-                    <TableCell style={{ minWidth: row.minWidth }}>
-                      {row.id}
-                    </TableCell>
-                    <TableCell style={{ minWidth: row.minWidth }}>
-                      {row.sku}
-                    </TableCell>
-                    <TableCell style={{ minWidth: row.minWidth }}>
-                      {row.productName}
-                    </TableCell>
-                    <TableCell style={{ minWidth: row.minWidth }}>
-                      {row.qty}
-                    </TableCell>
-                    <TableCell style={{ minWidth: row.minWidth }}>
+                {rows?.map((data, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{data?.sku}</TableCell>
+                    <TableCell>{data?.name}</TableCell>
+                    <TableCell>{data?.barcode.length}</TableCell>
+                    <TableCell>
                       <Button
                         variant='contained'
-                        onClick={() => handleClickOpen1(row)}
+                        onClick={() => handleClickOpen1(data)}
                       >
                         View
                       </Button>
@@ -419,19 +218,10 @@ const handleChangeRowsPerPage = (event) => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component='div'
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
         </Paper>
 
         {/* view barcode dialog box */}
-        <Dialog open={openDialog} onClose={handleClose2} maxWidth='xl'>
+        <Dialog open={openDialog} onClose={handleClickOpen1} maxWidth='xl'>
           <DialogTitle
             sx={{
               minWidth: '60vw',
@@ -442,14 +232,15 @@ const handleChangeRowsPerPage = (event) => {
             }}
           >
             <Typography>{`SKU: ${selectedRow?.sku} `}</Typography>
-            <Typography>{`Product Name: ${selectedRow?.productName} `}</Typography>
+
+            <Typography>{`Part Name: ${selectedRow?.name}`}</Typography>
           </DialogTitle>
 
           <DialogContent>
             <TableContainer sx={{ minHeight: 490, maxHeight: 490 }}>
               <Table stickyHeader aria-label='sticky table'>
-                {viewBarcodeColumns.map((data) => (
-                  <TableHead>
+                {viewBarcodeColumns.map((data, index) => (
+                  <TableHead key={index}>
                     <TableRow>
                       <TableCell>{data.id}</TableCell>
                       <TableCell>{data.barcode}</TableCell>
@@ -463,20 +254,10 @@ const handleChangeRowsPerPage = (event) => {
                 ))}
 
                 <TableBody>
-                  {viewBarcodeRows.map((data) => (
-                    <TableRow>
-                      <TableCell>{data.id}</TableCell>
-                      <TableCell>{data.barcode}</TableCell>
-                      <TableCell>{data.issueDate}</TableCell>
-                      <TableCell>{data.assigned}</TableCell>
-                      <TableCell
-                        sx={{
-                          backgroundColor:
-                            data?.status === 'Damage' ? 'red' : 'green',
-                        }}
-                      >
-                        {data?.status}
-                      </TableCell>
+                  {selectedRow?.barcode?.map((data, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{data?.Barcode}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -484,12 +265,12 @@ const handleChangeRowsPerPage = (event) => {
             </TableContainer>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose2}>Close</Button>
+            <Button onClick={handleClickOpen1}>Close</Button>
           </DialogActions>
         </Dialog>
       </Box>
     </Box>
   );
-}
+};
 
-export default AllInventoryData
+export default AllInventoryData;

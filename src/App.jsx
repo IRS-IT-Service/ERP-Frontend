@@ -625,10 +625,6 @@ function App() {
                   element={<ResearchNewProject />}
                 />
               </Route>
-              <Route
-                path='/ResearchNewProject'
-                element={<ResearchNewProject />}
-              />
             </Routes>
           </Suspense>
         </ThemeProvider>
