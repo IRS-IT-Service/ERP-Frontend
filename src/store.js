@@ -5,6 +5,7 @@ import productReducer from "./features/slice/productSlice";
 import uiReducer from "./features/slice/uiSlice";
 import SellerDetailsAndAddressReducer from "./features/slice/sellerDtatailsAndAddrssSlice";
 import { toast } from "react-toastify";
+import DscFormSlice from "./features/slice/DscFormSlice";
 
 /// Custom error handling middleware
 
@@ -50,10 +51,6 @@ const errorMiddleware = (store) => (next) => (action) => {
       endpointName === "login"
     ) {
       toast.error("Server Down");
-    } else if (action.payload?.status === "FETCH_ERROR") {
-      store.dispatch(addError("Server Error"));
-
-      store.dispatch(logout());
     } else {
       toast.error(action.payload?.data?.message || action.payload?.error);
     }
@@ -69,6 +66,7 @@ const store = configureStore({
     product: productReducer,
     ui: uiReducer,
     sellerDetailsAndAddress: SellerDetailsAndAddressReducer,
+    dscForm:DscFormSlice,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

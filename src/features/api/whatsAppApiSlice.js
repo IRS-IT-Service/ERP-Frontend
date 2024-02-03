@@ -2,7 +2,6 @@ import { apiSlice } from "./apiSlice";
 import { WhatsApp_URL } from "../../constants/ApiEndpoints";
 import { DataSaverOff } from "@mui/icons-material";
 
-
 export const whatsAppApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     reducerPath: "whatsAppApi",
@@ -12,38 +11,52 @@ export const whatsAppApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${WhatsApp_URL}/saveContactForWaapi?name=${data.name}`,
           method: "POST",
-          body:data
+          body: data,
         };
       },
     }),
-    getAllContactNo:builder.query({
-      query:(data) =>{
+    getAllContactNo: builder.query({
+      query: (data) => {
         return {
-            url: `${WhatsApp_URL}/getAllSavedContact?name=${data}`,
-            method:"GET"
-        }
-      }  
+          url: `${WhatsApp_URL}/getAllSavedContact?name=${data}`,
+          method: "GET",
+        };
+      },
     }),
-    deleteContactNo:builder.mutation({
-        query:(data) =>{
-            return {
-                url:`${WhatsApp_URL}/deleteSavedContact?name=${data.name}`,
-                method:"DELETE",
-                body:data
-            }
-        }
-    }),
-    sendMessage:builder.mutation({
-      query:(data)=>{
+    deleteContactNo: builder.mutation({
+      query: (data) => {
         return {
-          url:`${WhatsApp_URL}/send-message`,
-          method:"POST",
-          body:data
-        }
-      }
-    })
-   
+          url: `${WhatsApp_URL}/deleteSavedContact?name=${data.name}`,
+          method: "DELETE",
+          body: data,
+        };
+      },
+    }),
+    sendMessage: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${WhatsApp_URL}/send-message`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    sendPdfOnWhatsappDsc: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${WhatsApp_URL}/sendPdfDsc`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
-export const {useSaveWhatsAppNoMutation,useGetAllContactNoQuery,useDeleteContactNoMutation , useSendMessageMutation} = whatsAppApiSlice;
+export const {
+  useSaveWhatsAppNoMutation,
+  useGetAllContactNoQuery,
+  useDeleteContactNoMutation,
+  useSendMessageMutation,
+  useSendPdfOnWhatsappDscMutation,
+} = whatsAppApiSlice;

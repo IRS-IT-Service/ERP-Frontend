@@ -29,6 +29,7 @@ import BASEURL from "../../constants/BaseApi";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../CustomProvider/useWebSocket";
+import PdfDownloadDial from "./Components/PdfDownloadDial";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -48,6 +49,8 @@ const DSCFormList = () => {
   /// local state
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openDial,setOpenDial] = useState(false);
+  const [dscData,setDscData] = useState({})
   const [selectedData, setSelectedData] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
@@ -67,7 +70,6 @@ const DSCFormList = () => {
     },
   ]);
   const [queryParams, setQueryParams] = useState("open");
-  console.log(queryParams);
   const [selectedStatus, setSelectedStatus] = useState("");
   const dispatch = useDispatch();
   const socket = useSocket();
@@ -117,6 +119,16 @@ const DSCFormList = () => {
   const handleChange = (event, newQuery) => {
     setQueryParams(newQuery);
   };
+
+  const handleOpenPdfDial = (data) => {
+  setOpenDial(!openDial)
+  setDscData(data)
+  }
+
+  const handleClosePdfDial = () =>{
+    setDscData({})
+    setOpenDial(!openDial)
+  }
 
   const handleDownloadPdf = (id) => {
     setDownloadLoading(true);
@@ -317,11 +329,14 @@ const DSCFormList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        const Token = params.row.Token;
+        const Contact = params.row.MobileNo
+        const Name = params.row.CustomerName
         return (
           <div>
             <Button
               onClick={() => {
-                handleDownloadPdf(params.row.Token);
+                handleOpenPdfDial({Token,Contact,Name});
               }}
             >
               <DownloadIcon />
@@ -442,6 +457,7 @@ const DSCFormList = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      {openDial && <PdfDownloadDial open={openDial} close = {handleClosePdfDial} data={dscData}/>}
     </Box>
   );
 };

@@ -542,7 +542,7 @@ function App() {
                 <Route
                   path='/barcodeHistory'
                   element={
-                    <UserRole name={'History'}>
+                    <UserRole name={"Barcode History"}>
                       <BarcodeHistory />
                     </UserRole>
                   }

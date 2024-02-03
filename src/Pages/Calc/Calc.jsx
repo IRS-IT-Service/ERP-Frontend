@@ -196,8 +196,8 @@ const Calc = () => {
   const [testSearch, setTestSearch] = useState("");
   const filteredData = data?.data.filter(
     (item) =>
-      item.Name.toLowerCase().includes(testSearch.toLowerCase()) ||
-      item.SKU.toLowerCase().includes(testSearch.toLowerCase())
+      item.Name?.toLowerCase().includes(testSearch?.toLowerCase()) ||
+      item.SKU?.toLowerCase().includes(testSearch?.toLowerCase())
   );
 
   /// local state
@@ -220,8 +220,7 @@ const Calc = () => {
   const [weightCompare, setWeightCompare] = useState({});
   const [totalWeight, setTotalWeight] = useState({});
   const [subTotalWeight, setSubTotalWeight] = useState(null);
-  const [
-    totalVolumeWeight, setTotalVolumeWeight] = useState(null);
+  const [totalVolumeWeight, setTotalVolumeWeight] = useState(null);
   const [totalActualWeight, setTotalActualWeight] = useState(null);
   const [volumeWeightRatio, setVolumeWeightRatio] = useState({});
   const [extraWeight, setExtraWeight] = useState("");
@@ -655,9 +654,9 @@ const Calc = () => {
       setRows(oneCalcData.data.Product);
       // weight
       setQty(oneCalcData.data.weightState.qty || {});
-      setDimensions(oneCalcData.data.weightState.dimefsions || {});
+      setDimensions(oneCalcData.data.weightState.dimensions || {});
       setUnit(oneCalcData.data.weightState.unit || "cf");
-      setWeightUnit(oneCalcData.data.weightState.WeigftUnit || "gm");
+      setWeightUnit(oneCalcData.data.weightState.WeightUnit || "gm");
       setCourier(oneCalcData.data.weightState.Courier || "cargo");
       setVolumeWeight(oneCalcData.data.weightState.volumeWeight || {});
       setActualWeight(oneCalcData.data.weightState.actualWeight || {});
@@ -1831,7 +1830,7 @@ const Calc = () => {
   };
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%", }}>
+    <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%" }}>
       <DrawerHeader />
       <Header
         Name={"Price Calculator"}
