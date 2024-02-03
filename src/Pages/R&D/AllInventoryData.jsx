@@ -138,7 +138,7 @@ const AllInventoryData = () => {
       barcode: 'Barcode',
       issueDate: 'Issue Date',
       status: 'Status',
-      assigned: 'AssignTo',
+      assigned: 'AssignTo Project Name',
     },
   ];
   const [openDialog, setOpenDialog] = useState(false);

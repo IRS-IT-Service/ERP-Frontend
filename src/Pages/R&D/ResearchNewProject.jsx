@@ -40,6 +40,7 @@ import { toast } from 'react-toastify';
 const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
+import { useAddProjectNameMutation } from '../../features/api/barcodeApiSlice';
 
 const infoDetail = [
   {
@@ -115,12 +116,27 @@ const ResearchNewProject = () => {
     }));
   };
 
-  // submit handler
-  const submitCreateProjectHandler = () => {
+  // rtk for post data
+  const [addNewProjectData, {isLoading: loadingAddNewProjectData}] = useAddProjectNameMutation();
+  // submit for New Project handler
+  const submitCreateProjectHandler = async () => {
     console.log(createProjectForm);
-    createProjectForm.projectName && createProjectForm.description
-      ? toast.success(`${createProjectForm.projectName} Project Added`)
-      : toast.error(`Add Project Name Description`);
+
+    if (!createProjectForm.projectName || !createProjectForm.description) {
+      toast.error(`Please enter ProjectName and Description First`);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('projectName', createProjectForm.projectName);
+    formData.append('description', createProjectForm.description);
+    
+    try {
+      const res = await addNewProjectData(formData).unwrap();
+      toast.success(`Project Added successfully`);
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   // track project status
@@ -402,7 +418,7 @@ const ResearchNewProject = () => {
       sNo: 'Sno',
       checkbox: 'Select',
       barcodeNumber: 'Barcode Number',
-      isAssigned: 'Assigned To',
+      isAssigned: 'Assigned To Project',
     },
   ];
   const addPartRows = [

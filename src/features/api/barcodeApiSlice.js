@@ -193,6 +193,13 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    addProjectName: builder.mutation({
+      query: (data) => ({
+        url: `r-and-d/createProject`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -226,4 +233,5 @@ export const {
   useGetAllShipmentQuery,
   useGetShipmentBarcodeMutation,
   useGetAllRDInventoryQuery,
+  useAddProjectNameMutation,
 } = BarcodeSlice;
