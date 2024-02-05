@@ -49,6 +49,7 @@ const UpdateLiveCalcDialog = ({
 }) => {
   // Initialization
   const socket = useSocket();
+  console.log(data)
 
   // Local state
   const [localData, setLocalData] = useState([...data]);
@@ -442,7 +443,7 @@ const UpdateLiveCalcDialog = ({
       { field: 'SKU', headerName: 'SKU' },
       { field: 'Name', headerName: 'Product' },
       { field: 'Quantity', headerName: 'Quantity' },
-      { field: 'Landing Cost₹', headerName: 'LC₹', preFix: '₹' },
+      { field: 'LandingCost', headerName: 'LC₹', preFix: '₹' },
       { field: 'GST', headerName: 'GST %', preFix: '%' },
     ];
 
