@@ -343,7 +343,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
               </Route>
 
-              {/* Admin Router. */}
+              {/* Admin Router */}
               <Route path="" element={<PrivateRoute />}>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="product-list" element={<Home_page />} />
