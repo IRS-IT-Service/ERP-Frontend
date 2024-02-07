@@ -220,7 +220,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           ).toFixed(2),
           SalesPrice: item.SalesPrice?.toFixed(2) || 0,
           SalesTax: item.SalesTax?.toFixed(2) || 0,
-          ProfitSales:
+          ProfitSalesWithTax:
             query === "SellerPrice"
               ? !item.SalesPrice || !item.LandingCost
                 ? 0
@@ -235,7 +235,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
                     item.LandingCost) *
                   100
                 ).toFixed(2),
-          ProfitSalesWithTax:
+                ProfitSales:
             query === "SellerPrice"
               ? (
                   ((item.SalesPrice - item.LandingCost) /
@@ -255,7 +255,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           //         100
           //       ).toFixed(2),
           SellerTax: item.SellerTax?.toFixed(2) || 0,
-          ProfitSeller:
+          ProfitSellerWithTax:
             !item[`Pending${query}`] || !item.LandingCost
               ? 0
               : (
@@ -263,7 +263,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
                     item.LandingCost) *
                   100
                 ).toFixed(2),
-          ProfitSellerWithTax: (
+                ProfitSeller: (
             ((item[`Pending${query}`] - item.LandingCost) /
               (item.LandingCost * (1 + item.SellerTax / 100))) *
             100

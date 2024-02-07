@@ -49,7 +49,7 @@ const UpdateLiveCalcDialog = ({
 }) => {
   // Initialization
   const socket = useSocket();
-  console.log(data)
+
 
   // Local state
   const [localData, setLocalData] = useState([...data]);
@@ -445,19 +445,20 @@ const UpdateLiveCalcDialog = ({
       { field: 'Quantity', headerName: 'Quantity' },
       { field: 'LandingCost', headerName: 'LC₹', preFix: '₹' },
       { field: 'GST', headerName: 'GST %', preFix: '%' },
+  
     ];
 
     if (type === "Sales") {
       visibleColumns = [
         ...visibleColumns,
         {
-          field: "ActualSalesProfit",
+          field: "ProfitSales",
           headerName: "Sales Profit %",
           preFix: "%",
           className: "violet-bg",
         },
         {
-          field: "ProfitSales",
+          field: "actualSalesProfit",
           headerName: "Sales Profit with Tax %",
           input: true,
           preFix: "%",
@@ -496,13 +497,13 @@ const UpdateLiveCalcDialog = ({
       visibleColumns = [
         ...visibleColumns,
         {
-          field: 'ActualSellerProfit',
+          field: 'ProfitSeller',
           headerName: 'SP%',
           preFix: '%',
           className: 'blue-bg',
         },
         {
-          field: 'ProfitSeller',
+          field: 'actualSellerProfit',
           headerName: ' SPT%',
           input: true,
           preFix: '%',
@@ -531,13 +532,13 @@ const UpdateLiveCalcDialog = ({
           className: 'blue-bg',
         },
         {
-          field: 'ActualSalesProfit',
+          field: 'ProfitSales',
           headerName: 'SP%',
           preFix: '%',
           className: 'violet-bg',
         },
         {
-          field: 'ProfitSales',
+          field: 'actualSalesProfit',
           headerName: 'SPT%',
           preFix: '%',
           className: 'violet-bg',
