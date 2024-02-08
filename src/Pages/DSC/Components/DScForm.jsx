@@ -10,7 +10,13 @@ import {
   Typography,
   DialogActions,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import Header from "../../../components/Common/Header";
 import Autocomplete from "@mui/material/Autocomplete";
 import {
@@ -24,6 +30,10 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import DSCFormTab from "./DSCFormTab";
 import { useNavigate } from "react-router-dom";
+import {
+  setDscformDetails,
+  removeDscformDetails,
+} from "../../../features/slice/DscFormSlice";
 import CustomerForm from "./CustomerForm";
 import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -106,12 +116,17 @@ const DScForm = () => {
   const socket = useSocket();
 
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
+
+  const dscForm = useSelector((state) => state.dscForm.dscFormDetails);
+  console.log(dscForm)
+
+
   /// local state
   const [form, setForm] = useState({
     CustomerName: "",
     CompanyName: "",
     MobileNo: "",
-    alternateNumber:"",
+    alternateNumber: "",
     address: "",
     pincode: "",
     city: "",
@@ -141,6 +156,10 @@ const DScForm = () => {
   const [hardwareInput, setHardwareInput] = useState("");
   const [softwareInput, setSoftwareInput] = useState("");
   const [partInput, setPartInput] = useState("");
+  const [isRendered, setIsRendered] = useState(false);
+
+  // Use useRef hook to create a ref
+  const firstRender = useRef(true);
 
   const [open, setOpen] = useState(false);
   const [partsQty, setPartsQty] = useState({});
@@ -152,6 +171,9 @@ const DScForm = () => {
       setIsTabletView(window.innerWidth <= 805);
     };
 
+   
+  
+
     // Check initial size on component mount
     setIsTabletView(window.innerWidth <= 805);
 
@@ -161,6 +183,54 @@ const DScForm = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+
+  //  useEffect(() => {
+  //     setForm({
+  //       ...form,
+    
+  //     CustomerName: dscForm?.CustomerName,
+  //     CompanyName: dscForm?.CompanyName,
+  //     MobileNo: dscForm?.MobileNo,
+  //     address: dscForm?.address,
+  //     alternateNumber: dscForm?.alternateNumber,
+  //     pincode: dscForm?.pincode,
+  //     city: dscForm?.city,
+  //     state: dscForm?.state,
+  //     district: dscForm?.district,
+  //     date: dscForm?.date,
+  //     droneModel: dscForm?.droneModel,
+  //     hardwareIssues: dscForm?.hardwareIssues?.map((item)=>{
+  //      return {...item}
+  //     }),
+  //     softwareIssues: dscForm?.softwareIssues?.map((item)=>{
+  //       return {...item}
+  //      }),
+  //     partsRecieved:dscForm?.partsRecieved?.map((item)=>{
+  //       return {...item}
+  //      }),
+     
+    
+    
+  //     });
+  //   },[]);
+
+
+  useEffect(() => {
+    setForm({
+      ...form,
+...dscForm
+  
+  
+    });
+  },[]);
+
+  useEffect(() => {
+    dispatch(setDscformDetails(form))
+  },[form,setForm]);
+
+
+  console.log(form)
 
   /// RTK query
   const { data, isLoading, refetch, isFetching } = useGetFormDynamicDataQuery();
@@ -248,31 +318,32 @@ const DScForm = () => {
         fetchPincodeDetails(value);
       }
     }
-
+    // dispatch(setDscformDetails(form));
     if (nested) {
       setForm((prev) => {
         return { ...prev, [parent]: { ...prev[parent], [name]: value } };
       });
+   ;
       return;
     }
     setForm((prev) => {
       return { ...prev, [name]: value };
     });
+ ;
   };
-
   const handleSubmitForm = async () => {
     try {
-      if (!form.CustomerName) {
+      if (!form.CustomerName || !CustomerName) {
         toast.error("Customer Name is required");
         setOpen(false);
         return;
       }
-      if (!form.droneModel) {
+      if (!form.droneModel || !droneModel) {
         toast.error("please select droneModel is required");
         setOpen(false);
         return;
       }
-      if (!form.MobileNo) {
+      if (!form.MobileNo || !MobileNo) {
         toast.error("MobileNo is required");
         setOpen(false);
         return;
@@ -296,13 +367,13 @@ const DScForm = () => {
         return;
       }
       const params = {
-        CustomerName: form.CustomerName,
-        MobileNo: form.MobileNo,
-        CompanyName: form.CompanyName,
-        DroneModel: form.droneModel,
-        alternateMobile:form.alternateNumber,
+        CustomerName: form.CustomerName || CustomerName,
+        MobileNo: form.MobileNo || MobileNo,
+        CompanyName: form.CompanyName || CompanyName,
+        DroneModel: form.droneModel || droneModel,
+        alternateMobile: form.alternateNumber || alternateNumber,
         Address: {
-          Pincode: form.pincode,
+          Pincode: form.pincode || pincode,
           City: form.city,
           District: form.district,
           State: form.state,
@@ -327,13 +398,14 @@ const DScForm = () => {
         }),
       };
       socket.emit("liveStatusServer", liveStatusData);
+      dispatch(removeDscformDetails());
 
       setForm({
         CustomerName: "",
         CompanyName: "",
         MobileNo: "",
         address: "",
-        alternateNumber:"",
+        alternateNumber: "",
         pincode: "",
         city: "",
         state: "",
@@ -430,6 +502,10 @@ const DScForm = () => {
     }
   };
 
+  // useEffect(() => {
+
+  // return ()=> dispatch(setDscformDetails(form));
+  // });
   return (
     <>
       <Box sx={{ textAlign: "center", padding: "4px", background: "grey" }}>
@@ -638,7 +714,7 @@ const DScForm = () => {
                 <h3>Pincode</h3>
                 <input
                   type="number"
-                  value={form.pincode}
+                  value={form.pincode }
                   onChange={(e) => {
                     handleChange(e.target.value, "pincode");
                   }}
@@ -706,7 +782,7 @@ const DScForm = () => {
                 <h3>State</h3>
                 <input
                   type="text"
-                  value={form.state}
+                  value={form.state }
                   onChange={(e) => {
                     handleChange(e.target.value, "state");
                   }}
@@ -740,7 +816,7 @@ const DScForm = () => {
                 <h3>Address</h3>
                 <input
                   type="text"
-                  value={form.address}
+                  value={form.address }
                   onChange={(e) => {
                     handleChange(e.target.value, "address");
                   }}
@@ -784,11 +860,13 @@ const DScForm = () => {
                   backgroundColor: "rgba(255, 255, 255)",
                 }}
                 options={data?.data || []}
+              
                 getOptionLabel={(option) => option.ModelName}
                 onChange={handleSelectedChange}
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                 
                     label="Select"
                     onChange={(e) => {
                       console.log(e.target.value);
@@ -1330,7 +1408,11 @@ const DScForm = () => {
           >
             Close
           </Button>
-          <Button disabled={saveFormLoading} variant="contained" onClick={handleSubmitForm}>
+          <Button
+            disabled={saveFormLoading}
+            variant="contained"
+            onClick={handleSubmitForm}
+          >
             Submit
           </Button>
         </DialogActions>
