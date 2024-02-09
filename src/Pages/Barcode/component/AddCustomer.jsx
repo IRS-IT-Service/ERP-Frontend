@@ -306,7 +306,7 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
           <Box
             sx={{
               flexBasis: '70%',
-              height: '70vh',
+              height: '7 0vh',
               overflow: 'auto',
               marginTop: '12px',
             }}

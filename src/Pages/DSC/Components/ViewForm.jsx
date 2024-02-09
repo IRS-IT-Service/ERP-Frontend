@@ -8,6 +8,7 @@ import {
   DialogActions,
   FormControlLabel,
   Checkbox,
+  TextField,
   colors,
 } from "@mui/material";
 import React from "react";
@@ -16,12 +17,15 @@ import { useParams } from "react-router-dom";
 import {
   useGetSingleRepairingFormQuery,
   useUpdateRepairFormMutation,
+  useGetFormDynamicDataQuery,
 } from "../../../features/api/dscApiSlice";
 // import Dateformat from "../../../components/Common/Dateformat";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import { useSelector } from "react-redux";
 import Loading from "../../../components/Common/Loading";
 import { toast } from "react-toastify";
+import Autocomplete from "@mui/material/Autocomplete";
+
 
 const ViewForm = () => {
   /// initialization
@@ -32,7 +36,7 @@ const ViewForm = () => {
   const color = themeColor.sideBarColor1;
 
   /// local state
-  const [editMode, setEditMode] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const [datas, setDatas] = useState(null);
   const [selectedIssues, setSelectedIssues] = useState([]);
   const [currentIssues, setCurrentIssues] = useState([]);
@@ -49,9 +53,10 @@ const ViewForm = () => {
     isFetching,
   } = useGetSingleRepairingFormQuery(token);
 
-
   const [updateFormApi, { isLoading: updateLoading }] =
     useUpdateRepairFormMutation();
+
+  const { data } = useGetFormDynamicDataQuery();
 
   /// handlers
   const toggleEditMode = () => {
@@ -71,7 +76,8 @@ const ViewForm = () => {
       const processedData = {
         CustomerName: datas.CustomerName,
         MobileNo: datas.MobileNo,
-        AlternateMobile:datas.AlternateMobile,
+        AlternateMobile: datas.AlternateMobile,
+        DroneModel:datas.DroneModel,
         CompanyName: datas.CompanyName,
         ServiceRemark: datas.ServiceRemark,
         Address: datas.Address,
@@ -94,7 +100,6 @@ const ViewForm = () => {
       console.log(e);
     }
   };
-
   const handleSearch = (value) => {
     const regex = new RegExp(value, "i");
 
@@ -189,8 +194,12 @@ const ViewForm = () => {
       }
     }
   };
+  const handleSelectedChange = (event, newValue) => {
+    if(newValue){
+      setDatas({...datas,DroneModel:newValue.ModelName})
+    }
+  };
   /// use Effect
-
   useEffect(() => {
     if (singleRepairFormData?.status) {
       const newPartRecievedCount = {};
@@ -206,7 +215,6 @@ const ViewForm = () => {
       setPartRecievedCount(newPartRecievedCount);
     }
   }, [singleRepairFormData]);
-
 
   return (
     <>
@@ -233,7 +241,7 @@ const ViewForm = () => {
           }}
           onClick={toggleEditMode}
         >
-          {editMode ? "Edit off" : "Edit on"}
+          {editMode ? "Edit On" : "Edit Off"}
         </Button>
         <Button
           variant="outlined"
@@ -328,25 +336,56 @@ const ViewForm = () => {
                     Model No.
                   </div>
                 </div>
-                <div style={{ flexGrow: 1 }}>
-                  <input
+                {!editMode ? (
+                  <div style={{ flexGrow: 1 }}>
+                    <input
+                      style={{
+                        padding: "10px",
+                        width: "100%",
+                        borderRadius: "5px",
+                        border: "1px solid",
+                        boxShadow: " -4px 4px 4px 1px rgba(0, 0, 0, 0.48)",
+                        outline: "none",
+                        background: "white",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                      }}
+                      placeholder="Drone Model No."
+                      className="custom-input"
+                      value={datas?.DroneModel || ""}
+                      disabled={!editMode}
+                    ></input>
+                  </div>
+                ) : (
+                  <div
                     style={{
-                      padding: "10px",
+                      display: "flex",
                       width: "100%",
-                      borderRadius: "5px",
-                      border: "1px solid",
-                      boxShadow: " -4px 4px 4px 1px rgba(0, 0, 0, 0.48)",
-                      outline: "none",
-                      background: "white",
-                      fontSize: "17px",
-                      fontWeight: "bold",
                     }}
-                    placeholder="Drone Model No."
-                    className="custom-input"
-                    value={datas?.DroneModel || ""}
-                    disabled
-                  ></input>
-                </div>
+                  >
+                    {/* <h3 style={{ margin: "0 0 0 100px" }}>Select</h3> */}
+                    <Autocomplete
+                      style={{
+                        width: "100%",
+                        backgroundColor: "rgba(255, 255, 255)",
+                      }}
+              
+                      options={data?.data || []}
+                      getOptionLabel={(option) => option.ModelName}
+                      onChange={handleSelectedChange}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select"
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                          }}
+                
+                        />
+                      )}
+                    />
+                  </div>
+                )}
               </div>
             </div>
             <div

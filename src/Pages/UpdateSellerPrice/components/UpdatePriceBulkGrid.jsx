@@ -23,6 +23,8 @@ import { useSocket } from "../../../CustomProvider/useWebSocket";
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
 }));
+import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
+
 
 const UpdatePriceBulk = () => {
   /// global state
@@ -32,6 +34,7 @@ const UpdatePriceBulk = () => {
   const query = useParams().query;
   const navigate = useNavigate();
   const socket = useSocket();
+
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
@@ -50,6 +53,8 @@ const UpdatePriceBulk = () => {
 
   /// rtk query
   const [updateProductApi, { isLoading }] = useUpdateProductsColumnMutation();
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
+
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -123,6 +128,7 @@ const UpdatePriceBulk = () => {
         }),
       };
       socket.emit("liveStatusServer", liveStatusData);
+      const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
       if (res.status === "success") {
         Swal.fire({
           icon: "success",
@@ -131,6 +137,7 @@ const UpdatePriceBulk = () => {
           timer: 1500,
         });
       }
+      await sendMessageToAdmin(whatsappMessage).unwrap()
     } catch (error) {
       console.error("An error occurred during login:", error);
     }

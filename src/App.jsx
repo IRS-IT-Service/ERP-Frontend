@@ -334,7 +334,7 @@ function App() {
                 path="/admin/resetPassword/:token"
                 element={<ResetPassword />}
               />
-              {/* Home Router */}
+              {/* Home Router. */}
               <Route path="*" element={<PrivateRoute nav={true} />}>
                 {" "}
                 <Route path="*" element={<NoPageFound />} />
