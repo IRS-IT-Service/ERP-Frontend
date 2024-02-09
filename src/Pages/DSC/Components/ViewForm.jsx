@@ -44,7 +44,6 @@ const ViewForm = () => {
   const [openIssues, setOpenIssues] = useState(false);
   const [type, setType] = useState("");
   const [partRecievedCount, setPartRecievedCount] = useState({});
-  const [droneModel,setDroneModel] = useState("")
 
   /// RTK query
   const {
