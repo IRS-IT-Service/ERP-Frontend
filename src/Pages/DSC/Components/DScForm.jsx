@@ -39,6 +39,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
+import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 
 const infoDetail = [
   {
@@ -103,6 +104,9 @@ const DScForm = () => {
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
 
+
+
+
   const [infoOpen, setInfoOpen] = useState(false);
   const handleClose = () => {
     setInfoOpen(!infoOpen);
@@ -118,6 +122,10 @@ const DScForm = () => {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
 
   const dscForm = useSelector((state) => state.dscForm.dscFormDetails);
+
+  //Whatsapp event
+
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
 
   /// local state
   const [form, setForm] = useState({
@@ -367,6 +375,10 @@ const DScForm = () => {
       };
       socket.emit("liveStatusServer", liveStatusData);
       dispatch(removeDscformDetails());
+
+      const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+
+      await sendMessageToAdmin(whatsappMessage).unwrap()
 
       setForm({
         CustomerName: "",
