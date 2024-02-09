@@ -66,7 +66,7 @@ const DSCFormTab = ({
                   border: "1px solid #fff",
                   borderRadius: "0.25em",
                   boxShadow: "-0.25em 0.25em 0.25em 0 rgba(0, 0, 0, 0.4)",
-                  fontSize: "17px",
+                  fontSize: "17px", 
                 }}
                 value={form.CustomerName}
                 onChange={(e) => {

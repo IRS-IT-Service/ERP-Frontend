@@ -19,6 +19,8 @@ import Loading from "../../../components/Common/Loading";
 import { useGetOneProductQuery } from "../../../features/api/productApiSlice";
 import { useEffect } from "react";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
+import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
+
 
 const UpdateStockDialog = ({
   SKU,
@@ -43,6 +45,8 @@ const UpdateStockDialog = ({
     refetchOnMountOrArgChange: true,
   });
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
+
 
   const handleStockChange = (event) => {
     setStock(Number(event.target.value));
@@ -87,10 +91,11 @@ const UpdateStockDialog = ({
         },
       };
       const historyRes = await createUserHistoryApi(addProductHistory);
+      const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
       setOpen(false);
       RefetchAll();
-
       setStock(0);
+      await sendMessageToAdmin(whatsappMessage).unwrap()
     } catch (error) {
       console.error("An error occurred during login:", error);
     }

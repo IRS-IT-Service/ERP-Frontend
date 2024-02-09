@@ -10,7 +10,13 @@ import {
   Typography,
   DialogActions,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import Header from "../../../components/Common/Header";
 import Autocomplete from "@mui/material/Autocomplete";
 import {
@@ -24,6 +30,10 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import DSCFormTab from "./DSCFormTab";
 import { useNavigate } from "react-router-dom";
+import {
+  setDscformDetails,
+  removeDscformDetails,
+} from "../../../features/slice/DscFormSlice";
 import CustomerForm from "./CustomerForm";
 import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -106,12 +116,15 @@ const DScForm = () => {
   const socket = useSocket();
 
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
+
+  const dscForm = useSelector((state) => state.dscForm.dscFormDetails);
+
   /// local state
   const [form, setForm] = useState({
     CustomerName: "",
     CompanyName: "",
     MobileNo: "",
-    alternateNumber:"",
+    alternateNumber: "",
     address: "",
     pincode: "",
     city: "",
@@ -141,6 +154,9 @@ const DScForm = () => {
   const [hardwareInput, setHardwareInput] = useState("");
   const [softwareInput, setSoftwareInput] = useState("");
   const [partInput, setPartInput] = useState("");
+  const [isRendered, setIsRendered] = useState(false);
+
+  // Use useRef hook to create a ref
 
   const [open, setOpen] = useState(false);
   const [partsQty, setPartsQty] = useState({});
@@ -161,6 +177,30 @@ const DScForm = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    setForm({
+      ...form,
+      ...dscForm,
+    });
+  }, []);
+
+  useEffect(() => {
+    dispatch(
+      setDscformDetails({
+        CustomerName: form.CustomerName,
+        CompanyName: form.CompanyName,
+        MobileNo: form.MobileNo,
+        alternateNumber: form.alternateNumber,
+        address: form.address,
+        pincode: form.pincode,
+        city: form.city,
+        state: form.state,
+        district: form.district,
+        date: form.date,
+      })
+    );
+  }, [form, setForm]);
 
   /// RTK query
   const { data, isLoading, refetch, isFetching } = useGetFormDynamicDataQuery();
@@ -248,7 +288,7 @@ const DScForm = () => {
         fetchPincodeDetails(value);
       }
     }
-
+    // dispatch(setDscformDetails(form));
     if (nested) {
       setForm((prev) => {
         return { ...prev, [parent]: { ...prev[parent], [name]: value } };
@@ -259,7 +299,6 @@ const DScForm = () => {
       return { ...prev, [name]: value };
     });
   };
-
   const handleSubmitForm = async () => {
     try {
       if (!form.CustomerName) {
@@ -296,13 +335,13 @@ const DScForm = () => {
         return;
       }
       const params = {
-        CustomerName: form.CustomerName,
-        MobileNo: form.MobileNo,
-        CompanyName: form.CompanyName,
-        DroneModel: form.droneModel,
-        alternateMobile:form.alternateNumber,
+        CustomerName: form.CustomerName || CustomerName,
+        MobileNo: form.MobileNo || MobileNo,
+        CompanyName: form.CompanyName || CompanyName,
+        DroneModel: form.droneModel || droneModel,
+        alternateMobile: form.alternateNumber || alternateNumber,
         Address: {
-          Pincode: form.pincode,
+          Pincode: form.pincode || pincode,
           City: form.city,
           District: form.district,
           State: form.state,
@@ -317,7 +356,7 @@ const DScForm = () => {
         costEstimation: form.costEstimation,
         serviceRemark: form.serviceRemark,
       };
-
+      console.log("handle");
       const res = await saveFormApi(params).unwrap();
 
       const liveStatusData = {
@@ -327,13 +366,14 @@ const DScForm = () => {
         }),
       };
       socket.emit("liveStatusServer", liveStatusData);
+      dispatch(removeDscformDetails());
 
       setForm({
         CustomerName: "",
         CompanyName: "",
         MobileNo: "",
         address: "",
-        alternateNumber:"",
+        alternateNumber: "",
         pincode: "",
         city: "",
         state: "",
@@ -430,6 +470,10 @@ const DScForm = () => {
     }
   };
 
+  // useEffect(() => {
+
+  // return ()=> dispatch(setDscformDetails(form));
+  // });
   return (
     <>
       <Box sx={{ textAlign: "center", padding: "4px", background: "grey" }}>
@@ -1330,7 +1374,11 @@ const DScForm = () => {
           >
             Close
           </Button>
-          <Button disabled={saveFormLoading} variant="contained" onClick={handleSubmitForm}>
+          <Button
+            disabled={saveFormLoading}
+            variant="contained"
+            onClick={handleSubmitForm}
+          >
             Submit
           </Button>
         </DialogActions>

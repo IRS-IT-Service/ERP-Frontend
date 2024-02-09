@@ -25,6 +25,7 @@ import ColumnsExplainerDialog from "./ColumnsExplainerDialog";
 import HideColumnsDialog from "./HideColumnsDialog";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import TablePagination from "@mui/material/TablePagination";
+import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 
 const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   /// initialization
@@ -111,6 +112,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   const [notationUpdateApi, { isLoading: NotationLoading }] =
     useUpdateNotationMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
 
   /// handlers
   const handleSelectionChange = (selectionModel) => {
@@ -199,6 +201,9 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
               },
             };
             const historyRes = await createUserHistoryApi(addProductHistory);
+            const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+
+            await sendMessageToAdmin(whatsappMessage).unwrap()
           })
         );
       }
