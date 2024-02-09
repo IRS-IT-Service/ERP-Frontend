@@ -156,7 +156,7 @@ const BarcodeGenerateGrid = () => {
   const handleViewBarcode = async (sku) => {
     try {
       const { data } = await getBarcode(sku);
-      console.log(data);
+ 
       if (data) {
         setData(data);
         openDialog();
@@ -213,7 +213,7 @@ const BarcodeGenerateGrid = () => {
             sx={{ mr: "12px" }}
             variant="contained"
             onClick={handleGenerateClick}
-            // disabled={isChecking}
+            disabled={isChecking}
             startIcon={isGeneratingBarcode && <CircularProgress size={20} />}
           >
             {isGeneratingBarcode ? "Generating..." : "Generate"}
@@ -287,7 +287,7 @@ const BarcodeGenerateGrid = () => {
       renderCell: (params) => {
         const { SKU } = params.row;
         const check = barcodes?.data?.includes(SKU);
-        // setIsChecking(check);
+        setIsChecking(check);
         const allSno = barcodes?.allData?.filter((item) => item.SKU === SKU);
         const checkVerify =
           allSno && allSno[0]?.SNo
@@ -297,6 +297,7 @@ const BarcodeGenerateGrid = () => {
         const checkLength =
           allSno && allSno[0]?.SNo ? allSno[0]?.SNo.length || 0 : "";
         const StickValue = Math.round((checkVerify / checkLength) * 100);
+
 
         let color;
 

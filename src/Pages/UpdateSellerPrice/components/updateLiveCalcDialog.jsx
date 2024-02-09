@@ -23,6 +23,8 @@ import { useUpdateProductsColumnMutation } from "../../../features/api/productAp
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import { toast } from "react-toastify";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
+import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
+
 
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? ' #0d0d0d' : '#eee',
@@ -58,6 +60,8 @@ const UpdateLiveCalcDialog = ({
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
+
 
   // useEffect
   useEffect(() => {
@@ -134,6 +138,8 @@ const UpdateLiveCalcDialog = ({
               timeZone: "Asia/Kolkata",
             }),
           };
+          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          await sendMessageToAdmin(whatsappMessage).unwrap();
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SalesPrice updated successfully");
           const addProductHistory = {
@@ -148,6 +154,9 @@ const UpdateLiveCalcDialog = ({
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
+
+   
+
         }
         if (updatedSalesTax.length) {
           const params = {
@@ -178,6 +187,9 @@ const UpdateLiveCalcDialog = ({
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
+          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          await sendMessageToAdmin(whatsappMessage).unwrap();
+
         }
 
         if (updatedSalesPrice.length || updatedSalesTax.length) {
@@ -237,6 +249,9 @@ const UpdateLiveCalcDialog = ({
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
+          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          await sendMessageToAdmin(whatsappMessage).unwrap();
+
         }
         if (updatedSellerTax.length) {
           const params = {
@@ -267,6 +282,8 @@ const UpdateLiveCalcDialog = ({
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
+          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          await sendMessageToAdmin(whatsappMessage).unwrap();
         }
       }
       if (
