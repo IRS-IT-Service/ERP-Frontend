@@ -118,8 +118,6 @@ const DScForm = () => {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
 
   const dscForm = useSelector((state) => state.dscForm.dscFormDetails);
-  console.log(dscForm)
-
 
   /// local state
   const [form, setForm] = useState({
@@ -159,7 +157,6 @@ const DScForm = () => {
   const [isRendered, setIsRendered] = useState(false);
 
   // Use useRef hook to create a ref
-  const firstRender = useRef(true);
 
   const [open, setOpen] = useState(false);
   const [partsQty, setPartsQty] = useState({});
@@ -171,9 +168,6 @@ const DScForm = () => {
       setIsTabletView(window.innerWidth <= 805);
     };
 
-   
-  
-
     // Check initial size on component mount
     setIsTabletView(window.innerWidth <= 805);
 
@@ -184,53 +178,29 @@ const DScForm = () => {
     };
   }, []);
 
-
-  //  useEffect(() => {
-  //     setForm({
-  //       ...form,
-    
-  //     CustomerName: dscForm?.CustomerName,
-  //     CompanyName: dscForm?.CompanyName,
-  //     MobileNo: dscForm?.MobileNo,
-  //     address: dscForm?.address,
-  //     alternateNumber: dscForm?.alternateNumber,
-  //     pincode: dscForm?.pincode,
-  //     city: dscForm?.city,
-  //     state: dscForm?.state,
-  //     district: dscForm?.district,
-  //     date: dscForm?.date,
-  //     droneModel: dscForm?.droneModel,
-  //     hardwareIssues: dscForm?.hardwareIssues?.map((item)=>{
-  //      return {...item}
-  //     }),
-  //     softwareIssues: dscForm?.softwareIssues?.map((item)=>{
-  //       return {...item}
-  //      }),
-  //     partsRecieved:dscForm?.partsRecieved?.map((item)=>{
-  //       return {...item}
-  //      }),
-     
-    
-    
-  //     });
-  //   },[]);
-
-
   useEffect(() => {
     setForm({
       ...form,
-...dscForm
-  
-  
+      ...dscForm,
     });
-  },[]);
+  }, []);
 
   useEffect(() => {
-    dispatch(setDscformDetails(form))
-  },[form,setForm]);
-
-
-  console.log(form)
+    dispatch(
+      setDscformDetails({
+        CustomerName: form.CustomerName,
+        CompanyName: form.CompanyName,
+        MobileNo: form.MobileNo,
+        alternateNumber: form.alternateNumber,
+        address: form.address,
+        pincode: form.pincode,
+        city: form.city,
+        state: form.state,
+        district: form.district,
+        date: form.date,
+      })
+    );
+  }, [form, setForm]);
 
   /// RTK query
   const { data, isLoading, refetch, isFetching } = useGetFormDynamicDataQuery();
@@ -323,27 +293,25 @@ const DScForm = () => {
       setForm((prev) => {
         return { ...prev, [parent]: { ...prev[parent], [name]: value } };
       });
-   ;
       return;
     }
     setForm((prev) => {
       return { ...prev, [name]: value };
     });
- ;
   };
   const handleSubmitForm = async () => {
     try {
-      if (!form.CustomerName || !CustomerName) {
+      if (!form.CustomerName) {
         toast.error("Customer Name is required");
         setOpen(false);
         return;
       }
-      if (!form.droneModel || !droneModel) {
+      if (!form.droneModel) {
         toast.error("please select droneModel is required");
         setOpen(false);
         return;
       }
-      if (!form.MobileNo || !MobileNo) {
+      if (!form.MobileNo) {
         toast.error("MobileNo is required");
         setOpen(false);
         return;
@@ -388,7 +356,7 @@ const DScForm = () => {
         costEstimation: form.costEstimation,
         serviceRemark: form.serviceRemark,
       };
-
+      console.log("handle");
       const res = await saveFormApi(params).unwrap();
 
       const liveStatusData = {
@@ -714,7 +682,7 @@ const DScForm = () => {
                 <h3>Pincode</h3>
                 <input
                   type="number"
-                  value={form.pincode }
+                  value={form.pincode}
                   onChange={(e) => {
                     handleChange(e.target.value, "pincode");
                   }}
@@ -782,7 +750,7 @@ const DScForm = () => {
                 <h3>State</h3>
                 <input
                   type="text"
-                  value={form.state }
+                  value={form.state}
                   onChange={(e) => {
                     handleChange(e.target.value, "state");
                   }}
@@ -816,7 +784,7 @@ const DScForm = () => {
                 <h3>Address</h3>
                 <input
                   type="text"
-                  value={form.address }
+                  value={form.address}
                   onChange={(e) => {
                     handleChange(e.target.value, "address");
                   }}
@@ -860,13 +828,11 @@ const DScForm = () => {
                   backgroundColor: "rgba(255, 255, 255)",
                 }}
                 options={data?.data || []}
-              
                 getOptionLabel={(option) => option.ModelName}
                 onChange={handleSelectedChange}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                 
                     label="Select"
                     onChange={(e) => {
                       console.log(e.target.value);
