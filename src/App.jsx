@@ -109,7 +109,7 @@ import BulkAddProduct from "./Pages/AddProduct/BulkAddProduct";
 import NewCalc from "./Pages/Calc/NewCalc";
 import NewCalcRishabh from "./Pages/Calc/NewCalcRishabh";
 import RemovedProduct from "./Pages/ProductDelete/RemovedProducts";
-
+import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorComparsion";
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -391,6 +391,14 @@ function App() {
                   element={
                     <UserRole name={"Product Status"}>
                       <ProductStatus />
+                    </UserRole>
+                  }
+                />
+                <Route
+                  path="/CompetitorComparsion"
+                  element={
+                    <UserRole name={"Competitor Comparsion"}>
+                      <CompetitorComparsion />
                     </UserRole>
                   }
                 />

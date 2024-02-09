@@ -84,6 +84,12 @@ const userRolesData = [
         icon: "fa-solid fa-list",
       },
       {
+        id: 3,
+        name: "Competitor Comparsion",
+        path: "/CompetitorComparsion",
+        icon: "fa-solid fa-list",
+      },
+      {
         id: 51,
         name: "Delete Product",
         path: "/productRemoval",
