@@ -52,10 +52,10 @@ const UpdateLiveCalcDialog = ({
   // Initialization
   const socket = useSocket();
 
-
+console.log(data)
   // Local state
   const [localData, setLocalData] = useState([...data]);
-
+console.log(localData)
   // RTK query
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
@@ -469,14 +469,14 @@ const UpdateLiveCalcDialog = ({
       visibleColumns = [
         ...visibleColumns,
         {
-          field: "ProfitSales",
-          headerName: "Sales Profit %",
+          field: "actualSalesProfit",
+          headerName: "Sales Profit with Tax %",
           preFix: "%",
           className: "violet-bg",
         },
         {
-          field: "actualSalesProfit",
-          headerName: "Sales Profit with Tax %",
+          field: "ProfitSales",
+          headerName: "Sales Profit %",
           input: true,
           preFix: "%",
           className: "violet-bg",
@@ -514,14 +514,14 @@ const UpdateLiveCalcDialog = ({
       visibleColumns = [
         ...visibleColumns,
         {
-          field: 'ProfitSeller',
-          headerName: 'SP%',
+          field: 'actualSellerProfit',
+          headerName: 'SPT%',
           preFix: '%',
           className: 'blue-bg',
         },
         {
-          field: 'actualSellerProfit',
-          headerName: ' SPT%',
+          field: 'ProfitSeller',
+          headerName: ' SP%',
           input: true,
           preFix: '%',
           className: 'blue-bg',
@@ -608,7 +608,7 @@ const UpdateLiveCalcDialog = ({
           <Table stickyHeader aria-label='sticky table' sx={{marginTop: '2%',}}>
             <TableHead>
               <TableRow>
-                {columns.map((column) => (
+                {columns.map((column,index) => (
                   <Tooltip
                     title={`${column.field}`}
                     placement='top'
@@ -630,6 +630,7 @@ const UpdateLiveCalcDialog = ({
             </TableHead>
             <TableBody>
               {localData.map((item, index) => {
+                console.log(item)
                 return (
                   <TableRow key={item.SKU}>
                     <TableCell sx={{ fontSize: '.8rem', textAlign: 'center' }}>
