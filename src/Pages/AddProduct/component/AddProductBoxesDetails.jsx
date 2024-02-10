@@ -10,6 +10,7 @@ import { useAddProductMutation } from "../../../features/api/productApiSlice";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import Loading from "../../../components/Common/Loading";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
+import { useSelector } from "react-redux";
 
 const AddProductBoxesDetails = () => {
   /// local state
@@ -37,6 +38,8 @@ const AddProductBoxesDetails = () => {
 
     setForm({ ...form, subItems: currentSubitem });
   };
+
+  const { name } = useSelector((state) => state.auth.userInfo);
 
   const handleRemoveSubItems = (index) => {
     const currentSubitem = form.subItems.filter((item, i) => i !== index);
@@ -168,9 +171,12 @@ const AddProductBoxesDetails = () => {
         products: params,
       };
       const res = await addProductApi(payload).unwrap();
-      console.log(res)
-      const whatsappMessage = { message:res.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+      const whatsappMessage = {
+        message: `${name} added new product name: ${productName} with gst: ${gst}`,
+        contact: import.meta.env.VITE_ADMIN_CONTACT,
+      };
       toast.success("Product added successfully");
+      await sendMessageToAdmin(whatsappMessage).unwrap();
       setForm({
         productName: "",
         brand: "",
@@ -182,7 +188,6 @@ const AddProductBoxesDetails = () => {
         subItems: [""],
         packageDimensions: [{ width: "", height: "", length: "", weight: "" }],
       });
-      await sendMessageToAdmin(whatsappMessage).unwrap()
     } catch (e) {
       console.log("error At Add Product");
       console.log(e.message);
