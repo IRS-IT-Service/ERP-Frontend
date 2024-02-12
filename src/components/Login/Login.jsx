@@ -151,7 +151,7 @@ export default function Login({ registrationToken }) {
       console.log(err);
     }
   };
-
+////
 
   const handleError = (e, id) => {
     // Set loading state or show loading spinner here
