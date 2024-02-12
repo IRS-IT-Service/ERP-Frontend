@@ -118,6 +118,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    clickTologout: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/clicktologoutadmin`,
+        method: "POST",
+        body:data
+
+      }),
+    }),
   }),
 });
 
@@ -127,6 +135,7 @@ export const {
   useGetAllUsersQuery,
   useGetOneUsersQuery,
   useUserRoleUpdateMutation,
+  useClickTologoutMutation,
   useRegisterMutation,
   useChangePasswordMutation,
   useForgetPasswordMutation,
