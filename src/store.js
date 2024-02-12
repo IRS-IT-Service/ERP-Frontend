@@ -5,6 +5,8 @@ import productReducer from "./features/slice/productSlice";
 import uiReducer from "./features/slice/uiSlice";
 import SellerDetailsAndAddressReducer from "./features/slice/sellerDtatailsAndAddrssSlice";
 import { toast } from "react-toastify";
+import DscFormSlice from "./features/slice/DscFormSlice";
+import RAndDFormSlice from "./features/slice/R&DSlice"
 
 /// Custom error handling middleware
 
@@ -65,6 +67,8 @@ const store = configureStore({
     product: productReducer,
     ui: uiReducer,
     sellerDetailsAndAddress: SellerDetailsAndAddressReducer,
+    dscForm:DscFormSlice,
+    randdform:RAndDFormSlice,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

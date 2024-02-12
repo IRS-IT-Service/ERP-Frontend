@@ -110,6 +110,9 @@ import NewCalc from "./Pages/Calc/NewCalc";
 import NewCalcRishabh from "./Pages/Calc/NewCalcRishabh";
 import RemovedProduct from "./Pages/ProductDelete/RemovedProducts";
 import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorComparsion";
+import AllInventoryData from "./Pages/R&D/AllInventoryData";
+import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
+
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -323,15 +326,15 @@ function App() {
         <ThemeProvider theme={theme}>
           <Suspense fallback={<Loading />}>
             <Routes>
-              <Route path="/testing" element={<Testing />} />
+              <Route path='/testing' element={<Testing />} />
               <Route
-                path="/login"
+                path='/login'
                 element={<Login registrationToken={registrationToken} />}
               />
-              <Route path="/forgetPassword" element={<ForgetPassword />} />
-              <Route path="/createTask" element={<CreateTask />} />
+              <Route path='/forgetPassword' element={<ForgetPassword />} />
+              <Route path='/createTask' element={<CreateTask />} />
               <Route
-                path="/admin/resetPassword/:token"
+                path='/admin/resetPassword/:token'
                 element={<ResetPassword />}
               />
               {/* Home Router. */}
@@ -339,57 +342,57 @@ function App() {
                 {" "}
                 <Route path="*" element={<NoPageFound />} />
               </Route>
-              <Route path="/profile" element={<PrivateRoute nav={true} />}>
-                <Route path="/profile" element={<Profile />} />
+              <Route path='/profile' element={<PrivateRoute nav={true} />}>
+                <Route path='/profile' element={<Profile />} />
               </Route>
 
               {/* Admin Router */}
-              <Route path="" element={<PrivateRoute />}>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="product-list" element={<Home_page />} />
+              <Route path='' element={<PrivateRoute />}>
+                <Route path='/' element={<LandingPage />} />
+                <Route path='product-list' element={<Home_page />} />
                 <Route
-                  path="/Users"
+                  path='/Users'
                   element={
-                    <UserRole name={"Users"}>
+                    <UserRole name={'Users'}>
                       <Users />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/viewQuery/admin"
+                  path='/viewQuery/admin'
                   element={
-                    <UserRole name={"View Query Admin"}>
+                    <UserRole name={'View Query Admin'}>
                       <ViewQuery />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/discountquery/:id"
+                  path='/discountquery/:id'
                   element={<AdminDiscountQuery />}
                 />
-                <Route path="/viewAssets" element={<AssetsMain />} />
-                <Route path="/scanAssets" element={<ScanAssetsCode />} />
-                <Route path="/WhatsAppEvent" element={<WhatsappEvent />} />
+                <Route path='/viewAssets' element={<AssetsMain />} />
+                <Route path='/scanAssets' element={<ScanAssetsCode />} />
+                <Route path='/WhatsAppEvent' element={<WhatsappEvent />} />
                 {/* Products Router */}
-                <Route path="/addRoboProduct" element={<AddRoboProducts />} />
-                <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
-                <Route path="/addBrand" element={<AddBrand />} />
+                <Route path='/addRoboProduct' element={<AddRoboProducts />} />
+                <Route path='/bulkAddProduct' element={<BulkAddProduct />} />
+                <Route path='/addBrand' element={<AddBrand />} />
                 <Route
-                  path="/UpdateSellerPrice"
+                  path='/UpdateSellerPrice'
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={'Update Product'}>
                       <UpdateSellerPrice />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/UpdateSellerPriceBulk/:query"
+                  path='/UpdateSellerPriceBulk/:query'
                   element={<UpdateSellerPriceBulk />}
                 />
                 <Route
-                  path="/ProductStatus"
+                  path='/ProductStatus'
                   element={
-                    <UserRole name={"Product Status"}>
+                    <UserRole name={'Product Status'}>
                       <ProductStatus />
                     </UserRole>
                   }
@@ -405,222 +408,231 @@ function App() {
                 <Route
                   path="/PriceHistory"
                   element={
-                    <UserRole name={"Price History"}>
+                    <UserRole name={'Price History'}>
                       <PriceHistroyMain />
                     </UserRole>
                   }
                 />
                 {/* WholeSale Buyer Router */}
                 <Route
-                  path="/AllSellerList"
+                  path='/AllSellerList'
                   element={
-                    <UserRole name={"Sellers List"}>
+                    <UserRole name={'Sellers List'}>
                       <AllSellers />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/sellerOrders/:id"
+                  path='/sellerOrders/:id'
                   element={
-                    <UserRole name={"Seller Orders"}>
+                    <UserRole name={'Seller Orders'}>
                       <AllSellerOrder />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/myAccount/:id"
+                  path='/myAccount/:id'
                   element={
-                    <UserRole name={"Sellers List"}>
+                    <UserRole name={'Sellers List'}>
                       <MyAccount />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/orders"
+                  path='/orders'
                   element={
-                    <UserRole name={"Seller Orders"}>
+                    <UserRole name={'Seller Orders'}>
                       <Order />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/SubSerialNumber"
+                  path='/SubSerialNumber'
                   element={
-                    <UserRole name={"Sub Serial No"}>
+                    <UserRole name={'Sub Serial No'}>
                       <SubSerialNumber />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/orderDetails/:id"
+                  path='/orderDetails/:id'
                   element={
-                    <UserRole name={"Seller Orders"}>
-                      <OrderDetails />{" "}
+                    <UserRole name={'Seller Orders'}>
+                      <OrderDetails />{' '}
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/sellerVerify"
+                  path='/sellerVerify'
                   element={
-                    <UserRole name={"Seller Req"}>
+                    <UserRole name={'Seller Req'}>
                       <SellerVerification />
                     </UserRole>
                   }
                 />
                 {/* Account Router */}
-                <Route path="/OverseasOrder" element={<OverseasOrder />} />
+                <Route path='/OverseasOrder' element={<OverseasOrder />} />
                 <Route
-                  path="/OverseasOrderBoxes/:id"
+                  path='/OverseasOrderBoxes/:id'
                   element={<OverseasOrderBoxes />}
                 />
                 <Route
-                  path="/OverseasShipment/:id"
+                  path='/OverseasShipment/:id'
                   element={<OverseasShipment />}
                 />
                 <Route
-                  path="/OneOverseasShipment/:id"
+                  path='/OneOverseasShipment/:id'
                   element={<OneOverseasShipment />}
                 />
                 <Route
-                  path="/allOverseasShipment"
+                  path='/allOverseasShipment'
                   element={<AllOverseasShipment />}
                 />
                 <Route
-                  path="/RestockOrderList"
+                  path='/RestockOrderList'
                   element={
-                    <UserRole name={"Restock Order"}>
+                    <UserRole name={'Restock Order'}>
                       <RestockOrderList />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/RestockOrderView"
+                  path='/RestockOrderView'
                   element={
-                    <UserRole name={"Restock Order View"}>
+                    <UserRole name={'Restock Order View'}>
                       <RestockOrderList />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/OrderSelection/:id"
+                  path='/OrderSelection/:id'
                   element={<OneRestockOrder />}
                 />
                 <Route
-                  path="/OverseasOrderlist/:id"
+                  path='/OverseasOrderlist/:id'
                   element={<OverSeasOrderProductGrid />}
                 />
-                <Route path="/RestockOrder" element={<CreateRestockOrder />} />
+                <Route path='/RestockOrder' element={<CreateRestockOrder />} />
                 <Route
-                  path="/ComparisionOrder"
+                  path='/ComparisionOrder'
                   element={
-                    <UserRole name={"Comparision Order"}>
+                    <UserRole name={'Comparision Order'}>
                       <PriceComparisonOrder />
                     </UserRole>
                   }
                 />
-                <Route path="/compare/:id" element={<Compare />} />
+                <Route path='/compare/:id' element={<Compare />} />
                 {/* Sales Router */}
                 <Route
-                  path="/uploadimage"
+                  path='/uploadimage'
                   element={
-                    <UserRole name={"Upload Image"}>
+                    <UserRole name={'Upload Image'}>
                       <UploadImageCom />
                     </UserRole>
                   }
                 />
-                <Route path="/discountquery" element={<DiscountQuery />} />
+                <Route path='/discountquery' element={<DiscountQuery />} />
                 <Route
-                  path="/viewQuery"
+                  path='/viewQuery'
                   element={
-                    <UserRole name={"View Query"}>
+                    <UserRole name={'View Query'}>
                       <ViewQuery />
                     </UserRole>
                   }
                 />
                 <Route
-                  path="/OneProductDetails/:id"
+                  path='/OneProductDetails/:id'
                   element={<OneProductDetails />}
                 />
-                <Route path="/salesDetails" element={<SellerDetails />} />
+                <Route path='/salesDetails' element={<SellerDetails />} />
                 {/* Barcode Router */}
-                <Route path="/generate" element={<BarcodeGenerate />} />
-                <Route path="/verify" element={<Verify />} />
+                <Route path='/generate' element={<BarcodeGenerate />} />
+                <Route path='/verify' element={<Verify />} />
                 <Route
-                  path="/barcodeHistory"
+                  path='/barcodeHistory'
                   element={
                     <UserRole name={"Barcode History"}>
                       <BarcodeHistory />
                     </UserRole>
                   }
                 />
-                <Route path="/addCustomer" element={<AddCustomer />} />
+                <Route path='/addCustomer' element={<AddCustomer />} />
                 {/* Logistics */}
-                <Route path="/inwardLogistic" element={<Logistics />} />
-                <Route path="/shipment" element={<ShipmentMain />} />
+                <Route path='/inwardLogistic' element={<Logistics />} />
+                <Route path='/shipment' element={<ShipmentMain />} />
                 <Route
-                  path="/OneinwardLogistic/:id"
+                  path='/OneinwardLogistic/:id'
                   element={<OneInwardLogistics />}
                 />
-                <Route path="/logisticList" element={<LogisticsList />} />
-                <Route path="/addBoxDetails/:id" element={<AddBoxDetails />} />
-                <Route path="/calc" element={<Calc />} />
+                <Route path='/logisticList' element={<LogisticsList />} />
+                <Route path='/addBoxDetails/:id' element={<AddBoxDetails />} />
+                <Route path='/calc' element={<Calc />} />
                 {/* <Route path="/calc" element={<NewCalcRishabh />} /> */}
-                <Route path="/savedCalc" element={<CalcEdit />} />
-                <Route path="/calc/:id" element={<Calc />} />
-                <Route path="/dispatch_Return" element={<Dispatch_Return />} />
-                <Route path="/product-shipment" element={<ProductShipment />} />
+                <Route path='/savedCalc' element={<CalcEdit />} />
+                <Route path='/calc/:id' element={<Calc />} />
+                <Route path='/dispatch_Return' element={<Dispatch_Return />} />
+                <Route path='/product-shipment' element={<ProductShipment />} />
                 {/* Approval Router */}
-                <Route path="/Approval/:query" element={<Approval />} />
+                <Route path='/Approval/:query' element={<Approval />} />
                 <Route
-                  path="/NewProductApproval"
+                  path='/NewProductApproval'
                   element={<NewProductApproval />}
                 />
                 <Route
-                  path="/changeProductApproval"
+                  path='/changeProductApproval'
                   element={<ChangeProductApproval />}
                 />
                 {/* Others Admin Profile Related Router */}
                 <Route
-                  path="/changepassword/:id"
+                  path='/changepassword/:id'
                   element={<ChangePassword />}
                 />
                 {/* /// Box Open Routes */}
-                <Route path="/boxopen" element={<OpenBox />} />
-                <Route path="/openboxhistory" element={<OpenBoxHistory />} />
-                <Route path="/openboxlist" element={<OpenBoxList />} />
+                <Route path='/boxopen' element={<OpenBox />} />
+                <Route path='/openboxhistory' element={<OpenBoxHistory />} />
+                <Route path='/openboxlist' element={<OpenBoxList />} />
                 <Route
-                  path="/createboxopenapproval"
+                  path='/createboxopenapproval'
                   element={<CreateBoxOpenApproval />}
                 />
-                <Route path="/RestockBox" element={<RestockBox />} />
+                <Route path='/RestockBox' element={<RestockBox />} />
                 <Route
-                  path="/boxapprovalstatus"
+                  path='/boxapprovalstatus'
                   element={<OpenBoxApprovalStatus />}
                 />
                 {/* /// UserTask Routes */}
-                <Route path="/viewTask" element={<ViewTask />} />
+                <Route path='/viewTask' element={<ViewTask />} />
                 {/* ///  ERP History */}
-                <Route path="/erpHistory" element={<ERPHistory />} />
+                <Route path='/erpHistory' element={<ERPHistory />} />
                 {/* ///  ProductRemoval */}
-                <Route path="/productRemoval" element={<RemoveProductGrid />} />
+                <Route path='/productRemoval' element={<RemoveProductGrid />} />
                 {/* ///  Removed Product */}
-                <Route path="/removedProduct" element={<RemovedProduct />} />
+                <Route path='/removedProduct' element={<RemovedProduct />} />
                 {/* ///  DSC */}
-                <Route path="/DynamicInputs" element={<ModelInputMain />} />
+                <Route path='/DynamicInputs' element={<ModelInputMain />} />
                 <Route
-                  path="/oneDynamicInput/:id"
+                  path='/oneDynamicInput/:id'
                   element={<OneDynamicInput />}
                 />
-                <Route path="/droneRepair" element={<RepairForm />} />
-                <Route path="/addCommonRepair" element={<AddCommonRepair />} />
-                <Route path="/viewDSCForm/:token" element={<DscFormView />} />
-                <Route path="/FormViewMain" element={<DSCFormList />} />
-                <Route path="/signature" element={<SignaturePad />} />
-                <Route path="/CustomerForm" element={<CustomerForm />} />
+                <Route path='/droneRepair' element={<RepairForm />} />
+                <Route path='/addCommonRepair' element={<AddCommonRepair />} />
+                <Route path='/viewDSCForm/:token' element={<DscFormView />} />
+                <Route path='/FormViewMain' element={<DSCFormList />} />
+                <Route path='/signature' element={<SignaturePad />} />
+                <Route path='/CustomerForm' element={<CustomerForm />} />
                 /// Proforma
-                <Route path="/AddProforma" element={<AddProforma />} />
-                <Route path="/ProformaList" element={<ProformaList />} />
-                <Route path="/ProformaDetails" element={<ProformaDetails />} />
+                <Route path='/AddProforma' element={<AddProforma />} />
+                <Route path='/ProformaList' element={<ProformaList />} />
+                <Route path='/ProformaDetails' element={<ProformaDetails />} />
+                {/* R&D */}
+                <Route
+                  path='/AllInventoryData'
+                  element={<AllInventoryData />}
+                />
+                <Route
+                  path='/ResearchNewProject'
+                  element={<ResearchNewProject />}
+                />
               </Route>
             </Routes>
           </Suspense>
