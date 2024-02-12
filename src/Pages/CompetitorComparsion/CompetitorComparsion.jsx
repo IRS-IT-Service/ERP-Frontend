@@ -1,5 +1,5 @@
 import { React, useState } from "react";
-import { Box, styled } from "@mui/material";
+import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import CompetitorTable from "./Components/CompetitorTable";
@@ -109,15 +109,16 @@ const CompetitorComparsion = () => {
   };
   return (
     <Box
-    component="main"
-    sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
-  >
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
+    >
       <DrawerHeader />
       <Header
         Name={"Competitor Comparsion"}
         info={true}
         customOnClick={handleOpen}
       />
+     
       {/* infoDialog table */}
       <InfoDialogBox
         infoDetails={infoDetail}
