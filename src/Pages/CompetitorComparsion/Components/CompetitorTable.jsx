@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,35 +10,77 @@ import {
 } from "@mui/material";
 
 const Columns = ["Sno", "SKU", "ProductName", "Comp1", "Comp2", "Comp3"];
-// const vendor = ['Hilda', 'Jinping', 'Putin'];
-const data = [
+
+const initialData = [
   {
     Sno: 1,
     SKU: "SKU123",
     ProductName: "Product A",
-    Comp1: "comp 1",
-    Comp2: "comp 2",
-    Comp3: "comp 3",
+    Comp1: "",
+    Comp2: "",
+    Comp3: "",
   },
   {
     Sno: 2,
     SKU: "SKU456",
     ProductName: "Product B",
-    Comp1: "comp 1",
-    Comp2: "comp 2",
-    Comp3: "comp 3",
+    Comp1: "",
+    Comp2: "",
+    Comp3: "",
   },
   {
     Sno: 3,
     SKU: "SKU789",
     ProductName: "Product C",
-    Comp1: "comp 1",
-    Comp2: "comp 2",
-    Comp3: "comp 3",
+    Comp1: "",
+    Comp2: "",
+    Comp3: "",
+  },
+  {
+    Sno: 4,
+    SKU: "SKU789",
+    ProductName: "Product C",
+    Comp1: "",
+    Comp2: "",
+    Comp3: "",
+  },
+  {
+    Sno: 5,
+    SKU: "SKU789",
+    ProductName: "Product C",
+    Comp1: "",
+    Comp2: "",
+    Comp3: "",
+  },
+  {
+    Sno: 6,
+    SKU: "SKU789",
+    ProductName: "Product C",
+    Comp1: "",
+    Comp2: "",
+    Comp3: "",
+  },
+  {
+    Sno: 7,
+    SKU: "SKU789",
+    ProductName: "Product C",
+    Comp1: "",
+    Comp2: "",
+    Comp3: "",
   },
 ];
 
 const CompetitorTable = () => {
+  const [data, setData] = useState(initialData);
+
+  const handleInputChange = (event, rowIndex, columnName) => {
+    const { value } = event.target;
+    const newData = [...data];
+    newData[rowIndex][columnName] = value;
+    setData(newData);
+    console.log(newData);
+  };
+
   return (
     <div>
       <TableContainer component={Paper}>
@@ -52,14 +93,29 @@ const CompetitorTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row) => (
+            {data.map((row, rowIndex) => (
               <TableRow key={row.Sno}>
                 <TableCell>{row.Sno}</TableCell>
                 <TableCell>{row.SKU}</TableCell>
                 <TableCell>{row.ProductName}</TableCell>
-                <TableCell>{row.Comp1}</TableCell>
-                <TableCell>{row.Comp2}</TableCell>
-                <TableCell>{row.Comp3}</TableCell>
+                {[1, 2, 3].map((compNum) => (
+                  <TableCell key={`Comp${compNum}`}>
+                    <input
+                      type="text"
+                      value={row[`Comp${compNum}`]}
+                      onChange={(event) =>
+                        handleInputChange(event, rowIndex, `Comp${compNum}`)
+                      }
+                      style={{
+                        width: "5vw",
+                        height: "4vh",
+                        border: "1px solid black",
+                        borderRadius: "4px",
+                        textAlign: "center",
+                      }}
+                    />
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
