@@ -33,6 +33,7 @@ import { useGetAllRDInventoryQuery } from '../../features/api/barcodeApiSlice';
 const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
+import { setRAndForm } from '../../features/slice/R&DSlice';
 
 const infoDetail = [
   {
@@ -122,9 +123,13 @@ const AllInventoryData = () => {
         barcode: (data?.Barcode || []).map((barcodeData) => ({
           barcodeSKU: barcodeData?.SKU,
           Barcode: barcodeData?.Barcode,
+          isAssigned: barcodeData?.isAssigned,
+          isDamaged: barcodeData?.isDamaged,
         })),
       }));
+
       setRows(updatedRows);
+    
     }
   }, [inventoryData]);
 
@@ -149,7 +154,7 @@ const AllInventoryData = () => {
     setSelectedRow(data)
     setOpenDialog(!openDialog);
   };
-  console.log(selectedRow)
+  // console.log(selectedRow)
   
   /// global state
   const { themeColor } = useSelector((state) => state.ui);
@@ -258,6 +263,13 @@ const AllInventoryData = () => {
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{data?.Barcode}</TableCell>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>projects {index}</TableCell>
+                      <TableCell>{`${
+                        data?.isAssigned === true
+                          ? 'in USE'
+                          : 'IN INVENTORY'
+                      }`}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

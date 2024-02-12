@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   styled,
@@ -32,6 +32,7 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ClearIcon from '@mui/icons-material/Clear';
 import Header from '../../components/Common/Header';
 import InfoDialogBox from '../../components/Common/InfoDialogBox';
 import { useSelector, useDispatch } from 'react-redux';
@@ -41,7 +42,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 import { useAddProjectNameMutation } from '../../features/api/barcodeApiSlice';
-
+import { useGetAllRDInventoryQuery } from '../../features/api/barcodeApiSlice';
+import { useGetAllProjectDataQuery } from '../../features/api/barcodeApiSlice';
 const infoDetail = [
   {
     name: 'Submit Button',
@@ -106,7 +108,6 @@ const ResearchNewProject = () => {
     projectName: '',
     description: '',
   });
-
   // createNewProjectHandler to createNewProject
   const createNewProjectHandler = (e) => {
     const { name, value } = e.target;
@@ -116,8 +117,34 @@ const ResearchNewProject = () => {
     }));
   };
 
+  // rtk getting inventory data
+  const { data: isInventory } = useGetAllRDInventoryQuery();
+  const [addPartsData, setAddPartsData] = useState([]);
+
+  useEffect(() => {
+    if (isInventory?.status === true) {
+      const displayAllInventoryData = isInventory?.data?.map((data) => ({
+        sku: data?.SKU,
+        productName: data?.Name,
+        barcode: data?.Barcode?.map((barcodeData) => ({
+          Barcode: barcodeData,
+        })),
+      }));
+      setAddPartsData(displayAllInventoryData);
+    }
+  }, [isInventory]);
+
+  // useEffect(() => {
+  //   // Log each item's sku property
+  //   console.log(addPartsData);
+  // }, [addPartsData]);
+
   // rtk for post data
-  const [addNewProjectData, {isLoading: loadingAddNewProjectData}] = useAddProjectNameMutation();
+  const [addNewProjectData, { isLoading: loadingAddNewProjectData }] =
+    useAddProjectNameMutation();
+
+  const [isButtonDisabled, setButtonDisabled] = useState(false);
+
   // submit for New Project handler
   const submitCreateProjectHandler = async () => {
     console.log(createProjectForm);
@@ -126,18 +153,70 @@ const ResearchNewProject = () => {
       toast.error(`Please enter ProjectName and Description First`);
       return;
     }
-
-    const formData = new FormData();
-    formData.append('projectName', createProjectForm.projectName);
-    formData.append('description', createProjectForm.description);
-    
+    const requestData = {
+      projectName: createProjectForm.projectName,
+      description: createProjectForm.description,
+    };
     try {
-      const res = await addNewProjectData(formData).unwrap();
+      const res = await addNewProjectData(requestData).unwrap();
       toast.success(`Project Added successfully`);
     } catch (error) {
       toast.error(error);
     }
+    setButtonDisabled(!isButtonDisabled);
+    setTimeout(openCloseNewProjectBox(), 1000);
+
+    getNewProjectDataRefech();
   };
+
+  // rtk get projectData
+  const {
+    data: getNewProjectData,
+    isLoading: getNewProjectDataLoading,
+    refetch: getNewProjectDataRefech,
+  } = useGetAllProjectDataQuery();
+
+  useEffect(() => {
+    if (getNewProjectData?.status === true) {
+      const projectDataRows = getNewProjectData?.data?.map((data) => ({
+        projectId: data?.projectId,
+        projectName: data?.Name,
+        startDate: data?.startDate
+          ? new Date(data.startDate).toLocaleDateString('en-GB')
+          : '',
+        description: data?.Description,
+      }));
+      console.log(projectDataRows);
+      setAllProjectData(projectDataRows);
+    }
+  }, [getNewProjectData]);
+
+  const [allProjectData, setAllProjectData] = useState([]);
+  const columns = [
+    { id: 1, label: 'SNo', minWidth: 120 },
+    { id: 2, label: 'ProjectID', minWidth: 120 },
+    { id: 3, label: 'Project Name', minWidth: 120 },
+    {
+      id: 5,
+      label: 'Start Date ',
+      minWidth: 120,
+    },
+    {
+      id: 6,
+      label: 'End Date ',
+      minWidth: 120,
+    },
+    {
+      id: 7,
+      label: 'Add Parts ',
+      minWidth: 120,
+    },
+    {
+      id: 8,
+      label: 'Project Detail ',
+      minWidth: 120,
+    },
+  ];
 
   // track project status
   const [projectDetail, setProjectDetail] = useState({
@@ -228,186 +307,14 @@ const ResearchNewProject = () => {
       year: 1964,
     },
   ];
-  const columns = [
-    { id: 1, label: 'SNo', minWidth: 120 },
-    { id: 2, label: 'ProjectID', minWidth: 120 },
-    { id: 3, label: 'Project Name', minWidth: 120 },
-    // {
-    //   id: 4,
-    //   label: 'Description',
-    //   minWidth: 120,
-    // },
-    {
-      id: 5,
-      label: 'Start Date ',
-      minWidth: 120,
-    },
-    {
-      id: 6,
-      label: 'End Date ',
-      minWidth: 120,
-    },
-    {
-      id: 7,
-      label: 'Add Parts ',
-      minWidth: 120,
-    },
-    {
-      id: 8,
-      label: 'Project Detail ',
-      minWidth: 120,
-    },
-  ];
-  const rows = [
-    {
-      id: 1,
-      projectId: 'Project1',
-      productName: 'New Project 1 for Motor',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 2,
-      sku: 'IRS32345673476',
-      productName: 'T Engine MQ701-S TC120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-      minWidth: 120,
-    },
-    {
-      id: 3,
-      sku: 'IRS12325456653',
-      productName: 'T Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 4,
-      sku: 'IRS22736482732',
-      productName: 'T Engine WETod-Q KV555',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 5,
-      sku: 'IRS24012433476',
-      productName: 'T Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 6,
-      sku: 'IRS35665788765',
-      productName: 'T Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 7,
-      sku: 'IRS24011002325',
-      productName: 'T Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 8,
-      sku: 'IRS2450123s335',
-      productName: 'T Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 9,
-      sku: 'IRS240110034345',
-      productName: 'T Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 10,
-      sku: 'IRS2401100535',
-      productName: 'T Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 11,
-      sku: 'IRS2401100535',
-      productName: 'T Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 12,
-      sku: 'IRS2401100535',
-      productName: 'T Motor MN801-S KV120',
-
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-    {
-      id: 13,
-      sku: 'IRS2401100535',
-      productName: 'Tttt Motor MN801-S KV120',
-      startDate: '2023/02/2024',
-      endDate: '2023/05/06',
-    },
-  ];
 
   const viewBarcodeColumns = [
     {
       id: 'SNo',
       sku: 'SKU',
       productName: 'Product Name',
-      description: 'Description',
       button: 'Select Part',
-    },
-  ];
-  const viewBarcodeRows = [
-    {
-      id: 1,
-      barcode: 'IRS110054255',
-      status: 'Mavic T12 500 TEE',
-    },
-    {
-      id: 2,
-      barcode: 'IRS110055879',
-      status: 'Phantom P12 500 PHR',
-    },
-    {
-      id: 3,
-      barcode: 'IRS110054255',
-      status: 'Tejas R32 500 TEE',
-    },
-    {
-      id: 1,
-      barcode: 'IRS110054255',
-      status: 'Mavic T12 500 TEE',
-    },
-    {
-      id: 2,
-      barcode: 'IRS110055879',
-      status: 'Phantom P12 500 PHR',
-    },
-    {
-      id: 3,
-      barcode: 'IRS110054255',
-      status: 'Tejas R32 500 TEE',
-    },
-    {
-      id: 1,
-      barcode: 'IRS110054255',
-      status: 'Mavic T12 500 TEE',
-    },
-    {
-      id: 2,
-      barcode: 'IRS110055879',
-      status: 'Phantom P12 500 PHR',
-    },
-    {
-      id: 3,
-      barcode: 'IRS110054255',
-      status: 'Tejas R32 500 TEE',
+      qty: 'Qty'
     },
   ];
 
@@ -418,65 +325,13 @@ const ResearchNewProject = () => {
       sNo: 'Sno',
       checkbox: 'Select',
       barcodeNumber: 'Barcode Number',
-      isAssigned: 'Assigned To Project',
-    },
-  ];
-  const addPartRows = [
-    {
-      id: 1,
-
-      checkbox: <Checkbox {...label} />,
-      barcodeNumber: 'BRC11001548',
-      isAssigned: 'Assigned to Project',
-    },
-    {
-      id: 2,
-      checkbox: <Checkbox {...label} />,
-      barcodeNumber: 'BRC11001548',
-      isAssigned: 'Assigned to Project',
-    },
-    {
-      id: 3,
-      checkbox: <Checkbox {...label} />,
-      barcodeNumber: 'BRC11001548',
-      isAssigned: 'Assigned to Project',
-    },
-    {
-      id: 4,
-      checkbox: <Checkbox {...label} />,
-      barcodeNumber: 'BRC11001548',
-      isAssigned: 'Assigned to Project',
-    },
-    {
-      id: 5,
-      checkbox: <Checkbox {...label} />,
-      barcodeNumber: 'BRC11001548',
-      isAssigned: 'Assigned to Project',
-    },
-    {
-      id: 6,
-      checkbox: <Checkbox {...label} />,
-      barcodeNumber: 'BRC11001548',
-      isAssigned: 'Assigned to Project',
+      isAssigned: `Status`,
+      close: 'Close',
     },
   ];
 
   const currentDate = new Date().toLocaleDateString();
   const projectDetailHeader = [
-    {
-      id: 1,
-      label: 'ProjectID: ',
-      input: (
-        <InputBase
-          sx={{
-            borderBottom: '2px solid grey',
-            maxHeight: '20px',
-            maxWidth: '180px',
-            paddingX: '1.5%',
-          }}
-        />
-      ),
-    },
     {
       id: 2,
       label: 'ProjectName: ',
@@ -544,24 +399,59 @@ const ResearchNewProject = () => {
   const [newProjectDialogClose, setNewProjectDialogClose] = useState(false);
   const openCloseNewProjectBox = () => {
     setNewProjectDialogClose(!newProjectDialogClose);
+    setButtonDisabled(false);
+    setCreateProjectForm(
+      createProjectForm.projectName === '' &&
+        createProjectForm.description === ''
+    );
   };
 
   // add part open close
   const [openCloseAddPart, setOpenCloseAddPart] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const handleOpenCloseAddPart = (row) => {
-    setSelectedRow(row);
+  const [selectedRow, setSelectedRow] = useState([]);
+  const handleOpenCloseAddPart = (row, projectId) => {
+    if (row && projectId) {
+      setSelectedRow((prevState) => [
+        ...prevState,
+        {
+          partsData: row,
+          projectId: projectId,
+        },
+      ]);
+    }
+    
     setOpenCloseAddPart(!openCloseAddPart);
-    console.log(row);
+    console.log(selectedRow);
+    setSelectedBarcodeData([], () => {
+      console.log(selectedBarcodeData);
+    });
+  };
+  const clearAndCloseHandler = () => {
+    setSelectedBarcodeData([]);
+    setOpenCloseAddPart(!openCloseAddPart);
+    setSelectedBarcodeData([], () => {
+      console.log(selectedBarcodeData);
+    });
+  };
+
+  const barcodeDataSubmitted = () => {
+    if (selectedBarcodeData.length === 0) {
+      toast.error('Data not Selected');
+      setOpenCloseAddPart(true);
+    } else {
+      toast.success('Parts Added Successfully!');
+      setOpenCloseAddPart(!openCloseAddPart);
+    }
+
+    console.log(selectedBarcodeData);
   };
 
   // project detail open close
   const [openClosePD, setOpenClosePD] = useState(false);
-  // const [selectedRow, setSelectedRow] = useState(null);
-  const handleOpenClosePD = () => {
-    // setSelectedRow(row);
+  const [projectDetailData, setProjectDetailData] = useState([]);
+  const handleOpenClosePD = (row) => {
     setOpenClosePD(!openClosePD);
-    console.log('hlo from PD');
+    setProjectDetailData(row);
   };
 
   const [page, setPage] = React.useState(0);
@@ -597,15 +487,37 @@ const ResearchNewProject = () => {
     setOpen(false);
   };
 
-  const [displayBarcode, setDisplayBarcode] = useState(false)
-  
-  const showBarcodeHandler = ()=>{
-    setDisplayBarcode(!displayBarcode);
-  }
+  const [displayBarcode, setDisplayBarcode] = useState(false);
+  const [barcodeData, setBarcodeData] = useState([]);
+  const showBarcodeHandler = (barcode) => {
+    setBarcodeData(barcode);
+    setDisplayBarcode(true);
+  };
+  const toggleBarcode = () => {
+    setDisplayBarcode(false);
+  };
 
-  const addBarcodeHandler = ()=>{
+  useEffect(() => {
+    console.log(barcodeData);
+  }, [barcodeData]);
+
+  const addBarcodeHandler = () => {
     setDisplayBarcode(!displayBarcode);
-  }
+  };
+
+  const [selectedBarcodeData, setSelectedBarcodeData] = useState([]);
+
+  const selectBarcodeHandler = (selectedBarcodeName, data) => {
+    if (selectedBarcodeName && data) {
+      setSelectedBarcodeData((prevState) => [
+        ...prevState,
+        {
+          productName: selectedBarcodeName.productName,
+          Barcode: data?.Barcode?.Barcode,
+        },
+      ]);
+    }
+  };
 
   return (
     <Box
@@ -734,7 +646,12 @@ const ResearchNewProject = () => {
               </Box>
             </DialogContent>
             <DialogActions>
-              <Button onClick={submitCreateProjectHandler}>Submit</Button>
+              <Button
+                onClick={submitCreateProjectHandler}
+                disabled={isButtonDisabled}
+              >
+                Submit
+              </Button>
               <Button onClick={openCloseNewProjectBox}>Close</Button>
             </DialogActions>
           </Dialog>
@@ -746,118 +663,33 @@ const ResearchNewProject = () => {
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      style={{
-                        width:
-                          column.id === 1
-                            ? 10
-                            : column.id === 2
-                            ? 30
-                            : column.id === 3
-                            ? 100
-                            : column.id === 4
-                            ? 180
-                            : column.id === 5
-                            ? 30
-                            : column.id === 6
-                            ? 10
-                            : column.id === 7
-                            ? 10
-                            : column.id === 8,
-                        textAlign:
-                          column.id === 1
-                            ? ''
-                            : column.id === 2
-                            ? ''
-                            : column.id === 3
-                            ? 'center'
-                            : column.id === 4
-                            ? 'center'
-                            : column.id === 5
-                            ? 'cyan'
-                            : column.id === 6
-                            ? 'brown'
-                            : '',
-                      }}
-                    >
-                      {column.label}
-                    </TableCell>
+                    <TableCell key={column.id}>{column.label}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell
-                      style={{
-                        width: row.id === index + 1 ? 2 : '',
-                        textAlign: row.id === index + 1 ? '' : 'center',
-                      }}
-                    >
-                      {row.id}
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        width: row.id === index + 1 ? 30 : '',
-                        // backgroundColor: row.id === index + 1 ? 'red' : '',
-                        // textAlign: row.id === index + 1 ? '' : 'center',
-                      }}
-                    >
-                      {row.projectId}
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        width: row.id === index + 1 ? 100 : '',
-                        // backgroundColor: row.id === index + 1 ? 'yellow' : '',
-                      }}
-                    >
-                      {row.productName}
-                    </TableCell>
-                    {/* <TableCell
-                      style={{
-                        width: row.id === index + 1 ? 180 : '',
-                        
-                      }}
-                    >
-                      {row.description}
-                    </TableCell> */}
-                    <TableCell
-                      style={{
-                        width: row.id === index + 1 ? 50 : '',
-                        // backgroundColor: row.id === index + 1 ? 'blue' : '',
-                      }}
-                    >
-                      {row.startDate}
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        width: row.id === index + 1 ? 50 : '',
-                        // backgroundColor: row.id === index + 1 ? 'blue' : '',
-                      }}
-                    >
-                      {row.endDate}
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        width: row.id === index + 1 ? 10 : '',
-                        // backgroundColor: row.id === index + 1 ? 'cyan' : '',
-                      }}
-                    >
+                {allProjectData?.map((row, index) => (
+                  <TableRow key={row.projectId}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{row.projectId}</TableCell>
+                    <TableCell>{row.projectName}</TableCell>
+                    <TableCell>{row.startDate}</TableCell>
+                    <TableCell>{row.endDate}</TableCell>
+                    <TableCell>
                       <Button
                         variant='contained'
-                        onClick={() => handleOpenCloseAddPart(row)}
+                        onClick={() =>
+                          handleOpenCloseAddPart(addPartsData, row?.projectId)
+                        }
                       >
                         <AddIcon />
                       </Button>
                     </TableCell>
-                    <TableCell
-                      style={{
-                        width: row.id === index + 1 ? 40 : '',
-                        // backgroundColor: row.id === index + 1 ? 'brown' : '',
-                      }}
-                    >
-                      <Button variant='contained' onClick={handleOpenClosePD}>
+                    <TableCell>
+                      <Button
+                        variant='contained'
+                        onClick={() => handleOpenClosePD(row)}
+                      >
                         View
                       </Button>
                     </TableCell>
@@ -869,7 +701,7 @@ const ResearchNewProject = () => {
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component='div'
-            count={rows.length}
+            count={10}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -880,12 +712,12 @@ const ResearchNewProject = () => {
         {/* Add parts */}
         <Dialog
           open={openCloseAddPart}
-          onClose={handleOpenCloseAddPart}
+          onClose={!openCloseAddPart}
           maxWidth='xl'
         >
           <DialogTitle
             sx={{
-              minWidth: '60vw',
+              minWidth: '50vw',
               display: 'flex',
               justifyContent: 'space-around',
               alignItems: 'center',
@@ -908,7 +740,7 @@ const ResearchNewProject = () => {
             <TableContainer
               sx={{
                 maxHeight: 490,
-                maxWidth: `${displayBarcode ? '590px' : '100%'}`,
+                maxWidth: `${displayBarcode ? '810px' : '100%'}`,
                 overflow: 'auto',
               }}
             >
@@ -930,6 +762,9 @@ const ResearchNewProject = () => {
                         {data.productName}
                       </TableCell>
                       <TableCell sx={{ backgroundColor: 'grey' }}>
+                        {data.qty}
+                      </TableCell>
+                      <TableCell sx={{ backgroundColor: 'grey' }}>
                         {data.button}
                       </TableCell>
                     </TableRow>
@@ -937,14 +772,15 @@ const ResearchNewProject = () => {
                 ))}
 
                 <TableBody>
-                  {viewBarcodeRows.map((data, index) => (
+                  {addPartsData?.map((data, index) => (
                     <TableRow key={index}>
-                      <TableCell>{data.id}</TableCell>
-                      <TableCell>{data.barcode}</TableCell>
-                      <TableCell>{data?.status}</TableCell>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{data?.sku}</TableCell>
+                      <TableCell>{data?.productName}</TableCell>
+                      <TableCell>{data?.barcode.length}</TableCell>
                       <TableCell>
-                        <Button onClick={showBarcodeHandler}>
-                          Select Part
+                        <Button onClick={() => showBarcodeHandler(data)}>
+                          Select Barcode
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -952,12 +788,11 @@ const ResearchNewProject = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-
             {/* parts barcode table */}
             <TableContainer
               sx={{
                 maxHeight: 490,
-                maxWidth: 475,
+                maxWidth: 595,
                 overflow: 'auto',
                 display: `${displayBarcode ? '' : 'none'}`,
               }}
@@ -1006,17 +841,46 @@ const ResearchNewProject = () => {
                       >
                         {data.isAssigned}
                       </TableCell>
+                      <TableCell
+                        sx={{
+                          backgroundColor: '#fda0a0',
+                          alignContent: 'center',
+                          paddingLeft: '5%',
+                        }}
+                      >
+                        <Button
+                          variant='text'
+                          color='error'
+                          onClick={toggleBarcode}
+                        >
+                          <ClearIcon/>
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                 ))}
 
                 <TableBody>
-                  {addPartRows.map((data, index) => (
-                    <TableRow key={{ index }}>
-                      <TableCell>{data.id}</TableCell>
-                      <TableCell>{data.checkbox}</TableCell>
-                      <TableCell>{data.barcodeNumber}</TableCell>
-                      <TableCell>{data.isAssigned}</TableCell>
+                  {barcodeData?.barcode?.map((data, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>
+                        {data?.Barcode?.isAssigned === true ? (
+                          <Checkbox disabled />
+                        ) : (
+                          <Checkbox
+                            onClick={() =>
+                              selectBarcodeHandler(barcodeData, data)
+                            }
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>{data?.Barcode?.Barcode}</TableCell>
+                      <TableCell colSpan={2}>{`${
+                        data?.Barcode?.isAssigned === true
+                          ? 'in USE'
+                          : 'IN INVENTORY'
+                      }`}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -1024,8 +888,8 @@ const ResearchNewProject = () => {
             </TableContainer>
           </DialogContent>
           <DialogActions>
-            <Button onClick={showBarcodeHandler}>Submit</Button>
-            <Button onClick={handleOpenCloseAddPart}>Close</Button>
+            <Button onClick={barcodeDataSubmitted}>Submit</Button>
+            <Button onClick={clearAndCloseHandler}>Close</Button>
           </DialogActions>
         </Dialog>
 
@@ -1047,13 +911,19 @@ const ResearchNewProject = () => {
                 width: '100%',
                 display: 'flex',
                 flex: 'wrap',
-                justifyContent: 'space-between',
+                justifyContent: 'space-around',
                 alignItems: 'center',
               }}
             >
-              {projectDetailHeader?.map((data) => (
+              <Box
+                sx={{
+                  display: 'flex',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
                 <Box
-                  key={data.id}
                   sx={{
                     display: 'flex',
                     justifyContent: 'center',
@@ -1061,13 +931,91 @@ const ResearchNewProject = () => {
                   }}
                 >
                   <Typography sx={{ fontWeight: '600' }}>
-                    {data.label}
+                    ProjectId: {` `}
                   </Typography>
-                  <Typography>{data.input}</Typography>
+                  <Typography>
+                    {' '}
+                    <InputBase
+                      value={projectDetailData?.projectId}
+                      sx={{
+                        borderBottom: '2px solid grey',
+                        maxHeight: '20px',
+                        maxWidth: '60px',
+                        paddingX: '1.5%',
+                      }}
+                    />
+                  </Typography>
                 </Box>
-              ))}
-            </Box>
 
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {' '}
+                  <Typography sx={{ fontWeight: '600' }}>
+                    ProjectName
+                  </Typography>
+                  <Typography>
+                    <InputBase
+                      value={projectDetailData?.projectName}
+                      sx={{
+                        borderBottom: '2px solid grey',
+                        textAlign: 'center',
+                        maxHeight: '20px',
+                        maxWidth: '150px',
+                        paddingX: '2.5%',
+                      }}
+                    />
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography sx={{ fontWeight: '600' }}>StartDate:</Typography>
+                  <Typography>
+                    <InputBase
+                      value={projectDetailData?.startDate}
+                      sx={{
+                        borderBottom: '2px solid grey',
+                        maxHeight: '20px',
+                        maxWidth: '100px',
+                        paddingX: '2.5%',
+                      }}
+                    />
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {' '}
+                  <Typography sx={{ fontWeight: '600' }}>EndDate</Typography>
+                  <Typography>
+                    <InputBase
+                      value={'Present'}
+                      sx={{
+                        borderBottom: '2px solid grey',
+                        maxHeight: '20px',
+                        maxWidth: '100px',
+                        paddingX: '1.5%',
+                      }}
+                    />
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
             <Box
               sx={{
                 width: '100%',
@@ -1080,6 +1028,7 @@ const ResearchNewProject = () => {
               <Typography sx={{ fontWeight: '600' }}>Description:</Typography>
               <InputBase
                 multiline
+                value={projectDetailData?.description}
                 sx={{
                   border: '2px solid grey',
                   borderRadius: '8px',
@@ -1111,24 +1060,11 @@ const ResearchNewProject = () => {
                 ))}
 
                 <TableBody>
-                  {newProjectDetailRows.map((data, index) => (
+                  {selectedBarcodeData?.map((data, index) => (
                     <TableRow key={index}>
-                      <TableCell>{data.id}</TableCell>
-                      <TableCell>{data.partsName}</TableCell>
-                      <TableCell>{data.partsBarcode}</TableCell>
-                      <TableCell
-                        sx={{
-                          backgroundColor:
-                            data?.status === 'Damage'
-                              ? 'red'
-                              : data?.status === 'In Use'
-                              ? 'yellow'
-                              : 'green',
-                          alignContent: 'right',
-                        }}
-                      >
-                        {data?.status}
-                      </TableCell>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{data?.productName}</TableCell>
+                      <TableCell>{data?.Barcode}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

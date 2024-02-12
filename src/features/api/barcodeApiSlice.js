@@ -187,10 +187,17 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+
     getAllRDInventory: builder.query({
       query: () => ({
         url: `${BARCODE_URL}/getAllRDInventory`,
         method: 'GET',
+      }),
+    }),
+    getAllProjectData: builder.query({
+      query: () => ({
+        url: `r-and-d/getAllProjects`,
+        method: 'GET'
       }),
     }),
     addProjectName: builder.mutation({
@@ -232,6 +239,7 @@ export const {
   useGetSingleShipmentMutation,
   useGetAllShipmentQuery,
   useGetShipmentBarcodeMutation,
+  useGetAllProjectDataQuery,
   useGetAllRDInventoryQuery,
   useAddProjectNameMutation,
 } = BarcodeSlice;
