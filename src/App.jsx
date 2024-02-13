@@ -254,7 +254,7 @@ function App() {
             "BM3r8o8qHsrmxPGM2sHJUlabsSEs-EONb1wg4mOPrNi0r8JYi86BI85wqtWhduF3fdnsfhr8nu814QdYzCHj3VU",
         })
           .then((currentToken) => {
-            // console.log("Current token:", currentToken); // Debug log
+            // console.log("Current token:", currentToken); // Debug log.
             if (currentToken) {
               setRegistrationToken(currentToken);
             } else {
@@ -336,10 +336,10 @@ function App() {
                 path='/admin/resetPassword/:token'
                 element={<ResetPassword />}
               />
-              {/* Home Router */}
-              <Route path='*' element={<PrivateRoute nav={true} />}>
-                {' '}
-                <Route path='*' element={<NoPageFound />} />
+              {/* Home Router. */}
+              <Route path="*" element={<PrivateRoute nav={true} />}>
+                {" "}
+                <Route path="*" element={<NoPageFound />} />
               </Route>
               <Route path='/profile' element={<PrivateRoute nav={true} />}>
                 <Route path='/profile' element={<Profile />} />

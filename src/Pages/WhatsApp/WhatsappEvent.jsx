@@ -152,12 +152,13 @@ const WhatsappEvent = () => {
         p: 0,
         width: "100%",
         overflowY: "auto",
+      
         // border: "2px solid red",
       }}
     >
       <DrawerHeader />
       <Header Name={"WhatsApp Event"} info={true} customOnClick={handleOpen} />
-      <Box sx={{ margin: "4px" }}>
+      <Box sx={{ marginTop:"2rem" }}>
         <Grid
           container
           spacing={2}
@@ -173,15 +174,20 @@ const WhatsappEvent = () => {
               item
               xs={4}
               sx={{
-                marginTop: "15px",
+                // marginTop: "15px",
                 background: color,
                 justifyContent: "center",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 margin: "20px",
-                boxShadow: 10,
+                paddingBottom:1,
+                boxShadow: "-6px -6px 14px rgba(255, 255, 255, 0.7), -6px -6px 10px rgba(255, 255, 255, 0.5), 6px 6px 8px rgba(255, 255, 255, 0.075), 6px 6px 10px rgba(0, 0, 0, 0.15)",
                 borderRadius: "10px",
+                "&:hover":{
+                  boxShadow: "inset -2px -2px 6px rgba(255, 255, 255, .7),inset -2px -2px 4px rgba(255, 255, 255, .5),inset 2px 2px 2px rgba(255, 255, 255, .075),inset 2px 2px 4px rgba(0, 0, 0, .15)"
+          
+                }
               }}
             >
               <i className={`${item.icon}`} />
