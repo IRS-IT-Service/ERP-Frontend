@@ -14,10 +14,11 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  TextField
+  TextField,
+  Typography,
 } from "@mui/material";
 
-const Columns = ["Sno", "SKU", "ProductName", "GST", "Comp1", "Comp2", "Comp3"];
+const Columns = ["Sno", "SKU", "ProductName", "GST", "Comp1", "Comp2"];
 
 const initialData = [
   {
@@ -25,9 +26,8 @@ const initialData = [
     SKU: "SKU123",
     ProductName: "Product A",
     GST: "12",
-    Comp1: "",
+    Comp1: "Hex",
     Comp2: "",
-    Comp3: "",
   },
   {
     Sno: 2,
@@ -36,7 +36,6 @@ const initialData = [
     GST: "12",
     Comp1: "",
     Comp2: "",
-    Comp3: "",
   },
   {
     Sno: 3,
@@ -45,7 +44,6 @@ const initialData = [
     GST: "12",
     Comp1: "",
     Comp2: "",
-    Comp3: "",
   },
   {
     Sno: 4,
@@ -54,48 +52,30 @@ const initialData = [
     GST: "12",
     Comp1: "",
     Comp2: "",
-    Comp3: "",
-  },
-  {
-    Sno: 5,
-    SKU: "SKU789",
-    ProductName: "Product C",
-    GST: "12",
-    Comp1: "",
-    Comp2: "",
-    Comp3: "",
-  },
-  {
-    Sno: 6,
-    SKU: "SKU789",
-    ProductName: "Product C",
-    GST: "12",
-    Comp1: "",
-    Comp2: "",
-    Comp3: "",
-  },
-  {
-    Sno: 7,
-    SKU: "SKU789",
-    ProductName: "Product C",
-    GST: "12",
-    Comp1: "",
-    Comp2: "",
-    Comp3: "",
   },
 ];
 
+// Dilog box table
+function createData(Sno, CompetitorName, url) {
+  return { Sno, CompetitorName, url };
+}
+const rows = [
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+  createData(1, "Tesla", "kdjfkljdskfj"),
+];
 const CompetitorTable = () => {
   const [data, setData] = useState(initialData);
-  const [open, setOpen] = useState(false);
 
-  const handleInputChange = (event, rowIndex, columnName) => {
-    const { value } = event.target;
-    const newData = [...data];
-    newData[rowIndex][columnName] = value;
-    setData(newData);
-    console.log(newData);
-  };
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -103,6 +83,14 @@ const CompetitorTable = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleInputChange = (event, rowIndex, columnName) => {
+    const { value } = event.target;
+    const newData = [...data];
+    newData[rowIndex][columnName] = value;
+    setData(newData);
+    console.log(newData);
   };
 
   const handleSubmit = (event) => {
@@ -124,28 +112,106 @@ const CompetitorTable = () => {
   return (
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Button variant="outlined" sx={{ margin: "10px" }} onClick={handleClickOpen}>
-         Add Competitor
+        <Button
+          variant="outlined"
+          sx={{ margin: "10px" }}
+          onClick={handleClickOpen}
+        >
+          Add Competitor
         </Button>
+
         <Dialog
           open={open}
           onClose={handleClose}
           PaperProps={{
-            component: 'form',
+            component: "form",
             onSubmit: handleSubmit,
           }}
         >
-          <DialogContent sx={{minWidth:"30vw"}}>
-           <Box sx={{display:"flex", flexDirection:"column", gap:"10px"} }>
-           <TextField id="outlined-basic" label="Competitor Name " variant="outlined"  />
-          <TextField id="outlined-basic" label="URL" variant="outlined" />
-           </Box>
-         
+          <DialogTitle
+            id="alert-dialog-title"
+            sx={{
+              textAlign: "center",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography sx={{ fontWeight: "bold" }}>Add Competitor</Typography>
+            <Button onClick={handleClose} sx={{ fontWeight: "bold" }}>
+              {" "}
+              Cancel
+            </Button>
+          </DialogTitle>
+
+          <DialogContent>
+            <Box
+              sx={{
+                gap: "12px",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                <TextField
+                  id="outlined-basic"
+                  label="Competitor Name "
+                  variant="outlined"
+                  sx={{ width: "100%" }}
+                />
+                <TextField
+                  id="outlined-basic"
+                  label="URL"
+                  variant="outlined"
+                  sx={{ width: "100%" }}
+                />
+                <Button type="submit" variant="outlined">
+                  Add
+                </Button>
+              </Box>
+              <Box sx={{ marginTop: "12px" }}>
+                <TableContainer component={Paper} sx={{ maxHeight: 300 }}>
+                  <Table
+                    sx={{ minWidth: 500 }}
+                    size="medium"
+                    aria-label="a dense table"
+                  >
+                    <TableHead
+                      sx={{ position: "sticky", top: 0, background: "white" }}
+                    >
+                      <TableRow>
+                        <TableCell>Sno</TableCell>
+                        <TableCell>Competitor Name</TableCell>
+                        <TableCell>Url</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {rows.map((row) => (
+                        <TableRow
+                          key={row.Sno}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {row.Sno}
+                          </TableCell>
+                          <TableCell>{row.CompetitorName}</TableCell>
+                          <TableCell>{row.url}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            </Box>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit">Save</Button>
-          </DialogActions>
+          <DialogActions></DialogActions>
         </Dialog>
         <Button variant="outlined" sx={{ margin: "10px" }} onClick={handleSave}>
           Save
@@ -169,7 +235,7 @@ const CompetitorTable = () => {
                 <TableCell>
                   <p>{row.GST}</p>
                 </TableCell>
-                {[1, 2, 3].map((compNum) => (
+                {[1, 2].map((compNum) => (
                   <TableCell key={`Comp${compNum}`}>
                     <input
                       type="text"
