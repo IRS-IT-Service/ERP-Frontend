@@ -30,6 +30,7 @@ import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../CustomProvider/useWebSocket";
 import PdfDownloadDial from "./Components/PdfDownloadDial";
+import WebStatusDial from "./Components/WebStatusDial";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -49,8 +50,9 @@ const DSCFormList = () => {
   /// local state
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
-  const [openDial,setOpenDial] = useState(false);
-  const [dscData,setDscData] = useState({})
+  const [openDial, setOpenDial] = useState(false);
+  const [opneWebDial, setOpenWebDial] = useState(false);
+  const [dscData, setDscData] = useState({});
   const [selectedData, setSelectedData] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
@@ -121,14 +123,24 @@ const DSCFormList = () => {
   };
 
   const handleOpenPdfDial = (data) => {
-  setOpenDial(!openDial)
-  setDscData(data)
+    setOpenDial(!openDial);
+    setDscData(data);
+  };
+
+  const handleOpenWebDial = (data) => {
+    setOpenWebDial(!opneWebDial);
+    setDscData(data);
+  };
+
+  const handleCloseWebDial = (data) => {
+    setOpenWebDial(!opneWebDial)
+    setDscData(data);
   }
 
-  const handleClosePdfDial = () =>{
-    setDscData({})
-    setOpenDial(!openDial)
-  }
+  const handleClosePdfDial = () => {
+    setDscData({});
+    setOpenDial(!openDial);
+  };
 
   const handleDownloadPdf = (id) => {
     setDownloadLoading(true);
@@ -272,6 +284,25 @@ const DSCFormList = () => {
       },
     },
     {
+      field: "WebStatus",
+      headerName: "WebStatus",
+      flex: 0.2,
+      minWidth: 140,
+      maxWidth: 450,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const data = {
+          token:params.row.Token,
+          model:params.row.DroneModel
+
+        }
+        return <Button onClick={() => {handleOpenWebDial(data)}}>View</Button>;
+      },
+    },
+    {
       field: "view",
       headerName: "View",
       flex: 0.2,
@@ -330,13 +361,13 @@ const DSCFormList = () => {
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
         const Token = params.row.Token;
-        const Contact = params.row.MobileNo
-        const Name = params.row.CustomerName
+        const Contact = params.row.MobileNo;
+        const Name = params.row.CustomerName;
         return (
           <div>
             <Button
               onClick={() => {
-                handleOpenPdfDial({Token,Contact,Name});
+                handleOpenPdfDial({ Token, Contact, Name });
               }}
             >
               <DownloadIcon />
@@ -457,7 +488,20 @@ const DSCFormList = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      {openDial && <PdfDownloadDial open={openDial} close = {handleClosePdfDial} data={dscData}/>}
+      {openDial && (
+        <PdfDownloadDial
+          open={openDial}
+          close={handleClosePdfDial}
+          data={dscData}
+        />
+      )}
+      {opneWebDial && (
+        <WebStatusDial
+          open={opneWebDial}
+          close={handleCloseWebDial}
+          data={dscData}
+        />
+      )}
     </Box>
   );
 };
