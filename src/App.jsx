@@ -515,9 +515,9 @@ function App() {
                 <Route
                   path="/uploadimage"
                   element={
-                    <UserRole name={"Upload Image"}>
+               // We have removed User Role
                       <UploadImageCom />
-                    </UserRole>
+                 
                   }
                 />
                 <Route path="/discountquery" element={<DiscountQuery />} />
