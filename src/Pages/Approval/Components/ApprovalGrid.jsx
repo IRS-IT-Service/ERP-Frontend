@@ -140,7 +140,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       refetchUnApprovedCount().then(() => {
         socket.emit("liveStatusServer", liveStatusData);
       });
-      await sendWhatsAppmessage(datas);
+      await sendWhatsAppmessage(datas).unwrap();
     } catch (error) {
       console.error(`An error occurred ${query} Approval:`, error);
     }
@@ -154,6 +154,18 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
         const findName = rows.find((data) => data.SKU === item);
         return { SKU: item, value: bool, name: findName.Name };
       });
+      let approvalName =
+      query === "Quantity"
+        ? "Stock Approval"
+        : query === "MRP"
+        ? "MRP Approval"
+        : query === "SalesPrice"
+        ? "SalesPrice Approval"
+        : query === "SellerPrice"
+        ? "SellerPrice Approval"
+        : query === "LandingCost"
+        ? "Cost Approval"
+        : null;
       const param = { query: query, body: { products: products } };
       const res = await approveProductApi(param).unwrap();
       const liveStatusData = {
@@ -192,10 +204,16 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           });
         });
       }
+      const datas = {
+        message: liveStatusData.message,
+        approvalName,
+      };
       refetch();
       refetchUnApprovedCount().then(() => {
         socket.emit("liveStatusServer", liveStatusData);
       });
+      await sendWhatsAppmessage(datas).unwrap();
+
     } catch (error) {
       console.error(`An error occurred ${query} Approval:`, error);
     }

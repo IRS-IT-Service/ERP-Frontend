@@ -23,6 +23,8 @@ import { useUpdateProductsColumnMutation } from "../../../features/api/productAp
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import { toast } from "react-toastify";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
+import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
+
 
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? ' #0d0d0d' : '#eee',
@@ -50,14 +52,16 @@ const UpdateLiveCalcDialog = ({
   // Initialization
   const socket = useSocket();
 
-
+console.log(data)
   // Local state
   const [localData, setLocalData] = useState([...data]);
-
+console.log(localData)
   // RTK query
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
+
 
   // useEffect
   useEffect(() => {
@@ -134,6 +138,8 @@ const UpdateLiveCalcDialog = ({
               timeZone: "Asia/Kolkata",
             }),
           };
+          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          await sendMessageToAdmin(whatsappMessage).unwrap();
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SalesPrice updated successfully");
           const addProductHistory = {
@@ -148,6 +154,9 @@ const UpdateLiveCalcDialog = ({
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
+
+   
+
         }
         if (updatedSalesTax.length) {
           const params = {
@@ -178,6 +187,9 @@ const UpdateLiveCalcDialog = ({
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
+          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          await sendMessageToAdmin(whatsappMessage).unwrap();
+
         }
 
         if (updatedSalesPrice.length || updatedSalesTax.length) {
@@ -237,6 +249,9 @@ const UpdateLiveCalcDialog = ({
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
+          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          await sendMessageToAdmin(whatsappMessage).unwrap();
+
         }
         if (updatedSellerTax.length) {
           const params = {
@@ -267,6 +282,8 @@ const UpdateLiveCalcDialog = ({
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
+          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          await sendMessageToAdmin(whatsappMessage).unwrap();
         }
       }
       if (
@@ -452,14 +469,14 @@ const UpdateLiveCalcDialog = ({
       visibleColumns = [
         ...visibleColumns,
         {
-          field: "ProfitSales",
-          headerName: "Sales Profit %",
+          field: "actualSalesProfit",
+          headerName: "Sales Profit with Tax %",
           preFix: "%",
           className: "violet-bg",
         },
         {
-          field: "actualSalesProfit",
-          headerName: "Sales Profit with Tax %",
+          field: "ProfitSales",
+          headerName: "Sales Profit %",
           input: true,
           preFix: "%",
           className: "violet-bg",
@@ -497,14 +514,14 @@ const UpdateLiveCalcDialog = ({
       visibleColumns = [
         ...visibleColumns,
         {
-          field: 'ProfitSeller',
-          headerName: 'SP%',
+          field: 'actualSellerProfit',
+          headerName: 'SPT%',
           preFix: '%',
           className: 'blue-bg',
         },
         {
-          field: 'actualSellerProfit',
-          headerName: ' SPT%',
+          field: 'ProfitSeller',
+          headerName: ' SP%',
           input: true,
           preFix: '%',
           className: 'blue-bg',
@@ -591,7 +608,7 @@ const UpdateLiveCalcDialog = ({
           <Table stickyHeader aria-label='sticky table' sx={{marginTop: '2%',}}>
             <TableHead>
               <TableRow>
-                {columns.map((column) => (
+                {columns.map((column,index) => (
                   <Tooltip
                     title={`${column.field}`}
                     placement='top'
@@ -613,6 +630,7 @@ const UpdateLiveCalcDialog = ({
             </TableHead>
             <TableBody>
               {localData.map((item, index) => {
+                console.log(item)
                 return (
                   <TableRow key={item.SKU}>
                     <TableCell sx={{ fontSize: '.8rem', textAlign: 'center' }}>

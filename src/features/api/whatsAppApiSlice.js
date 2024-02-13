@@ -41,6 +41,15 @@ export const whatsAppApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    sendMessageToAdmin: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${WhatsApp_URL}/sendMessageToAdmin`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
     sendPdfOnWhatsappDsc: builder.mutation({
       query: (data) => {
         return {
@@ -59,4 +68,5 @@ export const {
   useDeleteContactNoMutation,
   useSendMessageMutation,
   useSendPdfOnWhatsappDscMutation,
+  useSendMessageToAdminMutation
 } = whatsAppApiSlice;

@@ -17,6 +17,7 @@ import {
   useLoginMutation,
   useOtpLoginMutation,
   useLogoutMutation,
+  useClickTologoutMutation,
 } from "../../features/api/usersApiSlice";
 import {
   logout,
@@ -26,6 +27,8 @@ import {
 import droneWallpaoer from "../../assets/drone-wall-2.jpg";
 import irsLogo from "../../assets/irs.png";
 import { toast } from "react-toastify";
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 function Copyright(props) {
   return (
@@ -65,6 +68,9 @@ export default function Login({ registrationToken }) {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
+
+  const [clickTologout, { isLoading: logoutLoading }] =
+  useClickTologoutMutation();
 
   /// isLocalServer Check
 
@@ -136,6 +142,62 @@ export default function Login({ registrationToken }) {
     }
   }, [error, dispatch, removeError]);
 
+  const handleToClickLogout = async (id) => {
+    try {
+      const res = await clickTologout({
+        adminId: id,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+////
+
+  const handleError = (e, id) => {
+    // Set loading state or show loading spinner here
+  
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `${e}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d11e06',
+      cancelButtonColor: 'black',
+      confirmButtonText: 'Click to Logout',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Disable the button while the logout process is ongoing
+        Swal.showLoading(); // Show loading spinner
+  
+        try {
+          handleToClickLogout(id);
+          Swal.fire({
+            title: 'Logout Successful',
+            text: 'You have successfully logged out from other devices.',
+            icon: 'success',
+            confirmButtonColor: 'black',
+          }).then((result) => {
+            if (result.isConfirmed) window.location.reload();
+          });
+        } catch (error) {
+          Swal.fire({
+            title: 'Error',
+            text: 'An error occurred during the logout process. Please try again later.',
+            icon: 'error',
+            confirmButtonColor: 'black',
+          });
+          console.error(error);
+        } finally {
+          // Enable the button after logout process completes (whether successful or not)
+          Swal.hideLoading(); // Hide loading spinner
+        }
+      }
+    });
+  };
+  
+
+
+
   /// Handlers
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -150,7 +212,7 @@ export default function Login({ registrationToken }) {
         unique: uniqueId,
         fcmAdminToken: registrationToken,
       }).unwrap();
-      console.log(res)
+    
       if (res.data.isOtp) {
         setIsShowOtp(true);
         setUserId(res.data.adminId);
@@ -160,7 +222,11 @@ export default function Login({ registrationToken }) {
       dispatch(setCredentials(res.data));
       navigate("/");
     } catch (error) {
-      console.error("An error occurred during login:", error);
+      // console.error("An error occurred during login:", error);
+      console.log(error.data.id)
+      if (error.data.id) {
+        handleError(error.data.message, error.data.id);
+      }
     }
   };
 
@@ -183,7 +249,8 @@ export default function Login({ registrationToken }) {
       dispatch(setCredentials(res.data));
       navigate("/");
     } catch (error) {
-      console.error("An error occurred during login:", error);
+    
+      console.log(error.data.message);
     }
   };
 
@@ -198,6 +265,10 @@ export default function Login({ registrationToken }) {
 
     handleLogout(); // Call the async function
   }, [timerExpired]);
+
+
+
+
 
   return (
     <ThemeProvider theme={theme}>
