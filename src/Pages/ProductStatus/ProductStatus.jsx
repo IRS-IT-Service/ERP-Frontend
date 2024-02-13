@@ -46,7 +46,8 @@ const infoDetail = [
     ),
     instruction:
       "If you click the search box, you can search for any product or brand here",
-  },  {
+  },
+  {
     name: "Check",
     screenshot: (
       <img
@@ -57,7 +58,8 @@ const infoDetail = [
     ),
     instruction:
       "If the checkbox is check like this , It  indicates that there is a value in this particular list",
-  },  {
+  },
+  {
     name: "Uncheck",
     screenshot: (
       <img
@@ -68,7 +70,7 @@ const infoDetail = [
     ),
     instruction:
       "If the checkbox is unchecked like this, it indicates that there is no value in this particular list",
-  }, 
+  },
   {
     name: "Download With Valuer",
     screenshot: (
@@ -80,7 +82,8 @@ const infoDetail = [
     ),
     instruction:
       "If you have selected a particular list and want to download the values in Excel format, you can click this button",
-  },  {
+  },
+  {
     name: "Download With True/False",
     screenshot: (
       <img
@@ -91,21 +94,21 @@ const infoDetail = [
     ),
     instruction:
       "If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button",
-  },  
+  },
 ];
 
 const ProductStatus = () => {
-   // infodialog state
-   const description =
-   "This is the Product Status you can check product details  ";
+  // infodialog state
+  const description =
+    "This is the Product Status you can check product details  ";
 
- const [infoOpen, setInfoOpen] = useState(false);
- const handleClose = () => {
-   setInfoOpen(!infoOpen);
- };
- const handleOpen = () => {
-   setInfoOpen(true);
- };
+  const [infoOpen, setInfoOpen] = useState(false);
+  const handleClose = () => {
+    setInfoOpen(!infoOpen);
+  };
+  const handleOpen = () => {
+    setInfoOpen(true);
+  };
   /// local state
   const [openHistory, setOpenHistory] = useState(false);
   const [productDetails, setProductDetails] = useState({});
@@ -124,7 +127,7 @@ const ProductStatus = () => {
     >
       <DrawerHeader />
       <Header Name={"Product Status"} info={true} customOnClick={handleOpen} />
- 
+
       <ProductStatusGrid
         setOpenHistory={setOpenHistory}
         setProductDetails={setProductDetails}
@@ -135,8 +138,8 @@ const ProductStatus = () => {
         handleCloseHistory={handleCloseHistory}
         productDetails={productDetails}
       />
-       {/* infoDialog table */}
-       <InfoDialogBox
+      {/* infoDialog table */}
+      <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
         open={infoOpen}

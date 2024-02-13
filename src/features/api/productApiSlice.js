@@ -255,6 +255,21 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    addCompetitor: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCT_URL}/addCompetitorInBulk`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getAllCompetitor: builder.query({
+      query: () => {
+        return {
+          url: `${PRODUCT_URL}/getAllCompetitor`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -288,4 +303,6 @@ export const {
   usePendingProductApprovalMutation,
   useDeleteProductMutation,
   useGetDeletedProductQuery,
+  useAddCompetitorMutation,
+  useGetAllCompetitorQuery,
 } = productApiSlice;

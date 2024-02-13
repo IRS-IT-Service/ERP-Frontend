@@ -16,7 +16,11 @@ import {
   DialogActions,
   TextField,
   Typography,
+  CircularProgress,
 } from "@mui/material";
+import { useAddCompetitorMutation } from "../../../features/api/productApiSlice";
+import { useGetAllCompetitorQuery } from "../../../features/api/productApiSlice";
+import { toast } from "react-toastify";
 
 const Columns = ["Sno", "SKU", "ProductName", "GST", "Comp1", "Comp2"];
 
@@ -72,10 +76,22 @@ const rows = [
   createData(1, "Tesla", "kdjfkljdskfj"),
   createData(1, "Tesla", "kdjfkljdskfj"),
 ];
+
 const CompetitorTable = () => {
+  // rtk Querry
+  const [addCompetitor, { isLoading: addCompetitorLoading }] =
+    useAddCompetitorMutation();
+  const {
+    data: allCompetitor,
+    isLoading: getallCompetitorLoading,
+    refetch,
+  } = useGetAllCompetitorQuery();
+
+  // console.log(addCompetitor);
   const [data, setData] = useState(initialData);
 
   const [open, setOpen] = useState(false);
+  const [input, setInput] = useState({ Name: "", URL: "" });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -107,6 +123,27 @@ const CompetitorTable = () => {
       const gstValue = row.GST;
       console.log("Saving GST value for row:", index, "Value:", gstValue);
     });
+  };
+
+  // post competitor name or url
+  const handleOnChange = (e) => {
+    setInput({
+      ...input,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleAdd = async () => {
+    try {
+      if (!input) toast.error("Please fill the data");
+      const data = [input];
+      const result = await addCompetitor({ Competitors: data });
+      toast.success("Competitor added successfully");
+      setInput({});
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -160,18 +197,30 @@ const CompetitorTable = () => {
               >
                 <TextField
                   id="outlined-basic"
-                  label="Competitor Name "
+                  label="Competitor Name"
                   variant="outlined"
                   sx={{ width: "100%" }}
+                  name="Name"
+                  value={input.Name}
+                  onChange={handleOnChange}
                 />
                 <TextField
                   id="outlined-basic"
                   label="URL"
                   variant="outlined"
                   sx={{ width: "100%" }}
+                  name="URL"
+                  value={input.URL}
+                  onChange={handleOnChange}
                 />
-                <Button type="submit" variant="outlined">
-                  Add
+
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  onClick={handleAdd}
+                  disabled={addCompetitorLoading}
+                >
+                  {addCompetitorLoading ? <CircularProgress /> : "Add"}
                 </Button>
               </Box>
               <Box sx={{ marginTop: "12px" }}>
@@ -191,18 +240,18 @@ const CompetitorTable = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {rows.map((row) => (
+                      {allCompetitor?.data[0]?.Competitors.map((row, index) => (
                         <TableRow
-                          key={row.Sno}
+                          key={`${row.Sno}-${index}`}
                           sx={{
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
                         >
                           <TableCell component="th" scope="row">
-                            {row.Sno}
+                            {index + 1}
                           </TableCell>
-                          <TableCell>{row.CompetitorName}</TableCell>
-                          <TableCell>{row.url}</TableCell>
+                          <TableCell>{row.Name}</TableCell>
+                          <TableCell>{row.URL}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
