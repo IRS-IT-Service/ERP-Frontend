@@ -515,9 +515,9 @@ function App() {
                 <Route
                   path="/uploadimage"
                   element={
-               // We have removed User Role
+                      // We have removed User Role
                       <UploadImageCom />
-                 
+                  
                   }
                 />
                 <Route path="/discountquery" element={<DiscountQuery />} />
@@ -609,7 +609,7 @@ function App() {
                 <Route path="/FormViewMain" element={<DSCFormList />} />
                 <Route path="/signature" element={<SignaturePad />} />
                 <Route path="/CustomerForm" element={<CustomerForm />} />
-                /// Proforma
+                {/* /// Proforma */}
                 <Route path="/AddProforma" element={<AddProforma />} />
                 <Route path="/ProformaList" element={<ProformaList />} />
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
