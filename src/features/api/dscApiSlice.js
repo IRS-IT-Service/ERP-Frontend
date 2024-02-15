@@ -124,6 +124,31 @@ export const dscApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    addWebsiteStatus: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${DSC_URL}/createRepairingStatus`,
+          method: "Post",
+          body: data,
+        };
+      },
+    }),
+    getWebsiteStatus: builder.query({
+      query: (id) => {
+        return {
+          url: `${DSC_URL}/getRepairingStatus/${id}`,
+          method: "GET",
+        };
+      },
+    }),
+    deleteWebsiteStatus: builder.mutation({
+      query: (id) => {
+        return {
+          url: `${DSC_URL}/deleteWebStatus/${id}`,
+          method: "Delete",
+        };
+      },
+    }),
   }),
 });
 
@@ -142,4 +167,7 @@ export const {
   useUpdateCustomerAknowledgementMutation,
   useUpdateRepairStatusMutation,
   useUpdateRepairFormMutation,
+  useGetWebsiteStatusQuery,
+  useAddWebsiteStatusMutation,
+  useDeleteWebsiteStatusMutation,
 } = dscApiSlice;
