@@ -1,3 +1,4 @@
+import { Category, DisabledByDefault } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -8,121 +9,62 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+import { useAddDynamicValueMutation } from "../../../features/api/productApiSlice";
+import { useGetDynamicValueQuery } from "../../../features/api/productApiSlice";
 
 const RoboProductTable = () => {
   const [selectValue, setSelectValue] = useState("");
   const [addvalue, setAddvalue] = useState("");
   const [values, setValues] = useState([]);
-  const [brand, setBrand] = useState([
-    { sno: "1", name: "Tesla" },
-    { sno: "2", name: "Apple" },
-    { sno: "3", name: "Google" },
-    { sno: "4", name: "Amazon" },
-    { sno: "5", name: "Microsoft" },
-    { sno: "6", name: "Samsung" },
-    { sno: "6", name: "Samsung" },
-    { sno: "6", name: "Samsung" },
-    { sno: "6", name: "Samsung" },
-    { sno: "6", name: "Samsung" },
-    { sno: "6", name: "Samsung" },
-    { sno: "6", name: "Samsung" },
-  ]);
-  const [category, setCategory] = useState([
-    { sno: "1", name: "senior fresher" },
-    { sno: "2", name: "manager" },
-    { sno: "3", name: "assistant manager" },
-    { sno: "4", name: "team lead" },
-    { sno: "5", name: "senior engineer" },
-    { sno: "6", name: "junior engineer" },
-    { sno: "6", name: "junior engineer" },
-    { sno: "6", name: "junior engineer" },
-    { sno: "6", name: "junior engineer" },
-    { sno: "6", name: "junior engineer" },
-    { sno: "6", name: "junior engineer" },
-  ]);
-  const [subcategory, setSubcategory] = useState([
-    { sno: "1", name: "intern" },
-    { sno: "2", name: "senior intern" },
-    { sno: "3", name: "managerial intern" },
-    { sno: "4", name: "executive intern" },
-    { sno: "5", name: "associate intern" },
-    { sno: "6", name: "junior intern" },
-    { sno: "6", name: "junior intern" },
-    { sno: "6", name: "junior intern" },
-    { sno: "6", name: "junior intern" },
-    { sno: "6", name: "junior intern" },
-    { sno: "6", name: "junior intern" },
-  ]);
 
-  const [gst, setGst] = useState([
-    { sno: "1", per: "5%" },
-    { sno: "2", per: "12%" },
-    { sno: "3", per: "18%" },
-    { sno: "4", per: "28%" },
-    { sno: "5", per: "0%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-    { sno: "6", per: "15%" },
-  ]);
+  //rtk Querry
+  const [addDynamicValue] = useAddDynamicValueMutation();
+  const { data: getDyanmicValue, isLoading: getDyanmaicValueLoading } =
+    useGetDynamicValueQuery();
+  console.log();
 
   const handleChange = (event) => {
-    setSelectValue(event.target.value);
+    const selectedValue = event.target.value;
+    if (values.length === 0) {
+      setSelectValue(selectedValue);
+    }
   };
 
   const handleInput = (event) => {
     setAddvalue(event.target.value);
   };
+
   const handleAdd = () => {
-    if (addvalue.length > 0) {
+    if (selectValue === "GST" && !addvalue.includes("%")) {
+      toast.error(" Please enter a value with '%' for GST.");
+    } else if (addvalue.length > 0) {
       setValues([...values, addvalue]);
       setAddvalue("");
+    } else {
     }
   };
+
   const handleDelete = (index) => {
     const newValues = [...values];
     newValues.splice(index, 1);
     setValues(newValues);
   };
 
-  const handleSave = () => {
-    if (selectValue && addvalue) {
-      switch (selectValue) {
-        case "1":
-          setBrand((prevBrand) => [
-            ...prevBrand,
-            { sno: prevBrand.length + 1, name: addvalue },
-          ]);
-          break;
-        case "2":
-          setCategory((prevCategory) => [
-            ...prevCategory,
-            { sno: prevCategory.length + 1, name: addvalue },
-          ]);
-          break;
-        case "3":
-          setSubcategory((prevSubcategory) => [
-            ...prevSubcategory,
-            { sno: prevSubcategory.length + 1, name: addvalue },
-          ]);
-          break;
-        case "4":
-          setGst((prevGst) => [
-            ...prevGst,
-            { sno: prevGst.length + 1, per: addvalue },
-          ]);
-          break;
-        default:
-          break;
-      }
-      setAddvalue("");
+  const handleSave = async () => {
+    if (!selectValue || values.length === 0)
+      return toast.error("Please select value option");
+
+    try {
+      const info = { name: selectValue, values: values };
+      const result = await addDynamicValue(info).unwrap();
+      toast.success("Values Succesfully Save");
+      setValues([]);
+      setSelectValue("");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -151,13 +93,10 @@ const RoboProductTable = () => {
             onChange={handleChange}
             sx={{ color: "black", fontWeight: "bold" }}
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={1}>Brand</MenuItem>
-            <MenuItem value={2}>Category</MenuItem>
-            <MenuItem value={3}>Subcategory</MenuItem>
-            <MenuItem value={4}>GST</MenuItem>
+            <MenuItem value="Brand">Brand</MenuItem>
+            <MenuItem value="Category">Category</MenuItem>
+            <MenuItem value="SubCategory">Subcategory</MenuItem>
+            <MenuItem value="GST">GST</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -188,14 +127,17 @@ const RoboProductTable = () => {
           width: "100%",
           m: 2,
           display: "flex",
+          flexWrap: "wrap",
           justifyContent: "start",
           gap: 2,
           borderRadius: "10px",
           padding: 2,
+          overflow: "hidden",
         }}
       >
         {values.map((value, index) => (
           <Box
+            key={index}
             sx={{
               display: "flex",
               gap: 1,
@@ -212,7 +154,7 @@ const RoboProductTable = () => {
               {value}
             </Typography>
             <i
-              class="fa-solid fa-trash"
+              className="fa-solid fa-trash"
               style={{ color: "blue", cursor: "pointer", fontSize: "1.2rem" }}
               onClick={() => handleDelete(index)}
             ></i>
@@ -252,10 +194,12 @@ const RoboProductTable = () => {
               width: "20vw",
             }}
           >
-            {brand.map((item, index) => (
+            {getDyanmicValue?.data?.[0]?.Brand?.map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
-                <Typography sx={{ fontSize: "1.4rem" }}>{item.sno}.</Typography>
-                <Typography sx={{ fontSize: "1.4rem" }}>{item.name}</Typography>
+                <Typography sx={{ fontSize: "1.4rem" }}>
+                  {index + 1}.
+                </Typography>
+                <Typography sx={{ fontSize: "1.4rem" }}>{item}</Typography>
               </Box>
             ))}
           </Box>
@@ -293,10 +237,12 @@ const RoboProductTable = () => {
               width: "20vw",
             }}
           >
-            {category.map((item, index) => (
+            {getDyanmicValue?.data?.[0]?.Category?.map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
-                <Typography sx={{ fontSize: "1.4rem" }}>{item.sno}.</Typography>
-                <Typography sx={{ fontSize: "1.4rem" }}>{item.name}</Typography>
+                <Typography sx={{ fontSize: "1.4rem" }}>
+                  {index + 1}.
+                </Typography>
+                <Typography sx={{ fontSize: "1.4rem" }}>{item}</Typography>
               </Box>
             ))}
           </Box>
@@ -334,15 +280,16 @@ const RoboProductTable = () => {
               width: "20vw",
             }}
           >
-            {subcategory.map((item, index) => (
+            {getDyanmicValue?.data?.[0]?.SubCategory?.map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
-                <Typography sx={{ fontSize: "1.4rem" }}>{item.sno}.</Typography>
-                <Typography sx={{ fontSize: "1.4rem" }}>{item.name}</Typography>
+                <Typography sx={{ fontSize: "1.4rem" }}>
+                  {index + 1}.
+                </Typography>
+                <Typography sx={{ fontSize: "1.4rem" }}>{item}</Typography>
               </Box>
             ))}
           </Box>
         </Box>
-
         <Box
           sx={{
             border: "1px solid black",
@@ -376,10 +323,12 @@ const RoboProductTable = () => {
               width: "20vw",
             }}
           >
-            {gst.map((item, index) => (
+            {getDyanmicValue?.data?.[0]?.GST?.map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
-                <Typography sx={{ fontSize: "1.4rem" }}>{item.sno}.</Typography>
-                <Typography sx={{ fontSize: "1.4rem" }}>{item.per}</Typography>
+                <Typography sx={{ fontSize: "1.4rem" }}>
+                  {index + 1}.
+                </Typography>
+                <Typography sx={{ fontSize: "1.4rem" }}>{item}</Typography>
               </Box>
             ))}
           </Box>
