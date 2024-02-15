@@ -512,14 +512,7 @@ function App() {
                 />
                 <Route path="/compare/:id" element={<Compare />} />
                 {/* Sales Router */}
-                <Route
-                  path="/uploadimage"
-                  element={
-                    <UserRole name={"Upload Image"}>
-                      <UploadImageCom />
-                    </UserRole>
-                  }
-                />
+                <Route path="/uploadimage" element={<UploadImageCom />} />
                 <Route path="/discountquery" element={<DiscountQuery />} />
                 <Route
                   path="/viewQuery"
@@ -609,7 +602,7 @@ function App() {
                 <Route path="/FormViewMain" element={<DSCFormList />} />
                 <Route path="/signature" element={<SignaturePad />} />
                 <Route path="/CustomerForm" element={<CustomerForm />} />
-                /// Proforma
+                {/* /// Proforma */}
                 <Route path="/AddProforma" element={<AddProforma />} />
                 <Route path="/ProformaList" element={<ProformaList />} />
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
