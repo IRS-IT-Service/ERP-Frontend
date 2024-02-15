@@ -343,13 +343,13 @@ const DScForm = () => {
         return;
       }
       const params = {
-        CustomerName: form.CustomerName || CustomerName,
-        MobileNo: form.MobileNo || MobileNo,
-        CompanyName: form.CompanyName || CompanyName,
-        DroneModel: form.droneModel || droneModel,
-        alternateMobile: form.alternateNumber || alternateNumber,
+        CustomerName: form.CustomerName ,
+        MobileNo: form.MobileNo ,
+        CompanyName: form.CompanyName ,
+        DroneModel: form.droneModel ,
+        alternateMobile: form.alternateNumber ,
         Address: {
-          Pincode: form.pincode || pincode,
+          Pincode: form.pincode,
           City: form.city,
           District: form.district,
           State: form.state,
@@ -364,7 +364,6 @@ const DScForm = () => {
         costEstimation: form.costEstimation,
         serviceRemark: form.serviceRemark,
       };
-      console.log("handle");
       const res = await saveFormApi(params).unwrap();
 
       const liveStatusData = {
