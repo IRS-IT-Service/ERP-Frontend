@@ -9,7 +9,6 @@ import Loading from "../../../components/Common/Loading";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import Header from "../../../components/Common/Header";
 
-
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
 
@@ -201,8 +200,7 @@ const PriceComparisonOrder = () => {
         sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
       >
         <DrawerHeader />
-        <Header Name={"Price Comparison"}/>
-   
+        <Header Name={"Price Comparison"} />
 
         {openDialog ? (
           <CompareAssignDialog

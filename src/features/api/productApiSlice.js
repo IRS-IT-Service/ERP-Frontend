@@ -255,6 +255,36 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    addCompetitor: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCT_URL}/addCompetitorInBulk`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getAllCompetitor: builder.query({
+      query: () => {
+        return {
+          url: `${PRODUCT_URL}/getAllCompetitor`,
+          method: "GET",
+        };
+      },
+    }),
+    addDynamicValue: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCT_URL}/addDynamicValue?value=${data.name}`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getDynamicValue: builder.query({
+      query: () => {
+        return {
+          url: `${PRODUCT_URL}/getDynamicValue`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -288,4 +318,8 @@ export const {
   usePendingProductApprovalMutation,
   useDeleteProductMutation,
   useGetDeletedProductQuery,
+  useAddCompetitorMutation,
+  useGetAllCompetitorQuery,
+  useAddDynamicValueMutation,
+  useGetDynamicValueQuery,
 } = productApiSlice;
