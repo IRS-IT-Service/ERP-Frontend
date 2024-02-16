@@ -54,6 +54,7 @@ const FilterBarV2 = ({
   customButton2,
   customButton3,
   customButton4,
+  customButton5,
   apiRef,
 }) => {
   /// initialize
@@ -154,6 +155,13 @@ const FilterBarV2 = ({
               alignItems: "start",
             }}
           >
+            <Box
+              sx={{
+                mt: 0.7,
+              }}
+            >
+              {customButton5}
+            </Box>
             <StyledButton onClick={() => handleOpenClose("brand")}>
               <Badge
                 badgeContent={checkedBrand && checkedBrand.length}
