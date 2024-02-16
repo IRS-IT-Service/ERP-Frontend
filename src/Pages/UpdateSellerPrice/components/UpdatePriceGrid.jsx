@@ -1,4 +1,4 @@
-import { React, useEffect, useRef, useState } from "react";
+import { React, useEffect, useRef, useState,useMemo,useCallback  } from "react";
 import {
   DataGrid,
   useGridApiRef,
@@ -15,6 +15,7 @@ import {
   useUpdateProductsColumnMutation,
   useUpdateNotationMutation,
   useGetAllProductV2Query,
+  useGetAllProductQuery,
 } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import UpdateStockDialog from "./UpdateStockDialog";
@@ -26,6 +27,13 @@ import HideColumnsDialog from "./HideColumnsDialog";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import TablePagination from "@mui/material/TablePagination";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
+
+import {
+  setCheckedBrand,
+  setCheckedCategory,
+  setCheckedGST,
+  setDeepSearch
+} from "../../../features/slice/productSlice";
 
 const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   /// initialization
@@ -42,9 +50,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     hiddenColumns: latestHiddenColumns,
   } = useSelector((state) => state.auth);
 
-  const { checkedBrand, checkedCategory, deepSearch } = useSelector(
-    (state) => state.product
-  );
+  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
+    useSelector((state) => state.product);
 
   /// local state
   const [rows, setRows] = useState([]);
@@ -64,6 +71,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   const [page, setPage] = useState(1);
   const [rowPerPage, setRowPerPage] = useState(100);
   const [totalProductCount, setTotalProductCount] = useState(0);
+  const [localData, setLocalData] = useState([]);
 
   /// function
   function getUniqueItems(arr1, arr2, key) {
@@ -106,45 +114,91 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     pollingInterval: 1000 * 300,
   });
 
+  // const {
+  //   data: allProductData,
+  //   isLoading: productLoading,
+  //   refetch,
+  //   isFetching,
+  // } = useGetAllProductQuery(
+  //   { searchTerm: searchTerm || undefined },
+  //   {
+  //     pollingInterval: 1000 * 300,
+  //   }
+  // );;
+
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
 
   const [notationUpdateApi, { isLoading: NotationLoading }] =
     useUpdateNotationMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
-  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation();
 
   /// handlers
+  // const handleSelectionChange = (selectionModel) => {
+  //   setSelectedItems(selectionModel);
+
+  //   if (selectionModel.length > selectedItems.length) {
+  //     const newSelectedRowsData = rows.filter((item) =>
+  //       selectionModel.includes(item.id)
+  //     );
+
+  //     const newSelectedData = getUniqueItems(
+  //       newSelectedRowsData,
+  //       selectedItemsData,
+  //       "SKU"
+  //     );
+
+  //     setSelectedItemsData(newSelectedData);
+
+  //   } else {
+  //     const deletedItem = findUniqueElements(selectedItems, selectionModel);
+  //     setSelectedItemsData((prev) => {
+  //       return prev.filter((item) => item.SKU !== deletedItem);
+  //     });
+  //   }
+  // };
+
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
-    if (selectionModel.length > selectedItems.length) {
+
+    
       const newSelectedRowsData = rows.filter((item) =>
         selectionModel.includes(item.id)
       );
-      const newSelectedData = getUniqueItems(
-        newSelectedRowsData,
-        selectedItemsData,
-        "SKU"
-      );
 
-      setSelectedItemsData(newSelectedData);
-    } else {
-      const deletedItem = findUniqueElements(selectedItems, selectionModel);
-      setSelectedItemsData((prev) => {
-        return prev.filter((item) => item.SKU !== deletedItem);
-      });
-    }
+      setSelectedItemsData(newSelectedRowsData);
+   
   };
 
-  const removeSelectedItems = (id) => {
-    const newSelectedItems = selectedItems.filter((item) => item !== id);
-    const newSelectedRowsData = selectedItemsData.filter(
-      (item) => item.SKU !== id
-    );
+  // const removeSelectedItems = (id) => {
+//     const newSelectedItems = selectedItems.filter((item) => item !== id);
+//     const newSelectedRowsData = selectedItemsData.filter(
+//       (item) => item.SKU !== id
+//     );
+// console.log(newSelectedRowsData)
+//     setSelectedItemsData(newSelectedRowsData);
+//     setSelectedItems(newSelectedItems);
 
-    setSelectedItemsData(newSelectedRowsData);
-    setSelectedItems(newSelectedItems);
-  };
+// const newSelectedItemsIndex = selectedItems.findIndex(item => item === id);
+// const newSelectedRowsDataindex = selectedItemsData.findIndex(item => item.id === id);
+// const newSelectedItemsValue = selectedItems
+// const newselectedItemsDataValue = selectedItemsData
+// console.log(newSelectedItemsIndex,newSelectedRowsDataindex)
+// if (newSelectedItemsIndex !== -1 && newSelectedRowsDataindex !== -1) {
+//   selectedItems.splice(newSelectedItemsIndex, 1);
+//   selectedItemsData.splice(newSelectedRowsDataindex, 1);
+
+//     setSelectedItemsData(newselectedItemsDataValue);
+//     setSelectedItems(newSelectedItemsValue);
+
+// } else {
+//     console.log(`Item with ID ${id} not found.`);
+// }
+
+  // };
+
+
 
   const handleOpenDialog = (type) => {
     setOpenCalc(true);
@@ -201,9 +255,12 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
               },
             };
             const historyRes = await createUserHistoryApi(addProductHistory);
-            const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+            const whatsappMessage = {
+              message: liveStatusData.message,
+              contact: import.meta.env.VITE_ADMIN_CONTACT,
+            };
 
-            await sendMessageToAdmin(whatsappMessage).unwrap()
+            await sendMessageToAdmin(whatsappMessage).unwrap();
           })
         );
       }
@@ -287,7 +344,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
           MRP: item.MRP.toFixed(2),
           GST: item.GST,
           ThresholdQty: item.ThresholdQty,
-          Mqr:item.Mqr || 0,
+          Mqr: item.Mqr || 0,
           Quantity: item.ActualQuantity,
           Category: item.Category,
           SalesTax: item.SalesTax.toFixed(2) || 0,
@@ -336,6 +393,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
       });
 
       dispatch(setAllProductsV2(allProductData.data));
+
       setRows(data);
       setRowPerPage(allProductData.data.limit);
       setTotalProductCount(allProductData.data.totalProductCount);
@@ -381,6 +439,22 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     setHiddenColumns(newHiddenColumns);
   }, [latestHiddenColumns]);
 
+
+  useEffect(()=>{
+    return ()=>{
+        // dispatch(setCheckedBrand([])),
+        // dispatch(setCheckedCategory([])),
+        // dispatch(setCheckedGST([])),
+        // dispatch(setDeepSearch("")),
+        // apiRef?.current?.setPage(0),
+        // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 })
+        console.log("Refetch")
+      
+     
+    
+    }
+  },[])
+
   useEffect(() => {
     let newFilterString = "";
     checkedBrand.forEach((item, index) => {
@@ -394,12 +468,21 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     checkedCategory.forEach((item, index) => {
       newFilterString += `&category=${item}`;
     });
-    if (!checkedCategory.length && !checkedBrand.length) {
+
+    checkedGST.forEach((item, index) => {
+      if (index === 0) {
+        newFilterString += `gst=${item}`;
+      } else {
+        newFilterString += `&gst=${item}`;
+      }
+    });
+    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
       setFilterString(`${newFilterString}page=1`);
       return;
     }
+
     setFilterString(`${newFilterString}&page=1`);
-  }, [checkedBrand, checkedCategory]);
+  }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
     apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
@@ -421,7 +504,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
       field: "Sno",
       headerName: "Sno",
       flex: 0.3,
-      minWidth: 40,
+      minWidth: 80,
       maxWidth: 60,
       align: "center",
       headerAlign: "center",
@@ -1031,12 +1114,19 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
         <UpdateLiveCalcDialog
           data={selectedItemsData}
           apiRef={apiRef}
-          removeSelectedItems={removeSelectedItems}
+          // removeSelectedItems={removeSelectedItems}
           open={openCalc}
           setOpen={setOpenCalc}
           userInfo={userInfo}
           refetch={refetch}
           type={buttonType}
+          localData={localData}
+          setLocalData={setLocalData}
+          setSelectedItems={setSelectedItems}
+          setSelectedItemsData={setSelectedItemsData}
+          selectedItemsData={selectedItemsData}
+          selectedItems={selectedItems}
+          
         />
       )}
 
@@ -1120,8 +1210,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
                   return true;
                 } else if (params.field === "ThresholdQty") {
                   return true;
-                }
-                else if (params.field === "Mqr") {
+                } else if (params.field === "Mqr") {
                   return true;
                 }
               }}
@@ -1171,6 +1260,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
               checkboxSelection
               disableRowSelectionOnClick
               onRowSelectionModelChange={handleSelectionChange}
+              isRowSelectable={(params) => params.row.LandingCost > 0}
               rowSelectionModel={selectedItems}
               keepNonExistentRowsSelected
             />
