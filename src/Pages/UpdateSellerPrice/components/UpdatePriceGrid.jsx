@@ -1033,12 +1033,13 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
             </Box>
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Update Rejected</span>
-              <Button
+              <Box
                 sx={{
                   border: "0.5px solid black",
                   width: "25px",
                   height: "20px",
                   borderRadius: "10px",
+                  cursor:"pointer",
                   backgroundColor: "#B22222",
                   color: "#ffff",
                   "&:hover": {
@@ -1048,8 +1049,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
                 }}
                 onClick={handleRejectFilter}
               >
-                {isRejectedOn ? "Show" : "Hide"}
-              </Button>
+       
+              </Box>
             </Box>
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Sales Columns</span>
