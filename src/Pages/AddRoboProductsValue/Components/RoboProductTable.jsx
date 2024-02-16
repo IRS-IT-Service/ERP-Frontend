@@ -38,13 +38,10 @@ const RoboProductTable = () => {
   };
 
   const handleAdd = () => {
-    if (selectValue === "GST" && !addvalue.includes("%")) {
-      toast.error(" Please enter a value with '%' for GST.");
-    } else if (addvalue.length > 0) {
+   if (addvalue.length > 0) {
       setValues([...values, addvalue]);
       setAddvalue("");
-    } else {
-    }
+    } 
   };
 
   const handleDelete = (index) => {
