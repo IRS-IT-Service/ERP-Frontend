@@ -385,6 +385,7 @@ function App() {
                 <Route
                   path="/UpdateSellerPriceBulk/:query"
                   element={<UpdateSellerPriceBulk />}
+
                 />
                 <Route
                   path="/ProductStatus"
