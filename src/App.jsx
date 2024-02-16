@@ -512,7 +512,14 @@ function App() {
                 />
                 <Route path="/compare/:id" element={<Compare />} />
                 {/* Sales Router */}
-                <Route path="/uploadimage" element={<UploadImageCom />} />
+                <Route
+                  path="/uploadimage"
+                  element={
+                      // We have removed User Role
+                      <UploadImageCom />
+                  
+                  }
+                />
                 <Route path="/discountquery" element={<DiscountQuery />} />
                 <Route
                   path="/viewQuery"
