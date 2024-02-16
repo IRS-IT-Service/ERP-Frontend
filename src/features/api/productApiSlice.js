@@ -255,6 +255,14 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    RejectedProduct: builder.mutation({
+      query: (page) => {
+        return {
+          url: `${PRODUCT_URL}/getPendingProduct?type=update`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -288,4 +296,5 @@ export const {
   usePendingProductApprovalMutation,
   useDeleteProductMutation,
   useGetDeletedProductQuery,
+  useRejectedProductMutation,
 } = productApiSlice;
