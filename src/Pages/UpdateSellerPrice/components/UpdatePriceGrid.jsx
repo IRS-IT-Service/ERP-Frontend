@@ -15,7 +15,7 @@ import {
   useUpdateProductsColumnMutation,
   useUpdateNotationMutation,
   useGetAllProductV2Query,
-  useGetAllProductQuery,
+  useRejectedProductMutation,
 } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import UpdateStockDialog from "./UpdateStockDialog";
@@ -65,6 +65,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [openCalc, setOpenCalc] = useState(false);
   const [buttonType, setButtontype] = useState("");
+  const[isRejectedOn,setisRejectedOn] = useState(false);
+  const[isRejectedValue,setisRejectedValue] = useState([]);
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -133,6 +135,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     useUpdateNotationMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
+  const [IfRejected,{isLoading:isRejectedloading}] = useRejectedProductMutation();
 
   /// handlers
   // const handleSelectionChange = (selectionModel) => {
@@ -325,6 +328,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
 
   /// useEffect
   useEffect(() => {
+
+
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         return {
@@ -394,12 +399,29 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
 
       dispatch(setAllProductsV2(allProductData.data));
 
+     
+
       setRows(data);
       setRowPerPage(allProductData.data.limit);
       setTotalProductCount(allProductData.data.totalProductCount);
       setPage(allProductData.data.currentPage);
     }
   }, [allProductData, triggerDefault]);
+
+console.log(allProductData)
+  const handleRejectFilter = async() =>{
+
+    setisRejectedOn(!isRejectedOn)
+// const res = await IfRejected().unwrap();
+// if(res.success){
+//   setisRejectedValue(res)
+// }
+
+
+  } 
+  
+ 
+
 
   useEffect(() => {
     if (editedRows.length && rows.length) {
@@ -497,6 +519,19 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
       }, 1000);
     }
   }, [deepSearch]);
+
+
+  useEffect(() => {
+    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+
+    if (isRejectedOn) {
+      setFilterString(`page=1`);
+      return;
+    } else {
+             setFilterString(`type=update&page=1`);
+      }
+    
+  }, [isRejectedOn]);
 
   //Columns*******
 
@@ -1016,15 +1051,22 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
             </Box>
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Update Rejected</span>
-              <Box
-                bgcolor="#B22222"
+              <Button
+               
                 sx={{
                   border: "0.5px solid black",
                   width: "25px",
                   height: "20px",
                   borderRadius: "10px",
+                  backgroundColor:"#B22222",
+                  color:"#ffff",
+                  "&:hover":{
+                    backgroundColor:"#ffff",
+                    color:"#B22222",
+                  }
                 }}
-              ></Box>
+                onClick={handleRejectFilter}
+              >{isRejectedOn ? "Show" : "Hide"}</Button>
             </Box>
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Sales Columns</span>
