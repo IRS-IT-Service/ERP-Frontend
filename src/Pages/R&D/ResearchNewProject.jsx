@@ -158,7 +158,7 @@ const ResearchNewProject = () => {
       description: createProjectForm.description,
     };
     try {
-      const res = await addNewProjectData(requestData).unwrap();
+      const res = await addNewProjectData(requestData);
       toast.success(`Project Added successfully`);
     } catch (error) {
       toast.error(error);
@@ -319,7 +319,7 @@ const ResearchNewProject = () => {
       sku: 'SKU',
       productName: 'Product Name',
       button: 'Select Part',
-      qty: 'Qty'
+      qty: 'Qty',
     },
   ];
 
@@ -424,19 +424,13 @@ const ResearchNewProject = () => {
         },
       ]);
     }
-    
     setOpenCloseAddPart(!openCloseAddPart);
     console.log(selectedRow);
-    setSelectedBarcodeData([], () => {
-      console.log(selectedBarcodeData);
-    });
+    setSelectedBarcodeData([]);
   };
   const clearAndCloseHandler = () => {
     setSelectedBarcodeData([]);
     setOpenCloseAddPart(!openCloseAddPart);
-    setSelectedBarcodeData([], () => {
-      console.log(selectedBarcodeData);
-    });
   };
 
   const barcodeDataSubmitted = () => {
@@ -459,10 +453,10 @@ const ResearchNewProject = () => {
     setProjectDetailData(row);
   };
 
-  const [openCloseEP, setOpenCloseEP] = useState(false)
-  const handleOpenCloseEP = (row) =>{
+  const [openCloseEP, setOpenCloseEP] = useState(false);
+  const handleOpenCloseEP = (row) => {
     setOpenCloseEP(!openCloseEP);
-  }
+  };
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -497,7 +491,9 @@ const ResearchNewProject = () => {
     setOpen(false);
   };
 
-  const [displayBarcode, setDisplayBarcode] = useState(false);
+  const [displayBarcode, setDisplayBarcode] = useState(
+    Array(addPartsData.length).fill(false)
+  );
   const [barcodeData, setBarcodeData] = useState([]);
   const showBarcodeHandler = (barcode) => {
     setBarcodeData(barcode);
@@ -517,7 +513,7 @@ const ResearchNewProject = () => {
 
   const [selectedBarcodeData, setSelectedBarcodeData] = useState([]);
 
-  const selectBarcodeHandler = (selectedBarcodeName, data, index) => {
+  const selectBarcodeHandler = (selectedBarcodeName, data) => {
     if (selectedBarcodeName && data) {
       setSelectedBarcodeData((prevState) => [
         ...prevState,
@@ -806,6 +802,7 @@ const ResearchNewProject = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+
             {/* parts barcode table */}
             <TableContainer
               sx={{
@@ -889,7 +886,7 @@ const ResearchNewProject = () => {
                           ) : (
                             <Checkbox
                               onClick={() =>
-                                selectBarcodeHandler(barcodeData, data, index)
+                                selectBarcodeHandler(barcodeData, data)
                               }
                             />
                           )}

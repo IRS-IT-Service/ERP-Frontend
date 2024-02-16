@@ -125,25 +125,25 @@ const UploadImageGrid = () => {
     }
   };
 
-  const handleSetDefaultImage = async (url) => {
-    try {
-      const data = {
-        sku: imageSKU,
-        body: { defaultImage: url },
-      };
+ const handleSetDefaultImage = async (url) => {
+   try {
+     const data = {
+       sku: imageSKU,
+       body: { defaultImage: url },
+     };
+     await setImageDefaultApi(data).unwrap();
+     toast.success('Image set as default', {
+       position: toast.POSITION.TOP_CENTER,
+     });
+     refetchOneProduct();
+   } catch (error) {
+     console.error('Error setting image as default:', error);
+     toast.error('Error setting image as default', {
+       position: toast.POSITION.TOP_CENTER,
+     });
+   }
+ };
 
-      await setImageDefaultApi(data).unwrap();
-      toast.success('Image set as default', {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      refetchOneProduct();
-    } catch (error) {
-      console.error('Error deleting image:', error);
-      toast.error('Error deleting image', {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    }
-  };
 
   const handleFileSelect = async (event) => {
     try {
@@ -407,6 +407,7 @@ const UploadImageGrid = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+
               }}
               size='small'
               onClick={(e) => {
@@ -625,7 +626,7 @@ const UploadImageGrid = () => {
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '5rem',
+              gap: '3rem',
               alignItems: 'center',
             }}
           >
@@ -671,7 +672,7 @@ const UploadImageGrid = () => {
                       <CardMedia
                         component='img'
                         sx={{
-                          width: 80,
+                          width: 100,
                           height: 80,
                           background: 'green',
                           borderRadius: '5px',
@@ -683,13 +684,21 @@ const UploadImageGrid = () => {
                         alt='side Image'
                         onClick={(e) => handleSetDefaultImage(img)}
                       />
-                      {oneProductData?.data?.mainImage?._id === img._id && (
-                        <CardContent>
-                          <Typography>Default Image</Typography>
-                        </CardContent>
+                      {oneProductData?.data?.mainImage?.fileId ===
+                        img.fileId && (
+                        <Typography
+                          sx={{
+                            width: '100%',
+                            height: '10%',
+                            fontSize: '0.8rem',
+                            textAlign: 'center',
+                            color: 'red',
+                          }}
+                        >
+                          Default Image
+                        </Typography>
                       )}
                     </Card>
-
                     <HighlightOffIcon
                       sx={{
                         position: 'absolute',
