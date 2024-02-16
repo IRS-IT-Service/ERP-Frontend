@@ -15,7 +15,6 @@ import {
   useUpdateProductsColumnMutation,
   useUpdateNotationMutation,
   useGetAllProductV2Query,
-  useRejectedProductMutation,
 } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import UpdateStockDialog from "./UpdateStockDialog";
@@ -135,7 +134,6 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     useUpdateNotationMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
-  const [IfRejected,{isLoading:isRejectedloading}] = useRejectedProductMutation();
 
   /// handlers
   // const handleSelectionChange = (selectionModel) => {
