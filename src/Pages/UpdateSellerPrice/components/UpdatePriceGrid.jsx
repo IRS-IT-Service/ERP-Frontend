@@ -1,4 +1,11 @@
-import { React, useEffect, useRef, useState,useMemo,useCallback  } from "react";
+import {
+  React,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   DataGrid,
   useGridApiRef,
@@ -32,7 +39,7 @@ import {
   setCheckedBrand,
   setCheckedCategory,
   setCheckedGST,
-  setDeepSearch
+  setDeepSearch,
 } from "../../../features/slice/productSlice";
 
 const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
@@ -65,8 +72,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [openCalc, setOpenCalc] = useState(false);
   const [buttonType, setButtontype] = useState("");
-  const[isRejectedOn,setisRejectedOn] = useState(false);
-  const[isRejectedValue,setisRejectedValue] = useState([]);
+  const [isRejectedOn, setisRejectedOn] = useState(false);
+
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -135,7 +142,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     useUpdateNotationMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
-  const [IfRejected,{isLoading:isRejectedloading}] = useRejectedProductMutation();
+  const [IfRejected, { isLoading: isRejectedloading }] =
+    useRejectedProductMutation();
 
   /// handlers
   // const handleSelectionChange = (selectionModel) => {
@@ -165,43 +173,39 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
 
-    
-      const newSelectedRowsData = rows.filter((item) =>
-        selectionModel.includes(item.id)
-      );
+    const newSelectedRowsData = rows.filter((item) =>
+      selectionModel.includes(item.id)
+    );
 
-      setSelectedItemsData(newSelectedRowsData);
-   
+    setSelectedItemsData(newSelectedRowsData);
   };
 
   // const removeSelectedItems = (id) => {
-//     const newSelectedItems = selectedItems.filter((item) => item !== id);
-//     const newSelectedRowsData = selectedItemsData.filter(
-//       (item) => item.SKU !== id
-//     );
-// console.log(newSelectedRowsData)
-//     setSelectedItemsData(newSelectedRowsData);
-//     setSelectedItems(newSelectedItems);
+  //     const newSelectedItems = selectedItems.filter((item) => item !== id);
+  //     const newSelectedRowsData = selectedItemsData.filter(
+  //       (item) => item.SKU !== id
+  //     );
+  // console.log(newSelectedRowsData)
+  //     setSelectedItemsData(newSelectedRowsData);
+  //     setSelectedItems(newSelectedItems);
 
-// const newSelectedItemsIndex = selectedItems.findIndex(item => item === id);
-// const newSelectedRowsDataindex = selectedItemsData.findIndex(item => item.id === id);
-// const newSelectedItemsValue = selectedItems
-// const newselectedItemsDataValue = selectedItemsData
-// console.log(newSelectedItemsIndex,newSelectedRowsDataindex)
-// if (newSelectedItemsIndex !== -1 && newSelectedRowsDataindex !== -1) {
-//   selectedItems.splice(newSelectedItemsIndex, 1);
-//   selectedItemsData.splice(newSelectedRowsDataindex, 1);
+  // const newSelectedItemsIndex = selectedItems.findIndex(item => item === id);
+  // const newSelectedRowsDataindex = selectedItemsData.findIndex(item => item.id === id);
+  // const newSelectedItemsValue = selectedItems
+  // const newselectedItemsDataValue = selectedItemsData
+  // console.log(newSelectedItemsIndex,newSelectedRowsDataindex)
+  // if (newSelectedItemsIndex !== -1 && newSelectedRowsDataindex !== -1) {
+  //   selectedItems.splice(newSelectedItemsIndex, 1);
+  //   selectedItemsData.splice(newSelectedRowsDataindex, 1);
 
-//     setSelectedItemsData(newselectedItemsDataValue);
-//     setSelectedItems(newSelectedItemsValue);
+  //     setSelectedItemsData(newselectedItemsDataValue);
+  //     setSelectedItems(newSelectedItemsValue);
 
-// } else {
-//     console.log(`Item with ID ${id} not found.`);
-// }
+  // } else {
+  //     console.log(`Item with ID ${id} not found.`);
+  // }
 
   // };
-
-
 
   const handleOpenDialog = (type) => {
     setOpenCalc(true);
@@ -328,8 +332,6 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
 
   /// useEffect
   useEffect(() => {
-
-
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         return {
@@ -399,8 +401,6 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
 
       dispatch(setAllProductsV2(allProductData.data));
 
-     
-
       setRows(data);
       setRowPerPage(allProductData.data.limit);
       setTotalProductCount(allProductData.data.totalProductCount);
@@ -408,19 +408,20 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     }
   }, [allProductData, triggerDefault]);
 
-console.log(allProductData)
-  const handleRejectFilter = async() =>{
-
-    setisRejectedOn(!isRejectedOn)
-// const res = await IfRejected().unwrap();
-// if(res.success){
-//   setisRejectedValue(res)
-// }
-
-
-  } 
+  const handleRejectFilter = async () => {
   
- 
+    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+  
+    if (isRejectedOn) {
+      setFilterString(`type=update&page=1`);
+      setisRejectedOn(false);
+    } else {
+      setFilterString(`&page=1`);
+      setisRejectedOn(true);
+    }
+  };
+
+   
 
 
   useEffect(() => {
@@ -461,22 +462,17 @@ console.log(allProductData)
     setHiddenColumns(newHiddenColumns);
   }, [latestHiddenColumns]);
 
-
-  useEffect(()=>{
-    refetch()
-    return ()=>{
-        dispatch(setCheckedBrand([])),
+  useEffect(() => {
+    refetch();
+    return () => {
+      dispatch(setCheckedBrand([])),
         dispatch(setCheckedCategory([])),
         dispatch(setCheckedGST([])),
         dispatch(setDeepSearch("")),
         apiRef?.current?.setPage(0),
-        apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 })
-       
-      
-     
-    
-    }
-  },[])
+        apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    };
+  }, []);
 
   useEffect(() => {
     let newFilterString = "";
@@ -494,7 +490,7 @@ console.log(allProductData)
 
     checkedGST.forEach((item, index) => {
       if (index === 0) {
-        newFilterString += `gst=${item}`;
+        newFilterString += `&gst=${item}`;
       } else {
         newFilterString += `&gst=${item}`;
       }
@@ -521,17 +517,6 @@ console.log(allProductData)
   }, [deepSearch]);
 
 
-  useEffect(() => {
-    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-
-    if (isRejectedOn) {
-      setFilterString(`page=1`);
-      return;
-    } else {
-             setFilterString(`type=update&page=1`);
-      }
-    
-  }, [isRejectedOn]);
 
   //Columns*******
 
@@ -1052,21 +1037,22 @@ console.log(allProductData)
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Update Rejected</span>
               <Button
-               
                 sx={{
                   border: "0.5px solid black",
                   width: "25px",
                   height: "20px",
                   borderRadius: "10px",
-                  backgroundColor:"#B22222",
-                  color:"#ffff",
-                  "&:hover":{
-                    backgroundColor:"#ffff",
-                    color:"#B22222",
-                  }
+                  backgroundColor: "#B22222",
+                  color: "#ffff",
+                  "&:hover": {
+                    backgroundColor: "#ffff",
+                    color: "#B22222",
+                  },
                 }}
                 onClick={handleRejectFilter}
-              >{isRejectedOn ? "Show" : "Hide"}</Button>
+              >
+                {isRejectedOn ? "Show" : "Hide"}
+              </Button>
             </Box>
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Sales Columns</span>
@@ -1169,7 +1155,6 @@ console.log(allProductData)
           setSelectedItemsData={setSelectedItemsData}
           selectedItemsData={selectedItemsData}
           selectedItems={selectedItems}
-          
         />
       )}
 
