@@ -393,6 +393,7 @@ function App() {
                 <Route
                   path="/UpdateSellerPriceBulk/:query"
                   element={<UpdateSellerPriceBulk />}
+
                 />
                 <Route
                   path="/ProductStatus"
@@ -531,9 +532,9 @@ function App() {
                 <Route
                   path="/uploadimage"
                   element={
-                    <UserRole name={"Upload Image"}>
+               // We have removed User Role
                       <UploadImageCom />
-                    </UserRole>
+                 
                   }
                 />
                 <Route path="/discountquery" element={<DiscountQuery />} />
