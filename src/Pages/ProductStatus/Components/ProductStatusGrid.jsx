@@ -452,20 +452,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       Download with Value
     </Button>
   );
-  const selectedlist = selectedItems && selectedItems.length > 0 && (
-    <Typography
-      sx={{
-        fontWeight: "bold",
-        marginLeft: "8px",
-        padding: "2px",
-        background: "blue",
-        color: "white",
-      }}
-    >
-      {" "}
-      {selectedItems.length}
-    </Typography>
-  );
 
   const downloadWithTrueFalseCustomButton = (
     <Button
@@ -530,7 +516,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
         apiRef={apiRef}
         customButton1={isAdmin ? downloadWithValueCustomButton : ""}
         customButton2={downloadWithTrueFalseCustomButton}
-        customButton5={selectedlist}
+        count={selectedItems}
       />
       <ProductStatusDownloadDialog
         open={open}

@@ -19,12 +19,15 @@ import {
   TableCell,
   tableCellClasses,
 } from "@mui/material";
-import { setDeepSearch ,setSearchTerm} from "../../features/slice/productSlice";
+import {
+  setDeepSearch,
+  setSearchTerm,
+} from "../../features/slice/productSlice";
 import { useEffect } from "react";
 import {
   setCheckedBrand,
   setCheckedCategory,
-  setCheckedGST
+  setCheckedGST,
 } from "../../features/slice/productSlice";
 
 /// style
@@ -55,15 +58,22 @@ const FilterBarV2 = ({
   customButton2,
   customButton3,
   customButton4,
-  customButton5,
   apiRef,
+  count,
 }) => {
   /// initialize
   const dispatch = useDispatch();
 
   /// global state
-  const { GST,brands, categories, checkedCategory,checkedGST, checkedBrand, deepSearch } =
-    useSelector((state) => state.product);
+  const {
+    GST,
+    brands,
+    categories,
+    checkedCategory,
+    checkedGST,
+    checkedBrand,
+    deepSearch,
+  } = useSelector((state) => state.product);
 
   ///local state
   const [Opensortdialog, setOpensortdialog] = useState({
@@ -79,7 +89,7 @@ const FilterBarV2 = ({
       apiRef?.current?.setPage(0);
       apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     }
-  }, [checkedBrand, checkedCategory ,checkedGST]);
+  }, [checkedBrand, checkedCategory, checkedGST]);
 
   /// handlers
 
@@ -168,6 +178,22 @@ const FilterBarV2 = ({
   return (
     <div>
       <StyledGrid container xl={12}>
+        {count && count.length > 0 && (
+          <Typography
+            sx={{
+              fontWeight: "bold",
+              margin: "12px",
+              padding: "2px",
+              color: "black",
+              background: "white",
+              border: "2px solid black",
+              borderRadius: "10px",
+            }}
+          >
+            {" "}
+            {count.length}
+          </Typography>
+        )}
         <FormGroup>
           <Box
             sx={{
@@ -180,13 +206,6 @@ const FilterBarV2 = ({
               alignItems: "start",
             }}
           >
-            <Box
-              sx={{
-                mt: 0.7,
-              }}
-            >
-              {customButton5}
-            </Box>
             <StyledButton onClick={() => handleOpenClose("brand")}>
               <Badge
                 badgeContent={checkedBrand && checkedBrand.length}
@@ -239,7 +258,7 @@ const FilterBarV2 = ({
             </StyledButton>
 
             {(checkedBrand && checkedBrand.length >= 1) ||
-            (checkedCategory && checkedCategory.length >= 1) || 
+            (checkedCategory && checkedCategory.length >= 1) ||
             (checkedGST && checkedGST.length >= 1) ||
             deepSearch ? (
               <StyledButton
@@ -412,8 +431,7 @@ const FilterBarV2 = ({
                             <TableRow key={index}>
                               {rowItems.map((rowItem, rowIndex) => {
                                 const rowItemIndex = index + rowIndex;
-                                const isChecked =
-                                checkedGST.includes(rowItem);
+                                const isChecked = checkedGST.includes(rowItem);
                                 return (
                                   <StyledTableCell
                                     align="left"
@@ -422,7 +440,7 @@ const FilterBarV2 = ({
                                     <FormControlLabel
                                       control={<Checkbox checked={isChecked} />}
                                       value={rowItem}
-                                      label={"GST " + rowItem + "%" }
+                                      label={"GST " + rowItem + "%"}
                                       sx={{
                                         "& .MuiSvgIcon-root": {
                                           fontSize: 15,

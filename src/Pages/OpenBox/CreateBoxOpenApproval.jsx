@@ -286,6 +286,7 @@ In the "Create Box Open Approval" you provide specific approval for the selected
         apiRef={apiRef}
         customButton={selectedItems.length ? 'Create' : ''}
         customOnClick={handleOpenDialog}
+        count={selectedItems}
       />
       <CreateBoxApprovalDialog
         open={open}
