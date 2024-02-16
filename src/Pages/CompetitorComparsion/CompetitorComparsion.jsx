@@ -1,9 +1,8 @@
 import { React, useState } from "react";
-import { Box, styled } from "@mui/material";
-import ProductHistory from "../Home_Page/Components/ProductHistory";
-import ProductStatusGrid from "./Components/ProductStatusGrid";
+import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import CompetitorTable from "./Components/CompetitorTable";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -96,8 +95,7 @@ const infoDetail = [
       "If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button",
   },
 ];
-
-const ProductStatus = () => {
+const CompetitorComparsion = () => {
   // infodialog state
   const description =
     "This is the Product Status you can check product details  ";
@@ -109,35 +107,18 @@ const ProductStatus = () => {
   const handleOpen = () => {
     setInfoOpen(true);
   };
-  /// local state
-  const [openHistory, setOpenHistory] = useState(false);
-  const [productDetails, setProductDetails] = useState({});
-
-  /// rtk query
-
-  /// handlers
-  const handleCloseHistory = () => {
-    setOpenHistory(false);
-  };
-
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Product Status"} info={true} customOnClick={handleOpen} />
-
-      <ProductStatusGrid
-        setOpenHistory={setOpenHistory}
-        setProductDetails={setProductDetails}
+      <Header
+        Name={"Competitor Comparsion"}
+        info={true}
+        customOnClick={handleOpen}
       />
-      <ProductHistory
-        openHistory={openHistory}
-        setOpenHistory={setOpenHistory}
-        handleCloseHistory={handleCloseHistory}
-        productDetails={productDetails}
-      />
+     
       {/* infoDialog table */}
       <InfoDialogBox
         infoDetails={infoDetail}
@@ -145,8 +126,9 @@ const ProductStatus = () => {
         open={infoOpen}
         close={handleClose}
       />
+      <CompetitorTable />
     </Box>
   );
 };
 
-export default ProductStatus;
+export default CompetitorComparsion;

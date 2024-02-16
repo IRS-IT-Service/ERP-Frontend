@@ -3,9 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   allProduct: [],
   brands: [],
+  GST: [],
   checkedBrand: [],
   categories: [],
   checkedCategory: [],
+  checkedGST: [],
   deepSearch: "",
   cart: {},
   orders: [],
@@ -24,10 +26,12 @@ const productSlice = createSlice({
       state.allProduct = action.payload.data;
       state.categories = action.payload.categories;
       state.brands = action.payload.brands;
+      state.GST = action.payload.GST;
     },
     setAllProductsV2: (state, action) => {
       state.categories = action.payload.filterOptions.category;
       state.brands = action.payload.filterOptions.brand;
+      state.GST = action.payload.filterOptions.GST;
     },
     removeAllProducts: (state) => {
       state.allProduct = [];
@@ -63,6 +67,9 @@ const productSlice = createSlice({
     setCheckedCategory: (state, action) => {
       state.checkedCategory = action.payload;
     },
+    setCheckedGST: (state, action) => {
+      state.checkedGST = action.payload;
+    },
     setDeepSearch: (state, action) => {
       state.deepSearch = action.payload;
     },
@@ -81,6 +88,7 @@ export const {
   setSearchTerm,
   clearSearchTerm,
   setAllProductsV2,
+  setCheckedGST,
   setCheckedBrand,
   setCheckedCategory,
   setDeepSearch,

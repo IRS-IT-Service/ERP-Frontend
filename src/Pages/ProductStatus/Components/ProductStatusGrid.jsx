@@ -12,7 +12,7 @@ import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
-import { Box, Button, TablePagination } from "@mui/material";
+import { Box, Button, TablePagination, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setAllProducts,
@@ -42,6 +42,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   /// local state
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  console.log(selectedItems.length);
   const [open, setOpen] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [loading, setLoading] = useState(false);
@@ -515,6 +516,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
         apiRef={apiRef}
         customButton1={isAdmin ? downloadWithValueCustomButton : ""}
         customButton2={downloadWithTrueFalseCustomButton}
+        count={selectedItems}
       />
       <ProductStatusDownloadDialog
         open={open}

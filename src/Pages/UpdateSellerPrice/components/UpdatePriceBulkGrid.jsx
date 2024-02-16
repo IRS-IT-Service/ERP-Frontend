@@ -46,7 +46,7 @@ const UpdatePriceBulk = () => {
       navigate(`/`);
     }
   }, [query]);
-
+console.log(productColumnData)
   /// local state
   const [excelData, setExcelData] = useState([]);
   const [downloadLoading, setDownloadLoading] = useState(false);
