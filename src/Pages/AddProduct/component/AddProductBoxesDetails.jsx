@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, Autocomplete } from "@mui/material";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
@@ -11,6 +11,7 @@ import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlic
 import Loading from "../../../components/Common/Loading";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 import { useSelector } from "react-redux";
+import { useGetDynamicValueQuery } from "../../../features/api/productApiSlice";
 
 const AddProductBoxesDetails = () => {
   /// local state
@@ -30,7 +31,7 @@ const AddProductBoxesDetails = () => {
   const [addProductApi, { isLoading }] = useAddProductMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
-
+  const { data: getDynaicValue } = useGetDynamicValueQuery();
   /// handlers
   const handleAddSubItems = () => {
     const currentSubitem = [...form.subItems];
@@ -98,6 +99,13 @@ const AddProductBoxesDetails = () => {
     }
   };
 
+  // const handle option value change
+  const handleSelectedChange = (value, field) => {
+    setForm({
+      ...form,
+      [field]: value,
+    });
+  };
   const handleSubmit = async () => {
     try {
       const {
@@ -245,71 +253,76 @@ const AddProductBoxesDetails = () => {
               }}
               inputProps={{
                 style: {
-                  height: "1.8vh",
+                  height: "2.1vh",
                   width: "24vw",
                 },
               }}
             />
-            <TextField
-              id="outlined-basic"
-              label="Brand Name"
-              variant="outlined"
-              value={form?.brand}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "brand");
+
+            <Autocomplete
+              style={{
+                width: "20%",
+                backgroundColor: "rgba(255, 255, 255)",
               }}
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "18vw",
-                },
-              }}
+              options={getDynaicValue?.data?.[0]?.Brand || []}
+              getOptionLabel={(option) => option}
+              onChange={(event, value) => handleSelectedChange(value, "brand")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Brand"
+                  value={form.value}
+                />
+              )}
             />
-            <TextField
-              id="outlined-basic"
-              label="Category"
-              variant="outlined"
-              value={form?.category}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "category");
+            <Autocomplete
+              style={{
+                width: "20%",
+                backgroundColor: "rgba(255, 255, 255)",
               }}
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "12vw",
-                },
-              }}
+              options={getDynaicValue?.data?.[0]?.Category || []}
+              getOptionLabel={(option) => option}
+              onChange={(event, value) =>
+                handleSelectedChange(value, "category")
+              }
+              renderInput={(params) => (
+                <TextField
+                  name="Category"
+                  {...params}
+                  label="Select Category"
+                  value={form.category}
+                />
+              )}
             />
-            <TextField
-              id="outlined-basic"
-              label="SubCategory"
-              variant="outlined"
-              value={form?.subCategory}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "subCategory");
+            <Autocomplete
+              style={{
+                width: "20%",
+                backgroundColor: "rgba(255, 255, 255)",
               }}
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "12vw",
-                },
-              }}
+              options={getDynaicValue?.data?.[0]?.SubCategory || []}
+              getOptionLabel={(option) => option}
+              onChange={(event, value) =>
+                handleSelectedChange(value, "subCategory")
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Sub Category"
+                  value={form.subCategory}
+                />
+              )}
             />
-            <TextField
-              id="outlined-basic"
-              label="GST(%)"
-              variant="outlined"
-              type="number"
-              value={form?.gst}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "gst");
+            <Autocomplete
+              style={{
+                width: "8%",
+                backgroundColor: "rgba(255, 255, 255)",
               }}
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "2.7vw",
-                },
-              }}
+              options={getDynaicValue?.data?.[0]?.GST || []}
+              getOptionLabel={(option) => option}
+              onChange={(event, value) => handleSelectedChange(value, "gst")}
+              renderInput={(params) => (
+                <TextField {...params} label="Gst" value={form.gst} />
+              )}
             />
           </Box>
 
