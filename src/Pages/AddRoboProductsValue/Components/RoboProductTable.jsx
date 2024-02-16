@@ -22,9 +22,9 @@ const RoboProductTable = () => {
 
   //rtk Querry
   const [addDynamicValue] = useAddDynamicValueMutation();
-  const { data: getDyanmicValue, isLoading: getDyanmaicValueLoading } =
+  const { data: getDyanmicValue, isLoading: getDyanmaicValueLoading,refetch } =
     useGetDynamicValueQuery();
-  console.log();
+
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;
@@ -62,6 +62,7 @@ const RoboProductTable = () => {
       const result = await addDynamicValue(info).unwrap();
       toast.success("Values Succesfully Save");
       setValues([]);
+      refetch();
       setSelectValue("");
     } catch (error) {
       console.log(error);
