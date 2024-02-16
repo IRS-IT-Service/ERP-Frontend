@@ -46,6 +46,13 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
+      {
+        id: 62,
+        name: "AddRoboProuctValue",
+        path: "/AddRoboProductsValue",
+        icon: "fa fa-comment",
+        notification: true,
+      },
     ],
   },
   {
@@ -81,6 +88,12 @@ const userRolesData = [
         id: 3,
         name: "Product Status",
         path: "/ProductStatus",
+        icon: "fa-solid fa-list",
+      },
+      {
+        id: 61,
+        name: "Competitor Comparsion",
+        path: "/CompetitorComparsion",
         icon: "fa-solid fa-list",
       },
       {
@@ -428,8 +441,28 @@ const userRolesData = [
       },
     ],
   },
+  {
+    title: "R&D",
+    icon: "fa fa-wrench",
+    childrens: [
+      {
+        id: 54,
+        name: "All Inventory Data",
+        path: "/AllInventoryData",
+        icon: "fa fa-wrench",
+        notification: true,
+      },
+      {
+        id: 55,
+        name: "R&D Projects",
+        path: "/ResearchNewProject",
+        icon: "fa fa-wrench",
+        notification: true,
+      },
+    ],
+  },
 ];
 
-// last routes is 59
+// last routes is 62
 
 export default userRolesData;
