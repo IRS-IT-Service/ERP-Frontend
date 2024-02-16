@@ -28,6 +28,13 @@ import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlic
 import TablePagination from "@mui/material/TablePagination";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 
+import {
+  setCheckedBrand,
+  setCheckedCategory,
+  setCheckedGST,
+  setDeepSearch
+} from "../../../features/slice/productSlice";
+
 const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   /// initialization
   const dispatch = useDispatch();
@@ -435,10 +442,18 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
 
   useEffect(()=>{
     return ()=>{
-      refetch
+        // dispatch(setCheckedBrand([])),
+        // dispatch(setCheckedCategory([])),
+        // dispatch(setCheckedGST([])),
+        // dispatch(setDeepSearch("")),
+        // apiRef?.current?.setPage(0),
+        // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 })
+        console.log("Refetch")
+      
+     
     
     }
-  })
+  },[])
 
   useEffect(() => {
     let newFilterString = "";
