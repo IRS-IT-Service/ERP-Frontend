@@ -1133,6 +1133,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
         customButton2={hiddenColumnCustomButton}
         customButton3={liveSalesCalcCustomButton}
         customButton4={liveSellerCalcCustomButton}
+        count={selectedItems}
         apiRef={apiRef}
       />
 

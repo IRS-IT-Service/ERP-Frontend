@@ -156,7 +156,7 @@ const BarcodeGenerateGrid = () => {
   const handleViewBarcode = async (sku) => {
     try {
       const { data } = await getBarcode(sku);
- 
+
       if (data) {
         setData(data);
         openDialog();
@@ -298,7 +298,7 @@ const BarcodeGenerateGrid = () => {
           allSno && allSno[0]?.SNo ? allSno[0]?.SNo.length || 0 : "";
         const StickValue = Math.round((checkVerify / checkLength) * 100);
 
-// console
+        // console
         let color;
 
         if (StickValue >= 0 && StickValue <= 49) {
@@ -343,6 +343,7 @@ const BarcodeGenerateGrid = () => {
         CustomText={BarCodeButton}
         hiddenColumns={hiddenColumns}
         setHiddenColumns={setHiddenColumns}
+        count={selectedItems}
       />
       <BarcodeDialogbox
         open={isDialogOpen}

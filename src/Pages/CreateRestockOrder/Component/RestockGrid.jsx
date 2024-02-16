@@ -217,14 +217,10 @@ const RestockGrid = () => {
       <Box sx={{ width: "100%", height: "100%" }}>
         <FilterBar
           apiRef={apiRef}
-          customButton={
-            selectedRows.length
-              ? `Restock Items ${selectedRows.length}`
-              : undefined
-          }
           customOnClick={handleOpenRestockItem}
           hiddenColumns={hiddenColumns}
           setHiddenColumns={setHiddenColumns}
+          count={selectedItems}
         />
         <Grid container>
           {productLoading || isFetching ? (
