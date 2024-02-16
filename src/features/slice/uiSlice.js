@@ -31,6 +31,8 @@ const uiSlice = createSlice({
       state.themeColor = actions.payload;
       localStorage.setItem("themeColor", JSON.stringify(actions.payload));
     },
+
+    
   },
 });
 
