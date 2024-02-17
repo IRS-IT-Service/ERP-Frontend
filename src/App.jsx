@@ -107,12 +107,11 @@ import ProformaDetails from "./Pages/Proforma Track/ProformaDetails";
 import WhatsappEvent from "./Pages/WhatsApp/WhatsappEvent";
 import AddRoboProductsValue from "./Pages/AddRoboProductsValue/AddRoboProductsValue";
 import BulkAddProduct from "./Pages/AddProduct/BulkAddProduct";
-import NewCalc from "./Pages/Calc/NewCalc";
-import NewCalcRishabh from "./Pages/Calc/NewCalcRishabh";
 import RemovedProduct from "./Pages/ProductDelete/RemovedProducts";
 import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorComparsion";
 import AllInventoryData from "./Pages/R&D/AllInventoryData";
 import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
+import BulkMessage from "./Pages/BulkMessage/BulkMessage";
 
 function App() {
   /// initialize
@@ -378,6 +377,7 @@ function App() {
                   path="/AddRoboProductsValue"
                   element={<AddRoboProductsValue />}
                 />
+                <Route path="/BulkMessage" element={<BulkMessage />} />
                 {/* Products Router */}
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
                 <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
@@ -531,9 +531,8 @@ function App() {
                 <Route
                   path="/uploadimage"
                   element={
-                      // We have removed User Role
-                      <UploadImageCom />
-                  
+                    // We have removed User Role
+                    <UploadImageCom />
                   }
                 />
                 <Route path="/discountquery" element={<DiscountQuery />} />
@@ -625,25 +624,25 @@ function App() {
                 <Route path="/FormViewMain" element={<DSCFormList />} />
                 <Route path="/signature" element={<SignaturePad />} />
                 <Route path="/CustomerForm" element={<CustomerForm />} />
-                
+
                 {/* /// Proforma */}
 
                 <Route path="/AddProforma" element={<AddProforma />} />
                 <Route path="/ProformaList" element={<ProformaList />} />
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
-                <Route path='/droneRepair' element={<RepairForm />} />
-                <Route path='/addCommonRepair' element={<AddCommonRepair />} />
-                <Route path='/viewDSCForm/:token' element={<DscFormView />} />
-                <Route path='/FormViewMain' element={<DSCFormList />} />
-                <Route path='/signature' element={<SignaturePad />} />
-                <Route path='/CustomerForm' element={<CustomerForm />} />
-                <Route path='/AddProforma' element={<AddProforma />} />
-                <Route path='/ProformaList' element={<ProformaList />} />
-                <Route path='/ProformaDetails' element={<ProformaDetails />} />
+                <Route path="/droneRepair" element={<RepairForm />} />
+                <Route path="/addCommonRepair" element={<AddCommonRepair />} />
+                <Route path="/viewDSCForm/:token" element={<DscFormView />} />
+                <Route path="/FormViewMain" element={<DSCFormList />} />
+                <Route path="/signature" element={<SignaturePad />} />
+                <Route path="/CustomerForm" element={<CustomerForm />} />
                 <Route path="/AddProforma" element={<AddProforma />} />
                 <Route path="/ProformaList" element={<ProformaList />} />
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
-                
+                <Route path="/AddProforma" element={<AddProforma />} />
+                <Route path="/ProformaList" element={<ProformaList />} />
+                <Route path="/ProformaDetails" element={<ProformaDetails />} />
+
                 {/* R&D */}
                 <Route
                   path="/AllInventoryData"
