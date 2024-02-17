@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -17,47 +17,24 @@ import {
   TextField,
   Typography,
   CircularProgress,
+  styled,
 } from "@mui/material";
 import { useAddCompetitorMutation } from "../../../features/api/productApiSlice";
 import { useGetAllCompetitorQuery } from "../../../features/api/productApiSlice";
 import { toast } from "react-toastify";
 
-const Columns = ["Sno", "SKU", "ProductName", "GST", "Comp1", "Comp2"];
 
-const initialData = [
-  {
-    Sno: 1,
-    SKU: "SKU123",
-    ProductName: "Product A",
-    GST: "12",
-    Comp1: "Hex",
-    Comp2: "",
-  },
-  {
-    Sno: 2,
-    SKU: "SKU456",
-    ProductName: "Product B",
-    GST: "12",
-    Comp1: "",
-    Comp2: "",
-  },
-  {
-    Sno: 3,
-    SKU: "SKU789",
-    ProductName: "Product C",
-    GST: "12",
-    Comp1: "",
-    Comp2: "",
-  },
-  {
-    Sno: 4,
-    SKU: "SKU789",
-    ProductName: "Product C",
-    GST: "12",
-    Comp1: "",
-    Comp2: "",
-  },
+const columnsData = [
+  { field: "Sno", headerName: "S.No" },
+  { field: "SKU", headerName: "SKU" },
+  { field: "Name", headerName: "Name" },
+  { field: "QTY", headerName: "QTY" },
 ];
+
+const StyledTableCell2 = styled(TableCell)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "primary" : "#eee",
+  color: theme.palette.mode === "dark" ? "white" : "black",
+}));
 
 // Dilog box table
 function createData(Sno, CompetitorName, url) {
@@ -77,6 +54,8 @@ const rows = [
   createData(1, "Tesla", "kdjfkljdskfj"),
 ];
 
+
+
 const CompetitorTable = () => {
   // rtk Querry
   const [addCompetitor, { isLoading: addCompetitorLoading }] =
@@ -88,10 +67,12 @@ const CompetitorTable = () => {
   } = useGetAllCompetitorQuery();
 
   // console.log(addCompetitor);
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
 
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState({ Name: "", URL: "" });
+  const [input, setInput] = useState({ Name: "", URL: "" ,Date:""});
+  const [columns, setColumns] = useState([]);
+  const [rows, setRows] = useState([]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -99,6 +80,7 @@ const CompetitorTable = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setInput({});
   };
 
   const handleInputChange = (event, rowIndex, columnName) => {
@@ -125,20 +107,44 @@ const CompetitorTable = () => {
     });
   };
 
+
+//   useEffect(() => {
+//     if (allCompetitor?.status === "success") {
+//       setRows(allCompetitor.data.products);
+//       const ColumnsName = []
+//       allCompetitor.data?.forEach((row) =>{
+// row?.forEach((column) => {
+// ColumnsName.push(column.name);
+// })
+
+//       })
+
+//       setColumns([...columnsData,...allCompetitor.data]);
+
+   
+//     }
+//   }, [allCompetitor]);
+
   // post competitor name or url
   const handleOnChange = (e) => {
     setInput({
       ...input,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value,Date: new Date()
     });
   };
 
   const handleAdd = async () => {
     try {
-      if (!input) toast.error("Please fill the data");
-      const data = [input];
-      const result = await addCompetitor({ Competitors: data });
-      toast.success("Competitor added successfully");
+      if (!input) return toast.error("Please fill the data");
+const data = {
+  Competitors: [input]
+}
+      const result = await addCompetitor(data);
+  
+      if(!result.data.success){
+        return
+      }
+     toast.success("Competitor added successfully");
       setInput({});
       refetch();
     } catch (error) {
@@ -205,12 +211,11 @@ const CompetitorTable = () => {
                   onChange={handleOnChange}
                 />
                 <TextField
-                  id="outlined-basic"
+                  id="outlined-basic1"
                   label="URL"
                   variant="outlined"
                   sx={{ width: "100%" }}
                   name="URL"
-                  value={input.URL}
                   onChange={handleOnChange}
                 />
 
@@ -240,9 +245,10 @@ const CompetitorTable = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {allCompetitor?.data[0]?.Competitors.map((row, index) => (
-                        <TableRow
-                          key={`${row.Sno}-${index}`}
+                      {allCompetitor?.data[0].Competitors.map((row, index) => {
+                    
+                       return( <TableRow
+                          key={index}
                           sx={{
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
@@ -253,7 +259,8 @@ const CompetitorTable = () => {
                           <TableCell>{row.Name}</TableCell>
                           <TableCell>{row.URL}</TableCell>
                         </TableRow>
-                      ))}
+                       )
+})}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -266,18 +273,41 @@ const CompetitorTable = () => {
           Save
         </Button>
       </Box>
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer sx={{ maxHeight: "92vh", minHeight: "92vh" }}>
+      <Table stickyHeader aria-label="sticky table">
           <TableHead>
-            <TableRow>
-              {Columns.map((column) => (
-                <TableCell key={column}>{column}</TableCell>
+          <TableRow>
+              {columns.map((column, index) => (
+                <StyledTableCell2
+                  key={column.field}
+                  sx={{
+                    fontSize: ".8rem",
+                    minWidth: "50px",
+                    position: "sticky",
+                    left: `${
+                      column.headerName === "S.No"
+                        ? 0
+                        : column.headerName === "SKU"
+                        ? 3.78
+                        : column.headerName === "Name"
+                        ? 11.58
+                        : column.headerName === "QTY"
+                        ? 33.45
+                        : 37
+                    }rem`, // Adjust the values as needed
+                    zIndex: 200,
+
+                    textAlign: "center",
+                  }}
+                >
+                  {column.headerName}
+                </StyledTableCell2>
               ))}
             </TableRow>
           </TableHead>
-          <TableBody>
-            {data.map((row, rowIndex) => (
-              <TableRow key={row.Sno}>
+          {/* <TableBody>
+            {allCompetitor?.data.map((row, rowIndex) => (
+              <TableRow key={row.rowIndex}>
                 <TableCell>{row.Sno}</TableCell>
                 <TableCell>{row.SKU}</TableCell>
                 <TableCell>{row.ProductName}</TableCell>
@@ -304,7 +334,7 @@ const CompetitorTable = () => {
                 ))}
               </TableRow>
             ))}
-          </TableBody>
+          </TableBody> */}
         </Table>
       </TableContainer>
     </div>
