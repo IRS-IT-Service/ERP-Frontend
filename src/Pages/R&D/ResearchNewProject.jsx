@@ -557,7 +557,11 @@ const ResearchNewProject = () => {
           }}
         >
           <Box sx={{ minWidth: '12vw' }}>
-            <Button variant='contained' onClick={openCloseNewProjectBox}>
+            <Button
+              variant='contained'
+              sx={{ backgroundColor: color }}
+              onClick={openCloseNewProjectBox}
+            >
               Add New Project
             </Button>{' '}
           </Box>
@@ -684,6 +688,7 @@ const ResearchNewProject = () => {
                     <TableCell>
                       <Button
                         variant='contained'
+                        sx={{ backgroundColor: color }}
                         onClick={() =>
                           handleOpenCloseAddPart(addPartsData, row?.projectId)
                         }
@@ -694,6 +699,7 @@ const ResearchNewProject = () => {
                     <TableCell>
                       <Button
                         variant='contained'
+                        sx={{ backgroundColor: color }}
                         onClick={() => handleOpenCloseEP(row)}
                       >
                         Edit & Update Project
@@ -703,6 +709,7 @@ const ResearchNewProject = () => {
                       <Button
                         variant='contained'
                         onClick={() => handleOpenClosePD(row)}
+                        sx={{ backgroundColor: color }}
                       >
                         View
                       </Button>
