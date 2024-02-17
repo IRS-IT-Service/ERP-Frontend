@@ -672,13 +672,13 @@ const UploadImageGrid = () => {
                       <CardMedia
                         component='img'
                         sx={{
-                          width: 100,
+                          minWidth: 100,
                           height: 80,
                           background: 'green',
                           borderRadius: '5px',
                           position: 'relative',
                           cursor: 'pointer',
-                          objectFit: 'fill',
+                          objectFit: 'contain',
                         }}
                         image={img?.lowUrl}
                         alt='side Image'
