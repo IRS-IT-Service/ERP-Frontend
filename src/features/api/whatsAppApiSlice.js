@@ -68,5 +68,5 @@ export const {
   useDeleteContactNoMutation,
   useSendMessageMutation,
   useSendPdfOnWhatsappDscMutation,
-  useSendMessageToAdminMutation
+  useSendMessageToAdminMutation,
 } = whatsAppApiSlice;

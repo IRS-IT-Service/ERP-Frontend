@@ -152,13 +152,13 @@ const WhatsappEvent = () => {
         p: 0,
         width: "100%",
         overflowY: "auto",
-      
+
         // border: "2px solid red",
       }}
     >
       <DrawerHeader />
       <Header Name={"WhatsApp Event"} info={true} customOnClick={handleOpen} />
-      <Box sx={{ marginTop:"2rem" }}>
+      <Box sx={{ marginTop: "2rem" }}>
         <Grid
           container
           spacing={2}
@@ -181,13 +181,14 @@ const WhatsappEvent = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 margin: "20px",
-                paddingBottom:1,
-                boxShadow: "-6px -6px 14px rgba(255, 255, 255, 0.7), -6px -6px 10px rgba(255, 255, 255, 0.5), 6px 6px 8px rgba(255, 255, 255, 0.075), 6px 6px 10px rgba(0, 0, 0, 0.15)",
+                paddingBottom: 1,
+                boxShadow:
+                  "-6px -6px 14px rgba(255, 255, 255, 0.7), -6px -6px 10px rgba(255, 255, 255, 0.5), 6px 6px 8px rgba(255, 255, 255, 0.075), 6px 6px 10px rgba(0, 0, 0, 0.15)",
                 borderRadius: "10px",
-                "&:hover":{
-                  boxShadow: "inset -2px -2px 6px rgba(255, 255, 255, .7),inset -2px -2px 4px rgba(255, 255, 255, .5),inset 2px 2px 2px rgba(255, 255, 255, .075),inset 2px 2px 4px rgba(0, 0, 0, .15)"
-          
-                }
+                "&:hover": {
+                  boxShadow:
+                    "inset -2px -2px 6px rgba(255, 255, 255, .7),inset -2px -2px 4px rgba(255, 255, 255, .5),inset 2px 2px 2px rgba(255, 255, 255, .075),inset 2px 2px 4px rgba(0, 0, 0, .15)",
+                },
               }}
             >
               <i className={`${item.icon}`} />
@@ -201,12 +202,7 @@ const WhatsappEvent = () => {
           ))}
         </Grid>
         {/* infoDialog table */}
-        <InfoDialogBox
-          infoDetails={infoDetail}
-          description={description}
-          open={infoOpen}
-          close={handleClose}
-        />
+ 
       </Box>
       {openDial && (
         <WhastsAppDial
