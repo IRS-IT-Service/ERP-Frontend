@@ -46,6 +46,13 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
+      {
+        id: 63,
+        name: "BulkMessage",
+        path: "/BulkMessage",
+        icon: "fa fa-comment",
+        notification: true,
+      },
     
     ],
   },
@@ -464,6 +471,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 62
+// last routes is 63
 
 export default userRolesData;
