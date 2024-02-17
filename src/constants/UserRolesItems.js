@@ -46,13 +46,7 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
-      {
-        id: 62,
-        name: "AddRoboProuctValue",
-        path: "/AddRoboProductsValue",
-        icon: "fa fa-comment",
-        notification: true,
-      },
+    
     ],
   },
   {
@@ -107,6 +101,13 @@ const userRolesData = [
         name: "Removed Products",
         path: "/removedProduct",
         icon: "fa-solid fa-skull",
+      },
+      {
+        id: 62,
+        name: "Add Brand/Category",
+        path: "/AddRoboProductsValue",
+        icon: "fas fa-plus",
+        notification: true,
       },
     ],
   },
