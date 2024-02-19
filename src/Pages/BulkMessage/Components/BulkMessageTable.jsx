@@ -9,13 +9,18 @@ import {
   DialogActions,
   TextField,
   Typography,
-  CircularProgress,
   TextareaAutosize,
+  CircularProgress,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { DataGrid } from "@mui/x-data-grid";
 import { toast } from "react-toastify";
-import { useAddCustomerNumberMutation, useGetCustomerNumberQuery } from "../../../features/api/whatsAppApiSlice";
+import {
+  useAddCustomerNumberMutation,
+  useGetCustomerNumberQuery,
+  useSendBulkMessagesWithPicMutation,
+} from "../../../features/api/whatsAppApiSlice";
+import Loading from "../../../components/Common/Loading";
 //File upload
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -33,19 +38,28 @@ const BulkMessageTable = () => {
   const [open, setOpen] = useState(false);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [customerNumber, setCustomerNumber] = useState([]);
+  const [message, setMessage] = useState("");
+  const [file, setFile] = useState("");
   const [input, setInput] = useState({ CustomerName: "", CustomerNumber: "" });
-  const [data, setDate] = useState([]);
+  const [rows, setRows] = useState([]);
 
-//rtk Query 
-const [addCustomer, {isloading:addCustomerLoading}] = useAddCustomerNumberMutation();
-const {data:getAllCustomers} = useGetCustomerNumberQuery()
+  //rtk Query
+  const [addCustomer,{isLoading: addCustomerLoading }] =
+    useAddCustomerNumberMutation();
 
-
-
+    const [sendMsg,{isLoading:sendMsgLoading}] =
+    useSendBulkMessagesWithPicMutation();
+  const {
+    data: getAllCustomers,
+    refetch,
+    isloading: getloading,
+  } = useGetCustomerNumberQuery();
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     setFileUploaded(true);
+    setFile(file)
+    console.log(file)
   };
 
   const handleClickOpen = () => {
@@ -56,20 +70,70 @@ const {data:getAllCustomers} = useGetCustomerNumberQuery()
     setOpen(false);
   };
 
-  const handleSubmit = (event) => {
-    const customerNumberRegex = /^\d{10}$/;
-    if (!input.CustomerName || !input.CustomerNumber) {
-      toast.error("Please fill Customer Name or Customer Number ");
-      event.preventDefault();
-    } else if (!customerNumberRegex.test(input.CustomerNumber)) {
-      toast.error("Please Enter Correct Customer Number");
-      event.preventDefault();
-    } else {
-      event.preventDefault();
-      console.log("Customer Name:", input.CustomerName);
-      console.log("Customer Number:", input.CustomerNumber);
-      setInput([]);
-      handleClose();
+  useEffect(() => {
+    if (getAllCustomers?.message === "Customer Successfully fetched") {
+      const row = getAllCustomers?.data.map((item, index) => {
+        return {
+          ...item,
+          id: item._id,
+          sn: index + 1,
+        };
+      });
+
+      setRows(row);
+    }
+  }, [getAllCustomers]);
+
+
+  const handleSend = async() =>{
+try{
+  const formData = new FormData()
+
+
+  formData.append("contacts",JSON.stringify(customerNumber)),
+  formData.append("message",message),
+  formData.append("file",file)
+  
+  
+  const res =await sendMsg(formData).unwrap()
+  if(!res.status){
+  return
+  }
+  toast.success("Message successfully send!")
+  setFileUploaded(false)
+  setFile("")
+  setMessage("")
+refetch()
+}catch(err){
+  console.log(err)
+}
+
+
+  }
+
+  const handleSubmit = async (event) => {
+    try {
+      const customerNumberRegex = /^\d{10}$/;
+      if (!input.CustomerName || !input.CustomerNumber) {
+        toast.error("Please fill Customer Name or Customer Number ");
+      } else if (!customerNumberRegex.test(input.CustomerNumber)) {
+        toast.error("Please Enter Correct Customer Number");
+      } else {
+        const info = {
+          name: input.CustomerName,
+          number: input.CustomerNumber,
+        };
+        const res = await addCustomer(info).unwrap();
+        if (res.message !== "Customer Successfully Added") {
+          return;
+        }
+        toast.success("Customer Successfully Added");
+        setInput([]);
+        handleClose();
+        refetch();
+       }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -82,22 +146,19 @@ const {data:getAllCustomers} = useGetCustomerNumberQuery()
   };
 
   const handleSelectionChange = (selectionModel) => {
-    const selectedCustomerNumbers = selectionModel.map((selectedRowId) => {
-      const selectedRow = data.find((row) => row.id === selectedRowId);
-      return selectedRow ? selectedRow.CustomerNumber : null;
-    });
-    setCustomerNumber(selectedCustomerNumbers);
-  };
+    if (!Array.isArray(selectionModel)) return;
+    const limitedSelection = selectionModel.slice(0, 50);
+    const uniqueSelection = [...new Set(
+      rows.filter(item => limitedSelection.includes(item.id)).map(item => item.CustomerNumber)
+    )];
 
-  const handleSend = () => {
-    const formData = new FormData();
-    console.log();
+    setCustomerNumber(uniqueSelection);
   };
 
 
   //This is data grid data
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
+    { field: "sn", headerName: "ID", width: 90 },
     {
       field: "CustomerName",
       headerName: "Customer Name",
@@ -137,19 +198,21 @@ const {data:getAllCustomers} = useGetCustomerNumberQuery()
           >
             Add Customer
           </Button>
-          <TextareaAutosize
-            minRows={8}
+          <textarea
+          style={{
+            width: "100%",
+            height: "400px",
+            resize: "none",
+            paddingTop:5,
+            textIndent:"20px"
+          }}
+          value={message}
+           minRows={8}
             placeholder="Enter your message"
             aria-label="maximum height"
+            onChange={(e)=>setMessage(e.target.value)}
           />
-          <Dialog
-            open={open}
-            onClose={handleClose}
-            PaperProps={{
-              component: "form",
-              onSubmit: handleSubmit,
-            }}
-          >
+          <Dialog open={open} onClose={handleClose}>
             <DialogTitle
               id="alert-dialog-title"
               sx={{
@@ -177,7 +240,6 @@ const {data:getAllCustomers} = useGetCustomerNumberQuery()
                   }}
                 >
                   <TextField
-                    id="outlined-basic"
                     label="Customer Name"
                     variant="outlined"
                     sx={{ width: "100%", marginTop: "12px" }}
@@ -186,7 +248,6 @@ const {data:getAllCustomers} = useGetCustomerNumberQuery()
                     onChange={handleInputChange}
                   />
                   <TextField
-                    id="outlined-basic"
                     label="Customer Number"
                     variant="outlined"
                     sx={{ width: "100%" }}
@@ -196,8 +257,8 @@ const {data:getAllCustomers} = useGetCustomerNumberQuery()
                     type="number"
                   />
 
-                  <Button type="submit" variant="outlined">
-                    Add
+                  <Button onClick={handleSubmit} variant="outlined">
+                    {addCustomerLoading ? <CircularProgress /> : "Add"}
                   </Button>
                   <Button
                     onClick={handleClose}
@@ -236,15 +297,16 @@ const {data:getAllCustomers} = useGetCustomerNumberQuery()
               sx={{ margin: "10px" }}
               onClick={() => handleSend()}
             >
-              Send
+                   {sendMsgLoading ? <CircularProgress size={30} /> : "send"}
             </Button>
           </Box>
         </Box>
         <Box sx={{ width: "35%" }}>
           <Box sx={{ height: "72vh", width: "100%" }}>
             <DataGrid
-              rows={data}
+              rows={rows}
               columns={columns}
+              loading={getloading}
               rowHeight={50}
               initialState={{
                 pagination: {
