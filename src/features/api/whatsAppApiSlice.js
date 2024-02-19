@@ -59,6 +59,15 @@ export const whatsAppApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    sendBulkMessagesWithPic: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${WhatsApp_URL}/sendBulkMessage`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -69,4 +78,5 @@ export const {
   useSendMessageMutation,
   useSendPdfOnWhatsappDscMutation,
   useSendMessageToAdminMutation,
+  useSendBulkMessagesWithPicMutation,
 } = whatsAppApiSlice;
