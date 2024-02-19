@@ -15,7 +15,7 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { DataGrid } from "@mui/x-data-grid";
 import { toast } from "react-toastify";
-import { Numbers } from "@mui/icons-material";
+import { useAddCustomerNumberMutation, useGetCustomerNumberQuery } from "../../../features/api/whatsAppApiSlice";
 //File upload
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -33,13 +33,20 @@ const BulkMessageTable = () => {
   const [open, setOpen] = useState(false);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [customerNumber, setCustomerNumber] = useState([]);
+  const [input, setInput] = useState({ CustomerName: "", CustomerNumber: "" });
+  const [data, setDate] = useState([]);
+
+//rtk Query 
+const [addCustomer, {isloading:addCustomerLoading}] = useAddCustomerNumberMutation();
+const {data:getAllCustomers} = useGetCustomerNumberQuery()
+
+
+
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    console.log("File uploaded:", file);
     setFileUploaded(true);
   };
-  const [input, setInput] = useState({ CustomerName: "", CustomerNumber: "" });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -48,9 +55,9 @@ const BulkMessageTable = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
   const handleSubmit = (event) => {
     const customerNumberRegex = /^\d{10}$/;
-
     if (!input.CustomerName || !input.CustomerNumber) {
       toast.error("Please fill Customer Name or Customer Number ");
       event.preventDefault();
@@ -81,7 +88,12 @@ const BulkMessageTable = () => {
     });
     setCustomerNumber(selectedCustomerNumbers);
   };
-  console.log(" Selected Customer Numbers:", customerNumber);
+
+  const handleSend = () => {
+    const formData = new FormData();
+    console.log();
+  };
+
 
   //This is data grid data
   const columns = [
@@ -99,28 +111,6 @@ const BulkMessageTable = () => {
       editable: true,
     },
   ];
-  const [data, setDate] = useState([
-    { id: 1, CustomerName: "John", CustomerNumber: "12345" },
-    { id: 2, CustomerName: "Alice", CustomerNumber: "67890" },
-    { id: 3, CustomerName: "Bob", CustomerNumber: "24680" },
-    { id: 4, CustomerName: "Emma", CustomerNumber: "13579" },
-    { id: 5, CustomerName: "Michael", CustomerNumber: "97531" },
-    { id: 6, CustomerName: "Sophia", CustomerNumber: "745565" },
-    { id: 7, CustomerName: "Oliver", CustomerNumber: "45632" },
-    { id: 8, CustomerName: "Charlotte", CustomerNumber: "78901" },
-    { id: 9, CustomerName: "Liam", CustomerNumber: "35782" },
-    { id: 10, CustomerName: "Ava", CustomerNumber: "68024" },
-    { id: 11, CustomerName: "Mason", CustomerNumber: "12943" },
-    { id: 12, CustomerName: "Ella", CustomerNumber: "58371" },
-    { id: 13, CustomerName: "Alexander", CustomerNumber: "40236" },
-    { id: 14, CustomerName: "Mia", CustomerNumber: "81726" },
-    { id: 15, CustomerName: "James", CustomerNumber: "35478" },
-    { id: 16, CustomerName: "Emily", CustomerNumber: "69475" },
-    { id: 17, CustomerName: "Benjamin", CustomerNumber: "27654" },
-    { id: 18, CustomerName: "Harper", CustomerNumber: "50968" },
-    { id: 19, CustomerName: "Ethan", CustomerNumber: "81739" },
-    { id: 20, CustomerName: "Evelyn", CustomerNumber: "26374" },
-  ]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -241,7 +231,11 @@ const BulkMessageTable = () => {
               {fileUploaded ? "File Uploaded" : "Upload File"}
               <VisuallyHiddenInput type="file" onChange={handleFileUpload} />
             </Button>
-            <Button variant="outlined" sx={{ margin: "10px" }}>
+            <Button
+              variant="outlined"
+              sx={{ margin: "10px" }}
+              onClick={() => handleSend()}
+            >
               Send
             </Button>
           </Box>
