@@ -12,12 +12,12 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
-} from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import React, { useState, useEffect } from "react";
-import CartGrid from "../../components/Common/CardGrid";
-import DownloadIcon from "@mui/icons-material/Download";
-import { useNavigate } from "react-router-dom";
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import React, { useState, useEffect } from 'react';
+import CartGrid from '../../components/Common/CardGrid';
+import DownloadIcon from '@mui/icons-material/Download';
+import { useNavigate } from 'react-router-dom';
 import {
   useGetAllRepairingFormQuery,
   useUpdateRepairStatusMutation,
@@ -32,14 +32,14 @@ import { useSocket } from "../../CustomProvider/useWebSocket";
 import PdfDownloadDial from "./Components/PdfDownloadDial";
 import WebStatusDial from "./Components/WebStatusDial";
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const useStyles = makeStyles((theme) => ({
   selected: {
-    backgroundColor: "rgb(4,4,61) !important",
-    color: "white !important",
+    backgroundColor: 'rgb(4,4,61) !important',
+    color: 'white !important',
   },
 }));
 
@@ -56,25 +56,28 @@ const DSCFormList = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-  const [rejectRemark, setRejectRemark] = useState("");
+  const [rejectRemark, setRejectRemark] = useState('');
   const [selectOptions, setSelectOptions] = useState([
     {
-      value: "Completed",
-      label: "Completed",
+      value: 'Completed',
+      label: 'Completed',
     },
     {
-      value: "repairInProcess",
-      label: "repair In Process",
+      value: 'repairInProcess',
+      label: 'repair In Process',
     },
     {
-      value: "rejected",
-      label: "rejected",
+      value: 'rejected',
+      label: 'rejected',
     },
   ]);
-  const [queryParams, setQueryParams] = useState("open");
-  const [selectedStatus, setSelectedStatus] = useState("");
+    const [page, setPage] = useState(1);
+  const [queryParams, setQueryParams] = useState('open');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [pagination, setPagination] = useState([]);
   const dispatch = useDispatch();
   const socket = useSocket();
+    const [filterString, setFilterString] = useState('page=1');
 
   const { userInfo } = useSelector((state) => state.auth);
   /// rtk query
@@ -104,6 +107,20 @@ const DSCFormList = () => {
       }));
       setRows(rowss);
     }
+  }, [getAllRepairingForm]);
+
+  useEffect(() => {
+    if (getAllRepairingForm) {
+      const paginationValues = {
+        currentPage: getAllRepairingForm?.currentPage,
+        itemCount: getAllRepairingForm?.itemCount,
+        totalItems: getAllRepairingForm?.totalItems,
+        itemsPerPage: getAllRepairingForm?.itemsPerPage,
+        totalPages: getAllRepairingForm?.totalPages,
+      };
+      setPagination(paginationValues);
+    }
+    console.log(pagination)
   }, [getAllRepairingForm]);
 
   /// handlers
@@ -148,12 +165,12 @@ const DSCFormList = () => {
 
     axios({
       url: pdfUrl,
-      method: "GET",
-      responseType: "blob", // important
+      method: 'GET',
+      responseType: 'blob', // important
     })
       .then((response) => {
-        const blob = new Blob([response.data], { type: "application/pdf" });
-        const link = document.createElement("a");
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = `Repair_${id}.pdf`; // specify the filename
         link.click();
@@ -161,7 +178,7 @@ const DSCFormList = () => {
       })
       .catch((error) => {
         setDownloadLoading(false);
-        console.error("Error downloading PDF:", error);
+        console.error('Error downloading PDF:', error);
         // Handle the error as needed
       });
   };
@@ -172,100 +189,100 @@ const DSCFormList = () => {
 
       const liveStatusData = {
         message: `${userInfo.name} Updated Status To ${params.status} Of DSC Form Token ${params.token}  `,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
+        time: new Date().toLocaleTimeString('en-IN', {
+          timeZone: 'Asia/Kolkata',
         }),
       };
-      socket.emit("liveStatusServer", liveStatusData);
-      toast.success("Repair Query updated successfully");
+      socket.emit('liveStatusServer', liveStatusData);
+      toast.success('Repair Query updated successfully');
       setStatusOpen(false);
       setSelectedData(null);
-      setSelectedStatus("");
+      setSelectedStatus('');
       refetch();
     } catch (e) {
       console.log(e);
-      console.log("Error updating Staus DSC");
+      console.log('Error updating Staus DSC');
     }
   };
   /// columns
   const columns = [
     {
-      field: "Sno",
-      headerName: "Sno",
+      field: 'Sno',
+      headerName: 'Sno',
       flex: 0.2,
       minWidth: 40,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Token",
-      headerName: "Token",
+      field: 'Token',
+      headerName: 'Token',
       flex: 0.2,
       minWidth: 150,
       maxWidth: 350,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "CustomerName",
-      headerName: "Customer Name",
+      field: 'CustomerName',
+      headerName: 'Customer Name',
       flex: 0.2,
       minWidth: 200,
       maxWidth: 450,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "DroneModel",
-      headerName: "Drone Model",
+      field: 'DroneModel',
+      headerName: 'Drone Model',
       flex: 0.2,
       minWidth: 200,
       maxWidth: 450,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "MobileNo",
-      headerName: "Mobile Number",
+      field: 'MobileNo',
+      headerName: 'Mobile Number',
       flex: 0.2,
       minWidth: 140,
       maxWidth: 450,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Status",
-      headerName: "Status",
+      field: 'Status',
+      headerName: 'Status',
       flex: 0.2,
       minWidth: 140,
       maxWidth: 450,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         const color =
-          params.row.Status === "Completed"
-            ? "green"
-            : params.row.Status === "rejected"
-            ? "Red"
-            : "blue";
+          params.row.Status === 'Completed'
+            ? 'green'
+            : params.row.Status === 'rejected'
+            ? 'Red'
+            : 'blue';
         return (
           <Tooltip
-            title={params.row.RejectRemark || "No Remark"}
+            title={params.row.RejectRemark || 'No Remark'}
             disableHoverListener={
-              params.row.Status === "rejected" ? false : true
+              params.row.Status === 'rejected' ? false : true
             }
           >
             <Button
@@ -308,10 +325,10 @@ const DSCFormList = () => {
       flex: 0.2,
       minWidth: 140,
       maxWidth: 350,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         return (
           <div>
@@ -325,17 +342,17 @@ const DSCFormList = () => {
       },
     },
     {
-      field: "customerSign",
-      headerName: "Signature",
+      field: 'customerSign',
+      headerName: 'Signature',
       flex: 0.2,
       minWidth: 140,
       maxWidth: 350,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
-        const text = params.row.Status === "Completed" ? "View" : "Submit";
+        const text = params.row.Status === 'Completed' ? 'View' : 'Submit';
         return (
           <div>
             <Button
@@ -350,15 +367,15 @@ const DSCFormList = () => {
       },
     },
     {
-      field: "download",
-      headerName: "PDF",
+      field: 'download',
+      headerName: 'PDF',
       flex: 0.2,
       minWidth: 140,
       maxWidth: 350,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         const Token = params.row.Token;
         const Contact = params.row.MobileNo;
@@ -379,24 +396,24 @@ const DSCFormList = () => {
   ];
   const CustomToolbar = () => {
     return (
-      <Box style={{ display: "flex", justifyContent: "end", gap: "10px" }}>
+      <Box style={{ display: 'flex', justifyContent: 'end', gap: '10px' }}>
         <ToggleButtonGroup
-          color="primary"
+          color='primary'
           value={queryParams}
           exclusive
           onChange={handleChange}
-          aria-label="Platform"
+          aria-label='Platform'
         >
-          <ToggleButton value="open">Generated</ToggleButton>
-          <ToggleButton value="closed">Completed</ToggleButton>
+          <ToggleButton value='open'>Generated</ToggleButton>
+          <ToggleButton value='closed'>Completed</ToggleButton>
         </ToggleButtonGroup>
       </Box>
     );
   };
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
 
@@ -412,12 +429,17 @@ const DSCFormList = () => {
         data={selectedData}
         refetch={refetch}
       />
-      <Box sx={{ height: "90vh", width: "100%" }}>
+      <Box sx={{ height: '90vh', width: '100%' }}>
         <CartGrid
           columns={columns}
           rows={rows}
           rowHeight={40}
-          Height={"89vh"}
+          Height={'89vh'}
+          pagination={pagination}
+          filterString={filterString}
+          setFilterString={setFilterString}
+          page={page}
+          setPage={setPage}
         />
       </Box>
       <Dialog
@@ -425,23 +447,23 @@ const DSCFormList = () => {
         onClose={() => {
           setStatusOpen(false);
           setSelectedData(null);
-          setSelectedStatus("");
+          setSelectedStatus('');
         }}
       >
         <DialogTitle>Select Status</DialogTitle>
-        <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <TextField
-            id="outlined-select-currency"
+            id='outlined-select-currency'
             select
-            label="Select"
+            label='Select'
             value={selectedStatus}
             onChange={(e) => {
               setSelectedStatus(e.target.value);
             }}
-            defaultValue="EUR"
-            helperText="Please select Repair query status"
+            defaultValue='EUR'
+            helperText='Please select Repair query status'
             sx={{
-              margin: "5px",
+              margin: '5px',
             }}
           >
             {selectOptions.map((option) => (
@@ -450,31 +472,31 @@ const DSCFormList = () => {
               </MenuItem>
             ))}
           </TextField>
-          {selectedStatus === "rejected" ? (
+          {selectedStatus === 'rejected' ? (
             <TextField
-              placeholder="The Reason For Rejection"
+              placeholder='The Reason For Rejection'
               value={rejectRemark}
               onChange={(e) => {
                 setRejectRemark(e.target.value);
               }}
             />
           ) : (
-            ""
+            ''
           )}
         </DialogContent>
         <DialogActions>
           <Button
-            variant="contained"
+            variant='contained'
             onClick={() => {
               setStatusOpen(false);
               setSelectedData(null);
-              setSelectedStatus("");
+              setSelectedStatus('');
             }}
           >
             Close
           </Button>
           <Button
-            variant="contained"
+            variant='contained'
             onClick={() => {
               const params = {
                 status: selectedStatus,

@@ -625,10 +625,25 @@ function App() {
                 <Route path="/FormViewMain" element={<DSCFormList />} />
                 <Route path="/signature" element={<SignaturePad />} />
                 <Route path="/CustomerForm" element={<CustomerForm />} />
+                
                 {/* /// Proforma */}
+
                 <Route path="/AddProforma" element={<AddProforma />} />
                 <Route path="/ProformaList" element={<ProformaList />} />
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
+                <Route path='/droneRepair' element={<RepairForm />} />
+                <Route path='/addCommonRepair' element={<AddCommonRepair />} />
+                <Route path='/viewDSCForm/:token' element={<DscFormView />} />
+                <Route path='/FormViewMain' element={<DSCFormList />} />
+                <Route path='/signature' element={<SignaturePad />} />
+                <Route path='/CustomerForm' element={<CustomerForm />} />
+                <Route path='/AddProforma' element={<AddProforma />} />
+                <Route path='/ProformaList' element={<ProformaList />} />
+                <Route path='/ProformaDetails' element={<ProformaDetails />} />
+                <Route path="/AddProforma" element={<AddProforma />} />
+                <Route path="/ProformaList" element={<ProformaList />} />
+                <Route path="/ProformaDetails" element={<ProformaDetails />} />
+                
                 {/* R&D */}
                 <Route
                   path="/AllInventoryData"

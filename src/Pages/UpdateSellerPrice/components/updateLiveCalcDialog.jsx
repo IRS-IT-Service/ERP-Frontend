@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Delete } from "@mui/icons-material";
@@ -18,25 +18,28 @@ import {
   InputAdornment,
   CircularProgress,
   Tooltip,
-} from '@mui/material';
+} from "@mui/material";
 import { useUpdateProductsColumnMutation } from "../../../features/api/productApiSlice";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import { toast } from "react-toastify";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
-
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  removeLiveCalcDetails,
+  setLiveCalcDetails,
+} from "../../../features/slice/LiveCalcReducer";
 const StyledCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? ' #0d0d0d' : '#eee',
-  height: '50px',
+  backgroundColor: theme.palette.mode === "dark" ? " #0d0d0d" : "#eee",
+  height: "50px",
   padding: 6,
-  color: theme.palette.mode === 'dark' ? '#fff' : 'black',
+  color: theme.palette.mode === "dark" ? "#fff" : "black",
   // Apply violet background color to specific columns
-  '&.violet-bg': {
-    backgroundColor: '#93C54B',
+  "&.violet-bg": {
+    backgroundColor: "#93C54B",
   },
-  '&.blue-bg': {
-    backgroundColor: '#606CF2',
+  "&.blue-bg": {
+    backgroundColor: "#606CF2",
   },
 }));
 
@@ -47,21 +50,25 @@ const UpdateLiveCalcDialog = ({
   userInfo,
   refetch,
   type,
-  removeSelectedItems,
+  setLocalData,
+  localData,
+  setSelectedItems,
+  setSelectedItemsData,
+  selectedItemsData,
+  selectedItems,
 }) => {
   // Initialization
   const socket = useSocket();
 
-console.log(data)
   // Local state
-  const [localData, setLocalData] = useState([...data]);
-console.log(localData)
+
   // RTK query
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
-  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
-
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation();
+  const { liveCalcDetails } = useSelector((state) => state.liveCalc);
+  const dispatch = useDispatch();
 
   // useEffect
   useEffect(() => {
@@ -88,6 +95,7 @@ console.log(localData)
     });
 
     setLocalData(newLocalData);
+    // dispatch(setLiveCalcDetails(newLocalData))
   }, [data]);
 
   // Handlers
@@ -138,7 +146,10 @@ console.log(localData)
               timeZone: "Asia/Kolkata",
             }),
           };
-          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          const whatsappMessage = {
+            message: liveStatusData.message,
+            contact: import.meta.env.VITE_ADMIN_CONTACT,
+          };
           await sendMessageToAdmin(whatsappMessage).unwrap();
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SalesPrice updated successfully");
@@ -154,9 +165,6 @@ console.log(localData)
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
-
-   
-
         }
         if (updatedSalesTax.length) {
           const params = {
@@ -187,9 +195,11 @@ console.log(localData)
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
-          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          const whatsappMessage = {
+            message: liveStatusData.message,
+            contact: import.meta.env.VITE_ADMIN_CONTACT,
+          };
           await sendMessageToAdmin(whatsappMessage).unwrap();
-
         }
 
         if (updatedSalesPrice.length || updatedSalesTax.length) {
@@ -249,9 +259,11 @@ console.log(localData)
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
-          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          const whatsappMessage = {
+            message: liveStatusData.message,
+            contact: import.meta.env.VITE_ADMIN_CONTACT,
+          };
           await sendMessageToAdmin(whatsappMessage).unwrap();
-
         }
         if (updatedSellerTax.length) {
           const params = {
@@ -282,7 +294,10 @@ console.log(localData)
             },
           };
           const historyRes = await createUserHistoryApi(addProductHistory);
-          const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+          const whatsappMessage = {
+            message: liveStatusData.message,
+            contact: import.meta.env.VITE_ADMIN_CONTACT,
+          };
           await sendMessageToAdmin(whatsappMessage).unwrap();
         }
       }
@@ -301,12 +316,54 @@ console.log(localData)
     }
   };
 
+  const removeSelectedItems = useCallback(
+    (id) => {
+      const newSelectedItemsIndex = selectedItems.indexOf(id);
+      const newSelectedRowsDataindex = selectedItemsData.findIndex(
+        (item) => item.id === id
+      );
+
+      if (newSelectedItemsIndex !== -1 && newSelectedRowsDataindex !== -1) {
+        // Create copies of the arrays
+        const newSelectedItems = selectedItems.slice();
+        const newSelectedRowsData = selectedItemsData.slice();
+
+        // Remove the item from the copies
+        newSelectedItems.splice(newSelectedItemsIndex, 1);
+        newSelectedRowsData.splice(newSelectedRowsDataindex, 1);
+
+        setSelectedItemsData(newSelectedRowsData);
+        setSelectedItems(newSelectedItems);
+      } else {
+        console.log(`Item with ID ${id} not found.`);
+      }
+    },
+    [selectedItems, selectedItemsData]
+  );
+//Reset value after delete elements
+  useEffect(() => {
+    const matchingArray = [];
+    selectedItemsData.forEach((item) => {
+      const match = liveCalcDetails.find((items) => item.SKU === items.SKU);
+      if (match) {
+        matchingArray.push(match);
+      }
+    });
+
+    if (matchingArray.length > 0) {
+      setLocalData(matchingArray);
+    }
+  }, [selectedItemsData, setSelectedItemsData]);
+
+
+
+
   const handleChange = (e, sku) => {
     const { value, name } = e.target;
-
+    let values = [];
     // Updating the values
     setLocalData((prevData) => {
-      return prevData.map((data) => {
+      return (values = prevData.map((data) => {
         if (sku === data.SKU) {
           // SalesTax Change
           if (name === "SalesTax") {
@@ -444,25 +501,25 @@ console.log(localData)
         } else {
           return data;
         }
-      });
+      }));
     });
 
     // Updating the correlated value
     if (name === "SalesTax") {
       // Handle SalesTax change if needed
     }
+    dispatch(setLiveCalcDetails(values));
   };
 
   // Columns
   const generateColumns = () => {
     let visibleColumns = [
-      { field: 'Sno', headerName: 'S.No' },
-      { field: 'SKU', headerName: 'SKU' },
-      { field: 'Name', headerName: 'Product' },
-      { field: 'Quantity', headerName: 'Quantity' },
-      { field: 'LandingCost', headerName: 'LC₹', preFix: '₹' },
-      { field: 'GST', headerName: 'GST %', preFix: '%' },
-  
+      { field: "Sno", headerName: "S.No" },
+      { field: "SKU", headerName: "SKU" },
+      { field: "Name", headerName: "Product" },
+      { field: "Quantity", headerName: "Quantity" },
+      { field: "LandingCost", headerName: "LC₹", preFix: "₹" },
+      { field: "GST", headerName: "GST %", preFix: "%" },
     ];
 
     if (type === "Sales") {
@@ -514,74 +571,74 @@ console.log(localData)
       visibleColumns = [
         ...visibleColumns,
         {
-          field: 'actualSellerProfit',
-          headerName: 'SPT%',
-          preFix: '%',
-          className: 'blue-bg',
+          field: "actualSellerProfit",
+          headerName: "SPT%",
+          preFix: "%",
+          className: "blue-bg",
         },
         {
-          field: 'ProfitSeller',
-          headerName: ' SP%',
+          field: "ProfitSeller",
+          headerName: " SP%",
           input: true,
-          preFix: '%',
-          className: 'blue-bg',
+          preFix: "%",
+          className: "blue-bg",
         },
         {
-          field: 'SellerTax',
-          headerName: 'Tax%',
+          field: "SellerTax",
+          headerName: "Tax%",
           input: true,
-          preFix: '%',
+          preFix: "%",
           // Apply violet background color to this column header
-          className: 'blue-bg',
+          className: "blue-bg",
         },
         {
-          field: 'SellerPrice',
-          headerName: 'SP₹',
+          field: "SellerPrice",
+          headerName: "SP₹",
           input: true,
-          preFix: '₹',
-          className: 'blue-bg',
+          preFix: "₹",
+          className: "blue-bg",
           // Apply violet background color to this column header
         },
         {
-          field: 'SellerPriceWithGst',
-          headerName: 'SP(GST)%',
-          preFix: '₹',
-          className: 'blue-bg',
+          field: "SellerPriceWithGst",
+          headerName: "SP(GST)%",
+          preFix: "₹",
+          className: "blue-bg",
         },
         {
-          field: 'ProfitSales',
-          headerName: 'SP%',
-          preFix: '%',
-          className: 'violet-bg',
+          field: "ProfitSales",
+          headerName: "SP%",
+          preFix: "%",
+          className: "violet-bg",
         },
         {
-          field: 'actualSalesProfit',
-          headerName: 'SPT%',
-          preFix: '%',
-          className: 'violet-bg',
+          field: "actualSalesProfit",
+          headerName: "SPT%",
+          preFix: "%",
+          className: "violet-bg",
         },
         {
-          field: 'SalesTax',
-          headerName: 'ST%',
-          preFix: '%',
-          className: 'violet-bg',
+          field: "SalesTax",
+          headerName: "ST%",
+          preFix: "%",
+          className: "violet-bg",
         },
         {
-          field: 'SalesPrice',
-          headerName: 'SP₹',
-          preFix: '₹',
-          className: 'violet-bg',
+          field: "SalesPrice",
+          headerName: "SP₹",
+          preFix: "₹",
+          className: "violet-bg",
         },
         {
-          field: 'SalesPriceWithGst',
-          headerName: 'SP(GST)%',
-          preFix: '₹',
-          className: 'violet-bg',
+          field: "SalesPriceWithGst",
+          headerName: "SP(GST)%",
+          preFix: "₹",
+          className: "violet-bg",
         },
         {
-          field: 'Remove',
-          headerName: 'Remove',
-          className: 'violet-bg',
+          field: "Remove",
+          headerName: "Remove",
+          className: "violet-bg",
         },
       ];
     }
@@ -592,31 +649,32 @@ console.log(localData)
   const columns = generateColumns();
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth='xxl'>
+    <Dialog open={open} onClose={handleClose} maxWidth="xxl">
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          color: 'white',
-          backgroundColor: '#4d4dff',
+          display: "flex",
+          justifyContent: "center",
+          color: "white",
+          backgroundColor: "#4d4dff",
         }}
       >
         <DialogTitle>{`Update ${type} Live Calculation`}</DialogTitle>
       </Box>
       <DialogContent>
-        <TableContainer sx={{ maxHeight: '60vh' }}>
-          <Table stickyHeader aria-label='sticky table' sx={{marginTop: '2%',}}>
+        <TableContainer sx={{ maxHeight: "60vh" }}>
+          <Table
+            stickyHeader
+            aria-label="sticky table"
+            sx={{ marginTop: "2%" }}
+          >
             <TableHead>
               <TableRow>
-                {columns.map((column,index) => (
-                  <Tooltip
-                    title={`${column.field}`}
-                    placement='top'
-                  >
+                {columns.map((column, index) => (
+                  <Tooltip title={`${column.field}`} placement="top">
                     <StyledCell
                       sx={{
-                        fontSize: '.7rem',
-                        textAlign: 'center',
+                        fontSize: ".7rem",
+                        textAlign: "center",
                       }}
                       // Check for the "violet-bg" class and apply it to the header cell
                       className={column.className}
@@ -630,10 +688,9 @@ console.log(localData)
             </TableHead>
             <TableBody>
               {localData.map((item, index) => {
-                console.log(item)
                 return (
                   <TableRow key={item.SKU}>
-                    <TableCell sx={{ fontSize: '.8rem', textAlign: 'center' }}>
+                    <TableCell sx={{ fontSize: ".8rem", textAlign: "center" }}>
                       {index + 1}
                     </TableCell>
                     {columns.slice(1).map((column, index) => {
@@ -642,20 +699,20 @@ console.log(localData)
                           <TableCell
                             key={index}
                             sx={{
-                              fontSize: '.8rem',
-                              textAlign: 'center',
-                              minWidth: '85px',
+                              fontSize: ".8rem",
+                              textAlign: "center",
+                              minWidth: "85px",
                             }}
                           >
                             <TextField
-                              type='number'
+                              type="number"
                               name={column.field}
                               sx={{
-                                '& input': {
-                                  width: '60px',
-                                  height: '25px',
-                                  padding: '4px',
-                                  borderRadius: '6px',
+                                "& input": {
+                                  width: "60px",
+                                  height: "25px",
+                                  padding: "4px",
+                                  borderRadius: "6px",
                                 },
                               }}
                               value={item[column.field]}
@@ -669,48 +726,48 @@ console.log(localData)
                                 //   </InputAdornment>
                                 // ),
                                 startAdornment: (
-                                  <InputAdornment position='start'>
-                                    {column.preFix || ''}
+                                  <InputAdornment position="start">
+                                    {column.preFix || ""}
                                   </InputAdornment>
                                 ),
                               }}
                             />
                           </TableCell>
                         );
-                      } else if (column.field === 'SalesPriceWithGst') {
+                      } else if (column.field === "SalesPriceWithGst") {
                         return (
                           <TableCell
                             key={index}
-                            sx={{ fontSize: '.8rem', textAlign: 'center' }}
+                            sx={{ fontSize: ".8rem", textAlign: "center" }}
                           >
                             {Math.round(
                               +item.SalesPrice +
                                 (item.GST / 100) * item.SalesPrice
-                            )}{' '}
-                            {column.preFix ? column.preFix : ''}
+                            )}{" "}
+                            {column.preFix ? column.preFix : ""}
                           </TableCell>
                         );
-                      } else if (column.field === 'SellerPriceWithGst') {
+                      } else if (column.field === "SellerPriceWithGst") {
                         return (
                           <TableCell
                             key={index}
-                            sx={{ fontSize: '.8rem', textAlign: 'center' }}
+                            sx={{ fontSize: ".8rem", textAlign: "center" }}
                           >
                             {Math.round(
                               +item.SellerPrice +
                                 (item.GST / 100) * item.SellerPrice
-                            )}{' '}
-                            {column.preFix ? column.preFix : ''}
+                            )}{" "}
+                            {column.preFix ? column.preFix : ""}
                           </TableCell>
                         );
-                      } else if (column.field === 'Remove') {
+                      } else if (column.field === "Remove") {
                         return (
                           <TableCell
                             key={index}
                             sx={{
-                              fontSize: '.8rem',
-                              textAlign: 'center',
-                              cursor: 'pointer',
+                              fontSize: ".8rem",
+                              textAlign: "center",
+                              cursor: "pointer",
                             }}
                             onClick={() => {
                               removeSelectedItems(item.SKU);
@@ -723,10 +780,10 @@ console.log(localData)
                       return (
                         <TableCell
                           key={index}
-                          sx={{ fontSize: '.8rem', textAlign: 'center' }}
+                          sx={{ fontSize: ".8rem", textAlign: "center" }}
                         >
-                          {item[column.field]}{' '}
-                          {column.preFix ? column.preFix : ''}
+                          {item[column.field]}{" "}
+                          {column.preFix ? column.preFix : ""}
                         </TableCell>
                       );
                     })}
@@ -739,14 +796,14 @@ console.log(localData)
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleUpdate} color='primary'>
+        <Button onClick={handleUpdate} color="primary">
           {updateProductLoading ? (
-            <CircularProgress size={24} color='inherit' />
+            <CircularProgress size={24} color="inherit" />
           ) : (
-            'Submit'
+            "Submit"
           )}
         </Button>
-        <Button onClick={handleClose} color='primary'>
+        <Button onClick={handleClose} color="primary">
           Close
         </Button>
       </DialogActions>

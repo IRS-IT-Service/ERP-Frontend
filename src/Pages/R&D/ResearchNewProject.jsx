@@ -158,7 +158,7 @@ const ResearchNewProject = () => {
       description: createProjectForm.description,
     };
     try {
-      const res = await addNewProjectData(requestData).unwrap();
+      const res = await addNewProjectData(requestData);
       toast.success(`Project Added successfully`);
     } catch (error) {
       toast.error(error);
@@ -213,6 +213,11 @@ const ResearchNewProject = () => {
     },
     {
       id: 8,
+      label: 'Edit & Update Project ',
+      minWidth: 120,
+    },
+    {
+      id: 9,
       label: 'Project Detail ',
       minWidth: 120,
     },
@@ -314,7 +319,7 @@ const ResearchNewProject = () => {
       sku: 'SKU',
       productName: 'Product Name',
       button: 'Select Part',
-      qty: 'Qty'
+      qty: 'Qty',
     },
   ];
 
@@ -419,19 +424,13 @@ const ResearchNewProject = () => {
         },
       ]);
     }
-    
     setOpenCloseAddPart(!openCloseAddPart);
     console.log(selectedRow);
-    setSelectedBarcodeData([], () => {
-      console.log(selectedBarcodeData);
-    });
+    setSelectedBarcodeData([]);
   };
   const clearAndCloseHandler = () => {
     setSelectedBarcodeData([]);
     setOpenCloseAddPart(!openCloseAddPart);
-    setSelectedBarcodeData([], () => {
-      console.log(selectedBarcodeData);
-    });
   };
 
   const barcodeDataSubmitted = () => {
@@ -452,6 +451,11 @@ const ResearchNewProject = () => {
   const handleOpenClosePD = (row) => {
     setOpenClosePD(!openClosePD);
     setProjectDetailData(row);
+  };
+
+  const [openCloseEP, setOpenCloseEP] = useState(false);
+  const handleOpenCloseEP = (row) => {
+    setOpenCloseEP(!openCloseEP);
   };
 
   const [page, setPage] = React.useState(0);
@@ -487,7 +491,9 @@ const ResearchNewProject = () => {
     setOpen(false);
   };
 
-  const [displayBarcode, setDisplayBarcode] = useState(false);
+  const [displayBarcode, setDisplayBarcode] = useState(
+    Array(addPartsData.length).fill(false)
+  );
   const [barcodeData, setBarcodeData] = useState([]);
   const showBarcodeHandler = (barcode) => {
     setBarcodeData(barcode);
@@ -688,6 +694,14 @@ const ResearchNewProject = () => {
                     <TableCell>
                       <Button
                         variant='contained'
+                        onClick={() => handleOpenCloseEP(row)}
+                      >
+                        Edit & Update Project
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant='contained'
                         onClick={() => handleOpenClosePD(row)}
                       >
                         View
@@ -788,6 +802,7 @@ const ResearchNewProject = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+
             {/* parts barcode table */}
             <TableContainer
               sx={{
@@ -853,7 +868,7 @@ const ResearchNewProject = () => {
                           color='error'
                           onClick={toggleBarcode}
                         >
-                          <ClearIcon/>
+                          <ClearIcon />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -861,28 +876,29 @@ const ResearchNewProject = () => {
                 ))}
 
                 <TableBody>
-                  {barcodeData?.barcode?.map((data, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>
-                        {data?.Barcode?.isAssigned === true ? (
-                          <Checkbox disabled />
-                        ) : (
-                          <Checkbox
-                            onClick={() =>
-                              selectBarcodeHandler(barcodeData, data)
-                            }
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell>{data?.Barcode?.Barcode}</TableCell>
-                      <TableCell colSpan={2}>{`${
-                        data?.Barcode?.isAssigned === true
-                          ? 'in USE'
-                          : 'IN INVENTORY'
-                      }`}</TableCell>
-                    </TableRow>
-                  ))}
+                  {displayBarcode &&
+                    barcodeData?.barcode?.map((data, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>
+                          {data?.Barcode?.isAssigned === true ? (
+                            <Checkbox disabled />
+                          ) : (
+                            <Checkbox
+                              onClick={() =>
+                                selectBarcodeHandler(barcodeData, data)
+                              }
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell>{data?.Barcode?.Barcode}</TableCell>
+                        <TableCell colSpan={2}>{`${
+                          data?.Barcode?.isAssigned === true
+                            ? 'in USE'
+                            : 'IN INVENTORY'
+                        }`}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -1100,6 +1116,163 @@ const ResearchNewProject = () => {
             </RadioGroup>
 
             <Button onClick={handleOpenClosePD}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* edit product */}
+        <Dialog open={openCloseEP} onClose={handleOpenCloseEP} maxWidth='xl'>
+          <DialogTitle
+            sx={{
+              minWidth: '60vw',
+              minHeight: '12vh',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              backgroundColor: 'skyblue',
+              // border: '2px solid black'
+            }}
+          >
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 'wrap',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: '1.4rem',
+                }}
+              >
+                Edit & Update Project
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography sx={{ fontWeight: '600' }}>
+                    ProjectId: {` `}
+                  </Typography>
+                  <Typography>
+                    {' '}
+                    <InputBase
+                      value={projectDetailData?.projectId}
+                      sx={{
+                        // borderBottom: '2px solid grey',
+                        maxHeight: '20px',
+                        maxWidth: '120px',
+                        paddingX: '1.5%',
+                      }}
+                    />
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {' '}
+                  <Typography sx={{ fontWeight: '600' }}>
+                    ProjectName:
+                  </Typography>
+                  <Typography>
+                    <InputBase
+                      value={projectDetailData?.projectName}
+                      sx={{
+                        textAlign: 'center',
+                        maxHeight: '20px',
+                        maxWidth: '180px',
+                        paddingX: '2.5%',
+                      }}
+                    />
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </DialogTitle>
+
+          <DialogContent>
+            <TableContainer sx={{}}>
+              <Table stickyHeader aria-label='sticky table'>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Sno</TableCell>
+                    <TableCell>Barcode</TableCell>
+                    <TableCell>Change Barcode Status</TableCell>
+                    <TableCell>Part Damage</TableCell>
+                    <TableCell>Return Parts to Inventory</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>1</TableCell>
+                    <TableCell>12205925895045</TableCell>
+                    <TableCell>
+                      <Button variant='text'>status</Button>
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox {...label} />
+                    </TableCell>
+                    <TableCell>
+                      <Button variant='text'>return</Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              justifyContent: 'space-between',
+            }}
+          >
+            <RadioGroup
+              aria-label='status'
+              name='status'
+              // value={projectDetail.status}
+              // onChange={handleStatusChange}
+              row
+            >
+              <FormControlLabel
+                value='Complete'
+                control={<Radio />}
+                label='Complete'
+              />
+              <FormControlLabel
+                value='Incomplete'
+                control={<Radio />}
+                label='Incomplete'
+              />
+            </RadioGroup>
+            <Box sx={{ display: 'flex', gap: '10px' }}>
+              <Button
+                variant='text'
+                // onClick={updateProjectStatus}
+              >
+                Update
+              </Button>
+              <Button variant='text' onClick={handleOpenCloseEP}>
+                Close
+              </Button>
+            </Box>
           </DialogActions>
         </Dialog>
       </Box>

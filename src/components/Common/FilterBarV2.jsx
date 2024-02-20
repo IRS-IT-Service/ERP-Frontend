@@ -19,11 +19,15 @@ import {
   TableCell,
   tableCellClasses,
 } from "@mui/material";
-import { setDeepSearch } from "../../features/slice/productSlice";
+import {
+  setDeepSearch,
+  setSearchTerm,
+} from "../../features/slice/productSlice";
 import { useEffect } from "react";
 import {
   setCheckedBrand,
   setCheckedCategory,
+  setCheckedGST,
 } from "../../features/slice/productSlice";
 
 /// style
@@ -54,20 +58,28 @@ const FilterBarV2 = ({
   customButton2,
   customButton3,
   customButton4,
-  customButton5,
   apiRef,
+  count,
 }) => {
   /// initialize
   const dispatch = useDispatch();
 
   /// global state
-  const { brands, categories, checkedCategory, checkedBrand, deepSearch } =
-    useSelector((state) => state.product);
+  const {
+    GST,
+    brands,
+    categories,
+    checkedCategory,
+    checkedGST,
+    checkedBrand,
+    deepSearch,
+  } = useSelector((state) => state.product);
 
   ///local state
   const [Opensortdialog, setOpensortdialog] = useState({
     category: false,
     brand: false,
+    GST: false,
   });
 
   /// useEffect
@@ -77,7 +89,7 @@ const FilterBarV2 = ({
       apiRef?.current?.setPage(0);
       apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     }
-  }, [checkedBrand, checkedCategory]);
+  }, [checkedBrand, checkedCategory, checkedGST]);
 
   /// handlers
 
@@ -91,6 +103,13 @@ const FilterBarV2 = ({
       setOpensortdialog({
         ...Opensortdialog,
         category: !Opensortdialog.category,
+      });
+      return;
+    }
+    if (type === "GST") {
+      setOpensortdialog({
+        ...Opensortdialog,
+        GST: !Opensortdialog.GST,
       });
       return;
     }
@@ -130,11 +149,27 @@ const FilterBarV2 = ({
       }
       return;
     }
+
+    if (type === "GST") {
+      if (isChecked) {
+        const index = checkedGST.indexOf(item);
+        if (index !== -1) {
+          const newChecked = [...checkedGST];
+          newChecked.splice(index, 1);
+          dispatch(setCheckedGST(newChecked));
+        }
+      } else {
+        const newChecked = [...checkedGST, item];
+        dispatch(setCheckedGST(newChecked));
+      }
+      return;
+    }
   };
 
   const handleClearFilters = () => {
     dispatch(setCheckedBrand([]));
     dispatch(setCheckedCategory([]));
+    dispatch(setCheckedGST([]));
     dispatch(setDeepSearch(""));
     apiRef?.current?.setPage(0);
     apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
@@ -143,6 +178,22 @@ const FilterBarV2 = ({
   return (
     <div>
       <StyledGrid container xl={12}>
+        {count && count.length > 0 && (
+          <Typography
+            sx={{
+              fontWeight: "bold",
+              margin: "12px",
+              padding: "2px",
+              color: "black",
+              background: "white",
+              border: "2px solid black",
+              borderRadius: "10px",
+            }}
+          >
+            {" "}
+            {count.length}
+          </Typography>
+        )}
         <FormGroup>
           <Box
             sx={{
@@ -155,13 +206,6 @@ const FilterBarV2 = ({
               alignItems: "start",
             }}
           >
-            <Box
-              sx={{
-                mt: 0.7,
-              }}
-            >
-              {customButton5}
-            </Box>
             <StyledButton onClick={() => handleOpenClose("brand")}>
               <Badge
                 badgeContent={checkedBrand && checkedBrand.length}
@@ -196,9 +240,26 @@ const FilterBarV2 = ({
                 </Typography>
               </Badge>
             </StyledButton>
+            <StyledButton onClick={() => handleOpenClose("GST")}>
+              <Badge
+                badgeContent={checkedGST && checkedGST.length}
+                sx={{ color: "blue" }}
+              >
+                <Typography
+                  variant="span"
+                  sx={{
+                    background: "transparent",
+                    color: "gray",
+                  }}
+                >
+                  Sort By GST
+                </Typography>
+              </Badge>
+            </StyledButton>
 
             {(checkedBrand && checkedBrand.length >= 1) ||
             (checkedCategory && checkedCategory.length >= 1) ||
+            (checkedGST && checkedGST.length >= 1) ||
             deepSearch ? (
               <StyledButton
                 onClick={() => handleClearFilters()}
@@ -335,6 +396,81 @@ const FilterBarV2 = ({
                 </TableContainer>
               </Box>
             </Popover>
+            {/* GST */}
+            <Popover
+              open={Opensortdialog.GST}
+              sx={{ p: 2, width: "80vw" }}
+              onClose={() => handleOpenClose("GST")}
+              anchorReference="anchorPosition"
+              anchorPosition={{ top: 100, left: 280 }}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <Box sx={{ width: "80vw", height: "50vh" }}>
+                <Typography
+                  component="span"
+                  sx={{
+                    textDecoration: "underline",
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  Sort By GST{" "}
+                </Typography>
+                <TableContainer>
+                  <Table aria-label="simple table" size="small">
+                    <TableBody>
+                      {GST?.map((item, index) => {
+                        if (index % 7 === 0) {
+                          const rowItems = GST.slice(index, index + 7);
+
+                          return (
+                            <TableRow key={index}>
+                              {rowItems.map((rowItem, rowIndex) => {
+                                const rowItemIndex = index + rowIndex;
+                                const isChecked = checkedGST.includes(rowItem);
+                                return (
+                                  <StyledTableCell
+                                    align="left"
+                                    key={rowItemIndex}
+                                  >
+                                    <FormControlLabel
+                                      control={<Checkbox checked={isChecked} />}
+                                      value={rowItem}
+                                      label={"GST " + rowItem + "%"}
+                                      sx={{
+                                        "& .MuiSvgIcon-root": {
+                                          fontSize: 15,
+                                        },
+                                        "& .MuiFormControlLabel-label": {
+                                          fontSize: "14px",
+                                        },
+                                        paddingLeft: "10px",
+                                      }}
+                                      onChange={(event) =>
+                                        handleCheckBoxChange(
+                                          rowItem,
+                                          "GST",
+                                          isChecked
+                                        )
+                                      }
+                                    />
+                                  </StyledTableCell>
+                                );
+                              })}
+                            </TableRow>
+                          );
+                        }
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            </Popover>
+            {/* GST end */}
             <Popover
               open={Opensortdialog.category}
               sx={{ p: 2, width: "80vw" }}
