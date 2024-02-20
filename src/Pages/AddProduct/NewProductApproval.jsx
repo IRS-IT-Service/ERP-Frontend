@@ -37,7 +37,7 @@ const NewProductApproval = () => {
   const [rows, setRows] = useState([]);
   const [skip, setSkip] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
-
+  const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [sendWhatsAppmessage] = useSendMessageMutation();
   /// rtk query
   const { data, isLoading, refetch, isFetching } =
@@ -112,7 +112,7 @@ const NewProductApproval = () => {
       const liveStatusData = {
         message: `${userInfo.name}  ${
           status ? "Approved" : "Rejected"
-        } ${name} `,
+        } ${selectedItemsData} `,
         time: new Date().toLocaleTimeString("en-IN", {
           timeZone: "Asia/Kolkata",
         }),
@@ -129,7 +129,7 @@ const NewProductApproval = () => {
         type: "newProduct",
       };
 
-      console.log(params);
+     
 
       const res = await approvalApi(params).unwrap();
 
@@ -146,7 +146,14 @@ const NewProductApproval = () => {
 
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
+
+    const newSelectedRowsData = rows
+    .filter((item) => selectionModel.includes(item.id))
+    .map((item) => item.Name);
+
+    setSelectedItemsData(newSelectedRowsData);
   };
+
   // Column
   const columns = [
     {
