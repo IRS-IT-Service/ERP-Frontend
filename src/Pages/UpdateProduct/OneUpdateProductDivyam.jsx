@@ -8,6 +8,7 @@ import {
   Paper,
   Typography,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 
 import React, { useState, useEffect } from "react";
@@ -22,6 +23,7 @@ import {
 } from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
 import { toast } from "react-toastify";
+import { useGetDynamicValueQuery } from "../../features/api/productApiSlice";
 
 const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
   /// global state
@@ -39,6 +41,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
     subItems: [""],
     packageDimensions: [{ width: "", height: "", length: "", weight: "" }],
   });
+
   const [isEdited, setIsEdited] = useState(false);
 
   /// RTK query
@@ -46,6 +49,8 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
     skip: !open,
     refetchOnMountOrArgChange: true,
   });
+
+  const { data: getDynaicValue } = useGetDynamicValueQuery();
 
   const [updateProductApi, { isLoading: updateLoading }] =
     useUpdateOneProductMutation();
@@ -67,7 +72,6 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
 
     setForm({ ...form, subItems: currentSubitem });
   };
-
   const handleAddPackageDimensions = () => {
     const currentPackageDimensions = [...form.packageDimensions];
     currentPackageDimensions.push({
@@ -91,7 +95,13 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
 
     setForm({ ...form, packageDimensions: currentPackageDimensions });
   };
-
+  // const handle option value change
+  const handleSelectedChange = (value, field) => {
+    setForm({
+      ...form,
+      [field]: value,
+    });
+  };
   const handleChange = (type, value, index, name) => {
     if (data?.data?.isChanged) {
       return toast.error("Cant Be Edited Product Changes Approval Pending");
@@ -288,7 +298,6 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
               padding: "0.5% 0%",
             }}
           >
-            {" "}
             <TextField
               id="outlined-basic"
               label="Product Name"
@@ -304,7 +313,65 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                 },
               }}
             />
-            <TextField
+            <Autocomplete
+              style={{
+                width: "20%",
+                backgroundColor: "rgba(255, 255, 255)",
+              }}
+              options={getDynaicValue?.data?.[0]?.Brand || []}
+              getOptionLabel={(option) => String(option)}
+              value={form.brand || ""}
+              onChange={(event, value) => handleSelectedChange(value, "brand")}
+              renderInput={(params) => (
+                <TextField {...params} label="Brand Name" />
+              )}
+            />
+
+            <Autocomplete
+              style={{
+                width: "20%",
+                backgroundColor: "rgba(255, 255, 255)",
+              }}
+              options={getDynaicValue?.data?.[0]?.Category || []}
+              getOptionLabel={(option) => String(option)}
+              value={form.category || ""}
+              onChange={(event, value) =>
+                handleSelectedChange(value, "category")
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Select Category" />
+              )}
+            />
+
+            <Autocomplete
+              style={{
+                width: "20%",
+                backgroundColor: "rgba(255, 255, 255)",
+              }}
+              options={getDynaicValue?.data?.[0]?.SubCategory || []}
+              getOptionLabel={(option) => String(option)}
+              value={form.subCategory || ""}
+              onChange={(event, value) =>
+                handleSelectedChange(value, "subCategory")
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Select Sub Category" />
+              )}
+            />
+
+            <Autocomplete
+              style={{
+                width: "8%",
+                backgroundColor: "rgba(255, 255, 255)",
+              }}
+              options={getDynaicValue?.data?.[0]?.GST || []}
+              getOptionLabel={(option) => String(option)}
+              value={form.gst || ""}
+              onChange={(event, value) => handleSelectedChange(value, "gst")}
+              renderInput={(params) => <TextField {...params} label="Gst" />}
+            />
+
+            {/* <TextField
               id="outlined-basic"
               label="Brand Name"
               variant="outlined"
@@ -318,8 +385,8 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                   width: "18vw",
                 },
               }}
-            />
-            <TextField
+            /> */}
+            {/* <TextField
               id="outlined-basic"
               label="Category"
               value={form?.category}
@@ -333,8 +400,8 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                   width: "12vw",
                 },
               }}
-            />
-            <TextField
+            /> */}
+            {/* <TextField
               id="outlined-basic"
               label="SubCategory"
               value={form?.subCategory}
@@ -348,8 +415,8 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                   width: "12vw",
                 },
               }}
-            />
-            <TextField
+            /> */}
+            {/* <TextField
               id="outlined-basic"
               label="GST(%)"
               variant="outlined"
@@ -364,7 +431,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                   width: "2.7vw",
                 },
               }}
-            />
+            />  */}
           </Box>
 
           <Box
