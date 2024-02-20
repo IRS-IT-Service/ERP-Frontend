@@ -197,6 +197,7 @@ const AddProductBoxesDetails = () => {
         subItems: [""],
         packageDimensions: [{ width: "", height: "", length: "", weight: "" }],
       });
+    window.location.reload();
     } catch (e) {
       console.log("error At Add Product");
       console.log(e.message);
