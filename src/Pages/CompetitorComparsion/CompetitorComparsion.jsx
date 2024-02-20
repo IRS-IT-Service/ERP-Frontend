@@ -114,7 +114,7 @@ const CompetitorComparsion = () => {
     >
       <DrawerHeader />
       <Header
-        Name={"Competitor Comparsion"}
+        Name={"Competitor Comparison"}
         info={true}
         customOnClick={handleOpen}
       />

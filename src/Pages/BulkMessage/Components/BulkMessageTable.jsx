@@ -59,7 +59,7 @@ const BulkMessageTable = () => {
     const file = event.target.files[0];
     setFileUploaded(true);
     setFile(file)
-    console.log(file)
+
   };
 
   const handleClickOpen = () => {
@@ -185,6 +185,7 @@ refetch()
         <Box
           sx={{
             width: "30%",
+            marginTop:"2rem",
             display: "flex",
             flexDirection: "column",
             justifyItems: "center",
@@ -301,7 +302,7 @@ refetch()
             </Button>
           </Box>
         </Box>
-        <Box sx={{ width: "35%" }}>
+        <Box sx={{ width: "35%",marginTop:"2rem" }}>
           <Box sx={{ height: "72vh", width: "100%" }}>
             <DataGrid
               rows={rows}
@@ -311,11 +312,11 @@ refetch()
               initialState={{
                 pagination: {
                   paginationModel: {
-                    pageSize: 10,
+                    pageSize: 50,
                   },
                 },
               }}
-              pageSizeOptions={[10]}
+              pageSizeOptions={[50]}
               checkboxSelection
               disableRowSelectionOnClick
               onRowSelectionModelChange={handleSelectionChange}
