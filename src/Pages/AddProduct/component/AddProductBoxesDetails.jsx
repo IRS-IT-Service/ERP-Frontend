@@ -32,7 +32,7 @@ const AddProductBoxesDetails = () => {
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
   const { data: getDynaicValue } = useGetDynamicValueQuery();
-  
+
   /// handlers
   const handleAddSubItems = () => {
     const currentSubitem = [...form.subItems];
