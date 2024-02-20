@@ -26,7 +26,7 @@ const userRolesData = [
         notification: true,
       },
       {
-        id: 54,
+        id: 64,
         name: "Company Assets",
         path: "/viewAssets",
         icon: "fa-solid fa-thumbs-up",
@@ -471,6 +471,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 63
+// last routes is 64
 
 export default userRolesData;
