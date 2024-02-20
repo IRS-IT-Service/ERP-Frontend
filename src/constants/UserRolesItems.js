@@ -26,7 +26,7 @@ const userRolesData = [
         notification: true,
       },
       {
-        id: 54,
+        id: 64,
         name: "Company Assets",
         path: "/viewAssets",
         icon: "fa-solid fa-thumbs-up",
@@ -47,12 +47,13 @@ const userRolesData = [
         notification: true,
       },
       {
-        id: 62,
-        name: "AddRoboProuctValue",
-        path: "/AddRoboProductsValue",
+        id: 63,
+        name: "BulkMessage",
+        path: "/BulkMessage",
         icon: "fa fa-comment",
         notification: true,
       },
+    
     ],
   },
   {
@@ -107,6 +108,13 @@ const userRolesData = [
         name: "Removed Products",
         path: "/removedProduct",
         icon: "fa-solid fa-skull",
+      },
+      {
+        id: 62,
+        name: "Add Brand/Category",
+        path: "/AddRoboProductsValue",
+        icon: "fas fa-plus",
+        notification: true,
       },
     ],
   },
@@ -463,6 +471,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 62
+// last routes is 64
 
 export default userRolesData;

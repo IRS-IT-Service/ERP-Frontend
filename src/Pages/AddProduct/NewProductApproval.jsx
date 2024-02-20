@@ -14,6 +14,8 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { toast } from "react-toastify";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useSendMessageMutation } from "../../features/api/whatsAppApiSlice";
+import { useSelector } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -29,11 +31,14 @@ const NewProductApproval = () => {
   const handleOpen = () => {
     setInfoOpen(true);
   };
+
+  const { userInfo } = useSelector((state) => state.auth);
   /// local state
   const [rows, setRows] = useState([]);
   const [skip, setSkip] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
-
+  const [selectedItemsData, setSelectedItemsData] = useState([]);
+  const [sendWhatsAppmessage] = useSendMessageMutation();
   /// rtk query
   const { data, isLoading, refetch, isFetching } =
     useGetPendingProductQuery("NewProduct");
@@ -64,7 +69,7 @@ const NewProductApproval = () => {
 
   /// handlers
 
-  const handleSubmit = async (SKU, status) => {
+  const handleSubmit = async (SKU, status, name) => {
     setSkip(false);
     try {
       const params = {
@@ -72,9 +77,22 @@ const NewProductApproval = () => {
         status,
         type: "newProduct",
       };
+      const liveStatusData = {
+        message: `${userInfo.name}  ${
+          status ? "Approved" : "Rejected"
+        } ${name} `,
+        time: new Date().toLocaleTimeString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        }),
+      };
 
+      const datas = {
+        message: liveStatusData.message,
+        approvalName: "New Product Approval",
+      };
       const res = await approvalApi(params).unwrap();
       toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
+      await sendWhatsAppmessage(datas).unwrap();
       refetch();
       refetchUnApprovedCount();
     } catch (e) {
@@ -91,6 +109,19 @@ const NewProductApproval = () => {
         toast.error("Please Select a Product First");
         return;
       }
+      const liveStatusData = {
+        message: `${userInfo.name}  ${
+          status ? "Approved" : "Rejected"
+        } ${selectedItemsData} `,
+        time: new Date().toLocaleTimeString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        }),
+      };
+
+      const datas = {
+        message: liveStatusData.message,
+        approvalName: "New Product Approval",
+      };
 
       const params = {
         SKU: selectedItems,
@@ -98,11 +129,12 @@ const NewProductApproval = () => {
         type: "newProduct",
       };
 
-      console.log(params);
+     
 
       const res = await approvalApi(params).unwrap();
 
       toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
+      await sendWhatsAppmessage(datas).unwrap();
       refetch();
       refetchUnApprovedCount();
     } catch (e) {
@@ -114,7 +146,14 @@ const NewProductApproval = () => {
 
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
+
+    const newSelectedRowsData = rows
+    .filter((item) => selectionModel.includes(item.id))
+    .map((item) => item.Name);
+
+    setSelectedItemsData(newSelectedRowsData);
   };
+
   // Column
   const columns = [
     {
@@ -233,7 +272,7 @@ const NewProductApproval = () => {
             {" "}
             <ThumbUpIcon
               onClick={() => {
-                handleSubmit(params.row.SKU, true);
+                handleSubmit(params.row.SKU, true, params.row.Name);
               }}
             />
           </div>
@@ -261,7 +300,7 @@ const NewProductApproval = () => {
           >
             <ThumbDownIcon
               onClick={() => {
-                handleSubmit(params.row.SKU, false);
+                handleSubmit(params.row.SKU, false, params.row.Name);
               }}
             />
           </div>

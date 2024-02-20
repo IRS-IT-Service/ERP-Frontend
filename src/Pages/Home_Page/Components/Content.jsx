@@ -22,10 +22,9 @@ const Content = ({ autoHeight, text }) => {
 
   /// global state
   const { isAdmin, productColumns } = useSelector((state) => state.auth);
-  const { deepSearch, checkedBrand, checkedCategory } = useSelector(
-    (state) => state.product
-  );
-console.log(deepSearch)
+  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
+  useSelector((state) => state.product);
+
   /// local state
   const [rows, setRows] = useState([]);
   const [hiddenColumns, setHiddenColumns] = useState({});
@@ -102,12 +101,21 @@ console.log(deepSearch)
     checkedCategory.forEach((item, index) => {
       newFilterString += `&category=${item}`;
     });
-    if (!checkedCategory.length && !checkedBrand.length) {
+
+    checkedGST.forEach((item, index) => {
+      if (index === 0) {
+        newFilterString += `&gst=${item}`;
+      } else {
+        newFilterString += `&gst=${item}`;
+      }
+    });
+    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
       setFilterString(`${newFilterString}page=1`);
       return;
     }
+
     setFilterString(`${newFilterString}&page=1`);
-  }, [checkedBrand, checkedCategory]);
+  }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
     apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
@@ -346,7 +354,7 @@ console.log(deepSearch)
   }
   return (
     <Box sx={{ height: "100%", wdth: "100%", overflow: "hidden" }}>
-      <FilterBarV2 apiRef={apiRef} />
+      <FilterBarV2 apiRef={apiRef}  />
 
       <Grid container>
         <Loading loading={productLoading || isFetching} />
