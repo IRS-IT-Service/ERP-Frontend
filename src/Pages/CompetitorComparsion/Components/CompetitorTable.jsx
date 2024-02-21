@@ -83,12 +83,6 @@ const CompetitorTable = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
-  // const  handleInputChage = (e) =>{
-  //   const { value } = e.target;
-  //   const { name } = e.target;
-  //   const FinalValue = {[name]:value}
-  //   setInputValue((prev)=>[...prev ,FinalValue]);
-  // }
 
   useEffect(() => {
     if (allCompetitor) {
@@ -102,22 +96,11 @@ const CompetitorTable = () => {
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
           cellClassName: "super-app-theme--cell",
-    
         }))
       );
       setCompetitorColumns(updatedColumns);
     }
   }, [allCompetitor]);
-
- 
-
-  // const handleSelectionChange = (selectionModel) => {
-  //   setSelectedItems(selectionModel);
-  //   const newSelectedRowsData = rows.filter((item) =>
-  //     selectionModel.includes(item.id)
-  //   );
-  //   setSelectedItemsData(newSelectedRowsData);
-  // };
 
   const handleSelectionChange = (ids) => {
     setSelectedItems(ids);
@@ -146,10 +129,10 @@ const CompetitorTable = () => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         let CompName = {};
-      item.CompetitorPrice.forEach((compItem) => {
-        CompName[compItem.Name] = compItem.Price;
-      });
-      
+        item.CompetitorPrice.forEach((compItem) => {
+          CompName[compItem.Name] = compItem.Price;
+        });
+
         return {
           id: index,
           Sno:
@@ -162,8 +145,8 @@ const CompetitorTable = () => {
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
           Category: item.Category,
-        ...CompName
-       
+          competitor: item.CompetitorPrice,
+          ...CompName,
         };
       });
       dispatch(setAllProductsV2(allProductData.data));
@@ -188,43 +171,6 @@ const CompetitorTable = () => {
     setInput({});
   };
 
-  // const handleInputChange = (event, SKU, index, columnName) => {
-  //   const { value } = event.target;
-  //   setData(prevData => {
-  //     // Make a copy of the previous data
-  //     const newData = [...prevData];
-  //     // Find the specific object in the array based on index
-  //     const updatedObject = newData[index] || {};
-  //     // Update the specific property with the provided column name and value
-  //     updatedObject[SKU] = SKU;
-  //     updatedObject[columnName] = value;
-  //     // Update the array with the modified object
-  //     newData[index] = updatedObject;
-  //     // Return the updated array of objects in the required format
-  //     return newData.map(item => ({
-  //       SKU: item[SKU],
-  //       columnName: item[columnName],
-  //       value: item.value
-  //     }));
-  //   });
-  // };
-
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
-    const email = formJson.email;
-    console.log(email);
-    handleClose();
-  };
-
-  const handleSave = () => {
-    data.forEach((row, index) => {
-      const gstValue = row.GST;
-      console.log("Saving GST value for row:", index, "Value:", gstValue);
-    });
-  };
   useEffect(() => {
     let newFilterString = "";
     checkedBrand.forEach((item, index) => {
@@ -372,11 +318,13 @@ const CompetitorTable = () => {
     },
   ];
 
-useEffect(()=>{
-  let filterColumns = columns.concat(competitorColumns).map((columns)=>columns.headerName)
+  useEffect(() => {
+    let filterColumns = columns
+      .concat(competitorColumns)
+      .map((columns) => columns.headerName);
 
-  setFilterColumns(filterColumns)
-},[competitorColumns])
+    setFilterColumns(filterColumns);
+  }, [competitorColumns]);
 
   const handleOpenCompetitor = () => {
     setOpenCompetitor(true);
@@ -426,28 +374,6 @@ useEffect(()=>{
     </Button>
   );
 
-  const save = (
-    <Button variant="outlined" onClick={handleSave}>
-      Save
-    </Button>
-  );
-
-  //   useEffect(() => {
-  //     if (allCompetitor?.status === "success") {
-  //       setRows(allCompetitor.data.products);
-  //       const ColumnsName = []
-  //       allCompetitor.data?.forEach((row) =>{
-  // row?.forEach((column) => {
-  // ColumnsName.push(column.name);
-  // })
-
-  //       })
-
-  //       setColumns([...columnsData,...allCompetitor.data]);
-
-  //     }
-  //   }, [allCompetitor]);
-
   // post competitor name or url
   const handleOnChange = (e) => {
     setInput({
@@ -477,6 +403,7 @@ useEffect(()=>{
       toast.success("Competitor added successfully");
       setInput({});
       refetch();
+      productrefetch();
     } catch (error) {
       console.log(error);
     }
@@ -485,14 +412,7 @@ useEffect(()=>{
   return (
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: handleSubmit,
-          }}
-        >
+        <Dialog open={open} onClose={handleClose}>
           <DialogTitle
             id="alert-dialog-title"
             sx={{
@@ -602,8 +522,6 @@ useEffect(()=>{
           }
           customOnClick={handleOpenCompetitor}
           customButton1={addCustomer}
-          customButton2={save}
-          // count={selectedItems}
         />
 
         <Grid container>
@@ -720,13 +638,15 @@ useEffect(()=>{
             </Box>
           </Grid>
           <CompetitorDial
-          openCompetitor={openCompetitor}
-          handleCloseCompetitor={handleCloseCompetitor}
-          paramsData={selectedRows}
-          handleOpenCompetitor={handleOpenCompetitor}
-          columns={filterColumns}
-          handleRemoveCompetitorItem={handleRemoveCompetitorItem}
-        />
+            openCompetitor={openCompetitor}
+            handleCloseCompetitor={handleCloseCompetitor}
+            paramsData={selectedRows}
+            handleOpenCompetitor={handleOpenCompetitor}
+            columns={filterColumns}
+            handleRemoveCompetitorItem={handleRemoveCompetitorItem}
+            productrefetch={productrefetch}
+            refetch={refetch}
+          />
         </Grid>
       </Box>
     </div>
