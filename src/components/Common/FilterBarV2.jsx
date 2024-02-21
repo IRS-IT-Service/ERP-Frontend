@@ -54,12 +54,15 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const FilterBarV2 = ({
+  customButton,
+  customOnClick,
   customButton1,
   customButton2,
   customButton3,
   customButton4,
   apiRef,
   count,
+
 }) => {
   /// initialize
   const dispatch = useDispatch();
@@ -291,6 +294,20 @@ const FilterBarV2 = ({
                 />
               </Box>
             </Box>
+            {customButton ? (
+              <Button
+                variant="contained"
+                onClick={customOnClick}
+                sx={{
+                  mt: 0.7,
+                }}
+              >
+                {customButton}
+              </Button>
+            ) : (
+              ""
+            )}
+
             <Box
               sx={{
                 mt: 0.7,
@@ -321,7 +338,7 @@ const FilterBarV2 = ({
             >
               {customButton4}
             </Box>
-
+            
             <Popover
               open={Opensortdialog.brand}
               sx={{ p: 2, width: "80vw" }}
