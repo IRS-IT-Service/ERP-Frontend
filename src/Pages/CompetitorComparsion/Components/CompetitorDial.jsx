@@ -70,7 +70,7 @@ const CompetitorDial = ({
   const handleCompetitor = (SKU, Name, e) => {
     const { value } = e.target;
     const existingSKUIndex = compairePrice.findIndex(item => item.SKU === SKU);
-    const newCompetitor = { Name: Name, Price: parseFloat(value) };
+    const newCompetitor = { Name: Name, Price: value };
 console.log(newCompetitor)
     let values = [];
       setCompairePrice((prev) => {
