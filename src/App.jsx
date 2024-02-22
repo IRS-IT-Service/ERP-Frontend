@@ -113,6 +113,7 @@ import AllInventoryData from "./Pages/R&D/AllInventoryData";
 import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
 import BulkMessage from "./Pages/BulkMessage/BulkMessage";
 import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
+import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
 
 function App() {
   /// initialize
@@ -660,6 +661,7 @@ function App() {
 
                 {/* Marketing tools */}
                 <Route path="/addAdvertiser" element= {<CustomerDetails/>} />
+                <Route path="/addCusotmerforMarketing" element= {<AddCustomerForMarketing/>} />
 
               
               </Route>
