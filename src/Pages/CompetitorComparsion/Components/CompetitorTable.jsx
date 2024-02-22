@@ -90,8 +90,9 @@ const CompetitorTable = () => {
         item.Competitors.map((competitor) => ({
           field: `${competitor.Name}`,
           headerName: `${competitor.Name}`,
-          flex: 0.1,
-          maxWidth: 150,
+          flex: 0.3,
+          minWidth: 120,
+          maxWidth: 200,
           align: "center",
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
@@ -244,8 +245,8 @@ const CompetitorTable = () => {
       field: "SKU",
       headerName: "SKU",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 100,
+      minWidth: 120,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -273,8 +274,7 @@ const CompetitorTable = () => {
       field: "Product",
       headerName: "Product",
       flex: 0.3,
-      minWidth: 200,
-
+      minWidth: 450,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -284,8 +284,8 @@ const CompetitorTable = () => {
       field: "Brand",
       headerName: "Brand",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 120,
+      minWidth: 90,
+      maxWidth: 110,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -295,8 +295,8 @@ const CompetitorTable = () => {
       field: "Category",
       headerName: "Category",
       flex: 0.3,
-      minWidth: 90,
-      maxWidth: 120,
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -307,8 +307,8 @@ const CompetitorTable = () => {
       field: "GST",
       headerName: "GST",
       flex: 0.3,
-      minWidth: 60,
-      maxWidth: 70,
+      minWidth: 90,
+      maxWidth: 120,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -585,49 +585,12 @@ const CompetitorTable = () => {
                 rows={rows}
                 rowHeight={40}
                 checkboxSelection
+                disableRowSelectionOnClick
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
-                getCellClassName={(params) => {
-                  if (params.field === "Quantity") {
-                    return params.row.isRejectedQuantity
-                      ? "red"
-                      : !params.row.isVerifiedQuantity
-                      ? "orange"
-                      : "";
-                  } else if (params.field === "SellerPrice") {
-                    return params.row.isRejectedSellerPrice
-                      ? "red"
-                      : !params.row.isVerifiedSellerPrice
-                      ? "orange"
-                      : "";
-                  } else if (params.field === "SalesPrice") {
-                    return params.row.isRejectedSalesPrice
-                      ? "red"
-                      : !params.row.isVerifiedSalesPrice
-                      ? "orange"
-                      : "";
-                  } else if (params.field === "LandingCost") {
-                    return params.row.isRejectedLandingCost
-                      ? "red"
-                      : !params.row.isVerifiedLandingCost
-                      ? "orange"
-                      : "";
-                  } else if (params.field === "MRP") {
-                    return params.row.isRejectedMRP
-                      ? "red"
-                      : !params.row.isVerifiedMRP
-                      ? "orange"
-                      : "";
-                  }
-
-                  // Return an empty string if the field doesn't match any condition
-                  return "";
-                }}
-                apiRef={apiRef}
-                columnVisibilityModel={hiddenColumns}
-                onColumnVisibilityModelChange={(newModel) =>
-                  setHiddenColumns(newModel)
-                }
+                keepNonExistentRowsSelected
+                 apiRef={apiRef}
+                disableRowSelectionOnClick
                 components={{
                   Footer: CustomFooter,
                 }}

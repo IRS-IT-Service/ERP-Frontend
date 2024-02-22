@@ -166,6 +166,10 @@ try{
                     textAlign: "center",
                     background: "linear-gradient(0deg, #01127D, #04012F)",
                     color: "#fff",
+                    position:"sticky",
+                    top:0,
+                    left:0,
+                    zIndex: 200,
                   }}
                 >
                   Remove
@@ -176,6 +180,25 @@ try{
                       textAlign: "center",
                       background: "linear-gradient(0deg, #01127D, #04012F)",
                       color: "#fff",
+                      position: ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ? "sticky" : "sticky",
+                      left:  `${
+                        ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ?
+                        item === "Sno"
+                         ? 5.20
+                         : item === "SKU"
+                         ? 8.75
+                         : item === "Product"
+                         ? 17.1
+                         : item=== "Brand"
+                         ? 22.25
+                         : item=== "Category"
+                         ? 26.60
+                         : item=== "GST"
+                         ? 32.2
+                         : 0
+                     : ""}rem`, // Adjust the values as needed
+                     zIndex: `${["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ?300 : 100}`,
+          
                     }}
                     key={index}
                   >
@@ -191,6 +214,10 @@ try{
                     sx={{
                       textAlign: "center",
                       cursor: "pointer",
+                      position:"sticky",
+                    background:"#fff",
+                      left:0,
+                      zIndex: 100,
                       "&:hover": { color: "red" },
                     }}
                   >
@@ -198,9 +225,38 @@ try{
                       onClick={() => handleRemoveCompetitorItem(item.id)}
                     />
                   </TableCell>
-                  <TableCell key={index}>{index + 1}</TableCell>
+                  <TableCell key={index} sx={{  
+                    position:"sticky",
+                      left:100,
+                      zIndex: 200,
+                      background:"#fff"
+                      }}>{index + 1}</TableCell>
                   {newColumns.map((column, columnIndex) => (
-                    <TableCell key={columnIndex}>
+               <TableCell
+               key={columnIndex}
+               sx={{
+                 position: ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(column) ? "sticky" : "inherit",
+                 left: `${
+                  
+                  column === "Sno"
+                    ? 0
+                    : column === "SKU"
+                    ? 10
+                    : column === "Product"
+                    ? 18.58
+                    : column=== "Brand"
+                    ? 23.45
+                    : column=== "Category"
+                    ? 27.45
+                    : column=== "GST"
+                    ? 32.45
+                    : 60
+                }rem`, // Adjust the values as needed
+                zIndex: 100,
+                background:"#fff",
+// rowGap:`${column === "Product" ? "1rem" : ""}`
+               }}
+             >
                       {[
                         "SKU",
                         "Sno",
@@ -217,7 +273,7 @@ try{
                       ) : (
                         <input
                         defaultValue={item[column]}
-                          style={{ width: "100%", padding: 4 }}
+                          style={{ width: "6rem", padding: 4 }}
                           onChange={(e) =>
                            handleCompetitor(item.SKU, column, e)
                           }
