@@ -86,8 +86,8 @@ const CompetitorTable = () => {
 
   useEffect(() => {
     if (allCompetitor) {
-      const updatedColumns = allCompetitor.data.flatMap((item) =>
-        item.Competitors.map((competitor) => ({
+      const updatedColumns = allCompetitor?.data?.flatMap((item) =>
+        item?.Competitors?.map((competitor) => ({
           field: `${competitor.Name}`,
           headerName: `${competitor.Name}`,
           flex: 0.3,
@@ -487,7 +487,7 @@ const CompetitorTable = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {allCompetitor?.data[0].Competitors.map((row, index) => {
+                      {allCompetitor?.data[0]?.Competitors?.map((row, index) => {
                         return (
                           <TableRow
                             key={index}
@@ -590,8 +590,7 @@ const CompetitorTable = () => {
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected
                  apiRef={apiRef}
-                disableRowSelectionOnClick
-                components={{
+                 components={{
                   Footer: CustomFooter,
                 }}
                 slotProps={{
