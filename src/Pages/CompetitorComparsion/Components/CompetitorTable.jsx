@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   CircularProgress,
   styled,
   TablePagination,
-  Grid 
+  Grid,
 } from "@mui/material";
 import {
   DataGrid,
@@ -54,43 +54,35 @@ function createData(Sno, CompetitorName, url) {
   return { Sno, CompetitorName, url };
 }
 
-
-
-
 const CompetitorTable = () => {
   // rtk Querry
   const [addCompetitor, { isLoading: addCompetitorLoading }] =
     useAddCompetitorMutation();
 
-    const apiRef = useGridApiRef();
-    const dispatch = useDispatch();
-    const debouncing = useRef();
+  const apiRef = useGridApiRef();
+  const dispatch = useDispatch();
+  const debouncing = useRef();
   const {
     data: allCompetitor,
     isLoading: getallCompetitorLoading,
-    refetch:productrefetch,
+    refetch: productrefetch,
   } = useGetAllCompetitorQuery();
 
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-  useSelector((state) => state.product);
+    useSelector((state) => state.product);
 
   // console.log(addCompetitor);
   const [data, setData] = useState([]);
 
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState({ Name: "", URL: "" ,Date:""});
+  const [input, setInput] = useState({ Name: "", URL: "", Date: "" });
   const [rows, setRows] = useState([]);
-  const [inputValue, setInputValue] = useState([{}]);
-  const [competitorColumns, setCompetitorColumns] = useState([])
-
+  const [filterColumns, setFilterColumns] = useState([]);
+  const [competitorColumns, setCompetitorColumns] = useState([]);
+  const [openCompetitor, setOpenCompetitor] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
-  // const  handleInputChage = (e) =>{
-  //   const { value } = e.target;
-  //   const { name } = e.target;
-  //   const FinalValue = {[name]:value}
-  //   setInputValue((prev)=>[...prev ,FinalValue]);
-  // }
+  const [selectedRows, setSelectedRows] = useState([]);
 
   useEffect(() => {
     if (allCompetitor) {
@@ -98,36 +90,27 @@ const CompetitorTable = () => {
         item.Competitors.map((competitor) => ({
           field: `${competitor.Name}`,
           headerName: `${competitor.Name}`,
-          flex: 0.1,
-          maxWidth: 150,
+          flex: 0.3,
+          minWidth: 120,
+          maxWidth: 200,
           align: "center",
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
           cellClassName: "super-app-theme--cell",
-          renderCell: (params) => {
-      // console.log(params.row)
-            return(
-              <Box>
-  <input
-    style={{ width: "100%", padding: 4, textIndent: "5px" }}
-    name={competitor.Name} 
-    onChange={(e) => handleInputChange(e,params.row.SKU,competitor.Name,params.row.id)} 
-  />
-</Box>
-            )
-          }
         }))
       );
       setCompetitorColumns(updatedColumns);
     }
   }, [allCompetitor]);
 
-  const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
-    const newSelectedRowsData = rows.filter((item) =>
-      selectionModel.includes(item.id)
-    );
-    setSelectedItemsData(newSelectedRowsData);
+  const handleSelectionChange = (ids) => {
+    setSelectedItems(ids);
+
+    const selectedRowsData = ids.map((id) => {
+      return rows.find((row) => row.id === id);
+    });
+
+    setSelectedRows(selectedRowsData);
   };
 
   const handleClickOpen = () => {
@@ -142,11 +125,15 @@ const CompetitorTable = () => {
   } = useGetAllProductV2Query(filterString, {
     pollingInterval: 1000 * 300,
   });
-  
 
   useEffect(() => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
+        let CompName = {};
+        item.CompetitorPrice.forEach((compItem) => {
+          CompName[compItem.Name] = compItem.Price;
+        });
+
         return {
           id: index,
           Sno:
@@ -154,25 +141,13 @@ const CompetitorTable = () => {
             1 +
             (allProductData.data.currentPage - 1) * allProductData.data.limit,
           SKU: item.SKU,
-          Name: item.Name,
-          LandingCost: item.LandingCost.toFixed(2),
-          SalesPrice: item.SalesPrice.toFixed(2),
-          MRP: item.MRP.toFixed(2),
+          Product: item.Name,
           GST: item.GST.toFixed(2),
-          SellerPrice: item.SellerPrice.toFixed(2),
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
           Category: item.Category,
-          isVerifiedSellerPrice: item.isVerifiedSellerPrice,
-          isRejectedSellerPrice: item.isRejectedSellerPrice,
-          isVerifiedQuantity: item.isVerifiedQuantity,
-          isRejectedQuantity: item.isRejectedQuantity,
-          isVerifiedSalesPrice: item.isVerifiedSalesPrice,
-          isRejectedSalesPrice: item.isRejectedSalesPrice,
-          isVerifiedLandingCost: item.isVerifiedLandingCost,
-          isRejectedLandingCost: item.isRejectedLandingCost,
-          isVerifiedMRP: item.isVerifiedMRP,
-          isRejectedMRP: item.isRejectedMRP,
+          competitor: item.CompetitorPrice,
+          ...CompName,
         };
       });
       dispatch(setAllProductsV2(allProductData.data));
@@ -197,43 +172,6 @@ const CompetitorTable = () => {
     setInput({});
   };
 
-  // const handleInputChange = (event, SKU, index, columnName) => {
-  //   const { value } = event.target;
-  //   setData(prevData => {
-  //     // Make a copy of the previous data
-  //     const newData = [...prevData];
-  //     // Find the specific object in the array based on index
-  //     const updatedObject = newData[index] || {};
-  //     // Update the specific property with the provided column name and value
-  //     updatedObject[SKU] = SKU;
-  //     updatedObject[columnName] = value;
-  //     // Update the array with the modified object
-  //     newData[index] = updatedObject;
-  //     // Return the updated array of objects in the required format
-  //     return newData.map(item => ({
-  //       SKU: item[SKU],
-  //       columnName: item[columnName],
-  //       value: item.value
-  //     }));
-  //   });
-  // };
-  console.log(data)
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
-    const email = formJson.email;
-    console.log(email);
-    handleClose();
-  };
-
-  const handleSave = () => {
-    data.forEach((row, index) => {
-      const gstValue = row.GST;
-      console.log("Saving GST value for row:", index, "Value:", gstValue);
-    });
-  };
   useEffect(() => {
     let newFilterString = "";
     checkedBrand.forEach((item, index) => {
@@ -285,8 +223,8 @@ const CompetitorTable = () => {
       maxWidth: 70,
       align: "center",
       headerAlign: "center",
-      headerClassName: "super-app-theme--header-Sno",
-      cellClassName: "super-app-theme--cell-Sno",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
         return (
           <div
@@ -307,12 +245,12 @@ const CompetitorTable = () => {
       field: "SKU",
       headerName: "SKU",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 100,
+      minWidth: 120,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
-      headerClassName: "super-app-theme--header-SKU",
-      cellClassName: "super-app-theme--cell-SKU",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
         return (
           <div
@@ -333,11 +271,10 @@ const CompetitorTable = () => {
       },
     },
     {
-      field: "Name",
+      field: "Product",
       headerName: "Product",
       flex: 0.3,
-      minWidth: 200,
-
+      minWidth: 450,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -347,8 +284,8 @@ const CompetitorTable = () => {
       field: "Brand",
       headerName: "Brand",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 120,
+      minWidth: 90,
+      maxWidth: 110,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -358,8 +295,8 @@ const CompetitorTable = () => {
       field: "Category",
       headerName: "Category",
       flex: 0.3,
-      minWidth: 90,
-      maxWidth: 120,
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -370,8 +307,8 @@ const CompetitorTable = () => {
       field: "GST",
       headerName: "GST",
       flex: 0.3,
-      minWidth: 60,
-      maxWidth: 70,
+      minWidth: 90,
+      maxWidth: 120,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -379,15 +316,22 @@ const CompetitorTable = () => {
       type: "number",
       valueFormatter: (params) => `${params.value} %`,
     },
-  
   ];
 
-  const CombineColumns = (columns1 , columns2) =>{
-    return
-       
-    
-    columns1.concat(columns2);
-  }
+  useEffect(() => {
+    let filterColumns = columns
+      .concat(competitorColumns)
+      .map((columns) => columns.headerName);
+
+    setFilterColumns(filterColumns);
+  }, [competitorColumns]);
+
+  const handleOpenCompetitor = () => {
+    setOpenCompetitor(true);
+  };
+  const handleCloseCompetitor = () => {
+    setOpenCompetitor(false);
+  };
 
   function CustomFooter(props) {
     const { status } = props;
@@ -425,62 +369,41 @@ const CompetitorTable = () => {
   }
 
   const addCustomer = (
-    <Button
-    variant="outlined"
-    onClick={handleClickOpen}
-  >
-    Add Competitor
-  </Button>
+    <Button variant="outlined" onClick={handleClickOpen}>
+      Add Competitor
+    </Button>
   );
-
-  const save = (
-    <Button variant="outlined"  onClick={handleSave}>
-    Save
-  </Button>
-  );
-
-
-//   useEffect(() => {
-//     if (allCompetitor?.status === "success") {
-//       setRows(allCompetitor.data.products);
-//       const ColumnsName = []
-//       allCompetitor.data?.forEach((row) =>{
-// row?.forEach((column) => {
-// ColumnsName.push(column.name);
-// })
-
-//       })
-
-//       setColumns([...columnsData,...allCompetitor.data]);
-
-   
-//     }
-//   }, [allCompetitor]);
-
-
 
   // post competitor name or url
   const handleOnChange = (e) => {
     setInput({
       ...input,
-      [e.target.name]: e.target.value,Date: new Date()
+      [e.target.name]: e.target.value,
+      Date: new Date(),
     });
   };
+  const handleRemoveCompetitorItem = (id) => {
+    const newSelectedItems = selectedItems.filter((item) => item !== id);
 
+    setSelectedItems(newSelectedItems);
+    const newSelectedRow = selectedRows.filter((item) => item.id !== id);
+    setSelectedRows(newSelectedRow);
+  };
   const handleAdd = async () => {
     try {
       if (!input) return toast.error("Please fill the data");
-const data = {
-  Competitors: [input]
-}
+      const data = {
+        Competitors: [input],
+      };
       const result = await addCompetitor(data);
-  
-      if(!result.data.success){
-        return
+
+      if (!result.data.success) {
+        return;
       }
-     toast.success("Competitor added successfully");
+      toast.success("Competitor added successfully");
       setInput({});
       refetch();
+      productrefetch();
     } catch (error) {
       console.log(error);
     }
@@ -489,16 +412,7 @@ const data = {
   return (
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-      
-
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: handleSubmit,
-          }}
-        >
+        <Dialog open={open} onClose={handleClose}>
           <DialogTitle
             id="alert-dialog-title"
             sx={{
@@ -574,21 +488,21 @@ const data = {
                     </TableHead>
                     <TableBody>
                       {allCompetitor?.data[0].Competitors.map((row, index) => {
-                    
-                       return( <TableRow
-                          key={index}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                        >
-                          <TableCell component="th" scope="row">
-                            {index + 1}
-                          </TableCell>
-                          <TableCell>{row.Name}</TableCell>
-                          <TableCell>{row.URL}</TableCell>
-                        </TableRow>
-                       )
-})}
+                        return (
+                          <TableRow
+                            key={index}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell component="th" scope="row">
+                              {index + 1}
+                            </TableCell>
+                            <TableCell>{row.Name}</TableCell>
+                            <TableCell>{row.URL}</TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -597,132 +511,107 @@ const data = {
           </DialogContent>
           <DialogActions></DialogActions>
         </Dialog>
-      
       </Box>
       <Box sx={{ height: "100%", wdth: "100%" }}>
-      <FilterBarV2 apiRef={apiRef} customButton1={addCustomer} customButton2={save}   />
+        <FilterBarV2
+          apiRef={apiRef}
+          customButton={
+            selectedRows.length
+              ? `set competitor price ${selectedRows.length}`
+              : undefined
+          }
+          customOnClick={handleOpenCompetitor}
+          customButton1={addCustomer}
+        />
 
-      <Grid container>
-        <Loading loading={productLoading || isFetching} />
+        <Grid container>
+          <Loading loading={productLoading || isFetching} />
 
-        <Grid item xs={12} sx={{ mt: "5px" }}>
-          <Box
-            sx={{
-              width: "100%",
-              height: "78vh",
-              "& .super-app-theme--header": {
-                background: "#eee",
-                color: "black",
-                textAlign: "center",
-              },
-              "& .super-app-theme--header-Sno": {
-                background: "#eee",
-                color: "black",
-                textAlign: "center",
-                position: "sticky",
-                left:0,
-                zIndex: 1000
-              },
-              "& .super-app-theme--cell-Sno":{
-                background: "#fff",
-                position: "sticky",
-                left:0,
-                zIndex: 1000
-              },
-              "& .super-app-theme--header-SKU": {
-                background: "#eee",
-                color: "black",
-                textAlign: "center",
-                position: "sticky",
-                left:"3rem",
-                zIndex: 1000
-              },
-              "& .super-app-theme--cell-SKU":{
-                background: "#fff",
-                position: "sticky",
-                left:"3rem",
-                zIndex: 1000
-              },
-              "& .vertical-lines .MuiDataGrid-cell": {
-                borderRight: "1px solid #e0e0e0",
-              },
-              "& .supercursor-app-theme--cell:hover": {
-                background:
-                  "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-                color: "white",
-                cursor: "pointer",
-              },
-              "& .MuiDataGrid-columnHeaderTitleContainer": {
-                background: "#eee",
-              },
-              position: "relative",
-            }}
-          >
-            <DataGrid
-              columns={columns.concat(competitorColumns)}
-              rows={rows}
-              rowHeight={40}
-              checkboxSelection
-              onRowSelectionModelChange={handleSelectionChange}
-              rowSelectionModel={selectedItems}
-              getCellClassName={(params) => {
-                if (params.field === "Quantity") {
-                  return params.row.isRejectedQuantity
-                    ? "red"
-                    : !params.row.isVerifiedQuantity
-                    ? "orange"
-                    : "";
-                } else if (params.field === "SellerPrice") {
-                  return params.row.isRejectedSellerPrice
-                    ? "red"
-                    : !params.row.isVerifiedSellerPrice
-                    ? "orange"
-                    : "";
-                } else if (params.field === "SalesPrice") {
-                  return params.row.isRejectedSalesPrice
-                    ? "red"
-                    : !params.row.isVerifiedSalesPrice
-                    ? "orange"
-                    : "";
-                } else if (params.field === "LandingCost") {
-                  return params.row.isRejectedLandingCost
-                    ? "red"
-                    : !params.row.isVerifiedLandingCost
-                    ? "orange"
-                    : "";
-                } else if (params.field === "MRP") {
-                  return params.row.isRejectedMRP
-                    ? "red"
-                    : !params.row.isVerifiedMRP
-                    ? "orange"
-                    : "";
-                }
-
-                // Return an empty string if the field doesn't match any condition
-                return "";
+          <Grid item xs={12} sx={{ mt: "5px" }}>
+            <Box
+              sx={{
+                width: "100%",
+                height: "78vh",
+                "& .super-app-theme--header": {
+                  background: "#eee",
+                  color: "black",
+                  textAlign: "center",
+                },
+                "& .super-app-theme--header-Sno": {
+                  background: "#eee",
+                  color: "black",
+                  textAlign: "center",
+                  position: "sticky",
+                  left: 0,
+                  zIndex: 1000,
+                },
+                "& .super-app-theme--cell-Sno": {
+                  background: "#fff",
+                  position: "sticky",
+                  left: 0,
+                  zIndex: 1000,
+                },
+                "& .super-app-theme--header-SKU": {
+                  background: "#eee",
+                  color: "black",
+                  textAlign: "center",
+                  position: "sticky",
+                  left: "3rem",
+                  zIndex: 1000,
+                },
+                "& .super-app-theme--cell-SKU": {
+                  background: "#fff",
+                  position: "sticky",
+                  left: "3rem",
+                  zIndex: 1000,
+                },
+                "& .vertical-lines .MuiDataGrid-cell": {
+                  borderRight: "1px solid #e0e0e0",
+                },
+                "& .supercursor-app-theme--cell:hover": {
+                  background:
+                    "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
+                  color: "white",
+                  cursor: "pointer",
+                },
+                "& .MuiDataGrid-columnHeaderTitleContainer": {
+                  background: "#eee",
+                },
+                position: "relative",
               }}
-              apiRef={apiRef}
-              columnVisibilityModel={hiddenColumns}
-              onColumnVisibilityModelChange={(newModel) =>
-                setHiddenColumns(newModel)
-              }
-              components={{
-                Footer: CustomFooter,
-              }}
-              slotProps={{
-                footer: { status: refetch },
-              }}
-            />
-          </Box>
+            >
+              <DataGrid
+                columns={columns.concat(competitorColumns)}
+                rows={rows}
+                rowHeight={40}
+                checkboxSelection
+                disableRowSelectionOnClick
+                onRowSelectionModelChange={handleSelectionChange}
+                rowSelectionModel={selectedItems}
+                keepNonExistentRowsSelected
+                 apiRef={apiRef}
+                disableRowSelectionOnClick
+                components={{
+                  Footer: CustomFooter,
+                }}
+                slotProps={{
+                  footer: { status: refetch },
+                }}
+              />
+            </Box>
+          </Grid>
+          <CompetitorDial
+            openCompetitor={openCompetitor}
+            handleCloseCompetitor={handleCloseCompetitor}
+            paramsData={selectedRows}
+            handleOpenCompetitor={handleOpenCompetitor}
+            columns={filterColumns}
+            handleRemoveCompetitorItem={handleRemoveCompetitorItem}
+            productrefetch={productrefetch}
+            refetch={refetch}
+          />
         </Grid>
-        {/* <CompetitorDial
-          // openHistory={openHistory}
-          // handleCloseHistory={handleCloseHistory}
-          // paramsData={paramsData}
-          // HandleOpen={HandleOpen}
-        /> */}
-      </Grid>
-    </Box>
+      </Box>
     </div>
   );
 };
