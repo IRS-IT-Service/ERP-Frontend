@@ -30,6 +30,7 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
+  Popover,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -41,9 +42,15 @@ import { toast } from 'react-toastify';
 const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
-import { useAddProjectNameMutation } from '../../features/api/barcodeApiSlice';
-import { useGetAllRDInventoryQuery } from '../../features/api/barcodeApiSlice';
-import { useGetAllProjectDataQuery } from '../../features/api/barcodeApiSlice';
+import {
+  useAddProjectNameMutation,
+  useAddProjectItemMutation,
+  useGetAllProjectDataQuery,
+  useGetAllRDInventoryQuery,
+  useUpdateAssignedStatusMutation,
+  useUpdateDamagedStatusMutation,
+} from '../../features/api/barcodeApiSlice';
+
 const infoDetail = [
   {
     name: 'Submit Button',
@@ -103,11 +110,36 @@ const infoDetail = [
 const ResearchNewProject = () => {
   const description = `The Entry Form for Repairs Module is for the drone service center. Here, we enter customer details for drone services. After clicking the submit button, the data will be submitted.`;
 
-  // create new Project row Column
+  /// global state
+  const { themeColor } = useSelector((state) => state.ui);
+  const color = themeColor.sideBarColor1;
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  // all states used in functions
+  const [addPartsData, setAddPartsData] = useState([]);
+  const [allProjectData, setAllProjectData] = useState([]);
+  const [projectDetail, setProjectDetail] = useState({ status: '' });
+  const [newProjectDialogClose, setNewProjectDialogClose] = useState(false);
+  const [openCloseAddPart, setOpenCloseAddPart] = useState(false);
+  const [selectedRow, setSelectedRow] = useState([]);
+  const [openClosePD, setOpenClosePD] = useState(false);
+  const [projectDetailData, setProjectDetailData] = useState([]);
+  const [openCloseEP, setOpenCloseEP] = useState(false);
+  const [displayBarcode, setDisplayBarcode] = useState(false);
+  const [barcodeData, setBarcodeData] = useState([]);
+  const [selectedBarcodeData, setSelectedBarcodeData] = useState([]);
+  const [isButtonDisabled, setButtonDisabled] = useState(false);
   const [createProjectForm, setCreateProjectForm] = useState({
     projectName: '',
     description: '',
   });
+
+  const handleClose = () => {
+    setInfoOpen(!infoOpen);
+  };
+  const handleOpen = () => {
+    setInfoOpen(true);
+  };
   // createNewProjectHandler to createNewProject
   const createNewProjectHandler = (e) => {
     const { name, value } = e.target;
@@ -117,10 +149,9 @@ const ResearchNewProject = () => {
     }));
   };
 
-  // rtk getting inventory data
-  const { data: isInventory } = useGetAllRDInventoryQuery();
-  const [addPartsData, setAddPartsData] = useState([]);
-
+  // rtk for getting inventory data
+  const { data: isInventory, refetch: getAllInventoryDataRefetch } =
+    useGetAllRDInventoryQuery();
   useEffect(() => {
     if (isInventory?.status === true) {
       const displayAllInventoryData = isInventory?.data?.map((data) => ({
@@ -134,16 +165,18 @@ const ResearchNewProject = () => {
     }
   }, [isInventory]);
 
-  // useEffect(() => {
-  //   // Log each item's sku property
-  //   console.log(addPartsData);
-  // }, [addPartsData]);
-
-  // rtk for post data
+  // rtk for add ProjectName Description post data
   const [addNewProjectData, { isLoading: loadingAddNewProjectData }] =
     useAddProjectNameMutation();
 
-  const [isButtonDisabled, setButtonDisabled] = useState(false);
+  // rtk for adding the product Parts
+  const [addProductParts] = useAddProjectItemMutation();
+
+  // rtk for assigning the barcode status
+  const [assignBarcodeStatus] = useUpdateAssignedStatusMutation();
+
+  // rtk for deleting the barcode status
+  // const [deleteBarcodeStatus] = useUpdateDamagedStatusMutation();
 
   // submit for New Project handler
   const submitCreateProjectHandler = async () => {
@@ -185,13 +218,17 @@ const ResearchNewProject = () => {
           ? new Date(data.startDate).toLocaleDateString('en-GB')
           : '',
         description: data?.Description,
+        projectItems: data?.projectItem?.map((item) => ({
+          productName: item.ProductName,
+          barcode: item.Barcode,
+          assigned: projectDetail?.status,
+        })),
       }));
       console.log(projectDataRows);
       setAllProjectData(projectDataRows);
     }
   }, [getNewProjectData]);
 
-  const [allProjectData, setAllProjectData] = useState([]);
   const columns = [
     { id: 1, label: 'SNo', minWidth: 120 },
     { id: 2, label: 'ProjectID', minWidth: 120 },
@@ -223,13 +260,10 @@ const ResearchNewProject = () => {
     },
   ];
 
-  // track project status
-  const [projectDetail, setProjectDetail] = useState({
-    status: '',
-  });
+  // console.log(getNewProjectData);
 
-  // change the project status
-  const handleStatusChange = (e) => {
+  // change the project working status like weather its complete or not
+  const handleProjectWorkingStatus = (e) => {
     const { name, value } = e.target;
     setProjectDetail((prevState) => ({
       ...prevState,
@@ -237,171 +271,18 @@ const ResearchNewProject = () => {
     }));
   };
 
-  // update the status
+  // onclick function which update the working of complete or not a project
   const updateProjectStatus = () => {
-    console.log('Updating status:', projectDetail);
+    console.log('Updating status:', projectDetail?.status);
     projectDetail.status
       ? toast.success(`Project ${projectDetail.status}`)
       : toast.error(`Choose one`);
+    setTimeout(() => {
+      setOpenCloseEP(false);
+    }, 1000);
   };
-
-  const top100Films = [
-    {
-      title: 'The Lord of the Rings: The Return of the King',
-      year: 2003,
-    },
-    { title: 'The Good, the Bad and the Ugly', year: 1966 },
-    { title: 'Fight Club', year: 1999 },
-    {
-      title: 'The Lord of the Rings: The Fellowship of the Ring',
-      year: 2001,
-    },
-    {
-      title: 'Star Wars: Episode V - The Empire Strikes Back',
-      year: 1980,
-    },
-    { title: 'Forrest Gump', year: 1994 },
-    { title: 'Inception', year: 2010 },
-    {
-      title: 'The Lord of the Rings: The Two Towers',
-      year: 2002,
-    },
-    { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-    { title: 'Goodfellas', year: 1990 },
-    { title: 'The Matrix', year: 1999 },
-    { title: 'Seven Samurai', year: 1954 },
-    {
-      title: 'Star Wars: Episode IV - A New Hope',
-      year: 1977,
-    },
-    { title: 'City of God', year: 2002 },
-    { title: 'Se7en', year: 1995 },
-    { title: 'The Silence of the Lambs', year: 1991 },
-    { title: "It's a Wonderful Life", year: 1946 },
-    { title: 'Life Is Beautiful', year: 1997 },
-    { title: 'The Usual Suspects', year: 1995 },
-    { title: 'Léon: The Professional', year: 1994 },
-    { title: 'Spirited Away', year: 2001 },
-    { title: 'Saving Private Ryan', year: 1998 },
-    { title: 'Once Upon a Time in the West', year: 1968 },
-    { title: 'American History X', year: 1998 },
-    { title: 'Interstellar', year: 2014 },
-    { title: 'Casablanca', year: 1942 },
-    { title: 'City Lights', year: 1931 },
-    { title: 'Psycho', year: 1960 },
-    { title: 'The Green Mile', year: 1999 },
-    { title: 'The Intouchables', year: 2011 },
-    { title: 'Modern Times', year: 1936 },
-    { title: 'Raiders of the Lost Ark', year: 1981 },
-    { title: 'Rear Window', year: 1954 },
-    { title: 'The Pianist', year: 2002 },
-    { title: 'The Departed', year: 2006 },
-    { title: 'Terminator 2: Judgment Day', year: 1991 },
-    { title: 'Back to the Future', year: 1985 },
-    { title: 'Whiplash', year: 2014 },
-    { title: 'Gladiator', year: 2000 },
-    { title: 'Memento', year: 2000 },
-    { title: 'The Prestige', year: 2006 },
-    { title: 'The Lion King', year: 1994 },
-    { title: 'Apocalypse Now', year: 1979 },
-    { title: 'Alien', year: 1979 },
-    { title: 'Sunset Boulevard', year: 1950 },
-    {
-      title:
-        'Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb',
-      year: 1964,
-    },
-  ];
-
-  const viewBarcodeColumns = [
-    {
-      id: 'SNo',
-      sku: 'SKU',
-      productName: 'Product Name',
-      button: 'Select Part',
-      qty: 'Qty',
-    },
-  ];
-
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
-  const addPartColumns = [
-    {
-      id: 1,
-      sNo: 'Sno',
-      checkbox: 'Select',
-      barcodeNumber: 'Barcode Number',
-      isAssigned: `Status`,
-      close: 'Close',
-    },
-  ];
-
-  const currentDate = new Date().toLocaleDateString();
-  const projectDetailHeader = [
-    {
-      id: 2,
-      label: 'ProjectName: ',
-      input: (
-        <InputBase
-          sx={{
-            borderBottom: '2px solid grey',
-            maxHeight: '20px',
-            maxWidth: '180px',
-            paddingX: '1.5%',
-          }}
-        />
-      ),
-    },
-    {
-      id: 3,
-      label: 'StartDate: ',
-      input: currentDate,
-    },
-    {
-      id: 4,
-      label: 'EndDate: ',
-      input: 'Present Day',
-    },
-  ];
-
-  const newProjectDetailCloumns = [
-    {
-      id: 1,
-      label1: 'Sno',
-      label2: 'Part Name',
-      label3: `Part Barcode`,
-      label4: `Status of Part's Barcode`,
-    },
-  ];
-
-  const newProjectDetailRows = [
-    {
-      id: 1,
-      partsName: `Mavic's 12TVG`,
-      partsBarcode: `IRS29475648`,
-      status: 'In Use',
-    },
-    {
-      id: 2,
-      partsName: `Phantom's 12TVG`,
-      partsBarcode: `IRS876534345`,
-      status: 'Damage',
-    },
-    {
-      id: 3,
-      partsName: `Drone's 12TVG`,
-      partsBarcode: `IRS5425665`,
-      status: 'In Inventory',
-    },
-    {
-      id: 4,
-      partsName: `Tejas's 12TVG`,
-      partsBarcode: `IRS5454648`,
-      status: 'In Use',
-    },
-  ];
-
   // new project openClose
-  const [newProjectDialogClose, setNewProjectDialogClose] = useState(false);
   const openCloseNewProjectBox = () => {
     setNewProjectDialogClose(!newProjectDialogClose);
     setButtonDisabled(false);
@@ -412,51 +293,44 @@ const ResearchNewProject = () => {
   };
 
   // add part open close
-  const [openCloseAddPart, setOpenCloseAddPart] = useState(false);
-  const [selectedRow, setSelectedRow] = useState([]);
-  const handleOpenCloseAddPart = (row, projectId) => {
-    if (row && projectId) {
-      setSelectedRow((prevState) => [
-        ...prevState,
-        {
-          partsData: row,
-          projectId: projectId,
-        },
-      ]);
+  const handleOpenCloseAddPart = (allPartsData, projectId) => {
+    if (allPartsData && projectId) {
+      const newState = { partsData: allPartsData, projectId: projectId };
+      console.log(newState);
+      setSelectedRow(newState);
     }
     setOpenCloseAddPart(!openCloseAddPart);
-    console.log(selectedRow);
+    // setBarcodeData(barcodeData);
     setSelectedBarcodeData([]);
+    setDisplayBarcode(false);
   };
-  const clearAndCloseHandler = () => {
-    setSelectedBarcodeData([]);
-    setOpenCloseAddPart(!openCloseAddPart);
-  };
-
-  const barcodeDataSubmitted = () => {
-    if (selectedBarcodeData.length === 0) {
-      toast.error('Data not Selected');
-      setOpenCloseAddPart(true);
-    } else {
-      toast.success('Parts Added Successfully!');
-      setOpenCloseAddPart(!openCloseAddPart);
-    }
-
-    console.log(selectedBarcodeData);
-  };
-
   // project detail open close
-  const [openClosePD, setOpenClosePD] = useState(false);
-  const [projectDetailData, setProjectDetailData] = useState([]);
   const handleOpenClosePD = (row) => {
     setOpenClosePD(!openClosePD);
     setProjectDetailData(row);
   };
 
-  const [openCloseEP, setOpenCloseEP] = useState(false);
+  // states to handle the edit project
+  const [editProject, setEditProject] = useState([]);
+  // openClose edit project detail
   const handleOpenCloseEP = (row) => {
     setOpenCloseEP(!openCloseEP);
+    setEditProject(row);
   };
+  console.log(editProject);
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseChangeStatus = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -469,60 +343,95 @@ const ResearchNewProject = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  /// global state
-  const { themeColor } = useSelector((state) => state.ui);
-  const color = themeColor.sideBarColor1;
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
-
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose1 = () => {
-    setOpen(false);
-  };
-
-  const [displayBarcode, setDisplayBarcode] = useState(
-    Array(addPartsData.length).fill(false)
-  );
-  const [barcodeData, setBarcodeData] = useState([]);
-  const showBarcodeHandler = (barcode) => {
-    setBarcodeData(barcode);
+  const showBarcodeHandler = (partsBarcodeData, projectId) => {
+    setBarcodeData([partsBarcodeData, projectId]);
     setDisplayBarcode(true);
   };
+  // useEffect(() => {
+  //   console.log(barcodeData);
+  // }, [barcodeData]);
   const toggleBarcode = () => {
     setDisplayBarcode(false);
   };
 
-  useEffect(() => {
-    console.log(barcodeData);
-  }, [barcodeData]);
-
-  const addBarcodeHandler = () => {
-    setDisplayBarcode(!displayBarcode);
-  };
-
-  const [selectedBarcodeData, setSelectedBarcodeData] = useState([]);
-
-  const selectBarcodeHandler = (selectedBarcodeName, data) => {
-    if (selectedBarcodeName && data) {
+  const selectBarcodeHandler = (event, selectedBarcodeName, data) => {
+    const isChecked = event.target.checked;
+    if (isChecked) {
       setSelectedBarcodeData((prevState) => [
         ...prevState,
         {
-          productName: selectedBarcodeName.productName,
+          productName: selectedBarcodeName[0]?.productName,
           Barcode: data?.Barcode?.Barcode,
+          projectId: selectedBarcodeName[1],
         },
       ]);
+    } else {
+      setSelectedBarcodeData((prevState) =>
+        prevState.filter(
+          (barcode) =>
+            barcode.productName !== selectedBarcodeName.productName ||
+            barcode.Barcode !== data?.Barcode?.Barcode
+        )
+      );
     }
+  };
+
+  // function to check if a barcode is selected
+  const isSelected = (data) => {
+    return selectedBarcodeData.some(
+      (barcode) => barcode.Barcode === data?.Barcode?.Barcode
+    );
+  };
+
+  // submitted the selected barcode
+  const barcodeDataSubmitted = async () => {
+    if (selectedBarcodeData.length === 0) {
+      toast.error('Data not Selected');
+      setOpenCloseAddPart(true);
+    }
+    const requestPartData = {
+      projectId: selectedBarcodeData[0]?.projectId, // sending only one projectId from the starting array
+      projectItem: selectedBarcodeData.map((barcodeData) => ({
+        ProductName: barcodeData.productName,
+        Barcode: barcodeData.Barcode,
+        assigned: projectDetail?.status,
+      })),
+    };
+
+    // sending assign barcode status
+    const assignBarcodeStatusData = {
+      barcode: selectedBarcodeData?.map((assignBarcode) => assignBarcode?.Barcode),
+    };
+
+    // // sending delete barcode status
+    // const deleteBarcodeStatusData = {
+    //   barcode: selectedBarcodeData?.map((deleteBarcode) => deleteBarcode?.Barcode),
+    // };
+    
+
+    console.log(requestPartData);
+    try {
+      const res = await addProductParts(requestPartData);
+      toast.success(`Project Parts Added Successfully`);
+      const assignRes = await assignBarcodeStatus(assignBarcodeStatusData).unWrap();
+      // const deleteRes = await deleteBarcodeStatus(deleteBarcodeStatusData).unWrap();
+    } catch (error) {
+      toast.error(error);
+    }
+    setTimeout(() => {
+      setOpenCloseAddPart(!openCloseAddPart);
+    }, [1000]);
+    getNewProjectDataRefech();
+    getAllInventoryDataRefetch();
+  };
+  console.log(selectedBarcodeData);
+
+  // close & clear the state which is in the addParts & Barcode
+  const clearAndCloseHandler = () => {
+    // setSelectedBarcodeData([]);
+    setOpenCloseAddPart(!openCloseAddPart);
+    setSelectedRow([]);
   };
 
   return (
@@ -565,7 +474,7 @@ const ResearchNewProject = () => {
               Add New Project
             </Button>{' '}
           </Box>
-          <Box spacing={1} sx={{ width: 600 }}>
+          {/* <Box spacing={1} sx={{ width: 600 }}>
             <Autocomplete
               id='free-solo-demo'
               freeSolo
@@ -575,7 +484,7 @@ const ResearchNewProject = () => {
                 <TextField {...params} label='Search New Project' sx={{}} />
               )}
             />
-          </Box>
+          </Box> */}
           <Box
             sx={{
               // border: '2px solid red',
@@ -770,37 +679,41 @@ const ResearchNewProject = () => {
                 aria-label='sticky table'
                 sx={{ border: '1px solid grey' }}
               >
-                {viewBarcodeColumns.map((data, index) => (
-                  <TableHead key={index}>
-                    <TableRow>
-                      <TableCell sx={{ backgroundColor: 'grey' }}>
-                        {data.id}
-                      </TableCell>
-                      <TableCell sx={{ backgroundColor: 'grey' }}>
-                        {data.sku}
-                      </TableCell>
-                      <TableCell sx={{ backgroundColor: 'grey' }}>
-                        {data.productName}
-                      </TableCell>
-                      <TableCell sx={{ backgroundColor: 'grey' }}>
-                        {data.qty}
-                      </TableCell>
-                      <TableCell sx={{ backgroundColor: 'grey' }}>
-                        {data.button}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                ))}
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ backgroundColor: 'grey' }}>SNo</TableCell>
+                    <TableCell sx={{ backgroundColor: 'grey' }}>SKU</TableCell>
+                    <TableCell sx={{ backgroundColor: 'grey' }}>
+                      Product Name
+                    </TableCell>
+                    <TableCell sx={{ backgroundColor: 'grey' }}>Qty</TableCell>
+                    <TableCell sx={{ backgroundColor: 'grey' }}>
+                      Select Part
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
 
                 <TableBody>
-                  {addPartsData?.map((data, index) => (
+                  {selectedRow?.partsData?.map((data, index) => (
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{data?.sku}</TableCell>
                       <TableCell>{data?.productName}</TableCell>
                       <TableCell>{data?.barcode.length}</TableCell>
                       <TableCell>
-                        <Button onClick={() => showBarcodeHandler(data)}>
+                        <Button
+                          onClick={() =>
+                            showBarcodeHandler(data, selectedRow?.projectId)
+                          }
+                          sx={{
+                            backgroundColor:
+                              barcodeData[0] === data ? 'skyblue' : 'inherit',
+                            '&:hover': {
+                              backgroundColor:
+                                barcodeData[0] === data ? 'skyblue' : 'inherit',
+                            },
+                          }}
+                        >
                           Select Barcode
                         </Button>
                       </TableCell>
@@ -824,67 +737,65 @@ const ResearchNewProject = () => {
                 aria-label='sticky table'
                 sx={{ border: '1px solid grey' }}
               >
-                {addPartColumns.map((data, index) => (
-                  <TableHead key={index}>
-                    <TableRow>
-                      <TableCell
-                        sx={{
-                          backgroundColor: 'grey',
-                          alignContent: 'center',
-                          paddingLeft: '2%',
-                        }}
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        backgroundColor: 'grey',
+                        alignContent: 'center',
+                        paddingLeft: '2%',
+                      }}
+                    >
+                      Sno
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: 'grey',
+                        alignContent: 'center',
+                        paddingLeft: '2%',
+                      }}
+                    >
+                      Select
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: 'grey',
+                        alignContent: 'center',
+                        paddingLeft: '2%',
+                      }}
+                    >
+                      Barcode Number
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: 'grey',
+                        alignContent: 'center',
+                        paddingLeft: '2%',
+                      }}
+                    >
+                      Status
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: '#fda0a0',
+                        alignContent: 'center',
+                        paddingLeft: '5%',
+                      }}
+                    >
+                      <Button
+                        variant='text'
+                        color='error'
+                        onClick={toggleBarcode}
                       >
-                        {data.sNo}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          backgroundColor: 'grey',
-                          alignContent: 'center',
-                          paddingLeft: '2%',
-                        }}
-                      >
-                        {data.checkbox}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          backgroundColor: 'grey',
-                          alignContent: 'center',
-                          paddingLeft: '2%',
-                        }}
-                      >
-                        {data.barcodeNumber}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          backgroundColor: 'grey',
-                          alignContent: 'center',
-                          paddingLeft: '2%',
-                        }}
-                      >
-                        {data.isAssigned}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          backgroundColor: '#fda0a0',
-                          alignContent: 'center',
-                          paddingLeft: '5%',
-                        }}
-                      >
-                        <Button
-                          variant='text'
-                          color='error'
-                          onClick={toggleBarcode}
-                        >
-                          <ClearIcon />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                ))}
+                        <ClearIcon />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
 
                 <TableBody>
                   {displayBarcode &&
-                    barcodeData?.barcode?.map((data, index) => (
+                    barcodeData[0]?.barcode?.map((data, index) => (
                       <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>
@@ -892,8 +803,9 @@ const ResearchNewProject = () => {
                             <Checkbox disabled />
                           ) : (
                             <Checkbox
-                              onClick={() =>
-                                selectBarcodeHandler(barcodeData, data)
+                              checked={isSelected(data)}
+                              onChange={(event) =>
+                                selectBarcodeHandler(event, barcodeData, data)
                               }
                             />
                           )}
@@ -901,7 +813,7 @@ const ResearchNewProject = () => {
                         <TableCell>{data?.Barcode?.Barcode}</TableCell>
                         <TableCell colSpan={2}>{`${
                           data?.Barcode?.isAssigned === true
-                            ? 'in USE'
+                            ? 'In USE'
                             : 'IN INVENTORY'
                         }`}</TableCell>
                       </TableRow>
@@ -920,7 +832,7 @@ const ResearchNewProject = () => {
         <Dialog open={openClosePD} onClose={handleOpenClosePD} maxWidth='xl'>
           <DialogTitle
             sx={{
-              minWidth: '60vw',
+              minWidth: '70vw',
               minHeight: '19vh',
               display: 'flex',
               flexDirection: 'column',
@@ -934,8 +846,9 @@ const ResearchNewProject = () => {
                 width: '100%',
                 display: 'flex',
                 flex: 'wrap',
-                justifyContent: 'space-around',
+                justifyContent: 'center',
                 alignItems: 'center',
+                // border: '2px solid black',
               }}
             >
               <Box
@@ -944,6 +857,7 @@ const ResearchNewProject = () => {
                   width: '100%',
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  // border: '2px solid black',
                 }}
               >
                 <Box
@@ -961,7 +875,7 @@ const ResearchNewProject = () => {
                     <InputBase
                       value={projectDetailData?.projectId}
                       sx={{
-                        borderBottom: '2px solid grey',
+                        // borderBottom: '2px solid grey',
                         maxHeight: '20px',
                         maxWidth: '60px',
                         paddingX: '1.5%',
@@ -979,16 +893,16 @@ const ResearchNewProject = () => {
                 >
                   {' '}
                   <Typography sx={{ fontWeight: '600' }}>
-                    ProjectName
+                    ProjectName:
                   </Typography>
                   <Typography>
                     <InputBase
                       value={projectDetailData?.projectName}
                       sx={{
-                        borderBottom: '2px solid grey',
+                        // borderBottom: '2px solid grey',
                         textAlign: 'center',
                         maxHeight: '20px',
-                        maxWidth: '150px',
+                        minWidth: '230px',
                         paddingX: '2.5%',
                       }}
                     />
@@ -1007,9 +921,9 @@ const ResearchNewProject = () => {
                     <InputBase
                       value={projectDetailData?.startDate}
                       sx={{
-                        borderBottom: '2px solid grey',
+                        // borderBottom: '2px solid grey',
                         maxHeight: '20px',
-                        maxWidth: '100px',
+                        maxWidth: '92px',
                         paddingX: '2.5%',
                       }}
                     />
@@ -1024,12 +938,36 @@ const ResearchNewProject = () => {
                   }}
                 >
                   {' '}
-                  <Typography sx={{ fontWeight: '600' }}>EndDate</Typography>
+                  <Typography sx={{ fontWeight: '600' }}>EndDate: </Typography>
                   <Typography>
                     <InputBase
                       value={'Present'}
                       sx={{
-                        borderBottom: '2px solid grey',
+                        // borderBottom: '2px solid grey',
+                        maxHeight: '20px',
+                        maxWidth: '92px',
+                        paddingX: '1.5%',
+                      }}
+                    />
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {' '}
+                  <Typography sx={{ fontWeight: '600' }}>
+                    Project Status:
+                  </Typography>
+                  <Typography>
+                    <InputBase
+                      value={projectDetailData?.projectItems?.assigned}
+                      sx={{
+                        // borderBottom: '2px solid grey',
                         maxHeight: '20px',
                         maxWidth: '100px',
                         paddingX: '1.5%',
@@ -1071,57 +1009,29 @@ const ResearchNewProject = () => {
           <DialogContent>
             <TableContainer sx={{}}>
               <Table stickyHeader aria-label='sticky table'>
-                {newProjectDetailCloumns.map((data, index) => (
-                  <TableHead key={index}>
-                    <TableRow>
-                      <TableCell>{data.label1}</TableCell>
-                      <TableCell>{data.label2}</TableCell>
-                      <TableCell>{data.label3}</TableCell>
-                      <TableCell>{data.label4}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                ))}
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Sno</TableCell>
+                    <TableCell>Part Name</TableCell>
+                    <TableCell>Part Barcode</TableCell>
+                    <TableCell>Status of Part's Barcode</TableCell>
+                  </TableRow>
+                </TableHead>
 
                 <TableBody>
-                  {selectedBarcodeData?.map((data, index) => (
+                  {projectDetailData?.projectItems?.map((data, index) => (
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{data?.productName}</TableCell>
-                      <TableCell>{data?.Barcode}</TableCell>
+                      <TableCell>{data?.barcode}</TableCell>
+                      <TableCell>{`in use`}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
           </DialogContent>
-          <DialogActions sx={{ justifyContent: 'space-between' }}>
-            <RadioGroup
-              aria-label='status'
-              name='status'
-              value={projectDetail.status}
-              onChange={handleStatusChange}
-              row
-            >
-              <FormControlLabel
-                value='Complete'
-                control={<Radio />}
-                label='Complete'
-              />
-              <FormControlLabel
-                value='Incomplete'
-                control={<Radio />}
-                label='Incomplete'
-              />
-              <FormControlLabel
-                value='InProgress'
-                control={<Radio />}
-                label='In Progress'
-              />
-              <Button variant='outlined' onClick={updateProjectStatus}>
-                Update
-              </Button>
-            </RadioGroup>
-
+          <DialogActions>
             <Button onClick={handleOpenClosePD}>Close</Button>
           </DialogActions>
         </Dialog>
@@ -1178,7 +1088,7 @@ const ResearchNewProject = () => {
                   <Typography>
                     {' '}
                     <InputBase
-                      value={projectDetailData?.projectId}
+                      value={editProject?.projectId}
                       sx={{
                         // borderBottom: '2px solid grey',
                         maxHeight: '20px',
@@ -1202,7 +1112,7 @@ const ResearchNewProject = () => {
                   </Typography>
                   <Typography>
                     <InputBase
-                      value={projectDetailData?.projectName}
+                      value={editProject?.projectName}
                       sx={{
                         textAlign: 'center',
                         maxHeight: '20px',
@@ -1222,6 +1132,7 @@ const ResearchNewProject = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Sno</TableCell>
+                    <TableCell>Parts Name</TableCell>
                     <TableCell>Barcode</TableCell>
                     <TableCell>Change Barcode Status</TableCell>
                     <TableCell>Part Damage</TableCell>
@@ -1229,19 +1140,29 @@ const ResearchNewProject = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>1</TableCell>
-                    <TableCell>12205925895045</TableCell>
-                    <TableCell>
-                      <Button variant='text'>status</Button>
-                    </TableCell>
-                    <TableCell>
-                      <Checkbox {...label} />
-                    </TableCell>
-                    <TableCell>
-                      <Button variant='text'>return</Button>
-                    </TableCell>
-                  </TableRow>
+                  {editProject?.projectItems?.map((data, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{data?.productName}</TableCell>
+                      <TableCell>{data?.barcode}</TableCell>
+                      <TableCell>
+                        <Button
+                          aria-describedby={id}
+                          variant='outlined'
+                          onClick={handleClick}
+                          sx={{ background: color }}
+                        >
+                          Change Status
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox {...label} />
+                      </TableCell>
+                      <TableCell>
+                        <Button variant='text'>return</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -1254,26 +1175,23 @@ const ResearchNewProject = () => {
             <RadioGroup
               aria-label='status'
               name='status'
-              // value={projectDetail.status}
-              // onChange={handleStatusChange}
+              value={projectDetail.status}
+              onChange={handleProjectWorkingStatus}
               row
             >
               <FormControlLabel
-                value='Complete'
+                value={true}
                 control={<Radio />}
                 label='Complete'
               />
               <FormControlLabel
-                value='Incomplete'
+                value={false}
                 control={<Radio />}
                 label='Incomplete'
               />
             </RadioGroup>
             <Box sx={{ display: 'flex', gap: '10px' }}>
-              <Button
-                variant='text'
-                // onClick={updateProjectStatus}
-              >
+              <Button variant='text' onClick={updateProjectStatus}>
                 Update
               </Button>
               <Button variant='text' onClick={handleOpenCloseEP}>
@@ -1282,6 +1200,44 @@ const ResearchNewProject = () => {
             </Box>
           </DialogActions>
         </Dialog>
+
+        {/* edit product change status popup */}
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleCloseChangeStatus}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <Typography sx={{ p: 2, background: 'skyblue' }}>
+            <RadioGroup
+              aria-label='status'
+              name='status'
+              value={''}
+              onChange={''}
+              sx={{ display: 'flex' }}
+            >
+              <FormControlLabel
+                value={true}
+                control={<Radio />}
+                label='Inventory'
+              />
+              <FormControlLabel
+                value={false}
+                control={<Radio />}
+                label='InUse'
+              />
+
+              <Button variant='outlined' size='small'>
+                {' '}
+                Update{' '}
+              </Button>
+            </RadioGroup>
+          </Typography>
+        </Popover>
       </Box>
     </Box>
   );
