@@ -590,8 +590,7 @@ const CompetitorTable = () => {
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected
                  apiRef={apiRef}
-                disableRowSelectionOnClick
-                components={{
+                 components={{
                   Footer: CustomFooter,
                 }}
                 slotProps={{
