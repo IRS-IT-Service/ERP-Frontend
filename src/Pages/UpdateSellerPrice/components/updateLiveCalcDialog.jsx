@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Delete } from "@mui/icons-material";
+import { Delete, Rotate90DegreesCcw, Transform } from "@mui/icons-material";
 import {
   Table,
   TableBody,
@@ -17,7 +17,10 @@ import {
   TextField,
   InputAdornment,
   CircularProgress,
+  Typography,
+  Collapse,
   Tooltip,
+
 } from "@mui/material";
 import { useUpdateProductsColumnMutation } from "../../../features/api/productApiSlice";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -25,10 +28,12 @@ import { toast } from "react-toastify";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 import { useDispatch, useSelector } from "react-redux";
+import InfoIcon from "@mui/icons-material/Info";
 import {
   removeLiveCalcDetails,
   setLiveCalcDetails,
 } from "../../../features/slice/LiveCalcReducer";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? " #0d0d0d" : "#eee",
   height: "50px",
@@ -41,6 +46,11 @@ const StyledCell = styled(TableCell)(({ theme }) => ({
   "&.blue-bg": {
     backgroundColor: "#606CF2",
   },
+}));
+
+const StyleCellData = styled(TableCell)(({ theme }) => ({
+  textAlign: "center",
+  width: "100%",
 }));
 
 const UpdateLiveCalcDialog = ({
@@ -61,7 +71,7 @@ const UpdateLiveCalcDialog = ({
   const socket = useSocket();
 
   // Local state
-
+  console.log(localData);
   // RTK query
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
@@ -97,6 +107,16 @@ const UpdateLiveCalcDialog = ({
     setLocalData(newLocalData);
     // dispatch(setLiveCalcDetails(newLocalData))
   }, [data]);
+
+  //for competitor
+  const [openStates, setOpenStates] = useState(data.map(() => false));
+  const handleRowClick = (index) => {
+    const updatedOpenStates = [...openStates];
+    updatedOpenStates[index] = !updatedOpenStates[index];
+    setOpenStates(updatedOpenStates);
+  };
+
+  //end
 
   // Handlers
   const handleClose = () => {
@@ -340,7 +360,7 @@ const UpdateLiveCalcDialog = ({
     },
     [selectedItems, selectedItemsData]
   );
-//Reset value after delete elements
+  //Reset value after delete elements
   useEffect(() => {
     const matchingArray = [];
     selectedItemsData.forEach((item) => {
@@ -354,9 +374,6 @@ const UpdateLiveCalcDialog = ({
       setLocalData(matchingArray);
     }
   }, [selectedItemsData, setSelectedItemsData]);
-
-
-
 
   const handleChange = (e, sku) => {
     const { value, name } = e.target;
@@ -504,6 +521,8 @@ const UpdateLiveCalcDialog = ({
       }));
     });
 
+
+
     // Updating the correlated value
     if (name === "SalesTax") {
       // Handle SalesTax change if needed
@@ -564,6 +583,11 @@ const UpdateLiveCalcDialog = ({
         {
           field: "Remove",
           headerName: "Remove",
+          className: "violet-bg",
+        },
+        {
+          field: "Compaire",
+          headerName: "Comapire",
           className: "violet-bg",
         },
       ];
@@ -640,6 +664,11 @@ const UpdateLiveCalcDialog = ({
           headerName: "Remove",
           className: "violet-bg",
         },
+        {
+          field: "Compaire",
+          headerName: "Compaire",
+          className: "violet-bg",
+        },
       ];
     }
 
@@ -669,16 +698,18 @@ const UpdateLiveCalcDialog = ({
           >
             <TableHead>
               <TableRow>
-                {columns.map((column, index) => (
-                  <Tooltip title={`${column.field}`} placement="top">
+                {columns.map((column) => (
+                  <Tooltip
+                    title={`${column.field}`}
+                    placement="top"
+                    key={column.field}
+                  >
                     <StyledCell
                       sx={{
                         fontSize: ".7rem",
                         textAlign: "center",
                       }}
-                      // Check for the "violet-bg" class and apply it to the header cell
                       className={column.className}
-                      key={column.field}
                     >
                       {column.headerName}
                     </StyledCell>
@@ -687,17 +718,17 @@ const UpdateLiveCalcDialog = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {localData.map((item, index) => {
-                return (
-                  <TableRow key={item.SKU}>
+              {localData.map((item, index) => (
+                <React.Fragment key={item.SKU}>
+                  <TableRow key={index}>
                     <TableCell sx={{ fontSize: ".8rem", textAlign: "center" }}>
                       {index + 1}
                     </TableCell>
-                    {columns.slice(1).map((column, index) => {
+                    {columns.slice(1).map((column) => {
                       if (column.input) {
                         return (
                           <TableCell
-                            key={index}
+                            key={column.field}
                             sx={{
                               fontSize: ".8rem",
                               textAlign: "center",
@@ -720,11 +751,6 @@ const UpdateLiveCalcDialog = ({
                                 handleChange(e, item.SKU);
                               }}
                               InputProps={{
-                                // endAdornment: (
-                                //   <InputAdornment position="start">
-                                //     {column.preFix || ""}
-                                //   </InputAdornment>
-                                // ),
                                 startAdornment: (
                                   <InputAdornment position="start">
                                     {column.preFix || ""}
@@ -734,36 +760,35 @@ const UpdateLiveCalcDialog = ({
                             />
                           </TableCell>
                         );
-                      } else if (column.field === "SalesPriceWithGst") {
-                        return (
-                          <TableCell
-                            key={index}
-                            sx={{ fontSize: ".8rem", textAlign: "center" }}
-                          >
-                            {Math.round(
-                              +item.SalesPrice +
-                                (item.GST / 100) * item.SalesPrice
-                            )}{" "}
-                            {column.preFix ? column.preFix : ""}
-                          </TableCell>
+                      } else if (
+                        column.field === "SalesPriceWithGst" ||
+                        column.field === "SellerPriceWithGst"
+                      ) {
+                        const calculatedPrice = Math.round(
+                          +item[
+                            column.field.substring(0, column.field.length - 7)
+                          ] +
+                            (item.GST / 100) *
+                              item[
+                                column.field.substring(
+                                  0,
+                                  column.field.length - 7
+                                )
+                              ]
                         );
-                      } else if (column.field === "SellerPriceWithGst") {
                         return (
                           <TableCell
-                            key={index}
+                            key={column.field}
                             sx={{ fontSize: ".8rem", textAlign: "center" }}
                           >
-                            {Math.round(
-                              +item.SellerPrice +
-                                (item.GST / 100) * item.SellerPrice
-                            )}{" "}
+                            {calculatedPrice}{" "}
                             {column.preFix ? column.preFix : ""}
                           </TableCell>
                         );
                       } else if (column.field === "Remove") {
                         return (
                           <TableCell
-                            key={index}
+                            key={column.field}
                             sx={{
                               fontSize: ".8rem",
                               textAlign: "center",
@@ -776,10 +801,32 @@ const UpdateLiveCalcDialog = ({
                             <Delete />
                           </TableCell>
                         );
+                      } else if (column.field === "Compaire") {
+                        return (
+                          <TableCell>
+                            <Tooltip
+                              title="Click for more details"
+                              placement="top"
+                            >
+                              <KeyboardArrowDownIcon
+                          
+                          sx={{
+                            cursor: "pointer",
+                            fontSize: "20px",
+                            marginLeft: "10px",
+                            "&:hover": { color: "blue" },
+                            transition: "transform 0.5s ease-out",
+                            transform: openStates[index] ? "rotate(180deg)" : "rotate(0deg)",
+                          }}
+                                onClick={() => handleRowClick(index)}
+                              />
+                            </Tooltip>
+                          </TableCell>
+                        );
                       }
                       return (
                         <TableCell
-                          key={index}
+                          key={column.field}
                           sx={{ fontSize: ".8rem", textAlign: "center" }}
                         >
                           {item[column.field]}{" "}
@@ -788,8 +835,60 @@ const UpdateLiveCalcDialog = ({
                       );
                     })}
                   </TableRow>
-                );
-              })}
+                  {/* Competitor details */}
+                  {openStates[index] && (
+                    <TableRow>
+                      <StyleCellData
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={16}
+                      >
+                        <Collapse
+                          in={openStates[index]}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          {/* <Box sx={{backgroundColor: "#eee" ,width:"100%" }}> */}
+                          {/* Render sub-data here */}
+
+                          <TableContainer
+                            sx={{ backgroundColor: "#eee"}}
+                          >
+                            <Table>
+                              <TableRow>
+                                {item.competitor.map((items, index) => {
+                                  return (
+                                    <TableCell
+                                      key={index}
+                                      sx={{
+                                        background: "black",
+                                        color: "#fff",
+                                        padding: 0.5,
+                                        fontSize:"12px"
+                                      }}
+                                    >
+                                      {items.Name}
+                                    </TableCell>
+                                  );
+                                })}
+                              </TableRow>
+
+                              {item.competitor.map((items) => {
+                                return (
+                                  <TableCell key={index} sx={{ padding: 0.5 ,fontSize:"12px",fontWeight:"bold" }}>
+                                    {items.Price} ₹
+                                  </TableCell>
+                                );
+                              })}
+                            </Table>
+                          </TableContainer>
+
+                          {/* </Box> */}
+                        </Collapse>
+                      </StyleCellData>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
