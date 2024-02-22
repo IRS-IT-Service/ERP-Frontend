@@ -102,14 +102,11 @@ const CompetitorTable = () => {
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
           cellClassName: "super-app-theme--cell",
-    
         }))
       );
       setCompetitorColumns(updatedColumns);
     }
   }, [allCompetitor]);
-
- 
 
   // const handleSelectionChange = (selectionModel) => {
   //   setSelectedItems(selectionModel);
@@ -146,10 +143,10 @@ const CompetitorTable = () => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         let CompName = {};
-      item.CompetitorPrice.forEach((compItem) => {
-        CompName[compItem.Name] = compItem.Price;
-      });
-      
+        item.CompetitorPrice.forEach((compItem) => {
+          CompName[compItem.Name] = compItem.Price;
+        });
+
         return {
           id: index,
           Sno:
@@ -162,8 +159,7 @@ const CompetitorTable = () => {
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
           Category: item.Category,
-        ...CompName
-       
+          ...CompName,
         };
       });
       dispatch(setAllProductsV2(allProductData.data));
@@ -208,7 +204,6 @@ const CompetitorTable = () => {
   //     }));
   //   });
   // };
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -372,11 +367,13 @@ const CompetitorTable = () => {
     },
   ];
 
-useEffect(()=>{
-  let filterColumns = columns.concat(competitorColumns).map((columns)=>columns.headerName)
+  useEffect(() => {
+    let filterColumns = columns
+      .concat(competitorColumns)
+      .map((columns) => columns.headerName);
 
-  setFilterColumns(filterColumns)
-},[competitorColumns])
+    setFilterColumns(filterColumns);
+  }, [competitorColumns]);
 
   const handleOpenCompetitor = () => {
     setOpenCompetitor(true);
@@ -720,13 +717,13 @@ useEffect(()=>{
             </Box>
           </Grid>
           <CompetitorDial
-          openCompetitor={openCompetitor}
-          handleCloseCompetitor={handleCloseCompetitor}
-          paramsData={selectedRows}
-          handleOpenCompetitor={handleOpenCompetitor}
-          columns={filterColumns}
-          handleRemoveCompetitorItem={handleRemoveCompetitorItem}
-        />
+            openCompetitor={openCompetitor}
+            handleCloseCompetitor={handleCloseCompetitor}
+            paramsData={selectedRows}
+            handleOpenCompetitor={handleOpenCompetitor}
+            columns={filterColumns}
+            handleRemoveCompetitorItem={handleRemoveCompetitorItem}
+          />
         </Grid>
       </Box>
     </div>

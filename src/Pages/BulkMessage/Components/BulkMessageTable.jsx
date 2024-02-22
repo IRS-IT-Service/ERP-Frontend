@@ -21,6 +21,8 @@ import {
   useSendBulkMessagesWithPicMutation,
 } from "../../../features/api/whatsAppApiSlice";
 import Loading from "../../../components/Common/Loading";
+import CustomMsgDialogbox from "./CustomMsgDialogbox";
+
 //File upload
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -42,12 +44,14 @@ const BulkMessageTable = () => {
   const [file, setFile] = useState("");
   const [input, setInput] = useState({ CustomerName: "", CustomerNumber: "" });
   const [rows, setRows] = useState([]);
+  const [msgDialogbox, setMsgDialogbox] = useState(false);
+  const [sendingType, setSendingType] = useState("");
 
   //rtk Query
-  const [addCustomer,{isLoading: addCustomerLoading }] =
+  const [addCustomer, { isLoading: addCustomerLoading }] =
     useAddCustomerNumberMutation();
 
-    const [sendMsg,{isLoading:sendMsgLoading}] =
+  const [sendMsg, { isLoading: sendMsgLoading }] =
     useSendBulkMessagesWithPicMutation();
   const {
     data: getAllCustomers,
@@ -58,8 +62,7 @@ const BulkMessageTable = () => {
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     setFileUploaded(true);
-    setFile(file)
-
+    setFile(file);
   };
 
   const handleClickOpen = () => {
@@ -68,6 +71,15 @@ const BulkMessageTable = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleOpenMsgDialogbox = (type) => {
+    setSendingType(type);
+    setMsgDialogbox(true);
+  };
+
+  const handleCloseMsgDialogbox = () => {
+    setMsgDialogbox(false);
   };
 
   useEffect(() => {
@@ -84,32 +96,27 @@ const BulkMessageTable = () => {
     }
   }, [getAllCustomers]);
 
+  const handleSend = async () => {
+    try {
+      const formData = new FormData();
 
-  const handleSend = async() =>{
-try{
-  const formData = new FormData()
+      formData.append("contacts", JSON.stringify(customerNumber)),
+        formData.append("message", message),
+        formData.append("file", file);
 
-
-  formData.append("contacts",JSON.stringify(customerNumber)),
-  formData.append("message",message),
-  formData.append("file",file)
-  
-  
-  const res =await sendMsg(formData).unwrap()
-  if(!res.status){
-  return
-  }
-  toast.success("Message successfully send!")
-  setFileUploaded(false)
-  setFile("")
-  setMessage("")
-refetch()
-}catch(err){
-  console.log(err)
-}
-
-
-  }
+      const res = await sendMsg(formData).unwrap();
+      if (!res.status) {
+        return;
+      }
+      toast.success("Message successfully send!");
+      setFileUploaded(false);
+      setFile("");
+      setMessage("");
+      refetch();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleSubmit = async (event) => {
     try {
@@ -131,7 +138,7 @@ refetch()
         setInput([]);
         handleClose();
         refetch();
-       }
+      }
     } catch (err) {
       console.log(err);
     }
@@ -148,13 +155,16 @@ refetch()
   const handleSelectionChange = (selectionModel) => {
     if (!Array.isArray(selectionModel)) return;
     const limitedSelection = selectionModel.slice(0, 50);
-    const uniqueSelection = [...new Set(
-      rows.filter(item => limitedSelection.includes(item.id)).map(item => item.CustomerNumber)
-    )];
+    const uniqueSelection = [
+      ...new Set(
+        rows
+          .filter((item) => limitedSelection.includes(item.id))
+          .map((item) => item.CustomerNumber)
+      ),
+    ];
 
     setCustomerNumber(uniqueSelection);
   };
-
 
   //This is data grid data
   const columns = [
@@ -185,7 +195,7 @@ refetch()
         <Box
           sx={{
             width: "30%",
-            marginTop:"2rem",
+            marginTop: "2rem",
             display: "flex",
             flexDirection: "column",
             justifyItems: "center",
@@ -199,20 +209,58 @@ refetch()
           >
             Add Customer
           </Button>
-          <textarea
-          style={{
-            width: "100%",
-            height: "400px",
-            resize: "none",
-            paddingTop:5,
-            textIndent:"20px"
-          }}
-          value={message}
-           minRows={8}
+          {/* <textarea
+            style={{
+              width: "100%",
+              height: "400px",
+
+              resize: "none",
+              paddingTop: 5,
+              textIndent: "20px",
+            }}
+            value={message}
+            minRows={8}
             placeholder="Enter your message"
             aria-label="maximum height"
-            onChange={(e)=>setMessage(e.target.value)}
-          />
+            onChange={(e) => setMessage(e.target.value)}
+          /> */}
+          <Box
+            sx={{
+              marginTop: "1rem",
+              border: "2px solid black",
+              borderRadius: "2px",
+              display: "flex",
+            }}
+          >
+            <Button
+              variant="contained"
+              sx={{ margin: "0.6rem", width: "100%" }}
+              onClick={()=>handleOpenMsgDialogbox("Text")}
+            >
+              Send Text Message With Media
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ margin: "0.6rem", width: "100%" }}
+              onClick={()=>handleOpenMsgDialogbox("Text")}
+            >
+              Send Text Message
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ margin: "0.6rem", width: "100%" }}
+              onClick={()=>handleOpenMsgDialogbox("Link")}
+            >
+              Send Link
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ margin: "0.6rem", width: "100%" }}
+            >
+              Send Message With Template
+            </Button>
+          </Box>
+
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle
               id="alert-dialog-title"
@@ -298,11 +346,11 @@ refetch()
               sx={{ margin: "10px" }}
               onClick={() => handleSend()}
             >
-                   {sendMsgLoading ? <CircularProgress size={30} /> : "send"}
+              {sendMsgLoading ? <CircularProgress size={30} /> : "send"}
             </Button>
           </Box>
         </Box>
-        <Box sx={{ width: "35%",marginTop:"2rem" }}>
+        <Box sx={{ width: "35%", marginTop: "2rem" }}>
           <Box sx={{ height: "72vh", width: "100%" }}>
             <DataGrid
               rows={rows}
@@ -324,6 +372,13 @@ refetch()
           </Box>
         </Box>
       </Box>
+      {msgDialogbox && (
+        <CustomMsgDialogbox
+          msgDialogbox={msgDialogbox}
+          handleCloseMsgDialogbox={handleCloseMsgDialogbox}
+          sendingType={sendingType}
+        />
+      )}
     </Box>
   );
 };
