@@ -4,6 +4,7 @@ import ProductHistory from "../Home_Page/Components/ProductHistory";
 import UpdatePriceGrid from "./components/UpdatePriceGrid";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useParams } from "react-router-dom";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -150,22 +151,26 @@ const UpdateSellerPrice = () => {
     setOpenHistory(false);
   };
 
+ const params = useParams().SalesPrice
+
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Update Product"} info={true} customOnClick={handleOpen} />
+      <Header Name={`Update ${params}`} info={true} customOnClick={handleOpen} />
       <UpdatePriceGrid
         setOpenHistory={setOpenHistory}
         setProductDetails={setProductDetails}
+        condition={params}
       />
       <ProductHistory
         openHistory={openHistory}
         setOpenHistory={setOpenHistory}
         handleCloseHistory={handleCloseHistory}
         productDetails={productDetails}
+        condition= {params}
       />
       {/* infoDialog table */}
       <InfoDialogBox
@@ -173,6 +178,7 @@ const UpdateSellerPrice = () => {
         description={description}
         open={infoOpen}
         close={handleClose}
+        condition={params}
       />
     </Box>
   );
