@@ -41,13 +41,18 @@ import {
   setDeepSearch,
 } from "../../../features/slice/productSlice";
 
-const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
+const Content = ({
+  setOpenHistory,
+  setProductDetails,
+  autoHeight,
+  condition,
+}) => {
+  console.log(condition)
   /// initialization
   const dispatch = useDispatch();
   const apiRef = useGridApiRef();
   const socket = useSocket();
   const debouncing = useRef();
-
   /// global state
   const {
     isAdmin,
@@ -72,7 +77,6 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   const [openCalc, setOpenCalc] = useState(false);
   const [buttonType, setButtontype] = useState("");
   const [isRejectedOn, setisRejectedOn] = useState(false);
-
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -378,7 +382,9 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
               (item.LandingCost * (1 + item.SalesTax / 100))) *
             100
           ).toFixed(2),
-
+          SalesPriceWithGst: item.SalesPrice
+            ? ((item.SalesPrice * item.GST) / 100 + item.SalesPrice).toFixed(2)
+            : 0,
           Brand: item.Brand,
           isVerifiedSellerPrice: item.isVerifiedSellerPrice,
           isRejectedSellerPrice: item.isRejectedSellerPrice,
@@ -393,7 +399,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
           isEcwidSync: item.isEcwidSync,
           isWholeSaleActive: item.isWholeSaleActive,
           isImageExist: item.mainImage?.fileId ? true : false,
-          competitor:item.CompetitorPrice
+          competitor: item.CompetitorPrice,
         };
       });
 
@@ -407,9 +413,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
   }, [allProductData, triggerDefault]);
 
   const handleRejectFilter = async () => {
-  
     apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-  
+
     if (isRejectedOn) {
       setFilterString(`type=update&page=1`);
       setisRejectedOn(false);
@@ -418,9 +423,6 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
       setisRejectedOn(true);
     }
   };
-
-   
-
 
   useEffect(() => {
     if (editedRows.length && rows.length) {
@@ -514,10 +516,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
     }
   }, [deepSearch]);
 
-
-
   //Columns*******
-
   const columns = [
     {
       field: "Sno",
@@ -689,8 +688,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
       field: "LandingCost",
       headerName: "Cost ₹",
       flex: 0.3,
-      minWidth: 90,
-      maxWidth: 130,
+      minWidth: 150,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       editable: true,
@@ -717,8 +716,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
       field: "LandingCostWithGst",
       headerName: "Cost +(gst)",
       flex: 0.3,
-      minWidth: 90,
-      maxWidth: 130,
+      minWidth: 150,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -727,212 +726,203 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
       valueFormatter: (params) => `₹ ${params.value}`,
     },
 
-    {
-      field: "ProfitSales",
-      headerClassName: "super-app-theme--header--Sales",
-      cellClassName: "super-app-theme--cell",
-      headerName: "SP %",
-      align: "center",
-      headerAlign: "center",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 80,
-      type: "number",
-      valueFormatter: (params) => `${params.value} %`,
-      // maxWidth: 130,
-    },
-    {
-      field: "SalesTax",
-      headerClassName: "super-app-theme--header--Sales",
-      cellClassName: "super-app-theme--cell",
-      headerName: "ST %",
-      align: "center",
-      headerAlign: "center",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 120,
-      type: "number",
-      valueFormatter: (params) => `${params.value} %`,
-      // maxWidth: 130,
-    },
-    {
-      field: "ProfitSalesWithTax",
-      headerClassName: "super-app-theme--header--Sales",
-      cellClassName: "super-app-theme--cell",
-      headerName: "SP Tax %",
-      align: "center",
-      headerAlign: "center",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 80,
-      type: "number",
-      valueFormatter: (params) =>
-        `${
-          isNaN(params.value) || params.value === "Infinity" || params.value < 0
-            ? 0
-            : params.value
-        } %`,
-      // maxWidth: 130,
-    },
-
-    {
-      field: "SalesPrice",
-      headerClassName: "super-app-theme--header--Sales",
-      cellClassName: "super-app-theme--cell",
-      headerName: "S price ₹",
-      align: "center",
-      headerAlign: "center",
-      minWidth: 70,
-      maxWidth: 100,
-      type: "number",
-      valueFormatter: (params) => `₹ ${params.value}`,
-    },
-
-    {
-      field: "ProfitSeller",
-      headerClassName: "super-app-theme--header--Seller",
-      cellClassName: "super-app-theme--cell",
-      headerName: "WP Tax %",
-      align: "center",
-      headerAlign: "center",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 100,
-      type: "number",
-      valueFormatter: (params) => `${params.value} %`,
-      // maxWidth: 130,
-    },
-    {
-      field: "SellerTax",
-      headerClassName: "super-app-theme--header--Seller",
-      cellClassName: "super-app-theme--cell",
-      headerName: "WT%",
-      align: "center",
-      headerAlign: "center",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 120,
-      type: "number",
-      valueFormatter: (params) => `${params.value} %`,
-      // maxWidth: 130,
-    },
-    {
-      field: "ProfitSellerWithTax",
-      headerClassName: "super-app-theme--header--Seller",
-      cellClassName: "super-app-theme--cell",
-      headerName: "WP%",
-      align: "center",
-      headerAlign: "center",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 80,
-      type: "number",
-      valueFormatter: (params) =>
-        `${
-          isNaN(params.value) || params.value === "Infinity" || params.value < 0
-            ? 0
-            : params.value
-        } %`,
-      // maxWidth: 130,
-    },
-    {
-      field: "SellerPrice",
-      headerClassName: "super-app-theme--header--Seller",
-      cellClassName: "super-app-theme--cell",
-      headerName: "W price ₹",
-      align: "center",
-      headerAlign: "center",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 100,
-
-      type: "number",
-      valueFormatter: (params) => `₹ ${params.value}`,
-      // maxWidth: 130,
-    },
-    {
-      field: "history",
-      headerClassName: "super-app-theme--header--history",
-      cellClassName: "super-app-theme--cell",
-      headerName: "History",
-      align: "center",
-      headerAlign: "center",
-      flex: 0.2,
-      minWidth: 70,
-      maxWidth: 90,
-      renderCell: (params) => {
-        return (
-          <Button
-            onClick={() => {
-              setOpenHistory(true);
-              setProductDetails(params.row);
-            }}
-          >
-            View
-          </Button>
-        );
-      },
-    },
-    {
-      field: "isActive",
-      headerName: `Ecwid`,
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        return (
-          <div>
-            {" "}
-            <Switch
-              checked={params.row.isEcwidSync}
-              onChange={(e) => {
-                handleIsActiveyncUpdate(
-                  params.row.SKU,
-                  e.target.checked,
-                  "isEcwidSync"
-                );
-              }}
-            />
-          </div>
-        );
-      },
-    },
-    {
-      field: "isImageExist",
-      headerName: `WS Active`,
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        return (
-          <div>
-            {params.row.isImageExist ? (
-              <Switch
-                checked={params.row.isWholeSaleActive}
-                onChange={(e) => {
-                  handleIsActiveyncUpdate(
-                    params.row.SKU,
-                    e.target.checked,
-                    "isWholeSaleActive"
-                  );
-                }}
-              />
-            ) : (
-              <ImageNotSupportedIcon />
-            )}
-          </div>
-        );
-      },
-    },
+    ,
   ];
+
+  if (condition === "SalesPrice") {
+    columns.push(
+      {
+        field: "ProfitSales",
+        headerClassName: "super-app-theme--header--Sales",
+        cellClassName: "super-app-theme--cell",
+        headerName: "SP %",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 100,
+        maxWidth: 80,
+        type: "number",
+        valueFormatter: (params) => `${params.value} %`,
+        // maxWidth: 130,
+      },
+
+      {
+        field: "SalesTax",
+        headerClassName: "super-app-theme--header--Sales",
+        cellClassName: "super-app-theme--cell",
+        headerName: "ST %",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 100,
+        maxWidth: 120,
+        type: "number",
+        valueFormatter: (params) => `${params.value} %`,
+        // maxWidth: 130,
+      },
+      {
+        field: "ProfitSalesWithTax",
+        headerClassName: "super-app-theme--header--Sales",
+        cellClassName: "super-app-theme--cell",
+        headerName: "SP Tax %",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 100,
+        maxWidth: 80,
+        type: "number",
+        valueFormatter: (params) =>
+          `${
+            isNaN(params.value) ||
+            params.value === "Infinity" ||
+            params.value < 0
+              ? 0
+              : params.value
+          } %`,
+        // maxWidth: 130,
+      },
+
+      {
+        field: "SalesPrice",
+        headerClassName: "super-app-theme--header--Sales",
+        cellClassName: "super-app-theme--cell",
+        headerName: "S price ₹",
+        align: "center",
+        headerAlign: "center",
+        minWidth: 150,
+        maxWidth: 200,
+        type: "number",
+        valueFormatter: (params) => `₹ ${params.value}`,
+      },
+      {
+        field: "SalesPriceWithGst",
+        headerClassName: "super-app-theme--header--Sales",
+        cellClassName: "super-app-theme--cell",
+        headerName: "Sales Price Inclu (GST) ₹",
+        align: "center",
+        headerAlign: "center",
+        minWidth: 150,
+        maxWidth: 200,
+        type: "number",
+        valueFormatter: (params) => `₹ ${params.value}`,
+      },
+      {
+        field: "history",
+        headerClassName: "super-app-theme--header--history",
+        cellClassName: "super-app-theme--cell",
+        headerName: "History",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 70,
+        maxWidth: 90,
+        renderCell: (params) => {
+          return (
+            <Button
+              onClick={() => {
+                setOpenHistory(true);
+                setProductDetails(params.row);
+              }}
+            >
+              View
+            </Button>
+          );
+        },
+      }
+    );
+  }
+
+  if (condition === "SellerPrice") {
+    columns.push(
+      {
+        field: "ProfitSeller",
+        headerClassName: "super-app-theme--header--Seller",
+        cellClassName: "super-app-theme--cell",
+        headerName: "WP Tax %",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 100,
+        maxWidth: 100,
+        type: "number",
+        valueFormatter: (params) => `${params.value} %`,
+        // maxWidth: 130,
+      },
+      {
+        field: "SellerTax",
+        headerClassName: "super-app-theme--header--Seller",
+        cellClassName: "super-app-theme--cell",
+        headerName: "WT%",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 100,
+        maxWidth: 120,
+        type: "number",
+        valueFormatter: (params) => `${params.value} %`,
+        // maxWidth: 130,
+      },
+      {
+        field: "ProfitSellerWithTax",
+        headerClassName: "super-app-theme--header--Seller",
+        cellClassName: "super-app-theme--cell",
+        headerName: "WP%",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 100,
+        maxWidth: 80,
+        type: "number",
+        valueFormatter: (params) =>
+          `${
+            isNaN(params.value) ||
+            params.value === "Infinity" ||
+            params.value < 0
+              ? 0
+              : params.value
+          } %`,
+        // maxWidth: 130,
+      },
+      {
+        field: "SellerPrice",
+        headerClassName: "super-app-theme--header--Seller",
+        cellClassName: "super-app-theme--cell",
+        headerName: "W price ₹",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 100,
+        maxWidth: 100,
+
+        type: "number",
+        valueFormatter: (params) => `₹ ${params.value}`,
+        // maxWidth: 130,
+      },
+      {
+        field: "history",
+        headerClassName: "super-app-theme--header--history",
+        cellClassName: "super-app-theme--cell",
+        headerName: "History",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 70,
+        maxWidth: 90,
+        renderCell: (params) => {
+          return (
+            <Button
+              onClick={() => {
+                setOpenHistory(true);
+                setProductDetails(params.row);
+              }}
+            >
+              View
+            </Button>
+          );
+        },
+      }
+    );
+  }
 
   /// Functions
   const getModifiedColumns = (isAdmin, productColumns, columns) => {
@@ -1040,7 +1030,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
                   width: "25px",
                   height: "20px",
                   borderRadius: "10px",
-                  cursor:"pointer",
+                  cursor: "pointer",
                   backgroundColor: "#B22222",
                   color: "#ffff",
                   "&:hover": {
@@ -1049,9 +1039,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
                   },
                 }}
                 onClick={handleRejectFilter}
-              >
-       
-              </Box>
+              ></Box>
             </Box>
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Sales Columns</span>
@@ -1133,8 +1121,8 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
       <FilterBarV2
         customButton1={bulkUpdateCustomButton}
         customButton2={hiddenColumnCustomButton}
-        customButton3={liveSalesCalcCustomButton}
-        customButton4={liveSellerCalcCustomButton}
+        customButton3={condition === "SalesPrice" ? liveSalesCalcCustomButton : liveSellerCalcCustomButton}
+        // customButton4={liveSellerCalcCustomButton}
         count={selectedItems}
         apiRef={apiRef}
       />

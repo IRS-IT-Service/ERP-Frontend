@@ -384,8 +384,32 @@ function App() {
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
                 <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
                 <Route path="/addBrand" element={<AddBrand />} />
-                <Route
+                {/* <Route
                   path="/UpdateSellerPrice"
+                  element={
+                    <UserRole name={"Update Product"}>
+                      <UpdateSellerPrice />
+                    </UserRole>
+                  }
+                /> */}
+                <Route
+                  path="/UpdateSellerPrice/:SalesPrice"
+                  element={
+                    <UserRole name={"Update Product"}>
+                      <UpdateSellerPrice />
+                    </UserRole>
+                  }
+                />
+                <Route
+                  path="/UpdateSellerPrice/:SellerPrice"
+                  element={
+                    <UserRole name={"Update Product"}>
+                      <UpdateSellerPrice />
+                    </UserRole>
+                  }
+                />
+                <Route
+                  path="/UpdateSellerPrice/:equid"
                   element={
                     <UserRole name={"Update Product"}>
                       <UpdateSellerPrice />

@@ -79,10 +79,22 @@ const userRolesData = [
         icon: "fas fa-list",
       },
 
+      // {
+      //   id: 2,
+      //   name: "Update Product",
+      //   path: "/UpdateSellerPrice",
+      //   icon: "fa-solid fa-pen-to-square",
+      // },
       {
-        id: 2,
-        name: "Update Product",
-        path: "/UpdateSellerPrice",
+        id: 66,
+        name: "Update Sales Price",
+        path: "/UpdateSellerPrice/SalesPrice",
+        icon: "fa-solid fa-pen-to-square",
+      },
+      {
+        id: 67,
+        name: "Update Seller Price",
+        path: "/UpdateSellerPrice/SellerPrice",
         icon: "fa-solid fa-pen-to-square",
       },
       {
@@ -484,6 +496,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 64
+// last routes is 67
 
 export default userRolesData;

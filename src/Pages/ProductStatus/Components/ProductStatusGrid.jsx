@@ -12,7 +12,13 @@ import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
-import { Box, Button, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TablePagination,
+  Typography,
+  Switch,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setAllProducts,
@@ -23,6 +29,7 @@ import Loading from "../../../components/Common/Loading";
 import { useNavigate } from "react-router-dom";
 import ProductStatusDownloadDialog from "./ProductStatusDownloadDialog";
 import CachedIcon from "@mui/icons-material/Cached";
+import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 
 // for refresh data
 
@@ -124,6 +131,9 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           SalesPrice: item.SalesPrice,
           SellerPrice: item.SellerPrice,
           Brand: item.Brand,
+          isEcwidSync: item.isEcwidSync,
+          isWholeSaleActive: item.isWholeSaleActive,
+          isImageExist: item.mainImage?.fileId ? true : false,
         };
       });
 
@@ -428,6 +438,65 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             }}
           >
             {icon}
+          </div>
+        );
+      },
+    },
+    {
+      field: "isActive",
+      headerName: `Ecwid`,
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div>
+            {" "}
+            <Switch
+              checked={params.row.isEcwidSync}
+              onChange={(e) => {
+                handleIsActiveyncUpdate(
+                  params.row.SKU,
+                  e.target.checked,
+                  "isEcwidSync"
+                );
+              }}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      field: "isImageExist",
+      headerName: `WS Active`,
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div>
+            {params.row.isImageExist ? (
+              <Switch
+                checked={params.row.isWholeSaleActive}
+                onChange={(e) => {
+                  handleIsActiveyncUpdate(
+                    params.row.SKU,
+                    e.target.checked,
+                    "isWholeSaleActive"
+                  );
+                }}
+              />
+            ) : (
+              <ImageNotSupportedIcon />
+            )}
           </div>
         );
       },
