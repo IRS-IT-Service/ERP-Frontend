@@ -285,6 +285,15 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    addCompetitorPrice: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/addCompetitorPrice`,
+          method: "POST",
+          body:data
+        };
+      },
+    }),
   }),
 });
 
@@ -322,4 +331,5 @@ export const {
   useGetAllCompetitorQuery,
   useAddDynamicValueMutation,
   useGetDynamicValueQuery,
+  useAddCompetitorPriceMutation
 } = productApiSlice;

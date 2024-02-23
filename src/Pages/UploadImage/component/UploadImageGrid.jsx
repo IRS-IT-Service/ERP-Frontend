@@ -1,13 +1,13 @@
-import { React, useEffect, useState, useRef } from 'react';
+import { React, useEffect, useState, useRef } from "react";
 import {
   DataGrid,
   useGridApiRef,
   GridToolbarContainer,
-} from '@mui/x-data-grid';
-import { TablePagination } from '@mui/material';
-import { useSelector } from 'react-redux';
-import EditIcon from '@mui/icons-material/Edit';
-import CachedIcon from '@mui/icons-material/Cached';
+} from "@mui/x-data-grid";
+import { TablePagination } from "@mui/material";
+import { useSelector } from "react-redux";
+import EditIcon from "@mui/icons-material/Edit";
+import CachedIcon from "@mui/icons-material/Cached";
 import {
   Grid,
   CardMedia,
@@ -21,27 +21,27 @@ import {
   Paper,
   DialogTitle,
   Stack,
-} from '@mui/material';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+} from "@mui/material";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   useDeleteSideImageMutation,
   useGetAllProductV2Query,
   useGetOneProductQuery,
   useUploadSideImagesMutation,
   useSetDefaultImageMutation,
-} from '../../../features/api/productApiSlice';
-import Loading from '../../../components/Common/Loading';
-import FilterBarV2 from '../../../components/Common/FilterBarV2';
-import CloseIcon from '@mui/icons-material/Close';
-import { setAllProductsV2 } from '../../../features/slice/productSlice';
-import { toast } from 'react-toastify';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { useSocket } from '../../../CustomProvider/useWebSocket';
-import OneUpdateProductDial from '../../UpdateProduct/OneUpdateProductDial';
-import { useCreateUserHistoryMutation } from '../../../features/api/usersApiSlice';
-import OneUpdateProductDivyam from '../../UpdateProduct/OneUpdateProductDivyam';
+} from "../../../features/api/productApiSlice";
+import Loading from "../../../components/Common/Loading";
+import FilterBarV2 from "../../../components/Common/FilterBarV2";
+import CloseIcon from "@mui/icons-material/Close";
+import { setAllProductsV2 } from "../../../features/slice/productSlice";
+import { toast } from "react-toastify";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import { useSocket } from "../../../CustomProvider/useWebSocket";
+import OneUpdateProductDial from "../../UpdateProduct/OneUpdateProductDial";
+import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
+import OneUpdateProductDivyam from "../../UpdateProduct/OneUpdateProductDivyam";
 
 const UploadImageGrid = () => {
   /// initialization
@@ -64,14 +64,14 @@ const UploadImageGrid = () => {
   /// local state
   const [anchorEl, setAnchorEl] = useState(null);
   const [rows, setRows] = useState([]);
-  const [imageSKU, setImageSKU] = useState('');
+  const [imageSKU, setImageSKU] = useState("");
   const [skip, setSkip] = useState(true);
   const [preView, setPreView] = useState(false);
   const [open, setOpen] = useState(false);
-  const [SKUinfo, setSKUinfo] = useState('');
+  const [SKUinfo, setSKUinfo] = useState("");
 
   /// pagination State
-  const [filterString, setFilterString] = useState('page=1');
+  const [filterString, setFilterString] = useState("page=1");
   const [page, setPage] = useState(1);
   const [rowPerPage, setRowPerPage] = useState(100);
   const [totalProductCount, setTotalProductCount] = useState(0);
@@ -112,38 +112,37 @@ const UploadImageGrid = () => {
       };
 
       await deleteSideImageApi(body).unwrap();
-      toast.success('Image deleted successfully', {
+      toast.success("Image deleted successfully", {
         position: toast.POSITION.TOP_CENTER,
       });
       refetchOneProduct();
       refetch();
     } catch (error) {
-      console.error('Error deleting image:', error);
-      toast.error('Error deleting image', {
+      console.error("Error deleting image:", error);
+      toast.error("Error deleting image", {
         position: toast.POSITION.TOP_CENTER,
       });
     }
   };
 
- const handleSetDefaultImage = async (url) => {
-   try {
-     const data = {
-       sku: imageSKU,
-       body: { defaultImage: url },
-     };
-     await setImageDefaultApi(data).unwrap();
-     toast.success('Image set as default', {
-       position: toast.POSITION.TOP_CENTER,
-     });
-     refetchOneProduct();
-   } catch (error) {
-     console.error('Error setting image as default:', error);
-     toast.error('Error setting image as default', {
-       position: toast.POSITION.TOP_CENTER,
-     });
-   }
- };
-
+  const handleSetDefaultImage = async (url) => {
+    try {
+      const data = {
+        sku: imageSKU,
+        body: { defaultImage: url },
+      };
+      await setImageDefaultApi(data).unwrap();
+      toast.success("Image set as default", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      refetchOneProduct();
+    } catch (error) {
+      console.error("Error setting image as default:", error);
+      toast.error("Error setting image as default", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
+  };
 
   const handleFileSelect = async (event) => {
     try {
@@ -162,7 +161,7 @@ const UploadImageGrid = () => {
             `Image size exceeds the limit of 500 KB: ${file.name}`
           );
         }
-        formData.append('Images', file);
+        formData.append("Images", file);
       });
 
       const body = {
@@ -173,12 +172,12 @@ const UploadImageGrid = () => {
       await uploadSideImageApi(body).unwrap();
       const liveStatusData = {
         message: `${userInfo.name} uploaded Image to SKU ${imageSKU}`,
-        time: new Date().toLocaleTimeString('en-IN', {
-          timeZone: 'Asia/Kolkata',
+        time: new Date().toLocaleTimeString("en-IN", {
+          timeZone: "Asia/Kolkata",
         }),
       };
-      socket.emit('liveStatusServer', liveStatusData);
-      toast.success('Images uploaded successfully', {
+      socket.emit("liveStatusServer", liveStatusData);
+      toast.success("Images uploaded successfully", {
         position: toast.POSITION.TOP_CENTER,
       });
 
@@ -188,17 +187,17 @@ const UploadImageGrid = () => {
       const addProductHistory = {
         userId: userInfo.adminId,
         message: liveStatusData.message,
-        type: 'product',
-        by: 'user',
+        type: "product",
+        by: "user",
         reference: { product: [imageSKU] },
       };
 
       const historyRes = await createUserHistoryApi(addProductHistory);
     } catch (error) {
-      console.error('Error uploading images:', error);
+      console.error("Error uploading images:", error);
 
       // Handle the error, show a toast message, etc.
-      toast.error('Error uploading images', {
+      toast.error("Error uploading images", {
         position: toast.POSITION.TOP_CENTER,
       });
     }
@@ -237,7 +236,7 @@ const UploadImageGrid = () => {
   }, [allProductData]);
 
   useEffect(() => {
-    let newFilterString = '';
+    let newFilterString = "";
     checkedBrand.forEach((item, index) => {
       if (index === 0) {
         newFilterString += `brand=${item}`;
@@ -272,37 +271,37 @@ const UploadImageGrid = () => {
   /// Colums
   const columns = [
     {
-      field: 'Sno',
-      headerName: 'Sno',
+      field: "Sno",
+      headerName: "Sno",
       flex: 0.3,
       minWidth: 80,
       maxWidth: 90,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
-      field: 'SKU',
-      headerName: 'SKU',
+      field: "SKU",
+      headerName: "SKU",
       flex: 0.3,
       minWidth: 100,
       maxWidth: 130,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
         return (
           <div
             style={{
-              height: '100%',
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: params.row.isChanged ? 'orange' : '',
-              borderRadius: '5px',
+              height: "100%",
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: params.row.isChanged ? "orange" : "",
+              borderRadius: "5px",
             }}
             onDoubleClick={() => {
               onClose();
@@ -315,37 +314,37 @@ const UploadImageGrid = () => {
       },
     },
     {
-      field: 'Name',
-      headerName: 'Product ',
+      field: "Name",
+      headerName: "Product ",
       flex: 0.3,
       minWidth: 500,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
-      field: 'Weight',
-      headerName: 'Weight',
+      field: "Weight",
+      headerName: "Weight",
       flex: 0.3,
       minWidth: 100,
       maxWidth: 100,
       //  maxWidth: 600,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
-      field: 'Dimension',
-      headerName: 'Dimension',
+      field: "Dimension",
+      headerName: "Dimension",
       flex: 0.3,
       minWidth: 100,
       maxWidth: 140,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       value: (params) => {
         const dimensions = params.row.Dimension;
 
@@ -354,62 +353,61 @@ const UploadImageGrid = () => {
       },
     },
     {
-      field: 'Brand',
-      headerName: 'Brand',
+      field: "Brand",
+      headerName: "Brand",
       flex: 0.3,
       minWidth: 80,
       // maxWidth: 100,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
-      field: 'Category',
-      headerName: 'Category',
+      field: "Category",
+      headerName: "Category",
       flex: 0.3,
       minWidth: 80,
       // maxWidth: 100,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
 
     {
-      field: 'imageCount',
-      headerName: 'ImageCount',
+      field: "imageCount",
+      headerName: "ImageCount",
       flex: 0.3,
       minWidth: 80,
       maxWidth: 100,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
-      field: 'View',
-      headerName: 'Preview',
+      field: "View",
+      headerName: "Preview",
       flex: 0.3,
       minWidth: 80,
       // maxWidth: 100,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
         return (
           <>
             <Button
               style={{
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-
+                height: "100%",
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
-              size='small'
+              size="small"
               onClick={(e) => {
                 setImageSKU(params.row.SKU);
                 setSkip(false);
@@ -423,43 +421,42 @@ const UploadImageGrid = () => {
       },
     },
     {
-      field: 'uploadImg',
-      headerName: 'Upload',
+      field: "uploadImg",
+      headerName: "Upload",
       flex: 0.3,
       minWidth: 70,
       maxWidth: 70,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => (
         <Box>
           <input
-            type='file'
+            type="file"
             multiple
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
             onChange={handleFileSelect}
-            id='file-input'
+            id="file-input"
           />
-          <label htmlFor='file-input'>
+          <label htmlFor="file-input">
             <AddPhotoAlternateIcon
               onClick={(event) => handleImage(event, params.row.id)}
-              sx={{ color: 'green', cursor: 'pointer' }}
-            />{' '}
+              sx={{ color: "green", cursor: "pointer" }}
+            />
           </label>
         </Box>
       ),
     },
     {
-      field: 'ProdutEdit',
-      headerName: 'Product Edit',
+      field: "ProdutEdit",
+      headerName: "Product Edit",
       flex: 0.3,
       minWidth: 70,
-
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => (
         <Box>
           <Button
@@ -479,16 +476,16 @@ const UploadImageGrid = () => {
 
   const addProductCustomButton = (
     <Button
-      variant='outlined'
+      variant="outlined"
       sx={{
-        color: 'white',
+        color: "white",
         background: color,
-        '&:hover': {
-          color: 'black',
+        "&:hover": {
+          color: "black",
         },
       }}
       onClick={() => {
-        navigate('/addRoboProduct');
+        navigate("/addRoboProduct");
       }}
     >
       Add Product
@@ -500,28 +497,28 @@ const UploadImageGrid = () => {
     const { status } = props;
     return (
       <GridToolbarContainer>
-        <Box display='flex' justifyContent='space-between' width='100%'>
-          <Button size='small' onClick={() => status()}>
+        <Box display="flex" justifyContent="space-between" width="100%">
+          <Button size="small" onClick={() => status()}>
             <CachedIcon />
           </Button>
-          <Box display={'flex'} marginTop={'15px'}>
-            {' '}
+          <Box display={"flex"} marginTop={"15px"}>
+            {" "}
             <Box
               sx={{
-                width: '50px',
-                height: '20px',
-                backgroundColor: 'orange',
-                marginRight: '5px',
-                borderRadius: '5px',
+                width: "50px",
+                height: "20px",
+                backgroundColor: "orange",
+                marginRight: "5px",
+                borderRadius: "5px",
               }}
             ></Box>
-            <Typography sx={{ fontWeight: 'bold' }}>
+            <Typography sx={{ fontWeight: "bold" }}>
               Orange Color Denotes Product is edited and pending Approval , Cant
               be edited further
             </Typography>
           </Box>
           <TablePagination
-            component='div'
+            component="div"
             count={totalProductCount}
             page={page - 1}
             onPageChange={(event, newPage) => {
@@ -531,7 +528,7 @@ const UploadImageGrid = () => {
 
               let param = new URLSearchParams(paramString);
 
-              param.set('page', newPage + 1);
+              param.set("page", newPage + 1);
 
               let newFilterString = param.toString();
 
@@ -549,8 +546,8 @@ const UploadImageGrid = () => {
   return (
     <Box
       sx={{
-        height: '100%',
-        width: '100%',
+        height: "100%",
+        width: "100%",
       }}
     >
       <OneUpdateProductDivyam
@@ -574,29 +571,29 @@ const UploadImageGrid = () => {
         open={preView}
         anchorEl={anchorEl}
         anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'center',
+          vertical: "center",
+          horizontal: "center",
         }}
         transformOrigin={{
-          vertical: 'center',
-          horizontal: 'center',
+          vertical: "center",
+          horizontal: "center",
         }}
         disableRestoreFocus
       >
         <DialogTitle
           sx={{
-            backgroundColor: '#eeee',
-            textAlign: 'center',
-            display: 'flex',
-            justifyContent: 'space-between',
-            padding: '4px',
+            backgroundColor: "#eeee",
+            textAlign: "center",
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "4px",
           }}
         >
-          <Box sx={{ flex: '1', justifySelf: 'center' }}>
-            <Typography variant='h6'>
+          <Box sx={{ flex: "1", justifySelf: "center" }}>
+            <Typography variant="h6">
               Product Name: {oneProductData?.data?.Name}
             </Typography>
-            <Typography variant='h6'>Product SKU: {imageSKU}</Typography>
+            <Typography variant="h6">Product SKU: {imageSKU}</Typography>
           </Box>
 
           <CloseIcon
@@ -604,10 +601,10 @@ const UploadImageGrid = () => {
               setPreView(false);
             }}
             sx={{
-              background: '#000',
-              color: '#fff',
-              borderRadius: '50%',
-              cursor: 'pointer',
+              background: "#000",
+              color: "#fff",
+              borderRadius: "50%",
+              cursor: "pointer",
             }}
           />
         </DialogTitle>
@@ -616,44 +613,44 @@ const UploadImageGrid = () => {
           sx={{
             minWidth: 600,
             height: 600,
-            display: 'flex',
-            justifyContent: 'space-around',
-            gap: '2rem',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "space-around",
+            gap: "2rem",
+            alignItems: "center",
           }}
         >
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '3rem',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "column",
+              gap: "3rem",
+              alignItems: "center",
             }}
           >
-            <Paper elevation={10} sx={{ width: '300px', height: '300px' }}>
+            <Paper elevation={10} sx={{ width: "300px", height: "300px" }}>
               <CardMedia
-                component='img'
+                component="img"
                 sx={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '5px',
-                  objectFit: 'fill',
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "5px",
+                  objectFit: "fill",
                 }}
                 image={oneProductData?.data?.mainImage?.lowUrl}
-                alt='main Image'
+                alt="main Image"
               />
             </Paper>
 
             <Paper
               elevation={0}
               sx={{
-                width: '150px',
-                height: '80%',
-                display: 'flex',
+                width: "150px",
+                height: "80%",
+                display: "flex",
                 // flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'space-around',
-                gap: '1rem',
+                alignItems: "center",
+                justifyContent: "space-around",
+                gap: "1rem",
               }}
             >
               {oneProductData?.data?.sideImage &&
@@ -661,16 +658,16 @@ const UploadImageGrid = () => {
                   <Stack
                     key={index}
                     sx={{
-                      position: 'relative',
-                      width: '100%',
-                      height: '100%',
-                      borderRadius: '5px',
-                      cursor: 'pointer',
+                      position: "relative",
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "5px",
+                      cursor: "pointer",
                     }}
                   >
                     <Card>
                       <CardMedia
-                        component='img'
+                        component="img"
                         sx={{
                           minWidth: 100,
                           height: 80,
@@ -681,18 +678,18 @@ const UploadImageGrid = () => {
                           objectFit: 'contain',
                         }}
                         image={img?.lowUrl}
-                        alt='side Image'
+                        alt="side Image"
                         onClick={(e) => handleSetDefaultImage(img)}
                       />
                       {oneProductData?.data?.mainImage?.fileId ===
                         img.fileId && (
                         <Typography
                           sx={{
-                            width: '100%',
-                            height: '10%',
-                            fontSize: '0.8rem',
-                            textAlign: 'center',
-                            color: 'red',
+                            width: "100%",
+                            height: "10%",
+                            fontSize: "0.8rem",
+                            textAlign: "center",
+                            color: "red",
                           }}
                         >
                           Default Image
@@ -701,46 +698,46 @@ const UploadImageGrid = () => {
                     </Card>
                     <HighlightOffIcon
                       sx={{
-                        position: 'absolute',
-                        top: '2px',
-                        backgroundColor: 'orange',
-                        borderRadius: '5rem',
+                        position: "absolute",
+                        top: "2px",
+                        backgroundColor: "orange",
+                        borderRadius: "5rem",
                       }}
                       onClick={() => handleDeleteSideImage(img.fileId)}
                     />
                   </Stack>
                 ))}
             </Paper>
-            <Typography fontWeight='bold'>
+            <Typography fontWeight="bold">
               Click these images to set as default image
             </Typography>
           </Box>
         </DialogContent>
       </Popover>
 
-      <Grid item xs={12} sx={{ mt: '5px' }}>
+      <Grid item xs={12} sx={{ mt: "5px" }}>
         <Box
           sx={{
-            width: '100%',
-            height: '78vh',
-            '& .super-app-theme--header': {
-              background: '#eee',
-              color: 'black',
-              textAlign: 'center',
+            width: "100%",
+            height: "78vh",
+            "& .super-app-theme--header": {
+              background: "#eee",
+              color: "black",
+              textAlign: "center",
             },
-            '& .vertical-lines .MuiDataGrid-cell': {
-              borderRight: '1px solid #e0e0e0',
+            "& .vertical-lines .MuiDataGrid-cell": {
+              borderRight: "1px solid #e0e0e0",
             },
-            '& .supercursor-app-theme--cell:hover': {
+            "& .supercursor-app-theme--cell:hover": {
               background:
-                'linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)',
-              color: 'white',
-              cursor: 'pointer',
+                "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
+              color: "white",
+              cursor: "pointer",
             },
-            '& .MuiDataGrid-columnHeaderTitleContainer': {
-              background: '#eee',
+            "& .MuiDataGrid-columnHeaderTitleContainer": {
+              background: "#eee",
             },
-            position: 'relative',
+            position: "relative",
           }}
         >
           <DataGrid

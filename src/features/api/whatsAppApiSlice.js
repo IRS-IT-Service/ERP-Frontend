@@ -59,6 +59,32 @@ export const whatsAppApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    sendBulkMessagesWithPic: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${WhatsApp_URL}/sendBulkMessage`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    addCustomerNumber: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${WhatsApp_URL}/addCustomerNumber`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    getCustomerNumber: builder.query({
+      query: () => {
+        return {
+          url: `${WhatsApp_URL}/getAllCustomer`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -68,5 +94,9 @@ export const {
   useDeleteContactNoMutation,
   useSendMessageMutation,
   useSendPdfOnWhatsappDscMutation,
-  useSendMessageToAdminMutation
+  useSendMessageToAdminMutation,
+  useSendBulkMessagesWithPicMutation,
+  useAddCustomerNumberMutation,
+  useGetCustomerNumberQuery
+
 } = whatsAppApiSlice;

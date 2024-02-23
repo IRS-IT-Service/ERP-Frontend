@@ -32,7 +32,7 @@ const AddProductBoxesDetails = () => {
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
   const { data: getDynaicValue } = useGetDynamicValueQuery();
-  
+
   /// handlers
   const handleAddSubItems = () => {
     const currentSubitem = [...form.subItems];
@@ -197,6 +197,7 @@ const AddProductBoxesDetails = () => {
         subItems: [""],
         packageDimensions: [{ width: "", height: "", length: "", weight: "" }],
       });
+    window.location.reload();
     } catch (e) {
       console.log("error At Add Product");
       console.log(e.message);
