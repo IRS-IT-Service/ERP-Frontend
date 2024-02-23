@@ -83,41 +83,25 @@ const CompetitorTable = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
-  // const  handleInputChage = (e) =>{
-  //   const { value } = e.target;
-  //   const { name } = e.target;
-  //   const FinalValue = {[name]:value}
-  //   setInputValue((prev)=>[...prev ,FinalValue]);
-  // }
 
   useEffect(() => {
     if (allCompetitor) {
-      const updatedColumns = allCompetitor.data.flatMap((item) =>
-        item.Competitors.map((competitor) => ({
+      const updatedColumns = allCompetitor?.data?.flatMap((item) =>
+        item?.Competitors?.map((competitor) => ({
           field: `${competitor.Name}`,
           headerName: `${competitor.Name}`,
-          flex: 0.1,
-          maxWidth: 150,
+          flex: 0.3,
+          minWidth: 120,
+          maxWidth: 200,
           align: "center",
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
           cellClassName: "super-app-theme--cell",
-    
         }))
       );
       setCompetitorColumns(updatedColumns);
     }
   }, [allCompetitor]);
-
- 
-
-  // const handleSelectionChange = (selectionModel) => {
-  //   setSelectedItems(selectionModel);
-  //   const newSelectedRowsData = rows.filter((item) =>
-  //     selectionModel.includes(item.id)
-  //   );
-  //   setSelectedItemsData(newSelectedRowsData);
-  // };
 
   const handleSelectionChange = (ids) => {
     setSelectedItems(ids);
@@ -146,10 +130,10 @@ const CompetitorTable = () => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         let CompName = {};
-      item.CompetitorPrice.forEach((compItem) => {
-        CompName[compItem.Name] = compItem.Price;
-      });
-      
+        item.CompetitorPrice.forEach((compItem) => {
+          CompName[compItem.Name] = compItem.Price;
+        });
+
         return {
           id: index,
           Sno:
@@ -162,8 +146,8 @@ const CompetitorTable = () => {
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
           Category: item.Category,
-        ...CompName
-       
+          competitor: item.CompetitorPrice,
+          ...CompName,
         };
       });
       dispatch(setAllProductsV2(allProductData.data));
@@ -188,43 +172,6 @@ const CompetitorTable = () => {
     setInput({});
   };
 
-  // const handleInputChange = (event, SKU, index, columnName) => {
-  //   const { value } = event.target;
-  //   setData(prevData => {
-  //     // Make a copy of the previous data
-  //     const newData = [...prevData];
-  //     // Find the specific object in the array based on index
-  //     const updatedObject = newData[index] || {};
-  //     // Update the specific property with the provided column name and value
-  //     updatedObject[SKU] = SKU;
-  //     updatedObject[columnName] = value;
-  //     // Update the array with the modified object
-  //     newData[index] = updatedObject;
-  //     // Return the updated array of objects in the required format
-  //     return newData.map(item => ({
-  //       SKU: item[SKU],
-  //       columnName: item[columnName],
-  //       value: item.value
-  //     }));
-  //   });
-  // };
-
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
-    const email = formJson.email;
-    console.log(email);
-    handleClose();
-  };
-
-  const handleSave = () => {
-    data.forEach((row, index) => {
-      const gstValue = row.GST;
-      console.log("Saving GST value for row:", index, "Value:", gstValue);
-    });
-  };
   useEffect(() => {
     let newFilterString = "";
     checkedBrand.forEach((item, index) => {
@@ -298,8 +245,8 @@ const CompetitorTable = () => {
       field: "SKU",
       headerName: "SKU",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 100,
+      minWidth: 120,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -327,8 +274,7 @@ const CompetitorTable = () => {
       field: "Product",
       headerName: "Product",
       flex: 0.3,
-      minWidth: 200,
-
+      minWidth: 450,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -338,8 +284,8 @@ const CompetitorTable = () => {
       field: "Brand",
       headerName: "Brand",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 120,
+      minWidth: 90,
+      maxWidth: 110,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -349,8 +295,8 @@ const CompetitorTable = () => {
       field: "Category",
       headerName: "Category",
       flex: 0.3,
-      minWidth: 90,
-      maxWidth: 120,
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -361,8 +307,8 @@ const CompetitorTable = () => {
       field: "GST",
       headerName: "GST",
       flex: 0.3,
-      minWidth: 60,
-      maxWidth: 70,
+      minWidth: 90,
+      maxWidth: 120,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -372,11 +318,13 @@ const CompetitorTable = () => {
     },
   ];
 
-useEffect(()=>{
-  let filterColumns = columns.concat(competitorColumns).map((columns)=>columns.headerName)
+  useEffect(() => {
+    let filterColumns = columns
+      .concat(competitorColumns)
+      .map((columns) => columns.headerName);
 
-  setFilterColumns(filterColumns)
-},[competitorColumns])
+    setFilterColumns(filterColumns);
+  }, [competitorColumns]);
 
   const handleOpenCompetitor = () => {
     setOpenCompetitor(true);
@@ -426,28 +374,6 @@ useEffect(()=>{
     </Button>
   );
 
-  const save = (
-    <Button variant="outlined" onClick={handleSave}>
-      Save
-    </Button>
-  );
-
-  //   useEffect(() => {
-  //     if (allCompetitor?.status === "success") {
-  //       setRows(allCompetitor.data.products);
-  //       const ColumnsName = []
-  //       allCompetitor.data?.forEach((row) =>{
-  // row?.forEach((column) => {
-  // ColumnsName.push(column.name);
-  // })
-
-  //       })
-
-  //       setColumns([...columnsData,...allCompetitor.data]);
-
-  //     }
-  //   }, [allCompetitor]);
-
   // post competitor name or url
   const handleOnChange = (e) => {
     setInput({
@@ -477,6 +403,7 @@ useEffect(()=>{
       toast.success("Competitor added successfully");
       setInput({});
       refetch();
+      productrefetch();
     } catch (error) {
       console.log(error);
     }
@@ -485,14 +412,7 @@ useEffect(()=>{
   return (
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: handleSubmit,
-          }}
-        >
+        <Dialog open={open} onClose={handleClose}>
           <DialogTitle
             id="alert-dialog-title"
             sx={{
@@ -567,7 +487,7 @@ useEffect(()=>{
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {allCompetitor?.data[0].Competitors.map((row, index) => {
+                      {allCompetitor?.data[0]?.Competitors?.map((row, index) => {
                         return (
                           <TableRow
                             key={index}
@@ -602,8 +522,6 @@ useEffect(()=>{
           }
           customOnClick={handleOpenCompetitor}
           customButton1={addCustomer}
-          customButton2={save}
-          // count={selectedItems}
         />
 
         <Grid container>
@@ -667,50 +585,12 @@ useEffect(()=>{
                 rows={rows}
                 rowHeight={40}
                 checkboxSelection
+                disableRowSelectionOnClick
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
-                getCellClassName={(params) => {
-                  if (params.field === "Quantity") {
-                    return params.row.isRejectedQuantity
-                      ? "red"
-                      : !params.row.isVerifiedQuantity
-                      ? "orange"
-                      : "";
-                  } else if (params.field === "SellerPrice") {
-                    return params.row.isRejectedSellerPrice
-                      ? "red"
-                      : !params.row.isVerifiedSellerPrice
-                      ? "orange"
-                      : "";
-                  } else if (params.field === "SalesPrice") {
-                    return params.row.isRejectedSalesPrice
-                      ? "red"
-                      : !params.row.isVerifiedSalesPrice
-                      ? "orange"
-                      : "";
-                  } else if (params.field === "LandingCost") {
-                    return params.row.isRejectedLandingCost
-                      ? "red"
-                      : !params.row.isVerifiedLandingCost
-                      ? "orange"
-                      : "";
-                  } else if (params.field === "MRP") {
-                    return params.row.isRejectedMRP
-                      ? "red"
-                      : !params.row.isVerifiedMRP
-                      ? "orange"
-                      : "";
-                  }
-
-                  // Return an empty string if the field doesn't match any condition
-                  return "";
-                }}
-                apiRef={apiRef}
-                columnVisibilityModel={hiddenColumns}
-                onColumnVisibilityModelChange={(newModel) =>
-                  setHiddenColumns(newModel)
-                }
-                components={{
+                keepNonExistentRowsSelected
+                 apiRef={apiRef}
+                 components={{
                   Footer: CustomFooter,
                 }}
                 slotProps={{
@@ -720,13 +600,15 @@ useEffect(()=>{
             </Box>
           </Grid>
           <CompetitorDial
-          openCompetitor={openCompetitor}
-          handleCloseCompetitor={handleCloseCompetitor}
-          paramsData={selectedRows}
-          handleOpenCompetitor={handleOpenCompetitor}
-          columns={filterColumns}
-          handleRemoveCompetitorItem={handleRemoveCompetitorItem}
-        />
+            openCompetitor={openCompetitor}
+            handleCloseCompetitor={handleCloseCompetitor}
+            paramsData={selectedRows}
+            handleOpenCompetitor={handleOpenCompetitor}
+            columns={filterColumns}
+            handleRemoveCompetitorItem={handleRemoveCompetitorItem}
+            productrefetch={productrefetch}
+            refetch={refetch}
+          />
         </Grid>
       </Box>
     </div>

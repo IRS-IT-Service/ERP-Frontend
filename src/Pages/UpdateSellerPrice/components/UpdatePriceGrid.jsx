@@ -393,6 +393,7 @@ const Content = ({ setOpenHistory, setProductDetails, autoHeight }) => {
           isEcwidSync: item.isEcwidSync,
           isWholeSaleActive: item.isWholeSaleActive,
           isImageExist: item.mainImage?.fileId ? true : false,
+          competitor:item.CompetitorPrice
         };
       });
 

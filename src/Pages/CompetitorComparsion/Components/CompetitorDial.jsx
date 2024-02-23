@@ -18,9 +18,8 @@ import {
   selectClasses,
 } from "@mui/material";
 import {
-  useCreateRestockMutation,
-  useCreatePriceComparisionMutation,
-} from "../../../features/api/RestockOrderApiSlice";
+  useAddCompetitorPriceMutation,
+} from "../../../features/api/productApiSlice";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
@@ -32,26 +31,42 @@ const CompetitorDial = ({
   paramsData,
   handleRemoveCompetitorItem,
   columns,
+  productrefetch,
+  refetch
 }) => {
   const [compairePrice, setCompairePrice] = useState([]);
 
-  console.log(compairePrice);
-  /// intialize
-  // const socket = useSocket();
+  const [addCompair ,{isLoading}] = useAddCompetitorPriceMutation()
 
-  /// global state
-  // const { isAdmin, productColumns, userInfo } = useSelector(
-  //   (state) => state.auth
-  // );
 
-  /// local state
-  // const [orderQuantities, setOrderQuantities] = useState({});
-  // const [description, setDescription] = useState("");
+ 
 
-  /// rtk query
-  // const [createRestockOrderApi, { isLoading }] = useCreateRestockMutation();
-  // const [createPriceComparision, { isLoading: compareLoading }] =
-  //   useCreatePriceComparisionMutation();
+const handleSubmit = async() =>{
+const finalValue = compairePrice.filter((item) => item.competitor?.length > 0)
+let info = finalValue.map((item)=>{
+  return{
+    sku: item.SKU,
+    competitor: item.competitor
+  }
+})
+
+const main = {
+  datas:info
+}
+try{
+  const res = await addCompair(main).unwrap()
+  toast.success("Competitor price added successfully")
+  handleCloseCompetitor()
+  setCompairePrice([{}])
+  productrefetch()
+  refetch()
+
+}catch(err){
+  console.log(err)
+}
+
+
+}
 
   /// useEffects
   useEffect(() => {
@@ -70,30 +85,32 @@ const CompetitorDial = ({
   const handleCompetitor = (SKU, Name, e) => {
     const { value } = e.target;
     const existingSKUIndex = compairePrice.findIndex(item => item.SKU === SKU);
-    const newCompetitor = { Name: Name, Price: value };
-console.log(newCompetitor)
+    const newCompetitor = { Name: Name, Price: +value };
+
     let values = [];
-      setCompairePrice((prev) => {
-        return (values = prev.map((data) => {
-         if(SKU === data.SKU){
 
-   
-
-    
-    
-
-        return {
-          ...data,
-          // [Name]: value,
-          SKU: SKU,
-          competitor: [{ Name: Name, Price:value}]
-        };
-      
-     }
-          
-            
-          }))
+    if (existingSKUIndex !== -1) {
+      setCompairePrice(prev => {
+        return prev.map((data, index) => {
+          if (index === existingSKUIndex) {
+            const existingCompetitorIndex = data.competitor.findIndex(comp => comp.Name === Name);
+            if (existingCompetitorIndex !== -1) {
+              const updatedCompetitorArray = [...data.competitor];
+              updatedCompetitorArray[existingCompetitorIndex] = newCompetitor;
+              return { ...data, competitor: updatedCompetitorArray };
+            } else {
+              return { ...data, competitor: [...data.competitor, newCompetitor] };
+            }
+          }
+          return data;
+        });
       });
+    } else {
+      setCompairePrice(prev => {
+        return [...prev, { SKU: SKU, competitor: [newCompetitor] }];
+      });
+    }
+    
     
   };
 
@@ -149,6 +166,10 @@ console.log(newCompetitor)
                     textAlign: "center",
                     background: "linear-gradient(0deg, #01127D, #04012F)",
                     color: "#fff",
+                    position:"sticky",
+                    top:0,
+                    left:0,
+                    zIndex: 200,
                   }}
                 >
                   Remove
@@ -159,6 +180,25 @@ console.log(newCompetitor)
                       textAlign: "center",
                       background: "linear-gradient(0deg, #01127D, #04012F)",
                       color: "#fff",
+                      position: ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ? "sticky" : "sticky",
+                      left:  `${
+                        ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ?
+                        item === "Sno"
+                         ? 5.20
+                         : item === "SKU"
+                         ? 8.75
+                         : item === "Product"
+                         ? 17.1
+                         : item=== "Brand"
+                         ? 22.25
+                         : item=== "Category"
+                         ? 26.60
+                         : item=== "GST"
+                         ? 32.2
+                         : 0
+                     : ""}rem`, // Adjust the values as needed
+                     zIndex: `${["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ?300 : 100}`,
+          
                     }}
                     key={index}
                   >
@@ -174,6 +214,10 @@ console.log(newCompetitor)
                     sx={{
                       textAlign: "center",
                       cursor: "pointer",
+                      position:"sticky",
+                    background:"#fff",
+                      left:0,
+                      zIndex: 100,
                       "&:hover": { color: "red" },
                     }}
                   >
@@ -181,9 +225,38 @@ console.log(newCompetitor)
                       onClick={() => handleRemoveCompetitorItem(item.id)}
                     />
                   </TableCell>
-                  <TableCell key={index}>{index + 1}</TableCell>
+                  <TableCell key={index} sx={{  
+                    position:"sticky",
+                      left:100,
+                      zIndex: 200,
+                      background:"#fff"
+                      }}>{index + 1}</TableCell>
                   {newColumns.map((column, columnIndex) => (
-                    <TableCell key={columnIndex}>
+               <TableCell
+               key={columnIndex}
+               sx={{
+                 position: ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(column) ? "sticky" : "inherit",
+                 left: `${
+                  
+                  column === "Sno"
+                    ? 0
+                    : column === "SKU"
+                    ? 10
+                    : column === "Product"
+                    ? 18.58
+                    : column=== "Brand"
+                    ? 23.45
+                    : column=== "Category"
+                    ? 27.45
+                    : column=== "GST"
+                    ? 32.45
+                    : 60
+                }rem`, // Adjust the values as needed
+                zIndex: 100,
+                background:"#fff",
+// rowGap:`${column === "Product" ? "1rem" : ""}`
+               }}
+             >
                       {[
                         "SKU",
                         "Sno",
@@ -200,7 +273,7 @@ console.log(newCompetitor)
                       ) : (
                         <input
                         defaultValue={item[column]}
-                          style={{ width: "100%", padding: 4 }}
+                          style={{ width: "6rem", padding: 4 }}
                           onChange={(e) =>
                            handleCompetitor(item.SKU, column, e)
                           }
@@ -224,29 +297,7 @@ console.log(newCompetitor)
           gap: ".6rem",
         }}
       >
-        {/* <Typography
-          sx={{
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "space-between",
-            backgroundColor: "#80bfff",
-            marginTop: ".4rem",
-            // border: '2px solid yellow',
-            padding: ".2rem",
-            border: "2px solid #3385ff",
-            borderRadius: ".4rem",
-            boxShadow: "-3px 3px 4px 0px #404040",
-          }}
-        >
-          Enter Description For Order
-        </Typography> */}
-        {/* <TextField
-          placeholder="order description"
-          value={description}
-          onChange={(e) => {
-            setDescription(e.target.value);
-          }}
-        /> */}
+ 
       </Box>
       <Box
         sx={{
@@ -258,13 +309,13 @@ console.log(newCompetitor)
           backgroundColor: " #e6e6e6",
         }}
       >
-        {/* <Button variant="outlined" onClick={handleConfirm}>
+        <Button variant="outlined" onClick={handleSubmit}>
           {isLoading ? (
             <CircularProgress size={24} color="inherit" /> // Show loading indicator
           ) : (
-            "Create Restock"
+            "Submit"
           )}
-        </Button> */}
+        </Button>
       </Box>
     </Dialog>
   );
