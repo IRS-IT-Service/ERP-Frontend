@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   styled,
@@ -62,22 +62,27 @@ const columns = [
 ];
 
 const AddCustomerForMarketing = () => {
-  const [data, setData] = useState({
-    name: "",
-    mobile: "",
-    company: "",
-    address: "",
-  });
+  const [data, setData] = useState([
+    {
+      Sno: '',
+      CompanyName: '',
+      CustomerName: '',
+      MobileNo: '',
+      Address: '',
+    },
+  ]);
+
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [excelData, setExcelData] = useState([]);
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setData((prev) => {
-      return { ...prev, [name]: value };
-    });
+    setData([{...data[0], [name] : value}])
   };
 
+
+  console.log(data)
+  
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -143,70 +148,102 @@ const AddCustomerForMarketing = () => {
     }
   };
 
+  const [showData, setShowData] = useState([])
+  // onSubmit input data display in datagrid row
+ const submitHandler = () => {
+   console.log('before if');
+
+   if (data.length === 1) {
+    const newData = data.map((item, index) => ({
+      ...item,
+      id: index + Date.now(),
+    }));
+    setShowData((prevShowData) => {
+      console.log('Previous showData:', prevShowData);
+      return [...prevShowData, ...newData];
+    });
+
+
+     
+     setData([{
+       CompanyName: '',
+       CustomerName: '',
+       MobileNo: '',
+       Address: '',
+     }]);
+   }
+
+   console.log('after if');
+};
+
+useEffect(() => {
+  console.log(showData);
+}, [showData]);
   return (
     <>
       <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 0, width: "100%",overflow: "hidden" }}
+        component='main'
+        sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
       >
         <DrawerHeader />
-        <Header Name={"Bulk Add Product"} />
+        <Header Name={'Bulk Add Product'} />
         <Box
           sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-around",
-            alignItems: "center",
-            marginY: "5px",
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            marginY: '5px',
           }}
         >
           <Box>
             <input
-              type="file"
-              accept=".xls, .xlsx"
+              type='file'
+              accept='.xls, .xlsx'
               onChange={handleFileChange}
-              style={{ display: "none" }}
-              id="file-upload"
+              style={{ display: 'none' }}
+              id='file-upload'
             />
-            <label htmlFor="file-upload">
+            <label htmlFor='file-upload'>
               <Button
                 sx={{
-                  "&:hover": {
-                    backgroundColor: "black",
+                  '&:hover': {
+                    backgroundColor: 'black',
                   },
                 }}
-                variant="contained"
-                component="span"
+                variant='contained'
+                component='span'
               >
                 Upload Excel File
               </Button>
             </label>
           </Box>
           <Button
-            variant="contained"
+            variant='contained'
             sx={{
-              "&:hover": {
-                backgroundColor: "black",
+              '&:hover': {
+                backgroundColor: 'black',
               },
             }}
+            onClick={submitHandler}
             // onClick={handleSubmit}
           >
             {isLoading ? (
               <CircularProgress
                 sx={{
-                  color: "white",
+                  color: 'white',
                 }}
               />
             ) : (
-              "Submit"
+              'Add Customer'
             )}
           </Button>
           <Button
-            variant="contained"
+            variant='contained'
             sx={{
               // backgroundColor: themeColor.sideBarColor1,
-              "&:hover": {
-                backgroundColor: "black",
+              '&:hover': {
+                backgroundColor: 'black',
               },
             }}
             onClick={donwnloadExcelSample}
@@ -214,74 +251,88 @@ const AddCustomerForMarketing = () => {
             {loading ? (
               <CircularProgress
                 sx={{
-                  color: "white",
+                  color: 'white',
                 }}
               />
             ) : (
-              " Download Sample Excel"
+              ' Download Sample Excel'
             )}
           </Button>
         </Box>
         <Grid container spacing={1}>
+          <Grid item sm={1} sx={{display: 'none'}}>
+            <TextField
+              label='Customer Name'
+              fullWidth
+              name='CustomerName'
+              value={showData.length}
+              // onChange={(e) => handleChange(e)}
+              
+            />
+          </Grid>
           <Grid item sm={2}>
             <TextField
-              label="Customer Name"
+              label='Customer Name'
               fullWidth
-              name="name"
-              value={data.name}
+              name='CustomerName'
+              value={data[0].CustomerName}
               onChange={(e) => handleChange(e)}
             />
           </Grid>
           <Grid item sm={3}>
             <TextField
-              label="Company Name"
+              label='Company Name'
               fullWidth
-              name="company"
-              value={data.company}
+              name='CompanyName'
+              value={data[0].CompanyName}
               onChange={(e) => handleChange(e)}
             />
           </Grid>
           <Grid item sm={2}>
             <TextField
-              label="Mobile Number"
+              label='Mobile Number'
               fullWidth
-              name="mobile"
-              value={data.mobile}
+              name='MobileNo'
+              value={data[0].MobileNo}
               onChange={(e) => handleChange(e)}
             />
           </Grid>
           <Grid item sm={4}>
             <TextField
-              label="Address"
+              label='Address'
               fullWidth
-              name="address"
-              value={data.address}
+              name='Address'
+              value={data[0].Address}
               onChange={(e) => handleChange(e)}
             />
           </Grid>
         </Grid>
         <Box
           sx={{
-            width: "100%",
-            height: "75vh",
-            overflowY:"auto",
-            "& .super-app-theme--header": {
-              background: "#eee",
-              color: "black",
-              textAlign: "center",
+            width: '100%',
+            height: '75vh',
+            overflowY: 'auto',
+            '& .super-app-theme--header': {
+              background: '#eee',
+              color: 'black',
+              textAlign: 'center',
             },
-            "& .vertical-lines .MuiDataGrid-cell": {
-              borderRight: "1px solid #e0e0e0",
+            '& .vertical-lines .MuiDataGrid-cell': {
+              borderRight: '1px solid #e0e0e0',
             },
-            "& .supercursor-app-theme--cell:hover": {
+            '& .supercursor-app-theme--cell:hover': {
               background:
-                "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-              color: "white",
-              cursor: "pointer",
+                'linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)',
+              color: 'white',
+              cursor: 'pointer',
             },
           }}
         >
-          <DataGrid rows={excelData} columns={columns} />
+          <DataGrid
+            rows={data.length > 0 ? showData : excelData}
+            columns={columns}
+            getRowId={(row) => row.id}
+          />
         </Box>
       </Box>
     </>
