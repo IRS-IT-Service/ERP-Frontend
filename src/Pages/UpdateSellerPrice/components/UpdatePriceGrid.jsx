@@ -249,7 +249,6 @@ const Content = ({
                 timeZone: "Asia/Kolkata",
               }),
             };
-            socket.emit("liveStatusServer", liveStatusData);
             const addProductHistory = {
               userId: userInfo.adminId,
               message: liveStatusData.message,
@@ -261,6 +260,7 @@ const Content = ({
                 ),
               },
             };
+            socket.emit("liveStatusServer", liveStatusData);
             const historyRes = await createUserHistoryApi(addProductHistory);
             const whatsappMessage = {
               message: liveStatusData.message,
@@ -621,20 +621,6 @@ const Content = ({
       valueFormatter: (params) => `${params.value}`,
     },
     {
-      field: "Mqr",
-      headerName: "MQR",
-      flex: 0.3,
-      minWidth: 90,
-      maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      editable: true,
-      type: "number",
-      valueFormatter: (params) => `${params.value}`,
-    },
-    {
       field: "Quantity",
       headerName: "QTY",
       flex: 0.3,
@@ -833,6 +819,20 @@ const Content = ({
 
   if (condition === "SellerPrice") {
     columns.push(
+      {
+        field: "Mqr",
+        headerName: "MQR",
+        flex: 0.3,
+        minWidth: 90,
+        maxWidth: 100,
+        align: "center",
+        headerAlign: "center",
+        headerClassName: "super-app-theme--header",
+        cellClassName: "super-app-theme--cell",
+        editable: true,
+        type: "number",
+        valueFormatter: (params) => `${params.value}`,
+      },
       {
         field: "ProfitSeller",
         headerClassName: "super-app-theme--header--Seller",

@@ -19,6 +19,7 @@ import {
   CircularProgress,
   styled,
   TablePagination,
+  Tooltip,
   Grid,
 } from "@mui/material";
 import {
@@ -27,7 +28,7 @@ import {
   GridToolbarContainer,
 } from "@mui/x-data-grid";
 import FilterBarV2 from "../../../components/Common/FilterBarV2";
-
+import InfoIcon from "@mui/icons-material/Info";
 import { useAddCompetitorMutation } from "../../../features/api/productApiSlice";
 import { useGetAllCompetitorQuery } from "../../../features/api/productApiSlice";
 import { toast } from "react-toastify";
@@ -87,15 +88,36 @@ const CompetitorTable = () => {
   useEffect(() => {
     if (allCompetitor) {
       const updatedColumns = allCompetitor?.data?.flatMap((item) =>
-        item?.Competitors?.map((competitor) => ({
-          field: `${competitor.Name}`,
-          headerName: `${competitor.Name}`,
+        item?.Competitors?.map((competitor,index) => ({
+          field: `${competitor?.Name}`,
+          headerName: `${competitor?.Name}`,
           flex: 0.3,
           minWidth: 120,
           maxWidth: 200,
           align: "center",
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
+          renderCell: (params) => {
+          
+            return(
+                <TableCell align="center">
+        
+
+   
+                                   <Box sx={{
+                                    display:"flex",
+                                    gap:1,
+                                    alignItems:"center",
+                                 
+                                   }}>{ params.row[`${competitor.Name}`]?.URL &&  <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>} {params.row[`${competitor.Name}`]?.URL && <span>  <a href={`https://${params.row[`${competitor?.Name}`]?.URL}`} target="_blank" rel="noopener noreferrer">  <Tooltip
+                                   title={`${params.row[`${competitor?.Name}`]?.URL}`}
+                                   placement="top"
+                                   key={index}
+                                 ><InfoIcon sx={{width:"15px" ,marginTop:0.5 ,color:"black"}}  /></Tooltip> </a> </span> } </Box>
+                                 
+            </TableCell>
+            )
+          },
           cellClassName: "super-app-theme--cell",
         }))
       );
@@ -130,9 +152,14 @@ const CompetitorTable = () => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         let CompName = {};
+     
         item.CompetitorPrice.forEach((compItem) => {
-          CompName[compItem.Name] = compItem.Price;
-        });
+          CompName[compItem.Name] = { 
+            Price: compItem.Price,
+            URL: compItem.URL
+          };;
+        })
+       
 
         return {
           id: index,
@@ -145,9 +172,11 @@ const CompetitorTable = () => {
           GST: item.GST.toFixed(2),
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
+
           Category: item.Category,
           competitor: item.CompetitorPrice,
           ...CompName,
+    
         };
       });
       dispatch(setAllProductsV2(allProductData.data));
