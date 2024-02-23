@@ -78,6 +78,7 @@ const UpdateLiveCalcDialog = ({
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
   const { liveCalcDetails } = useSelector((state) => state.liveCalc);
+  const[isLoading , setIsLoading] = useState(false)
   const dispatch = useDispatch();
 
   // useEffect
@@ -130,7 +131,7 @@ const UpdateLiveCalcDialog = ({
       const updatedSalesPrice = [];
       const updatedSellerTax = [];
       const updatedSellerPrice = [];
-
+setIsLoading(true)
       if (type === "Sales") {
         data.forEach((item, i) => {
           const newSalesTax = +localData[i].SalesTax || 0;
@@ -330,6 +331,8 @@ const UpdateLiveCalcDialog = ({
         refetch();
       }
       setOpen(false);
+      setIsLoading(false)
+      window.location.reload();
     } catch (e) {
       console.error("An error occurred Update Price Grid:");
       console.error(e);
@@ -719,7 +722,7 @@ const UpdateLiveCalcDialog = ({
             </TableHead>
             <TableBody>
               {localData.map((item, index) => (
-                <React.Fragment key={item.SKU}>
+                <>
                   <TableRow key={index}>
                     <TableCell sx={{ fontSize: ".8rem", textAlign: "center" }}>
                       {index + 1}
@@ -887,7 +890,7 @@ const UpdateLiveCalcDialog = ({
                       </StyleCellData>
                     </TableRow>
                   )}
-                </React.Fragment>
+                </>
               ))}
             </TableBody>
           </Table>
@@ -896,7 +899,7 @@ const UpdateLiveCalcDialog = ({
 
       <DialogActions>
         <Button onClick={handleUpdate} color="primary">
-          {updateProductLoading ? (
+          {isLoading ? (
             <CircularProgress size={24} color="inherit" />
           ) : (
             "Submit"
