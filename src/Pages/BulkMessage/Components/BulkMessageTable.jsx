@@ -22,6 +22,7 @@ import {
 } from "../../../features/api/whatsAppApiSlice";
 import Loading from "../../../components/Common/Loading";
 import CustomMsgDialogbox from "./CustomMsgDialogbox";
+import TemplateMessage from "./TemplateMessage";
 
 //File upload
 const VisuallyHiddenInput = styled("input")({
@@ -46,6 +47,8 @@ const BulkMessageTable = () => {
   const [rows, setRows] = useState([]);
   const [msgDialogbox, setMsgDialogbox] = useState(false);
   const [sendingType, setSendingType] = useState("");
+  const [tempopen, setTempopen] = useState(false);
+  const [title, setTitle] = useState("");
 
   //rtk Query
   const [addCustomer, { isLoading: addCustomerLoading }] =
@@ -73,8 +76,9 @@ const BulkMessageTable = () => {
     setOpen(false);
   };
 
-  const handleOpenMsgDialogbox = (type) => {
+  const handleOpenMsgDialogbox = (type, name) => {
     setSendingType(type);
+    setTitle(name);
     setMsgDialogbox(true);
   };
 
@@ -82,6 +86,13 @@ const BulkMessageTable = () => {
     setMsgDialogbox(false);
   };
 
+  const handleTempopen = () => {
+    setTempopen(true);
+  };
+
+  const handleTempclose = () => {
+    setTempopen(false);
+  };
   useEffect(() => {
     if (getAllCustomers?.message === "Customer Successfully fetched") {
       const row = getAllCustomers?.data.map((item, index) => {
@@ -96,27 +107,27 @@ const BulkMessageTable = () => {
     }
   }, [getAllCustomers]);
 
-  const handleSend = async () => {
-    try {
-      const formData = new FormData();
+  // const handleSend = async () => {
+  //   try {
+  //     const formData = new FormData();
 
-      formData.append("contacts", JSON.stringify(customerNumber)),
-        formData.append("message", message),
-        formData.append("file", file);
+  //     formData.append("contacts", JSON.stringify(customerNumber)),
+  //       formData.append("message", message),
+  //       formData.append("file", file);
 
-      const res = await sendMsg(formData).unwrap();
-      if (!res.status) {
-        return;
-      }
-      toast.success("Message successfully send!");
-      setFileUploaded(false);
-      setFile("");
-      setMessage("");
-      refetch();
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //     const res = await sendMsg(formData).unwrap();
+  //     if (!res.status) {
+  //       return;
+  //     }
+  //     toast.success("Message successfully send!");
+  //     setFileUploaded(false);
+  //     setFile("");
+  //     setMessage("");
+  //     refetch();
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   const handleSubmit = async (event) => {
     try {
@@ -233,31 +244,64 @@ const BulkMessageTable = () => {
             }}
           >
             <Button
-              variant="contained"
-              sx={{ margin: "0.6rem", width: "100%" }}
-              onClick={()=>handleOpenMsgDialogbox("Text")}
+              variant="outlined"
+              sx={{
+                margin: "0.6rem",
+                backgroundColor: "blue",
+                color: "white",
+                "&:hover": {
+                  color: "black",
+                },
+              }}
+              onClick={() =>
+                handleOpenMsgDialogbox("File", "Send Text Message With Media")
+              }
             >
               Send Text Message With Media
             </Button>
             <Button
-              variant="contained"
-              sx={{ margin: "0.6rem", width: "100%" }}
-              onClick={()=>handleOpenMsgDialogbox("Text")}
+              variant="outlined"
+              sx={{
+                margin: "0.6rem",
+                backgroundColor: "blue",
+                color: "white",
+                "&:hover": {
+                  color: "black",
+                },
+              }}
+              onClick={() =>
+                handleOpenMsgDialogbox("Text", "Send Text Message")
+              }
             >
               Send Text Message
             </Button>
             <Button
-              variant="contained"
-              sx={{ margin: "0.6rem", width: "100%" }}
-              onClick={()=>handleOpenMsgDialogbox("Link")}
+              variant="outlined"
+              sx={{
+                margin: "0.6rem",
+                backgroundColor: "blue",
+                color: "white",
+                "&:hover": {
+                  color: "black",
+                },
+              }}
+              onClick={() => handleOpenMsgDialogbox("Link", "Send Link")}
             >
               Send Link
             </Button>
             <Button
-              variant="contained"
-              sx={{ margin: "0.6rem", width: "100%" }}
+              variant="outlined"
+              sx={{
+                margin: "0.6rem",
+                backgroundColor: "blue",
+                color: "white",
+                "&:hover": {
+                  color: "black",
+                },
+              }}
+              onClick={() => handleTempopen()}
             >
-              Send Message With Template
+              Send Message Template
             </Button>
           </Box>
 
@@ -314,7 +358,6 @@ const BulkMessageTable = () => {
                     variant="outlined"
                     sx={{ fontWeight: "bold" }}
                   >
-                    {" "}
                     Cancel
                   </Button>
                 </Box>
@@ -330,7 +373,7 @@ const BulkMessageTable = () => {
               margin: "10px",
             }}
           >
-            <Button
+            {/* <Button
               component="label"
               role={undefined}
               variant="contained"
@@ -340,14 +383,18 @@ const BulkMessageTable = () => {
             >
               {fileUploaded ? "File Uploaded" : "Upload File"}
               <VisuallyHiddenInput type="file" onChange={handleFileUpload} />
-            </Button>
-            <Button
+            </Button> */}
+
+            {/* 
+            //send buttton  */}
+
+            {/* <Button
               variant="outlined"
               sx={{ margin: "10px" }}
               onClick={() => handleSend()}
             >
               {sendMsgLoading ? <CircularProgress size={30} /> : "send"}
-            </Button>
+            </Button> */}
           </Box>
         </Box>
         <Box sx={{ width: "35%", marginTop: "2rem" }}>
@@ -377,6 +424,15 @@ const BulkMessageTable = () => {
           msgDialogbox={msgDialogbox}
           handleCloseMsgDialogbox={handleCloseMsgDialogbox}
           sendingType={sendingType}
+          title={title}
+        />
+      )}
+
+      {tempopen && (
+        <TemplateMessage
+          tempopen={tempopen}
+          handleTempclose={handleTempclose}
+          title="Send Message Template"
         />
       )}
     </Box>
