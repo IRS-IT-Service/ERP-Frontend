@@ -46,14 +46,6 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
-      {
-        id: 63,
-        name: "BulkMessage",
-        path: "/BulkMessage",
-        icon: "fa fa-comment",
-        notification: true,
-      },
-    
     ],
   },
   {
@@ -79,10 +71,22 @@ const userRolesData = [
         icon: "fas fa-list",
       },
 
+      // {
+      //   id: 2,
+      //   name: "Update Product",
+      //   path: "/UpdateSellerPrice",
+      //   icon: "fa-solid fa-pen-to-square",
+      // },
       {
-        id: 2,
-        name: "Update Product",
-        path: "/UpdateSellerPrice",
+        id: 66,
+        name: "Update Sales Price",
+        path: "/UpdateSellerPrice/SalesPrice",
+        icon: "fa-solid fa-pen-to-square",
+      },
+      {
+        id: 67,
+        name: "Update Seller Price",
+        path: "/UpdateSellerPrice/SellerPrice",
         icon: "fa-solid fa-pen-to-square",
       },
       {
@@ -469,8 +473,21 @@ const userRolesData = [
       },
     ],
   },
+  {
+    title: "Marketing Tools",
+    icon: "fa-solid fa-rectangle-ad",
+    childrens: [
+      {
+        id: 63,
+        name: "BulkMessage",
+        path: "/BulkMessage",
+        icon: "fa fa-comment",
+        notification: true,
+      },
+    ],
+  },
 ];
 
-// last routes is 64
+// last routes is 67
 
 export default userRolesData;

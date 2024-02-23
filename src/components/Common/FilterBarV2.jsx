@@ -76,8 +76,8 @@ const FilterBarV2 = ({
     checkedGST,
     checkedBrand,
     deepSearch,
+    condition
   } = useSelector((state) => state.product);
-
   ///local state
   const [Opensortdialog, setOpensortdialog] = useState({
     category: false,
@@ -330,14 +330,14 @@ const FilterBarV2 = ({
             >
               {customButton3}
             </Box>
-            <Box
+            {/* <Box
               sx={{
                 mt: 0.7,
                 // border: '2px solid green',
               }}
             >
               {customButton4}
-            </Box>
+            </Box> */}
             
             <Popover
               open={Opensortdialog.brand}
