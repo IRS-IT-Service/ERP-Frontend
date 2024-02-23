@@ -469,6 +469,19 @@ const userRolesData = [
       },
     ],
   },
+  {
+    title: "Marketing Tools",
+    icon: "fa-solid fa-rectangle-ad",
+    childrens: [
+      {
+        id: 65,
+        name: "Add Customers",
+        path: "/addAdvertiser",
+        icon: "fa-solid fa-user-plus",
+        notification: true,
+      },
+    ],
+  },
 ];
 
 // last routes is 64

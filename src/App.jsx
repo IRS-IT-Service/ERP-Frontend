@@ -112,6 +112,8 @@ import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorCompars
 import AllInventoryData from "./Pages/R&D/AllInventoryData";
 import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
 import BulkMessage from "./Pages/BulkMessage/BulkMessage";
+import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
+import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
 
 function App() {
   /// initialize
@@ -572,10 +574,12 @@ function App() {
                 <Route path="/addBoxDetails/:id" element={<AddBoxDetails />} />
                 <Route path="/calc" element={<Calc />} />
                 {/* <Route path="/calc" element={<NewCalcRishabh />} /> */}
+
                 <Route path="/savedCalc" element={<CalcEdit />} />
                 <Route path="/calc/:id" element={<Calc />} />
                 <Route path="/dispatch_Return" element={<Dispatch_Return />} />
                 <Route path="/product-shipment" element={<ProductShipment />} />
+
                 {/* Approval Router */}
                 <Route path="/Approval/:query" element={<Approval />} />
                 <Route
@@ -591,7 +595,9 @@ function App() {
                   path="/changepassword/:id"
                   element={<ChangePassword />}
                 />
+
                 {/* /// Box Open Routes */}
+
                 <Route path="/boxopen" element={<OpenBox />} />
                 <Route path="/openboxhistory" element={<OpenBoxHistory />} />
                 <Route path="/openboxlist" element={<OpenBoxList />} />
@@ -652,6 +658,12 @@ function App() {
                   path="/ResearchNewProject"
                   element={<ResearchNewProject />}
                 />
+
+                {/* Marketing tools */}
+                <Route path="/addAdvertiser" element= {<CustomerDetails/>} />
+                <Route path="/addCusotmerforMarketing" element= {<AddCustomerForMarketing/>} />
+
+              
               </Route>
             </Routes>
           </Suspense>
