@@ -89,8 +89,8 @@ const CompetitorTable = () => {
     if (allCompetitor) {
       const updatedColumns = allCompetitor?.data?.flatMap((item) =>
         item?.Competitors?.map((competitor,index) => ({
-          field: `${competitor.Name}`,
-          headerName: `${competitor.Name}`,
+          field: `${competitor?.Name}`,
+          headerName: `${competitor?.Name}`,
           flex: 0.3,
           minWidth: 120,
           maxWidth: 200,
@@ -109,8 +109,8 @@ const CompetitorTable = () => {
                                     gap:1,
                                     alignItems:"center",
                                  
-                                   }}>{ params.row[`${competitor.Name}`]?.URL &&  <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>} {params.row[`${competitor.Name}`]?.URL && <span>  <a href={`https://${params.row[`${competitor.Name}`]?.URL}`} target="_blank" rel="noopener noreferrer">  <Tooltip
-                                   title={`${params.row[`${competitor.Name}`]?.URL}`}
+                                   }}>{ params.row[`${competitor.Name}`]?.URL &&  <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>} {params.row[`${competitor.Name}`]?.URL && <span>  <a href={`https://${params.row[`${competitor?.Name}`]?.URL}`} target="_blank" rel="noopener noreferrer">  <Tooltip
+                                   title={`${params.row[`${competitor?.Name}`]?.URL}`}
                                    placement="top"
                                    key={index}
                                  ><InfoIcon sx={{width:"15px" ,marginTop:0.5 ,color:"black"}}  /></Tooltip> </a> </span> } </Box>
