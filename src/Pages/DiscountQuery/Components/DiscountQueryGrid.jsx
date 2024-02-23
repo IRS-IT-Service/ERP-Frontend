@@ -76,6 +76,7 @@ const DiscountQueryGrid = () => {
           MRP: item.MRP,
           Quantity: item.ActualQuantity,
           SalesPrice: item.SalesPrice,
+          SalesPriceGst:(((item.SalesPrice * item.GST) / 100) + item.SalesPrice ).toFixed(0) ,
           Brand: item.Brand,
           Category: item.Category,
         };
@@ -91,9 +92,8 @@ const DiscountQueryGrid = () => {
     {
       field: "Sno",
       headerName: "Sno",
-      flex: 0.3,
-      minWidth: 70,
-      maxWidth: 80,
+minWidth:30,
+maxWidth:40,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -102,9 +102,9 @@ const DiscountQueryGrid = () => {
     {
       field: "SKU",
       headerName: "SKU",
-      flex: 0.1,
-      minWidth: 80,
 
+      minWidth:200,
+      maxWidth:300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -113,8 +113,7 @@ const DiscountQueryGrid = () => {
     {
       field: "Name",
       headerName: "Product ",
-      flex: 0.3,
-      minWidth: 300,
+flex:0.1,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -123,9 +122,7 @@ const DiscountQueryGrid = () => {
     {
       field: "Brand",
       headerName: "Brand",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 110,
+
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -134,9 +131,7 @@ const DiscountQueryGrid = () => {
     {
       field: "Category",
       headerName: "Category",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 110,
+
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -145,9 +140,7 @@ const DiscountQueryGrid = () => {
     {
       field: "GST",
       headerName: "GST",
-      flex: 0.3,
-      minWidth: 60,
-      maxWidth: 70,
+
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -157,9 +150,7 @@ const DiscountQueryGrid = () => {
     {
       field: "Quantity",
       headerName: "QTY",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 90,
+
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -168,9 +159,7 @@ const DiscountQueryGrid = () => {
     {
       field: "MRP",
       headerName: "MRP",
-      flex: 0.3,
-      minWidth: 100,
-      maxWidth: 100,
+
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -184,8 +173,18 @@ const DiscountQueryGrid = () => {
       headerName: "Sales",
       align: "center",
       headerAlign: "center",
-      minWidth: 70,
-      maxWidth: 80,
+      minWidth:200,
+      maxWidth:300,
+      valueFormatter: (params) => `₹ ${(+params.value).toFixed(0)} `,
+    },
+    {
+      field: "SalesPriceGst",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerName: "Sales Price Inclu (GST) ₹",
+      align: "center",
+      minWidth:200,
+      maxWidth:300,
       valueFormatter: (params) => `₹ ${(+params.value).toFixed(0)} `,
     },
   ];

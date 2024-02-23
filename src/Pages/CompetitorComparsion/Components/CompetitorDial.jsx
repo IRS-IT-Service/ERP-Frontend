@@ -17,14 +17,13 @@ import {
   Typography,
   selectClasses,
 } from "@mui/material";
-import {
-  useAddCompetitorPriceMutation,
-} from "../../../features/api/productApiSlice";
+import { useAddCompetitorPriceMutation } from "../../../features/api/productApiSlice";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
-
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+import HttpIcon from "@mui/icons-material/Http";
 const CompetitorDial = ({
   openCompetitor,
   handleCloseCompetitor,
@@ -32,89 +31,102 @@ const CompetitorDial = ({
   handleRemoveCompetitorItem,
   columns,
   productrefetch,
-  refetch
+  refetch,
 }) => {
   const [compairePrice, setCompairePrice] = useState([]);
 
-  const [addCompair ,{isLoading}] = useAddCompetitorPriceMutation()
+  const [addCompair, { isLoading }] = useAddCompetitorPriceMutation();
 
+  const [price ,setPrice] = useState({
+    SKU:"",CompName:"" ,url:"",Price:""
+  });
+console.log(paramsData)
 
- 
+  const handleSubmit = async () => {
+    const finalValue = compairePrice.filter(
+      (item) => item.competitor?.length > 0
+    );
+    let info = finalValue.map((item) => {
+      return {
+        sku: item.SKU,
+        competitor: item.competitor,
+      };
+    });
 
-const handleSubmit = async() =>{
-const finalValue = compairePrice.filter((item) => item.competitor?.length > 0)
-let info = finalValue.map((item)=>{
-  return{
-    sku: item.SKU,
-    competitor: item.competitor
-  }
-})
-
-const main = {
-  datas:info
-}
-try{
-  const res = await addCompair(main).unwrap()
-  toast.success("Competitor price added successfully")
-  handleCloseCompetitor()
-  setCompairePrice([{}])
-  productrefetch()
-  refetch()
-
-}catch(err){
-  console.log(err)
-}
-
-
-}
+    const main = {
+      datas: info,
+    };
+    try {
+      const res = await addCompair(main).unwrap();
+      toast.success("Competitor price added successfully");
+      handleCloseCompetitor();
+      setCompairePrice([{}]);
+      productrefetch();
+      refetch();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   /// useEffects
   useEffect(() => {
     const newLocalData = paramsData.map((item) => {
-        return {
+      return {
         ...item,
-         };
+      };
     });
 
     setCompairePrice(newLocalData);
-
   }, [paramsData]);
+ 
+
+  const handleCompetitor = (SKU, CompName, e) => {
+    const { value, name } = e.target;
+if(name === 'url'){
+  setPrice({...price ,SKU: SKU,CompName:CompName ,url: value})
+
+}else{
+  setPrice({...price ,SKU: SKU,CompName:CompName ,Price: value})
+}
+
+    
+  };
 
 
+  useEffect(()=>{
+    const newCompetitor = { Name: price.CompName, Price: +price.Price, URL: price.url };
+  
 
-  const handleCompetitor = (SKU, Name, e) => {
-    const { value } = e.target;
-    const existingSKUIndex = compairePrice.findIndex(item => item.SKU === SKU);
-    const newCompetitor = { Name: Name, Price: +value };
-
-    let values = [];
-
+ 
+    const existingSKUIndex = compairePrice.findIndex((item) => item.SKU === price.SKU);
+  
     if (existingSKUIndex !== -1) {
-      setCompairePrice(prev => {
+      setCompairePrice((prev) => {
         return prev.map((data, index) => {
           if (index === existingSKUIndex) {
-            const existingCompetitorIndex = data.competitor.findIndex(comp => comp.Name === Name);
+            const existingCompetitorIndex = data.competitor.findIndex(
+              (comp) => comp.Name === price.CompName
+            );
             if (existingCompetitorIndex !== -1) {
               const updatedCompetitorArray = [...data.competitor];
               updatedCompetitorArray[existingCompetitorIndex] = newCompetitor;
               return { ...data, competitor: updatedCompetitorArray };
             } else {
-              return { ...data, competitor: [...data.competitor, newCompetitor] };
+              return {
+                ...data,
+                competitor: [...data.competitor, newCompetitor],
+              };
             }
           }
           return data;
         });
       });
     } else {
-      setCompairePrice(prev => {
-        return [...prev, { SKU: SKU, competitor: [newCompetitor] }];
+      setCompairePrice((prev) => {
+        return [...prev, { SKU: price.SKU, competitor: [newCompetitor] }];
       });
     }
-    
-    
-  };
-
-
+  },[price , setPrice])
   
 
   const newColumns = columns.filter((column) => column !== "Sno");
@@ -166,9 +178,9 @@ try{
                     textAlign: "center",
                     background: "linear-gradient(0deg, #01127D, #04012F)",
                     color: "#fff",
-                    position:"sticky",
-                    top:0,
-                    left:0,
+                    position: "sticky",
+                    top: 0,
+                    left: 0,
                     zIndex: 200,
                   }}
                 >
@@ -180,25 +192,52 @@ try{
                       textAlign: "center",
                       background: "linear-gradient(0deg, #01127D, #04012F)",
                       color: "#fff",
-                      position: ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ? "sticky" : "sticky",
-                      left:  `${
-                        ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ?
-                        item === "Sno"
-                         ? 5.20
-                         : item === "SKU"
-                         ? 8.75
-                         : item === "Product"
-                         ? 17.1
-                         : item=== "Brand"
-                         ? 22.25
-                         : item=== "Category"
-                         ? 26.60
-                         : item=== "GST"
-                         ? 32.2
-                         : 0
-                     : ""}rem`, // Adjust the values as needed
-                     zIndex: `${["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(item) ?300 : 100}`,
-          
+                      position: [
+                        "SKU",
+                        "Sno",
+                        "Product",
+                        "Brand",
+                        "Category",
+                        "GST",
+                      ].includes(item)
+                        ? "sticky"
+                        : "sticky",
+                      left: `${
+                        [
+                          "SKU",
+                          "Sno",
+                          "Product",
+                          "Brand",
+                          "Category",
+                          "GST",
+                        ].includes(item)
+                          ? item === "Sno"
+                            ? 5.2
+                            : item === "SKU"
+                            ? 8.75
+                            : item === "Product"
+                            ? 17.1
+                            : item === "Brand"
+                            ? 22.25
+                            : item === "Category"
+                            ? 26.6
+                            : item === "GST"
+                            ? 32.2
+                            : 0
+                          : ""
+                      }rem`, // Adjust the values as needed
+                      zIndex: `${
+                        [
+                          "SKU",
+                          "Sno",
+                          "Product",
+                          "Brand",
+                          "Category",
+                          "GST",
+                        ].includes(item)
+                          ? 300
+                          : 100
+                      }`,
                     }}
                     key={index}
                   >
@@ -214,9 +253,9 @@ try{
                     sx={{
                       textAlign: "center",
                       cursor: "pointer",
-                      position:"sticky",
-                    background:"#fff",
-                      left:0,
+                      position: "sticky",
+                      background: "#fff",
+                      left: 0,
                       zIndex: 100,
                       "&:hover": { color: "red" },
                     }}
@@ -225,38 +264,51 @@ try{
                       onClick={() => handleRemoveCompetitorItem(item.id)}
                     />
                   </TableCell>
-                  <TableCell key={index} sx={{  
-                    position:"sticky",
-                      left:100,
+                  <TableCell
+                    key={index}
+                    sx={{
+                      position: "sticky",
+                      left: 100,
                       zIndex: 200,
-                      background:"#fff"
-                      }}>{index + 1}</TableCell>
+                      background: "#fff",
+                    }}
+                  >
+                    {index + 1}
+                  </TableCell>
                   {newColumns.map((column, columnIndex) => (
-               <TableCell
-               key={columnIndex}
-               sx={{
-                 position: ["SKU", "Sno", "Product", "Brand", "Category", "GST"].includes(column) ? "sticky" : "inherit",
-                 left: `${
-                  
-                  column === "Sno"
-                    ? 0
-                    : column === "SKU"
-                    ? 10
-                    : column === "Product"
-                    ? 18.58
-                    : column=== "Brand"
-                    ? 23.45
-                    : column=== "Category"
-                    ? 27.45
-                    : column=== "GST"
-                    ? 32.45
-                    : 60
-                }rem`, // Adjust the values as needed
-                zIndex: 100,
-                background:"#fff",
-// rowGap:`${column === "Product" ? "1rem" : ""}`
-               }}
-             >
+                    <TableCell
+                      key={columnIndex}
+                      sx={{
+                        position: [
+                          "SKU",
+                          "Sno",
+                          "Product",
+                          "Brand",
+                          "Category",
+                          "GST",
+                        ].includes(column)
+                          ? "sticky"
+                          : "inherit",
+                        left: `${
+                          column === "Sno"
+                            ? 0
+                            : column === "SKU"
+                            ? 10
+                            : column === "Product"
+                            ? 18.58
+                            : column === "Brand"
+                            ? 23.45
+                            : column === "Category"
+                            ? 27.45
+                            : column === "GST"
+                            ? 32.45
+                            : 60
+                        }rem`, // Adjust the values as needed
+                        zIndex: 100,
+                        background: "#fff",
+                        // rowGap:`${column === "Product" ? "1rem" : ""}`
+                      }}
+                    >
                       {[
                         "SKU",
                         "Sno",
@@ -271,13 +323,77 @@ try{
                           item[column]
                         )
                       ) : (
-                        <input
-                        defaultValue={item[column]}
-                          style={{ width: "6rem", padding: 4 }}
-                          onChange={(e) =>
-                           handleCompetitor(item.SKU, column, e)
-                          }
-                        />
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            flexDirection: "column",
+                            gap: 2,
+                          }}
+                        >
+                          <Box
+                            style={{
+                              position: "relative",
+                            }}
+                          >
+                            <span
+                              style={{
+                                position: "absolute",
+                                zIndex: 1,
+                                left: 2,
+                                top: 1.5,
+                              }}
+                            >
+                              <CurrencyRupeeIcon
+                                sx={{ width: 15, background: "#eee" }}
+                              />
+                            </span>
+                            <input
+                              defaultValue={item[column]?.Price}
+                              style={{
+                                textIndent: "1.5rem",
+                                width: "12rem",
+                                padding: 4,
+                              }} // Adjust the value according to your preference
+                              onChange={(e) =>
+                                handleCompetitor(item.SKU, column, e)
+                              }
+                            />
+                  
+                          </Box>
+                          <Box
+                            style={{
+                              position: "relative",
+                            }}
+                          >
+                        
+                            <span
+                              style={{
+                                position: "absolute",
+                                zIndex: 1,
+                                left: 2,
+                                top: 1.5,
+                              }}
+                            >
+                              <HttpIcon
+                                sx={{ width: 25, background: "#eee" }}
+                              />
+                            </span>
+                            <input
+                              defaultValue={item[column]?.URL}
+                              name="url"
+                              style={{
+                                textIndent: "1.5rem",
+                                width: "12rem",
+                                padding: 4,
+                              }} // Adjust the value according to your preference
+                              onChange={(e) =>
+                                handleCompetitor(item.SKU, column, e)
+                              }
+                            />
+                                  
+                          </Box>
+                        </Box>
                       )}
                     </TableCell>
                   ))}
@@ -296,9 +412,7 @@ try{
           alignItems: "center",
           gap: ".6rem",
         }}
-      >
- 
-      </Box>
+      ></Box>
       <Box
         sx={{
           display: "flex",
