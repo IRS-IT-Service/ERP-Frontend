@@ -47,7 +47,6 @@ const Content = ({
   autoHeight,
   condition,
 }) => {
-  console.log(condition)
   /// initialization
   const dispatch = useDispatch();
   const apiRef = useGridApiRef();
