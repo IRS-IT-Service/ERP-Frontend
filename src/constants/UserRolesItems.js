@@ -46,14 +46,6 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
-      {
-        id: 63,
-        name: "BulkMessage",
-        path: "/BulkMessage",
-        icon: "fa fa-comment",
-        notification: true,
-      },
-    
     ],
   },
   {
@@ -486,10 +478,10 @@ const userRolesData = [
     icon: "fa-solid fa-rectangle-ad",
     childrens: [
       {
-        id: 65,
-        name: "Add Customers",
-        path: "/addAdvertiser",
-        icon: "fa-solid fa-user-plus",
+        id: 63,
+        name: "BulkMessage",
+        path: "/BulkMessage",
+        icon: "fa fa-comment",
         notification: true,
       },
     ],
