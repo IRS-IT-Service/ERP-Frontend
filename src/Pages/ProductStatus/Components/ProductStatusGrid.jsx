@@ -24,7 +24,12 @@ import {
   setAllProducts,
   setAllProductsV2,
 } from "../../../features/slice/productSlice";
-import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
+import {
+
+  useUpdateNotationMutation,
+  useGetAllProductV2Query,
+} from "../../../features/api/productApiSlice";
+
 import Loading from "../../../components/Common/Loading";
 import { useNavigate } from "react-router-dom";
 import ProductStatusDownloadDialog from "./ProductStatusDownloadDialog";
@@ -76,6 +81,33 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
   };
+
+  const [notationUpdateApi, { isLoading: NotationLoading }] =
+    useUpdateNotationMutation();
+
+
+
+    const handleIsActiveyncUpdate = async (id, status, type) => {
+      try {
+        const data = {
+          sku: id,
+          body: { data: status, type: type },
+        };
+  
+        const res = await notationUpdateApi(data).unwrap();
+        setRows((prevRow) => {
+          return prevRow.map((item) => {
+            if (item.SKU === id) {
+              return { ...item, [type]: status };
+            } else {
+              return { ...item };
+            }
+          });
+        });
+      } catch (error) {
+        console.error("An error occurred during login:", error);
+      }
+    };
 
   const handleExcelDownload = async (checkedItems, handleClose) => {
     setLoading(true);
