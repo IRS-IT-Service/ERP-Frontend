@@ -34,19 +34,21 @@ const UpdatePriceBulk = () => {
   const query = useParams().query;
   const navigate = useNavigate();
   const socket = useSocket();
+  const newQuery = query.split("&")
+  console.log(newQuery)
 
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
 
   /// useEffect
-  useEffect(() => {
-    const queryExist = productColumnData.some((item) => item.name === query);
-    if (!queryExist) {
-      navigate(`/`);
-    }
-  }, [query]);
-console.log(productColumnData)
+  // useEffect(() => {
+  //   const queryExist = productColumnData.some((item) => item.name === query);
+  //   if (!queryExist) {
+  //     navigate(`/`);
+  //   }
+  // }, [query]);
+
   /// local state
   const [excelData, setExcelData] = useState([]);
   const [downloadLoading, setDownloadLoading] = useState(false);

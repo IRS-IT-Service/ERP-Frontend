@@ -2,8 +2,7 @@ import { React, useState } from "react";
 import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import CompetitorTable from "./Components/CompetitorTable";
-
+import BulkMessageTable from "./Components/BulkMessageTable";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -95,7 +94,7 @@ const infoDetail = [
       "If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button",
   },
 ];
-const CompetitorComparsion = () => {
+const BulkMessage = () => {
   // infodialog state
   const description =
     "This is the Product Status you can check product details  ";
@@ -113,12 +112,8 @@ const CompetitorComparsion = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header
-        Name={"Competitor Comparison"}
-        info={true}
-        customOnClick={handleOpen}
-      />
-     
+      <Header Name={"Bulk Message"} info={true} customOnClick={handleOpen} />
+
       {/* infoDialog table */}
       <InfoDialogBox
         infoDetails={infoDetail}
@@ -126,9 +121,9 @@ const CompetitorComparsion = () => {
         open={infoOpen}
         close={handleClose}
       />
-      <CompetitorTable />
+      <BulkMessageTable/>
     </Box>
   );
 };
 
-export default CompetitorComparsion;
+export default BulkMessage;

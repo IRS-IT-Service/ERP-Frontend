@@ -107,12 +107,13 @@ import ProformaDetails from "./Pages/Proforma Track/ProformaDetails";
 import WhatsappEvent from "./Pages/WhatsApp/WhatsappEvent";
 import AddRoboProductsValue from "./Pages/AddRoboProductsValue/AddRoboProductsValue";
 import BulkAddProduct from "./Pages/AddProduct/BulkAddProduct";
-import NewCalc from "./Pages/Calc/NewCalc";
-import NewCalcRishabh from "./Pages/Calc/NewCalcRishabh";
 import RemovedProduct from "./Pages/ProductDelete/RemovedProducts";
 import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorComparsion";
 import AllInventoryData from "./Pages/R&D/AllInventoryData";
 import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
+import BulkMessage from "./Pages/BulkMessage/BulkMessage";
+import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
+import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
 
 function App() {
   /// initialize
@@ -378,12 +379,37 @@ function App() {
                   path="/AddRoboProductsValue"
                   element={<AddRoboProductsValue />}
                 />
+                <Route path="/BulkMessage" element={<BulkMessage />} />
                 {/* Products Router */}
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
                 <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
                 <Route path="/addBrand" element={<AddBrand />} />
-                <Route
+                {/* <Route
                   path="/UpdateSellerPrice"
+                  element={
+                    <UserRole name={"Update Product"}>
+                      <UpdateSellerPrice />
+                    </UserRole>
+                  }
+                /> */}
+                <Route
+                  path="/UpdateSellerPrice/:SalesPrice"
+                  element={
+                    <UserRole name={"Update Product"}>
+                      <UpdateSellerPrice />
+                    </UserRole>
+                  }
+                />
+                <Route
+                  path="/UpdateSellerPrice/:SellerPrice"
+                  element={
+                    <UserRole name={"Update Product"}>
+                      <UpdateSellerPrice />
+                    </UserRole>
+                  }
+                />
+                <Route
+                  path="/UpdateSellerPrice/:equid"
                   element={
                     <UserRole name={"Update Product"}>
                       <UpdateSellerPrice />
@@ -531,9 +557,8 @@ function App() {
                 <Route
                   path="/uploadimage"
                   element={
-                      // We have removed User Role
-                      <UploadImageCom />
-                  
+                    // We have removed User Role
+                    <UploadImageCom />
                   }
                 />
                 <Route path="/discountquery" element={<DiscountQuery />} />
@@ -573,10 +598,12 @@ function App() {
                 <Route path="/addBoxDetails/:id" element={<AddBoxDetails />} />
                 <Route path="/calc" element={<Calc />} />
                 {/* <Route path="/calc" element={<NewCalcRishabh />} /> */}
+
                 <Route path="/savedCalc" element={<CalcEdit />} />
                 <Route path="/calc/:id" element={<Calc />} />
                 <Route path="/dispatch_Return" element={<Dispatch_Return />} />
                 <Route path="/product-shipment" element={<ProductShipment />} />
+
                 {/* Approval Router */}
                 <Route path="/Approval/:query" element={<Approval />} />
                 <Route
@@ -592,7 +619,9 @@ function App() {
                   path="/changepassword/:id"
                   element={<ChangePassword />}
                 />
+
                 {/* /// Box Open Routes */}
+
                 <Route path="/boxopen" element={<OpenBox />} />
                 <Route path="/openboxhistory" element={<OpenBoxHistory />} />
                 <Route path="/openboxlist" element={<OpenBoxList />} />
@@ -625,25 +654,25 @@ function App() {
                 <Route path="/FormViewMain" element={<DSCFormList />} />
                 <Route path="/signature" element={<SignaturePad />} />
                 <Route path="/CustomerForm" element={<CustomerForm />} />
-                
+
                 {/* /// Proforma */}
 
                 <Route path="/AddProforma" element={<AddProforma />} />
                 <Route path="/ProformaList" element={<ProformaList />} />
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
-                <Route path='/droneRepair' element={<RepairForm />} />
-                <Route path='/addCommonRepair' element={<AddCommonRepair />} />
-                <Route path='/viewDSCForm/:token' element={<DscFormView />} />
-                <Route path='/FormViewMain' element={<DSCFormList />} />
-                <Route path='/signature' element={<SignaturePad />} />
-                <Route path='/CustomerForm' element={<CustomerForm />} />
-                <Route path='/AddProforma' element={<AddProforma />} />
-                <Route path='/ProformaList' element={<ProformaList />} />
-                <Route path='/ProformaDetails' element={<ProformaDetails />} />
+                <Route path="/droneRepair" element={<RepairForm />} />
+                <Route path="/addCommonRepair" element={<AddCommonRepair />} />
+                <Route path="/viewDSCForm/:token" element={<DscFormView />} />
+                <Route path="/FormViewMain" element={<DSCFormList />} />
+                <Route path="/signature" element={<SignaturePad />} />
+                <Route path="/CustomerForm" element={<CustomerForm />} />
                 <Route path="/AddProforma" element={<AddProforma />} />
                 <Route path="/ProformaList" element={<ProformaList />} />
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
-                
+                <Route path="/AddProforma" element={<AddProforma />} />
+                <Route path="/ProformaList" element={<ProformaList />} />
+                <Route path="/ProformaDetails" element={<ProformaDetails />} />
+
                 {/* R&D */}
                 <Route
                   path="/AllInventoryData"
@@ -653,6 +682,12 @@ function App() {
                   path="/ResearchNewProject"
                   element={<ResearchNewProject />}
                 />
+
+                {/* Marketing tools */}
+                <Route path="/addAdvertiser" element= {<CustomerDetails/>} />
+                <Route path="/addCusotmerforMarketing" element= {<AddCustomerForMarketing/>} />
+
+              
               </Route>
             </Routes>
           </Suspense>
