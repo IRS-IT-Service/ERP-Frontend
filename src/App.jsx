@@ -114,6 +114,8 @@ import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
 import BulkMessage from "./Pages/BulkMessage/BulkMessage";
 import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
 import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
+import UpdateProductBulk from "./Pages/UpdateProduct/components/UpdateProductBulk";
+import UpdateProductMain from "./Pages/UpdateProduct/UpdateProductMain";
 
 function App() {
   /// initialize
@@ -444,6 +446,14 @@ function App() {
                     </UserRole>
                   }
                 />
+                <Route
+                  path="/updateBulkProduct"
+                  element={
+                    <UserRole name={"Update Product"}>
+                      <UpdateProductMain />
+                    </UserRole>
+                  }
+                />
                 {/* WholeSale Buyer Router */}
                 <Route
                   path="/AllSellerList"
@@ -684,10 +694,11 @@ function App() {
                 />
 
                 {/* Marketing tools */}
-                <Route path="/addAdvertiser" element= {<CustomerDetails/>} />
-                <Route path="/addCusotmerforMarketing" element= {<AddCustomerForMarketing/>} />
-
-              
+                <Route path="/addAdvertiser" element={<CustomerDetails />} />
+                <Route
+                  path="/addCusotmerforMarketing"
+                  element={<AddCustomerForMarketing />}
+                />
               </Route>
             </Routes>
           </Suspense>

@@ -268,7 +268,7 @@ const ToggleNav = () => {
               key={key}
               onClick={() => {
                 handleClose();
-
+ 
                 if (key === "New Product Approval") {
                   navigate("/NewProductApproval");
                 } else if (key === "Product Changes Approval") {
