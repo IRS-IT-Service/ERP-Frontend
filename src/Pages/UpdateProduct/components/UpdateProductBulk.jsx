@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Box } from "@mui/material";
+import { Button, Box, CircularProgress } from "@mui/material";
 import * as XLSX from "xlsx";
 import { useUpdateBulkProductMutation } from "../../../features/api/productApiSlice";
 import Swal from "sweetalert2";
@@ -26,7 +26,7 @@ const UpdateProductBulk = () => {
 
   /// rtk query
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
-  const [bulkUpdateProduct] = useUpdateBulkProductMutation();
+  const [bulkUpdateProduct,{isLoading}] = useUpdateBulkProductMutation();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -91,6 +91,7 @@ const UpdateProductBulk = () => {
         });
       }
       await sendMessageToAdmin(whatsappMessage).unwrap();
+      window.location.reload()
     } catch (error) {
       console.error("An error occurred during login:", error);
     }
@@ -220,8 +221,8 @@ const UpdateProductBulk = () => {
         </Box>
         <Box>
           {excelData.length > 0 && (
-            <Button variant="contained" onClick={handleSubmit}>
-              Submit
+            <Button variant="contained" onClick={handleSubmit} disabled={isLoading}>
+              {isLoading ? <CircularProgress/> : "Submit"}
             </Button>
           )}
         </Box>
