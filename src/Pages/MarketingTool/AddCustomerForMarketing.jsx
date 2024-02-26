@@ -174,7 +174,6 @@ const AddCustomerForMarketing = () => {
        Address: '',
      }]);
    }
-
    console.log('after if');
 };
 
