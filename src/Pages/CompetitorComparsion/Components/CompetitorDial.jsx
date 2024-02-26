@@ -37,10 +37,13 @@ const CompetitorDial = ({
 
   const [addCompair, { isLoading }] = useAddCompetitorPriceMutation();
 
-  const [price ,setPrice] = useState({
-    SKU:"",CompName:"" ,url:"",Price:""
+  const [price, setPrice] = useState({
+    SKU: "",
+    CompName: "",
+    url: "",
+    Price: "",
   });
-console.log(paramsData)
+  console.log(paramsData);
 
   const handleSubmit = async () => {
     const finalValue = compairePrice.filter(
@@ -78,28 +81,27 @@ console.log(paramsData)
 
     setCompairePrice(newLocalData);
   }, [paramsData]);
- 
 
   const handleCompetitor = (SKU, CompName, e) => {
     const { value, name } = e.target;
-if(name === 'url'){
-  setPrice({...price ,SKU: SKU,CompName:CompName ,url: value})
-
-}else{
-  setPrice({...price ,SKU: SKU,CompName:CompName ,Price: value})
-}
-
-    
+    if (name === "url") {
+      setPrice({ ...price, SKU: SKU, CompName: CompName, url: value });
+    } else {
+      setPrice({ ...price, SKU: SKU, CompName: CompName, Price: value });
+    }
   };
 
+  useEffect(() => {
+    const newCompetitor = {
+      Name: price.CompName,
+      Price: +price.Price,
+      URL: price.url,
+    };
 
-  useEffect(()=>{
-    const newCompetitor = { Name: price.CompName, Price: +price.Price, URL: price.url };
-  
+    const existingSKUIndex = compairePrice.findIndex(
+      (item) => item.SKU === price.SKU
+    );
 
- 
-    const existingSKUIndex = compairePrice.findIndex((item) => item.SKU === price.SKU);
-  
     if (existingSKUIndex !== -1) {
       setCompairePrice((prev) => {
         return prev.map((data, index) => {
@@ -126,8 +128,7 @@ if(name === 'url'){
         return [...prev, { SKU: price.SKU, competitor: [newCompetitor] }];
       });
     }
-  },[price , setPrice])
-  
+  }, [price, setPrice]);
 
   const newColumns = columns.filter((column) => column !== "Sno");
 
@@ -268,13 +269,15 @@ if(name === 'url'){
                     key={index}
                     sx={{
                       position: "sticky",
-                      left: 100,
+                      left: 80,
                       zIndex: 200,
                       background: "#fff",
+                      textAlign: "center",
                     }}
                   >
                     {index + 1}
                   </TableCell>
+
                   {newColumns.map((column, columnIndex) => (
                     <TableCell
                       key={columnIndex}
@@ -293,11 +296,11 @@ if(name === 'url'){
                           column === "Sno"
                             ? 0
                             : column === "SKU"
-                            ? 10
+                            ? 8
                             : column === "Product"
-                            ? 18.58
+                            ? 16
                             : column === "Brand"
-                            ? 23.45
+                            ? 23
                             : column === "Category"
                             ? 27.45
                             : column === "GST"
@@ -306,6 +309,7 @@ if(name === 'url'){
                         }rem`, // Adjust the values as needed
                         zIndex: 100,
                         background: "#fff",
+
                         // rowGap:`${column === "Product" ? "1rem" : ""}`
                       }}
                     >
@@ -351,22 +355,20 @@ if(name === 'url'){
                             <input
                               defaultValue={item[column]?.Price}
                               style={{
-                                textIndent: "1.5rem",
-                                width: "12rem",
+                                textIndent: "0.8rem",
+                                width: "6rem",
                                 padding: 4,
                               }} // Adjust the value according to your preference
                               onChange={(e) =>
                                 handleCompetitor(item.SKU, column, e)
                               }
                             />
-                  
                           </Box>
                           <Box
                             style={{
                               position: "relative",
                             }}
                           >
-                        
                             <span
                               style={{
                                 position: "absolute",
@@ -383,15 +385,14 @@ if(name === 'url'){
                               defaultValue={item[column]?.URL}
                               name="url"
                               style={{
-                                textIndent: "1.5rem",
-                                width: "12rem",
+                                textIndent: "0.8rem",
+                                width: "6rem",
                                 padding: 4,
                               }} // Adjust the value according to your preference
                               onChange={(e) =>
                                 handleCompetitor(item.SKU, column, e)
                               }
                             />
-                                  
                           </Box>
                         </Box>
                       )}

@@ -190,7 +190,7 @@ const BulkMessageTable = () => {
       field: "CustomerNumber",
       headerName: "Customer Number",
       width: 150,
-      editable: true,
+      editable: true, 
     },
   ];
 
@@ -220,21 +220,6 @@ const BulkMessageTable = () => {
           >
             Add Customer
           </Button>
-          {/* <textarea
-            style={{
-              width: "100%",
-              height: "400px",
-
-              resize: "none",
-              paddingTop: 5,
-              textIndent: "20px",
-            }}
-            value={message}
-            minRows={8}
-            placeholder="Enter your message"
-            aria-label="maximum height"
-            onChange={(e) => setMessage(e.target.value)}
-          /> */}
           <Box
             sx={{
               marginTop: "1rem",
@@ -373,28 +358,6 @@ const BulkMessageTable = () => {
               margin: "10px",
             }}
           >
-            {/* <Button
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
-              style={{ backgroundColor: fileUploaded ? "green" : undefined }}
-            >
-              {fileUploaded ? "File Uploaded" : "Upload File"}
-              <VisuallyHiddenInput type="file" onChange={handleFileUpload} />
-            </Button> */}
-
-            {/* 
-            //send buttton  */}
-
-            {/* <Button
-              variant="outlined"
-              sx={{ margin: "10px" }}
-              onClick={() => handleSend()}
-            >
-              {sendMsgLoading ? <CircularProgress size={30} /> : "send"}
-            </Button> */}
           </Box>
         </Box>
         <Box sx={{ width: "35%", marginTop: "2rem" }}>
