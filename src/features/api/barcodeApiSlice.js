@@ -197,7 +197,7 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
     getAllProjectData: builder.query({
       query: () => ({
         url: `r-and-d/getAllProjects`,
-        method: 'GET'
+        method: 'GET',
       }),
     }),
     addProjectName: builder.mutation({
@@ -207,6 +207,27 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    addProjectItem: builder.mutation({
+      query: (data) => ({
+        url: `r-and-d/addProjectItem`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+      updateAssignedStatus: builder.mutation({
+        query: (data) => ({
+          url: `${BARCODE_URL}/updateAssignedStatus`,
+          method: `POST`,
+          body: data,
+        }),
+      }),
+      updateDamagedStatus: builder.mutation({
+        query: (data) => ({
+          url: `${BARCODE_URL}/updateDamagedStatus`,
+          method: `POST`,
+          body: data,
+        }),
+      }),
   }),
 });
 
@@ -242,4 +263,7 @@ export const {
   useGetAllProjectDataQuery,
   useGetAllRDInventoryQuery,
   useAddProjectNameMutation,
+  useAddProjectItemMutation,
+  useUpdateAssignedStatusMutation,
+  useUpdateDamagedStatusMutation,
 } = BarcodeSlice;
