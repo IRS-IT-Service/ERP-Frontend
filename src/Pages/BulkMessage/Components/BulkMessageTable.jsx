@@ -215,7 +215,7 @@ const BulkMessageTable = () => {
           }}
         >
           <Button
-            variant='outlined'
+            variant='contained'
             onClick={handleClickOpen}
             sx={{ margin: '6px 0px 6px 0px ', background: color }}
           >
