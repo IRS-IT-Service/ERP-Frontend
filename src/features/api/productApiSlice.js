@@ -294,6 +294,15 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    updateBulkProduct: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/bulkUpdateProducts`,
+          method: "PUT",
+          body:data
+        };
+      },
+    }),
   }),
 });
 
@@ -331,5 +340,6 @@ export const {
   useGetAllCompetitorQuery,
   useAddDynamicValueMutation,
   useGetDynamicValueQuery,
-  useAddCompetitorPriceMutation
+  useAddCompetitorPriceMutation,
+  useUpdateBulkProductMutation
 } = productApiSlice;

@@ -25,7 +25,6 @@ import {
   setAllProductsV2,
 } from "../../../features/slice/productSlice";
 import {
-
   useUpdateNotationMutation,
   useGetAllProductV2Query,
 } from "../../../features/api/productApiSlice";
@@ -54,7 +53,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   /// local state
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  console.log(selectedItems.length);
   const [open, setOpen] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [loading, setLoading] = useState(false);
@@ -85,29 +83,27 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const [notationUpdateApi, { isLoading: NotationLoading }] =
     useUpdateNotationMutation();
 
+  const handleIsActiveyncUpdate = async (id, status, type) => {
+    try {
+      const data = {
+        sku: id,
+        body: { data: status, type: type },
+      };
 
-
-    const handleIsActiveyncUpdate = async (id, status, type) => {
-      try {
-        const data = {
-          sku: id,
-          body: { data: status, type: type },
-        };
-  
-        const res = await notationUpdateApi(data).unwrap();
-        setRows((prevRow) => {
-          return prevRow.map((item) => {
-            if (item.SKU === id) {
-              return { ...item, [type]: status };
-            } else {
-              return { ...item };
-            }
-          });
+      const res = await notationUpdateApi(data).unwrap();
+      setRows((prevRow) => {
+        return prevRow.map((item) => {
+          if (item.SKU === id) {
+            return { ...item, [type]: status };
+          } else {
+            return { ...item };
+          }
         });
-      } catch (error) {
-        console.error("An error occurred during login:", error);
-      }
-    };
+      });
+    } catch (error) {
+      console.error("An error occurred during login:", error);
+    }
+  };
 
   const handleExcelDownload = async (checkedItems, handleClose) => {
     setLoading(true);
@@ -555,20 +551,25 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   );
 
   const downloadWithTrueFalseCustomButton = (
-    <Button
-      onClick={() => {
-        if (selectedItems.length === 0) {
-          window.alert("Please select Product First");
-          return;
-        }
+    <Box>
+      <Button
+        onClick={() => {
+          if (selectedItems.length === 0) {
+            window.alert("Please select Product First");
+            return;
+          }
 
-        setDownloadType("boolean");
-        setOpen(true);
-      }}
-      variant="contained"
-    >
-      Download with True / False
-    </Button>
+          setDownloadType("boolean");
+          setOpen(true);
+        }}
+        variant="contained"
+      >
+        Download with True / False
+      </Button>
+      <Button sx={{ marginLeft: "5px" }} onClick={() => navigate("/updateBulkProduct")} variant="contained">
+        Bulk Update Admin
+      </Button>
+    </Box>
   );
 
   /// Custom Footer
