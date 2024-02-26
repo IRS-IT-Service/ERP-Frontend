@@ -118,7 +118,7 @@ const AddCustomerForMarketing = () => {
   };
   const handleFileChange = (event) => {
 
-    setShowData([])
+   
     const file = event.target.files[0];
     const reader = new FileReader();
 
@@ -194,8 +194,8 @@ const AddCustomerForMarketing = () => {
   return (
     <>
       <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
+        component='main'
+        sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
       >
         <DrawerHeader />
         <Header Name={'Bulk Add Product'} />
@@ -215,6 +215,7 @@ const AddCustomerForMarketing = () => {
               onChange={handleFileChange}
               style={{ display: 'none' }}
               id='file-upload'
+              // disabled={submitData.length > 0 ? true : false}
             />
             <label htmlFor='file-upload'>
               <Button
@@ -246,7 +247,7 @@ const AddCustomerForMarketing = () => {
                 }}
               />
             ) : (
-              'Add Customer'
+              'Submit'
             )}
           </Button>
           <Button
@@ -272,65 +273,83 @@ const AddCustomerForMarketing = () => {
         </Box>
         <Box>
           {data?.map((item, index) => (
-            <Grid container spacing={1} key={index}>
+            <Grid
+              container
+              spacing={1}
+              key={index}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
               <Grid item sm={1}>
                 <TextField
-                  label="Sno"
+                  label='Sno'
                   fullWidth
-                  name="Sno"
+                  name='Sno'
                   value={item.Sno}
                   disabled
                 />
               </Grid>
               <Grid item sm={2}>
                 <TextField
-                  label="Customer Name"
+                  label='Customer Name'
                   fullWidth
-                  name="CustomerName"
+                  name='CustomerName'
                   value={item.CustomerName}
                   onChange={(e) => handleChange(e, index)}
                 />
               </Grid>
               <Grid item sm={3}>
                 <TextField
-                  label="Company Name"
+                  label='Company Name'
                   fullWidth
-                  name="CompanyName"
+                  name='CompanyName'
                   value={item.CompanyName}
                   onChange={(e) => handleChange(e, index)}
                 />
               </Grid>
               <Grid item sm={2}>
                 <TextField
-                  label="Mobile Number"
+                  label='Mobile Number'
                   fullWidth
-                  name="MobileNo"
+                  name='MobileNo'
                   value={item.MobileNo}
                   onChange={(e) => handleChange(e, index)}
                 />
               </Grid>
-              <Grid item sm={4}>
+              <Grid item sm={3}>
                 <TextField
-                  label="Address"
+                  label='Address'
                   fullWidth
-                  name="Address"
+                  name='Address'
                   value={item.Address}
                   onChange={(e) => handleChange(e, index)}
                 />
               </Grid>
+
+              <Grid item sm={1}>
+                <Button
+                  // disabled={(excelData.length > 0) ? true : false}
+                  variant='contained'
+                  onClick={() => handleAddData()}
+                >
+                  Add
+                </Button>
+              </Grid>
             </Grid>
           ))}
-          <Button onClick={() => handleAddData()}>Add</Button>
         </Box>
         <Box
           sx={{
-            width: "100%",
-            height: "75vh",
-            overflowY: "auto",
-            "& .super-app-theme--header": {
-              background: "#eee",
-              color: "black",
-              textAlign: "center",
+            width: '100%',
+            height: '75vh',
+            overflowY: 'auto',
+            '& .super-app-theme--header': {
+              background: '#eee',
+              color: 'black',
+              textAlign: 'center',
             },
             '& .vertical-lines .MuiDataGrid-cell': {
               borderRight: '1px solid #e0e0e0',
