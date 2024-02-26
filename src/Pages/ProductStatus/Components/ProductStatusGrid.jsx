@@ -12,17 +12,29 @@ import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
-import { Box, Button, TablePagination, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TablePagination,
+  Typography,
+  Switch,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setAllProducts,
   setAllProductsV2,
 } from "../../../features/slice/productSlice";
-import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
+import {
+
+  useUpdateNotationMutation,
+  useGetAllProductV2Query,
+} from "../../../features/api/productApiSlice";
+
 import Loading from "../../../components/Common/Loading";
 import { useNavigate } from "react-router-dom";
 import ProductStatusDownloadDialog from "./ProductStatusDownloadDialog";
 import CachedIcon from "@mui/icons-material/Cached";
+import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 
 // for refresh data
 
@@ -69,6 +81,33 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
   };
+
+  const [notationUpdateApi, { isLoading: NotationLoading }] =
+    useUpdateNotationMutation();
+
+
+
+    const handleIsActiveyncUpdate = async (id, status, type) => {
+      try {
+        const data = {
+          sku: id,
+          body: { data: status, type: type },
+        };
+  
+        const res = await notationUpdateApi(data).unwrap();
+        setRows((prevRow) => {
+          return prevRow.map((item) => {
+            if (item.SKU === id) {
+              return { ...item, [type]: status };
+            } else {
+              return { ...item };
+            }
+          });
+        });
+      } catch (error) {
+        console.error("An error occurred during login:", error);
+      }
+    };
 
   const handleExcelDownload = async (checkedItems, handleClose) => {
     setLoading(true);
@@ -124,6 +163,9 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           SalesPrice: item.SalesPrice,
           SellerPrice: item.SellerPrice,
           Brand: item.Brand,
+          isEcwidSync: item.isEcwidSync,
+          isWholeSaleActive: item.isWholeSaleActive,
+          isImageExist: item.mainImage?.fileId ? true : false,
         };
       });
 
@@ -428,6 +470,65 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             }}
           >
             {icon}
+          </div>
+        );
+      },
+    },
+    {
+      field: "isActive",
+      headerName: `Ecwid`,
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div>
+            {" "}
+            <Switch
+              checked={params.row.isEcwidSync}
+              onChange={(e) => {
+                handleIsActiveyncUpdate(
+                  params.row.SKU,
+                  e.target.checked,
+                  "isEcwidSync"
+                );
+              }}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      field: "isImageExist",
+      headerName: `WS Active`,
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div>
+            {params.row.isImageExist ? (
+              <Switch
+                checked={params.row.isWholeSaleActive}
+                onChange={(e) => {
+                  handleIsActiveyncUpdate(
+                    params.row.SKU,
+                    e.target.checked,
+                    "isWholeSaleActive"
+                  );
+                }}
+              />
+            ) : (
+              <ImageNotSupportedIcon />
+            )}
           </div>
         );
       },

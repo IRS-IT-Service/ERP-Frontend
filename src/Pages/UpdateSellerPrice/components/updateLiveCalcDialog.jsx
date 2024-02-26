@@ -71,7 +71,7 @@ const UpdateLiveCalcDialog = ({
   const socket = useSocket();
 
   // Local state
-  console.log(localData);
+
   // RTK query
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
@@ -839,19 +839,18 @@ setIsLoading(true)
                     })}
                   </TableRow>
                   {/* Competitor details */}
-                  {openStates[index] && (
+                  {true && (
                     <TableRow>
                       <StyleCellData
                         style={{ paddingBottom: 0, paddingTop: 0 }}
                         colSpan={16}
                       >
-                        <Collapse
+                        {/* <Collapse
                           in={openStates[index]}
                           timeout="auto"
                           unmountOnExit
-                        >
-                          {/* <Box sx={{backgroundColor: "#eee" ,width:"100%" }}> */}
-                          {/* Render sub-data here */}
+                        > */}
+                     
 
                           <TableContainer
                             sx={{ backgroundColor: "#eee"}}
@@ -875,18 +874,27 @@ setIsLoading(true)
                                 })}
                               </TableRow>
 
-                              {item.competitor.map((items) => {
+                              {item.competitor.map((items,index) => {
                                 return (
                                   <TableCell key={index} sx={{ padding: 0.5 ,fontSize:"12px",fontWeight:"bold" }}>
-                                    {items.Price} ₹
+                                   <Box sx={{
+                                    display:"flex",
+                                    gap:1,
+                                    alignItems:"center",
+                                 
+                                   }}> <span>{items.Price} ₹ </span> {items.URL && <span>  <a href={`https://${items.URL}`} target="_blank" rel="noopener noreferrer">  <Tooltip
+                                   title={`${items.URL}`}
+                                   placement="top"
+                                   key={index}
+                                 ><InfoIcon sx={{width:"15px" ,marginTop:0.5 ,color:"black"}}  /></Tooltip> </a> </span> } </Box>
                                   </TableCell>
                                 );
                               })}
                             </Table>
                           </TableContainer>
 
-                          {/* </Box> */}
-                        </Collapse>
+                    
+                        {/* </Collapse> */}
                       </StyleCellData>
                     </TableRow>
                   )}
