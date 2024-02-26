@@ -75,6 +75,8 @@ const AddCustomerForMarketing = () => {
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [excelData, setExcelData] = useState([]);
+  const [showData, setShowData] = useState([]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData([{...data[0], [name] : value}])
@@ -84,6 +86,8 @@ const AddCustomerForMarketing = () => {
   console.log(data)
   
   const handleFileChange = (event) => {
+
+    setShowData([])
     const file = event.target.files[0];
     const reader = new FileReader();
 
@@ -148,7 +152,7 @@ const AddCustomerForMarketing = () => {
     }
   };
 
-  const [showData, setShowData] = useState([])
+ 
   // onSubmit input data display in datagrid row
  const submitHandler = () => {
    console.log('before if');
@@ -163,8 +167,6 @@ const AddCustomerForMarketing = () => {
       return [...prevShowData, ...newData];
     });
 
-
-     
      setData([{
        CompanyName: '',
        CustomerName: '',
@@ -226,7 +228,6 @@ useEffect(() => {
               },
             }}
             onClick={submitHandler}
-            // onClick={handleSubmit}
           >
             {isLoading ? (
               <CircularProgress
@@ -260,13 +261,13 @@ useEffect(() => {
           </Button>
         </Box>
         <Grid container spacing={1}>
-          <Grid item sm={1} sx={{display: 'none'}}>
+          <Grid item sm={1} sx={{display: ''}}>
             <TextField
               label='Customer Name'
               fullWidth
               name='CustomerName'
               value={showData.length}
-              // onChange={(e) => handleChange(e)}
+             
               
             />
           </Grid>
@@ -329,7 +330,7 @@ useEffect(() => {
           }}
         >
           <DataGrid
-            rows={data.length > 0 ? showData : excelData}
+            rows={showData.length > 0 ? showData : excelData}
             columns={columns}
             getRowId={(row) => row.id}
           />
