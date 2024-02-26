@@ -206,6 +206,8 @@ const AddCustomerForMarketing = () => {
      } catch (error) {
        toast.error(error);
      }
+     setSubmitData([])
+     navigate('/BulkMessage');
   };
 
   const handleNavigation = () => {
