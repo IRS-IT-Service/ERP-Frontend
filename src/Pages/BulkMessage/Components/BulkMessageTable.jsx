@@ -23,6 +23,8 @@ import {
 import Loading from "../../../components/Common/Loading";
 import CustomMsgDialogbox from "./CustomMsgDialogbox";
 import TemplateMessage from "./TemplateMessage";
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 //File upload
 const VisuallyHiddenInput = styled("input")({
@@ -49,6 +51,9 @@ const BulkMessageTable = () => {
   const [sendingType, setSendingType] = useState("");
   const [tempopen, setTempopen] = useState(false);
   const [title, setTitle] = useState("");
+  const navigate = useNavigate();
+  const { themeColor } = useSelector((state) => state.ui);
+  const color = themeColor.sideBarColor1;
 
   //rtk Query
   const [addCustomer, { isLoading: addCustomerLoading }] =
@@ -65,11 +70,12 @@ const BulkMessageTable = () => {
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     setFileUploaded(true);
+
     setFile(file);
   };
 
   const handleClickOpen = () => {
-    setOpen(true);
+       navigate('/addCusotmerforMarketing');
   };
 
   const handleClose = () => {
@@ -104,30 +110,9 @@ const BulkMessageTable = () => {
       });
 
       setRows(row);
+      refetch();
     }
   }, [getAllCustomers]);
-
-  // const handleSend = async () => {
-  //   try {
-  //     const formData = new FormData();
-
-  //     formData.append("contacts", JSON.stringify(customerNumber)),
-  //       formData.append("message", message),
-  //       formData.append("file", file);
-
-  //     const res = await sendMsg(formData).unwrap();
-  //     if (!res.status) {
-  //       return;
-  //     }
-  //     toast.success("Message successfully send!");
-  //     setFileUploaded(false);
-  //     setFile("");
-  //     setMessage("");
-  //     refetch();
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
 
   const handleSubmit = async (event) => {
     try {
@@ -179,109 +164,125 @@ const BulkMessageTable = () => {
 
   //This is data grid data
   const columns = [
-    { field: "sn", headerName: "ID", width: 90 },
+    { field: 'sn', headerName: 'ID', width: 90 },
     {
-      field: "CustomerName",
-      headerName: "Customer Name",
+      field: 'CustomerName',
+      headerName: 'Customer Name',
+      width: 180,
+      editable: true,
+    },
+    {
+      field: 'CompanyName',
+      headerName: 'Company Name',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
+      flex: 0.3,
+      width: 210,
+    },
+    {
+      field: 'CustomerNumber',
+      headerName: 'Mobile No',
       width: 150,
       editable: true,
     },
     {
-      field: "CustomerNumber",
-      headerName: "Customer Number",
-      width: 150,
-      editable: true, 
+      field: 'Address',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
+      flex: 0.3,
+      headerName: 'Address',
+      width: 250,
     },
   ];
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Box
         sx={{
-          display: "flex",
-          width: "100%",
-          justifyContent: "space-around",
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'space-around',
         }}
       >
         <Box
           sx={{
-            width: "30%",
-            marginTop: "2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyItems: "center",
-            overflow: "hidden",
+            width: '30%',
+            marginTop: '2rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyItems: 'center',
+            overflow: 'hidden',
           }}
         >
           <Button
-            variant="outlined"
+            variant='outlined'
             onClick={handleClickOpen}
-            sx={{ margin: "6px 0px 6px 0px " }}
+            sx={{ margin: '6px 0px 6px 0px ', background: color }}
           >
             Add Customer
           </Button>
           <Box
             sx={{
-              marginTop: "1rem",
-              border: "2px solid black",
-              borderRadius: "2px",
-              display: "flex",
+              marginTop: '1rem',
+              border: '2px solid black',
+              borderRadius: '2px',
+              display: 'flex',
             }}
           >
             <Button
-              variant="outlined"
+              variant='outlined'
               sx={{
-                margin: "0.6rem",
-                backgroundColor: "blue",
-                color: "white",
-                "&:hover": {
-                  color: "black",
+                margin: '0.6rem',
+                backgroundColor: color,
+                color: 'white',
+                '&:hover': {
+                  color: 'black',
                 },
               }}
               onClick={() =>
-                handleOpenMsgDialogbox("File", "Send Text Message With Media")
+                handleOpenMsgDialogbox('File', 'Send Text Message With Media')
               }
             >
               Send Text Message With Media
             </Button>
             <Button
-              variant="outlined"
+              variant='outlined'
               sx={{
-                margin: "0.6rem",
-                backgroundColor: "blue",
-                color: "white",
-                "&:hover": {
-                  color: "black",
+                margin: '0.6rem',
+                backgroundColor: color,
+                color: 'white',
+                '&:hover': {
+                  color: 'black',
                 },
               }}
               onClick={() =>
-                handleOpenMsgDialogbox("Text", "Send Text Message")
+                handleOpenMsgDialogbox('Text', 'Send Text Message')
               }
             >
               Send Text Message
             </Button>
             <Button
-              variant="outlined"
+              variant='outlined'
               sx={{
-                margin: "0.6rem",
-                backgroundColor: "blue",
-                color: "white",
-                "&:hover": {
-                  color: "black",
+                margin: '0.6rem',
+                backgroundColor: color,
+                color: 'white',
+                '&:hover': {
+                  color: 'black',
                 },
               }}
-              onClick={() => handleOpenMsgDialogbox("Link", "Send Link")}
+              onClick={() => handleOpenMsgDialogbox('Link', 'Send Link')}
             >
               Send Link
             </Button>
             <Button
-              variant="outlined"
+              variant='outlined'
               sx={{
-                margin: "0.6rem",
-                backgroundColor: "blue",
-                color: "white",
-                "&:hover": {
-                  color: "black",
+                margin: '0.6rem',
+                backgroundColor: color,
+                color: 'white',
+                '&:hover': {
+                  color: 'black',
                 },
               }}
               onClick={() => handleTempopen()}
@@ -290,78 +291,17 @@ const BulkMessageTable = () => {
             </Button>
           </Box>
 
-          <Dialog open={open} onClose={handleClose}>
-            <DialogTitle
-              id="alert-dialog-title"
-              sx={{
-                textAlign: "center",
-                display: "flex",
-                justifyContent: "space-around",
-              }}
-            >
-              <Typography sx={{ fontWeight: "bold" }}>Add Customer</Typography>
-            </DialogTitle>
-
-            <DialogContent>
-              <Box
-                sx={{
-                  gap: "12px",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                  }}
-                >
-                  <TextField
-                    label="Customer Name"
-                    variant="outlined"
-                    sx={{ width: "100%", marginTop: "12px" }}
-                    name="CustomerName"
-                    value={input.CustomerName}
-                    onChange={handleInputChange}
-                  />
-                  <TextField
-                    label="Customer Number"
-                    variant="outlined"
-                    sx={{ width: "100%" }}
-                    name="CustomerNumber"
-                    value={input.CustomerNumber}
-                    onChange={handleInputChange}
-                    type="number"
-                  />
-
-                  <Button onClick={handleSubmit} variant="outlined">
-                    {addCustomerLoading ? <CircularProgress /> : "Add"}
-                  </Button>
-                  <Button
-                    onClick={handleClose}
-                    variant="outlined"
-                    sx={{ fontWeight: "bold" }}
-                  >
-                    Cancel
-                  </Button>
-                </Box>
-              </Box>
-            </DialogContent>
-            <DialogActions></DialogActions>
-          </Dialog>
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-around",
-              alignItems: "center",
-              margin: "10px",
+              display: 'flex',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              margin: '10px',
             }}
-          >
-          </Box>
+          ></Box>
         </Box>
-        <Box sx={{ width: "35%", marginTop: "2rem" }}>
-          <Box sx={{ height: "72vh", width: "100%" }}>
+        <Box sx={{ width: '60%', marginTop: '2rem' }}>
+          <Box sx={{ height: '72vh', width: '100%' }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -395,7 +335,7 @@ const BulkMessageTable = () => {
         <TemplateMessage
           tempopen={tempopen}
           handleTempclose={handleTempclose}
-          title="Send Message Template"
+          title='Send Message Template'
         />
       )}
     </Box>
