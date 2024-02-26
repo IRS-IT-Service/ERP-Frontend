@@ -12,6 +12,7 @@ import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import BASEURL from "../../constants/BaseApi";
 import * as XLSX from "xlsx";
+import { toast } from "react-toastify";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -62,22 +63,59 @@ const columns = [
 ];
 
 const AddCustomerForMarketing = () => {
-  const [data, setData] = useState({
-    name: "",
-    mobile: "",
-    company: "",
-    address: "",
-  });
+  const [data, setData] = useState([
+    {
+      Sno: 1,
+      id: 1,
+      CustomerName: "",
+      MobileNo: "",
+      CompanyName: "",
+      Address: "",
+    },
+  ]);
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [excelData, setExcelData] = useState([]);
-  const handleChange = (e) => {
+  const [submitData, setSubmitData] = useState([]);
+  // const handle change for data input
+
+  const handleChange = (e, index) => {
     const { name, value } = e.target;
-    setData((prev) => {
-      return { ...prev, [name]: value };
-    });
+    const list = [...data];
+    list[index][name] = value;
+    setData(list);
   };
 
+  // for handeling add buttons
+  const handleAddData = () => {
+    const updatedData = data.map((item, idx) => ({
+      ...item,
+      Sno: idx + 1,
+      id: idx + 1,
+    }));
+    const updatedSubmitData = [...submitData];
+
+    updatedData.forEach((item) => {
+      const existingSno = updatedSubmitData.find(
+        (dataItem) => dataItem.Sno === item.Sno
+      );
+      if (existingSno) {
+        item.Sno = updatedSubmitData.length + 1;
+        item.id = updatedSubmitData.length + 1;
+      }
+    });
+
+    setSubmitData([...updatedSubmitData, ...updatedData]);
+    setData([
+      {
+        Sno: updatedSubmitData.length + 1,
+        CustomerName: "",
+        MobileNo: "",
+        CompanyName: "",
+        Address: "",
+      },
+    ]);
+  };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -142,12 +180,20 @@ const AddCustomerForMarketing = () => {
       setLoading(false);
     }
   };
+  
+  const handleSubmit = () => {
+    if (submitData.length === 0 || excelData.length === 0) {
+      return toast.error(
+        "Please add some values or upload excel file before submitting"
+      );
+    }
 
+  };
   return (
     <>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 0, width: "100%",overflow: "hidden" }}
+        sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
       >
         <DrawerHeader />
         <Header Name={"Bulk Add Product"} />
@@ -189,7 +235,7 @@ const AddCustomerForMarketing = () => {
                 backgroundColor: "black",
               },
             }}
-            // onClick={handleSubmit}
+            onClick={handleSubmit}
           >
             {isLoading ? (
               <CircularProgress
@@ -222,49 +268,63 @@ const AddCustomerForMarketing = () => {
             )}
           </Button>
         </Box>
-        <Grid container spacing={1}>
-          <Grid item sm={2}>
-            <TextField
-              label="Customer Name"
-              fullWidth
-              name="name"
-              value={data.name}
-              onChange={(e) => handleChange(e)}
-            />
-          </Grid>
-          <Grid item sm={3}>
-            <TextField
-              label="Company Name"
-              fullWidth
-              name="company"
-              value={data.company}
-              onChange={(e) => handleChange(e)}
-            />
-          </Grid>
-          <Grid item sm={2}>
-            <TextField
-              label="Mobile Number"
-              fullWidth
-              name="mobile"
-              value={data.mobile}
-              onChange={(e) => handleChange(e)}
-            />
-          </Grid>
-          <Grid item sm={4}>
-            <TextField
-              label="Address"
-              fullWidth
-              name="address"
-              value={data.address}
-              onChange={(e) => handleChange(e)}
-            />
-          </Grid>
-        </Grid>
+        <Box>
+          {data?.map((item, index) => (
+            <Grid container spacing={1} key={index}>
+              <Grid item sm={1}>
+                <TextField
+                  label="Sno"
+                  fullWidth
+                  name="Sno"
+                  value={item.Sno}
+                  disabled
+                />
+              </Grid>
+              <Grid item sm={2}>
+                <TextField
+                  label="Customer Name"
+                  fullWidth
+                  name="CustomerName"
+                  value={item.CustomerName}
+                  onChange={(e) => handleChange(e, index)}
+                />
+              </Grid>
+              <Grid item sm={3}>
+                <TextField
+                  label="Company Name"
+                  fullWidth
+                  name="CompanyName"
+                  value={item.CompanyName}
+                  onChange={(e) => handleChange(e, index)}
+                />
+              </Grid>
+              <Grid item sm={2}>
+                <TextField
+                  label="Mobile Number"
+                  fullWidth
+                  name="MobileNo"
+                  value={item.MobileNo}
+                  onChange={(e) => handleChange(e, index)}
+                />
+              </Grid>
+              <Grid item sm={4}>
+                <TextField
+                  label="Address"
+                  fullWidth
+                  name="Address"
+                  value={item.Address}
+                  onChange={(e) => handleChange(e, index)}
+                />
+              </Grid>
+            </Grid>
+          ))}
+          <Button onClick={() => handleAddData()}>Add</Button>
+        </Box>
         <Box
           sx={{
             width: "100%",
             height: "75vh",
-            overflowY:"auto",
+            overflowY: "auto",
             "& .super-app-theme--header": {
               background: "#eee",
               color: "black",
@@ -281,7 +341,10 @@ const AddCustomerForMarketing = () => {
             },
           }}
         >
-          <DataGrid rows={excelData} columns={columns} />
+          <DataGrid
+            rows={submitData.length > 0 ? submitData : excelData}
+            columns={columns}
+          />
         </Box>
       </Box>
     </>
