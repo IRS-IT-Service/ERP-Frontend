@@ -54,7 +54,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   /// local state
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  console.log(selectedItems.length);
+  // console.log(selectedItems.length);
   const [open, setOpen] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [loading, setLoading] = useState(false);
@@ -302,25 +302,25 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        const value = params.row.GST;
-        const icon = value === 0 ? <CloseIcon /> : <CheckIcon />;
-        const iconColor = value === 0 ? "red" : "green";
+      // renderCell: (params) => {
+      //   const value = params.row.GST;
+      //   const icon = value === 0 ? <CloseIcon /> : <CheckIcon />;
+      //   const iconColor = value === 0 ? "red" : "green";
 
-        return (
-          <div
-            style={{
-              height: "30px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: iconColor,
-            }}
-          >
-            {icon}
-          </div>
-        );
-      },
+      //   return (
+      //     <div
+      //       style={{
+      //         height: "30px",
+      //         display: "flex",
+      //         justifyContent: "center",
+      //         alignItems: "center",
+      //         color: iconColor,
+      //       }}
+      //     >
+      //       {icon}
+      //     </div>
+      //   );
+      // },
     },
     {
       field: "Quantity",
