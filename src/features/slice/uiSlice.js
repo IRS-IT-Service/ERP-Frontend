@@ -8,8 +8,11 @@ const initialState = {
   themeColor: localStorage.getItem("themeColor")
     ? JSON.parse(localStorage.getItem("themeColor"))
     : {
-        name: "blue",
-        themeColor1: "linear-gradient(0deg, #01127D, #04012F)",
+      name: "blue",
+      themeColor1: "linear-gradient(0deg, #01127D, #04012F)",
+      sideBarColor1: "#4459ee",
+      sideBarColor2: "#b3cbff",
+      textColor:"#fff"
       },
 };
 
