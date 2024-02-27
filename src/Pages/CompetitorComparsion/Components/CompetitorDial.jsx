@@ -43,7 +43,7 @@ const CompetitorDial = ({
     url: "",
     Price: "",
   });
-  console.log(paramsData);
+
 
   const handleSubmit = async () => {
     const finalValue = compairePrice.filter(
@@ -169,11 +169,11 @@ const CompetitorDial = ({
           }}
         />
       </Box>
-      <DialogContent sx={{ overflow: "hidden" }}>
+      <DialogContent >
         <TableContainer sx={{ maxHeight: 450 }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
-              <TableRow>
+              <TableRow colSpan={3}>
                 <TableCell
                   sx={{
                     textAlign: "center",
@@ -183,6 +183,8 @@ const CompetitorDial = ({
                     top: 0,
                     left: 0,
                     zIndex: 200,
+                    width:0,
+             
                   }}
                 >
                   Remove
@@ -193,7 +195,8 @@ const CompetitorDial = ({
                       textAlign: "center",
                       background: "linear-gradient(0deg, #01127D, #04012F)",
                       color: "#fff",
-                      position: [
+                      width:0,
+                    position: [
                         "SKU",
                         "Sno",
                         "Product",
@@ -203,6 +206,7 @@ const CompetitorDial = ({
                       ].includes(item)
                         ? "sticky"
                         : "sticky",
+                        
                       left: `${
                         [
                           "SKU",
@@ -226,8 +230,8 @@ const CompetitorDial = ({
                             ? 32.2
                             : 0
                           : ""
-                      }rem`, // Adjust the values as needed
-                      zIndex: `${
+                      }rem`,
+               zIndex: `${
                         [
                           "SKU",
                           "Sno",
@@ -249,7 +253,7 @@ const CompetitorDial = ({
             </TableHead>
             <TableBody>
               {paramsData.map((item, index) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.id}  >
                   <TableCell
                     sx={{
                       textAlign: "center",
@@ -257,6 +261,8 @@ const CompetitorDial = ({
                       position: "sticky",
                       background: "#fff",
                       left: 0,
+                      width:0,
+              
                       zIndex: 100,
                       "&:hover": { color: "red" },
                     }}
@@ -269,10 +275,12 @@ const CompetitorDial = ({
                     key={index}
                     sx={{
                       position: "sticky",
-                      left: 80,
+                      left: 75,
                       zIndex: 200,
                       background: "#fff",
                       textAlign: "center",
+                    
+              
                     }}
                   >
                     {index + 1}
@@ -296,9 +304,9 @@ const CompetitorDial = ({
                           column === "Sno"
                             ? 0
                             : column === "SKU"
-                            ? 8
+                            ? 10
                             : column === "Product"
-                            ? 16
+                            ? 18
                             : column === "Brand"
                             ? 23
                             : column === "Category"
@@ -306,11 +314,14 @@ const CompetitorDial = ({
                             : column === "GST"
                             ? 32.45
                             : 60
-                        }rem`, // Adjust the values as needed
+                        }rem`, 
+               
+                        // background:"#fff",
                         zIndex: 100,
-                        background: "#fff",
-
-                        // rowGap:`${column === "Product" ? "1rem" : ""}`
+                      
+                        background:`${column === "Product" ? "red" : "#fff"}`,
+                        // paddingX:`${column === "Product" ? "15rem" : "#fff"}`,
+  
                       }}
                     >
                       {[
