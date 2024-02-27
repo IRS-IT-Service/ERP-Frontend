@@ -28,6 +28,7 @@ const UserList = ({
   const { userInfo } = useSelector((state) => state.auth);
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
+  const textColor = themeColor.textColor;
 
   /// local state
   const [rows, setRows] = useState([]);
@@ -392,7 +393,7 @@ const UserList = ({
               variant="outlined"
               onClick={onClick}
               sx={{
-                color: "white",
+                color: textColor,
                 background: color,
                 "&:hover": {
                   color: "black",
@@ -428,7 +429,7 @@ const UserList = ({
                 })
               }
               sx={{
-                color: "white",
+                color: textColor,
                 background: color,
                 "&:hover": {
                   color: "black",
