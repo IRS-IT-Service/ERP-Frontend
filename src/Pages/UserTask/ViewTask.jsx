@@ -21,7 +21,7 @@ import Loading from "../../components/Common/Loading";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useSelector } from "react-redux";
-import { formatDate } from "../../commonFunctions/commonFunctions";
+import { formatDate, formatTime, formateDateAndTime } from "../../commonFunctions/commonFunctions";
 import axios from "axios";
 import { USERS_URL } from "../../constants/ApiEndpoints";
 import BASEURL from "../../constants/BaseApi";
@@ -286,7 +286,8 @@ const ViewTask = () => {
                   <TableCell sx={{ color: "white", widht: "50px" }}>
                     Date
                   </TableCell>
-                  <TableCell sx={{ color: "white" }}>Task Time</TableCell>
+                  <TableCell sx={{ color: "white" }}>Task Hour</TableCell>
+                  <TableCell sx={{ color: "white" }}>Create Time</TableCell>
                   <TableCell sx={{ color: "white" }}>
                     Task Description
                   </TableCell>
@@ -300,6 +301,7 @@ const ViewTask = () => {
                     <TableCell>{row.name}</TableCell>
                     <TableCell>{formatDate(row.createdAt)}</TableCell>
                     <TableCell>{row.type.toUpperCase()}</TableCell>
+                    <TableCell>{formatTime(row.createdAt)}</TableCell>
                     <TableCell>{row.message}</TableCell>
                     <TableCell>
                       <Button

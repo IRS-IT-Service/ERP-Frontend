@@ -57,7 +57,7 @@ export default function Login({ registrationToken }) {
   const [userId, setUserId] = useState("");
   const [remainingTime, setRemainingTime] = useState(5 * 60);
   const [timerExpired, setTimerExpired] = useState(false);
-  const [currentError, setCurrentError] = useState(null);
+  const [message, setMessage] = useState("");
   const errorToastShown = useRef(false);
   const [ButtonDisable, setButtonDisable] = useState(true);
   const [Location, setLocation] = useState({
@@ -215,7 +215,9 @@ export default function Login({ registrationToken }) {
     
       if (res.data.isOtp) {
         setIsShowOtp(true);
-        setUserId(res.data.adminId);
+        setUserId(res.data?.adminId);
+        setMessage(res?.message)
+
         return;
       }
 
@@ -374,6 +376,7 @@ export default function Login({ registrationToken }) {
                   </div>
                 )}
               </Box>
+              <Box sx={{textAlign:"center" , color:"green"}}><p>{message}</p></Box>
             </Box>
           ) : (
             <Box
@@ -472,6 +475,7 @@ export default function Login({ registrationToken }) {
                   </Grid>
                 </Grid>
               </Box>
+       
             </Box>
           )}
 

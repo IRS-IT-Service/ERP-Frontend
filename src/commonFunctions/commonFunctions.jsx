@@ -54,5 +54,18 @@ const  formateDateAndTime =(originalDate) => {
   return `${formattedTime}, ${formattedDate}`;
 }
 
+const  formatTime =(originalDate) => {
+  const date = new Date(originalDate);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const amOrPm = hours >= 12 ? "PM" : "AM";
+  const formattedHours = hours % 12 || 12; 
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
-export { formatIndianPrice, formatUSDPrice, NotificationSoundPlay ,formatDate,formateDateAndTime};
+  const formattedTime = `${formattedHours}:${formattedMinutes} ${amOrPm}`;
+
+  return `${formattedTime}`;
+}
+
+
+export { formatIndianPrice, formatUSDPrice, NotificationSoundPlay ,formatDate,formateDateAndTime,formatTime};
