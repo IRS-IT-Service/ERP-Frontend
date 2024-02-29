@@ -515,6 +515,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             {params.row.isImageExist ? (
               <Switch
                 checked={params.row.isWholeSaleActive}
+                disabled={!params.row.SellerPrice}
                 onChange={(e) => {
                   handleIsActiveyncUpdate(
                     params.row.SKU,
