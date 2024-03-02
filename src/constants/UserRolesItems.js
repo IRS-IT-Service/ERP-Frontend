@@ -484,10 +484,17 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
+      {
+        id: 68,
+        name: "MessageTemplate",
+        path: "/MessageTemplate",
+        icon: "fa fa-comment",
+        notification: true,
+      },
     ],
   },
 ];
 
-// last routes is 67
+// last routes is 68
 
 export default userRolesData;
