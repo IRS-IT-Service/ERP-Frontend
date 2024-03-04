@@ -6,7 +6,7 @@ import MessageDialogBox from "./MessageDialogBox";
 const MessageBox = () => {
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
-  const [dialopen, setDialopen] = useState(true);
+  const [dialopen, setDialopen] = useState(false);
   const [title, setTitle] = useState("");
 
   const handleClickOpen = (name) => {
@@ -40,7 +40,7 @@ const MessageBox = () => {
             color: "white",
           },
         }}
-        onClick={() => handleClickOpen("Register Wholesale")} 
+        onClick={() => handleClickOpen("Register Wholesale")}
       >
         <Typography sx={{ fontSize: "1.5rem" }}>
           <i className="fa-brands fa-whatsapp"></i>
@@ -60,7 +60,7 @@ const MessageBox = () => {
             color: "white",
           },
         }}
-        onClick={() => handleClickOpen("Login Wholesale")} 
+        onClick={() => handleClickOpen("Login Wholesale")}
       >
         <Typography sx={{ fontSize: "1.5rem" }}>
           <i className="fa-brands fa-whatsapp"></i>
@@ -88,7 +88,11 @@ const MessageBox = () => {
         <Typography sx={{ fontSize: "0.9rem" }}>OTP Wholesale</Typography>
       </Box>
       {dialopen && (
-        <MessageDialogBox open={dialopen} handleClose={handleClose} title={title} />
+        <MessageDialogBox
+          open={dialopen}
+          handleClose={handleClose}
+          title={title}
+        />
       )}
     </Box>
   );
