@@ -320,10 +320,10 @@ const CompetitorDial = ({
                             : 60
                         }rem`,
 
-                        // background:"#fff",
+                        background:"#fff",
                         zIndex: 100,
 
-                        background: `${column === "Product" ? "red" : "#fff"}`,
+                        // background: `${column === "Product" ? "red" : "#fff"}`,
                         // paddingX:`${column === "Product" ? "15rem" : "#fff"}`,
                       }}
                     >
@@ -339,7 +339,7 @@ const CompetitorDial = ({
                         column === "GST" ? (
                           `${parseFloat(item[column]).toFixed(0)} %`
                         ) : column === "SalesPrice" ? (
-                          ` ₹ ${(item[column])}`
+                          ` ₹ ${(item[column]).toFixed(0)}`
                         ) : (
                           item[column]
                         )
@@ -402,7 +402,7 @@ const CompetitorDial = ({
                               defaultValue={item[column]?.URL}
                               name="url"
                               style={{
-                                textIndent: "0.8rem",
+                                textIndent: "1.5rem",
                                 width: "6rem",
                                 padding: 4,
                               }} // Adjust the value according to your preference
