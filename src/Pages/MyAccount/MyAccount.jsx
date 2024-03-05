@@ -11,21 +11,21 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const MyAccount = () => {
-
-
   return (
+    <Box
+      component="main"
+      sx={{
+        flexGrow: 1,
+        p: 0,
+        width: "100%",
+        height: "100vh",
+        overflowY: "auto",
+      }}
+    >
+      <DrawerHeader />
 
-    
-   <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 0, width: "100%", height:"100vh", overflowY: "auto" }}
-      >
-        <DrawerHeader />
-
-        <MyAccountDetails />
-      </Box>
-
-
+      <MyAccountDetails />
+    </Box>
   );
 };
 
