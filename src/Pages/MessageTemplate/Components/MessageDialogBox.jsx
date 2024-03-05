@@ -23,7 +23,6 @@ const rows = [
 ];
 
 const MessageDialogBox = ({ open, handleClose, title }) => {
-  const [showTextArea, setShowTextArea] = useState(false);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [click, setClick] = useState(null);
   const [file, setFile] = useState(null);
@@ -117,15 +116,6 @@ const MessageDialogBox = ({ open, handleClose, title }) => {
             gap: "10px",
           }}
         >
-          {!showTextArea && (
-            <Button
-              variant="outlined"
-              onClick={handleAddMessage}
-              sx={{ width: "100%" }}
-            >
-              Add Message
-            </Button>
-          )}
           <Button
             component="label"
             sx={{ width: "100%" }}
@@ -146,50 +136,48 @@ const MessageDialogBox = ({ open, handleClose, title }) => {
           </Button>
         </Box>
 
-        {showTextArea && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 1,
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <textarea
+            style={{
+              marginTop: "12px",
+              width: "30vw",
+              height: "20vh",
+              resize: "none",
+              paddingTop: 5,
+              textIndent: "20px",
             }}
-          >
-            <textarea
-              style={{
-                marginTop: "12px",
-                width: "30vw",
-                height: "20vh",
-                resize: "none",
-                paddingTop: 5,
-                textIndent: "20px",
-              }}
-              value={message}
-              placeholder="Enter your message"
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <Button variant="contained" sx={{ width: "20%" }}>
-              Ok
-            </Button>
-            <Box sx={{ height: 300, width: "100%" }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
+            value={message}
+            placeholder="Enter your message"
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <Button variant="contained" sx={{ width: "20%" }}>
+            Ok
+          </Button>
+          <Box sx={{ height: 300, width: "100%" }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
                   },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
+                },
+              }}
+              pageSizeOptions={[5]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
           </Box>
-        )}
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
