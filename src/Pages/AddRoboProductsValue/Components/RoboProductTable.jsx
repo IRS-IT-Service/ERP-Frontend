@@ -37,7 +37,7 @@ const RoboProductTable = () => {
   };
 
   const handleInput = (event) => {
-    setAddvalue(event.target.value);
+    setAddvalue((event.target.value).toUpperCase());
   };
 
   const handleAdd = () => {
