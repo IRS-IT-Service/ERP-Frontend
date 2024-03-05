@@ -484,6 +484,13 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
+      {
+        id: 68,
+        name: "MessageTemplate",
+        path: "/MessageTemplate",
+        icon: "fa fa-comment",
+        notification: true,
+      },
     ],
   },
 ];
