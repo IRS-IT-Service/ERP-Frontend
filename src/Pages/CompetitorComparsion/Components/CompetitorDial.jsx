@@ -402,7 +402,7 @@ const CompetitorDial = ({
                               defaultValue={item[column]?.URL}
                               name="url"
                               style={{
-                                textIndent: "0.8rem",
+                                textIndent: "1.5rem",
                                 width: "6rem",
                                 padding: 4,
                               }} // Adjust the value according to your preference
