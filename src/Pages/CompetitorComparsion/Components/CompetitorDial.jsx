@@ -339,7 +339,7 @@ const CompetitorDial = ({
                         column === "GST" ? (
                           `${parseFloat(item[column]).toFixed(0)} %`
                         ) : column === "SalesPrice" ? (
-                          ` ₹ ${(item[column])}`
+                          ` ₹ ${(item[column]).toFixed(0)}`
                         ) : (
                           item[column]
                         )
