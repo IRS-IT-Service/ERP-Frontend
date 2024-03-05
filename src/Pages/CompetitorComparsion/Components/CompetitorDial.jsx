@@ -44,7 +44,6 @@ const CompetitorDial = ({
     Price: "",
   });
 
-
   const handleSubmit = async () => {
     const finalValue = compairePrice.filter(
       (item) => item.competitor?.length > 0
@@ -169,7 +168,7 @@ const CompetitorDial = ({
           }}
         />
       </Box>
-      <DialogContent >
+      <DialogContent>
         <TableContainer sx={{ maxHeight: 450 }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
@@ -183,8 +182,7 @@ const CompetitorDial = ({
                     top: 0,
                     left: 0,
                     zIndex: 200,
-                    width:0,
-             
+                    width: 0,
                   }}
                 >
                   Remove
@@ -195,18 +193,19 @@ const CompetitorDial = ({
                       textAlign: "center",
                       background: "linear-gradient(0deg, #01127D, #04012F)",
                       color: "#fff",
-                      width:0,
-                    position: [
+                      width: 0,
+                      position: [
                         "SKU",
                         "Sno",
                         "Product",
                         "Brand",
                         "Category",
+                        "SalesPrice",
                         "GST",
                       ].includes(item)
                         ? "sticky"
                         : "sticky",
-                        
+
                       left: `${
                         [
                           "SKU",
@@ -214,6 +213,7 @@ const CompetitorDial = ({
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(item)
                           ? item === "Sno"
@@ -226,18 +226,21 @@ const CompetitorDial = ({
                             ? 22.25
                             : item === "Category"
                             ? 26.6
+                            : item === "SalesPrice"
+                            ? 32
                             : item === "GST"
-                            ? 32.2
+                            ? 38
                             : 0
                           : ""
                       }rem`,
-               zIndex: `${
+                      zIndex: `${
                         [
                           "SKU",
                           "Sno",
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(item)
                           ? 300
@@ -253,7 +256,7 @@ const CompetitorDial = ({
             </TableHead>
             <TableBody>
               {paramsData.map((item, index) => (
-                <TableRow key={item.id}  >
+                <TableRow key={item.id}>
                   <TableCell
                     sx={{
                       textAlign: "center",
@@ -261,8 +264,8 @@ const CompetitorDial = ({
                       position: "sticky",
                       background: "#fff",
                       left: 0,
-                      width:0,
-              
+                      width: 0,
+
                       zIndex: 100,
                       "&:hover": { color: "red" },
                     }}
@@ -279,8 +282,6 @@ const CompetitorDial = ({
                       zIndex: 200,
                       background: "#fff",
                       textAlign: "center",
-                    
-              
                     }}
                   >
                     {index + 1}
@@ -296,6 +297,7 @@ const CompetitorDial = ({
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(column)
                           ? "sticky"
@@ -311,17 +313,18 @@ const CompetitorDial = ({
                             ? 23
                             : column === "Category"
                             ? 27.45
+                            : column === "SalesPrice"
+                            ? 33.1
                             : column === "GST"
-                            ? 32.45
+                            ? 38.8
                             : 60
-                        }rem`, 
-               
+                        }rem`,
+
                         // background:"#fff",
                         zIndex: 100,
-                      
-                        background:`${column === "Product" ? "red" : "#fff"}`,
+
+                        background: `${column === "Product" ? "red" : "#fff"}`,
                         // paddingX:`${column === "Product" ? "15rem" : "#fff"}`,
-  
                       }}
                     >
                       {[
@@ -330,10 +333,13 @@ const CompetitorDial = ({
                         "Product",
                         "Brand",
                         "Category",
+                        "SalesPrice",
                         "GST",
                       ].includes(column) ? (
                         column === "GST" ? (
                           `${parseFloat(item[column]).toFixed(0)} %`
+                        ) : column === "SalesPrice" ? (
+                          ` ₹ ${(item[column])}`
                         ) : (
                           item[column]
                         )
