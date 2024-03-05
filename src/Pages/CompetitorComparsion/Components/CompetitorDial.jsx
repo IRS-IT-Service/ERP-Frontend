@@ -320,10 +320,10 @@ const CompetitorDial = ({
                             : 60
                         }rem`,
 
-                        // background:"#fff",
+                        background:"#fff",
                         zIndex: 100,
 
-                        background: `${column === "Product" ? "red" : "#fff"}`,
+                        // background: `${column === "Product" ? "red" : "#fff"}`,
                         // paddingX:`${column === "Product" ? "15rem" : "#fff"}`,
                       }}
                     >
