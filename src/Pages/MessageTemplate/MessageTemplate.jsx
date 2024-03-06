@@ -2,12 +2,12 @@ import { React, useState } from "react";
 import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import BulkMessageTable from "./Components/BulkMessageTable";
+import MessageBox from "./Components/MessageBox";
+
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
-
-// infoDialog box data
+//infoDialog box data
 const infoDetail = [
   {
     name: "Sort By Brand",
@@ -94,11 +94,11 @@ const infoDetail = [
       "If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button",
   },
 ];
-const BulkMessage = () => {
+
+const MessageTemplate = () => {
   // infodialog state
   const description =
     "This is the Product Status you can check product details  ";
-
   const [infoOpen, setInfoOpen] = useState(false);
   const handleClose = () => {
     setInfoOpen(!infoOpen);
@@ -112,7 +112,11 @@ const BulkMessage = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Bulk Message"} info={true} customOnClick={handleOpen} />
+      <Header
+        Name={"Message Template"}
+        info={true}
+        customOnClick={handleOpen}
+      />
 
       {/* infoDialog table */}
       <InfoDialogBox
@@ -121,9 +125,9 @@ const BulkMessage = () => {
         open={infoOpen}
         close={handleClose}
       />
-      <BulkMessageTable />
+      <MessageBox />
     </Box>
   );
 };
 
-export default BulkMessage;
+export default MessageTemplate;
