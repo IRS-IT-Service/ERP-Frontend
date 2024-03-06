@@ -12,12 +12,15 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { toast } from "react-toastify";
 import { useSendBulkMessagesWithPicMutation } from "../../../features/api/whatsAppApiSlice";
 const CustomMsgDialogbox = ({
   msgDialogbox,
   handleCloseMsgDialogbox,
   sendingType,
   title,
+  customerNumber,
+  setCustomerNumber,
 }) => {
   const [sendMsg, { isLoading: sendMsgLoading }] =
     useSendBulkMessagesWithPicMutation();
@@ -25,6 +28,7 @@ const CustomMsgDialogbox = ({
   const [message, setMessage] = useState("");
   const [link, setLink] = useState("");
   const [fileUploaded, setFileUploaded] = useState(false);
+  const [file, setFile] = useState(null);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -45,28 +49,25 @@ const CustomMsgDialogbox = ({
     width: 1,
   });
 
-  // const handleSend = async () => {
-  //   try {
-  //     const formData = new FormData();
-
-  //     formData.append("contacts", JSON.stringify(customerNumber)),
-  //       formData.append("message", message),
-  //       formData.append("file", file);
-
-  //     const res = await sendMsg(formData).unwrap();
-  //     if (!res.status) {
-  //       return;
-  //     }
-  //     toast.success("Message successfully send!");
-  //     setFileUploaded(false);
-  //     setFile("");
-  //     setMessage("");
-  //     refetch();
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
+  const handleSend = async () => {
+    try {
+      if (!file || !message) {
+        return toast.error("Please provide both field");
+      }
+      const formdata = new FormData();
+      formdata.append("message", message);
+      formdata.append("file", file);
+      formdata.append("contacts", JSON.stringify(customerNumber));
+      const res = await sendMsg(formdata).unwrap();
+      toast("Successfully Send message");
+      handleCloseMsgDialogbox();
+      setMessage();
+      setFile(null);
+      setC;
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <Box>
       <Dialog open={msgDialogbox} onClose={handleCloseMsgDialogbox}>
@@ -168,8 +169,13 @@ const CustomMsgDialogbox = ({
                 </Box>
               )}
               <Box sx={{ display: "flex" }}>
-                <Button variant="outlined" sx={{ margin: "4px", width: "50%" }}>
-                  send
+                <Button
+                  variant="outlined"
+                  disabled={sendMsgLoading}
+                  onClick={handleSend}
+                  sx={{ margin: "4px", width: "50%" }}
+                >
+                  {sendMsgLoading ? <CircularProgress size={30} /> : "Send"}
                 </Button>
                 <Button
                   variant="outlined"
