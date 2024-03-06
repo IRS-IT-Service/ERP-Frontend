@@ -116,6 +116,7 @@ import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
 import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
 import UpdateProductBulk from "./Pages/UpdateProduct/components/UpdateProductBulk";
 import UpdateProductMain from "./Pages/UpdateProduct/UpdateProductMain";
+import MessageTemplate from "./Pages/MessageTemplate/MessageTemplate";
 
 function App() {
   /// initialize
@@ -382,6 +383,7 @@ function App() {
                   element={<AddRoboProductsValue />}
                 />
                 <Route path="/BulkMessage" element={<BulkMessage />} />
+                <Route path="/MessageTemplate" element={<MessageTemplate/>}/>
                 {/* Products Router */}
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
                 <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
