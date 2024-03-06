@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Button, Box, styled, Typography } from "@mui/material";
+import { Grid, Button, Box, styled, Typography, Switch } from "@mui/material";
 import CartGrid from "../../../components/Common/CardGrid";
 import { useNavigate } from "react-router-dom";
-import { useGetAllSellerQuery } from "../../../features/api/sellerApiSlice";
+import {
+  useGetAllSellerQuery,
+  useDeactiveSellerMutation,
+} from "../../../features/api/sellerApiSlice";
 import Loading from "../../../components/Common/Loading";
+import { toast } from "react-toastify";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -11,7 +15,6 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 const AllSellersList = () => {
   // show no data after some seconds
-
   /// initialization
 
   const navigate = useNavigate();
@@ -28,8 +31,7 @@ const AllSellersList = () => {
     data: allSellerData,
     isLoading: allverifySeller,
   } = useGetAllSellerQuery("verified");
-
-  console.log(allSellerData);
+  const [deativeSeller, { isLoading }] = useDeactiveSellerMutation();
 
   /// useEffect
 
@@ -43,11 +45,22 @@ const AllSellersList = () => {
           Sno: index + 1,
           mobile: item.document?.mobileNo,
           gst: item.document?.gst,
+          disable: item.isActive,
         };
       });
       setRow(data);
     }
   }, [allSellerData]);
+
+  const handleChangetoggle = async (e, id) => {
+    try {
+      const result = await deativeSeller(id);
+      refetchSeller();
+      toast.success(result?.data?.message);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   /// columns
   const columns = [
@@ -153,6 +166,23 @@ const AllSellersList = () => {
         >
           Profile
         </Button>
+      ),
+    },
+    {
+      field: "disable",
+      headerName: "Disable",
+      sortable: false,
+      minWidth: 130,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => (
+        <Switch
+          checked={!params.row.disable}
+          onChange={(e) => handleChangetoggle(e, params.row.sellerId)}
+          value={!params.row.disable}
+        ></Switch>
       ),
     },
   ];

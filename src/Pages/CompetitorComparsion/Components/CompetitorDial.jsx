@@ -43,7 +43,6 @@ const CompetitorDial = ({
     url: "",
     Price: "",
   });
-  console.log(paramsData);
 
   const handleSubmit = async () => {
     const finalValue = compairePrice.filter(
@@ -169,11 +168,11 @@ const CompetitorDial = ({
           }}
         />
       </Box>
-      <DialogContent sx={{ overflow: "hidden" }}>
+      <DialogContent>
         <TableContainer sx={{ maxHeight: 450 }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
-              <TableRow>
+              <TableRow colSpan={3}>
                 <TableCell
                   sx={{
                     textAlign: "center",
@@ -183,6 +182,7 @@ const CompetitorDial = ({
                     top: 0,
                     left: 0,
                     zIndex: 200,
+                    width: 0,
                   }}
                 >
                   Remove
@@ -193,16 +193,19 @@ const CompetitorDial = ({
                       textAlign: "center",
                       background: "linear-gradient(0deg, #01127D, #04012F)",
                       color: "#fff",
+                      width: 0,
                       position: [
                         "SKU",
                         "Sno",
                         "Product",
                         "Brand",
                         "Category",
+                        "SalesPrice",
                         "GST",
                       ].includes(item)
                         ? "sticky"
                         : "sticky",
+
                       left: `${
                         [
                           "SKU",
@@ -210,6 +213,7 @@ const CompetitorDial = ({
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(item)
                           ? item === "Sno"
@@ -222,11 +226,13 @@ const CompetitorDial = ({
                             ? 22.25
                             : item === "Category"
                             ? 26.6
+                            : item === "SalesPrice"
+                            ? 32
                             : item === "GST"
-                            ? 32.2
+                            ? 38
                             : 0
                           : ""
-                      }rem`, // Adjust the values as needed
+                      }rem`,
                       zIndex: `${
                         [
                           "SKU",
@@ -234,6 +240,7 @@ const CompetitorDial = ({
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(item)
                           ? 300
@@ -257,6 +264,8 @@ const CompetitorDial = ({
                       position: "sticky",
                       background: "#fff",
                       left: 0,
+                      width: 0,
+
                       zIndex: 100,
                       "&:hover": { color: "red" },
                     }}
@@ -269,7 +278,7 @@ const CompetitorDial = ({
                     key={index}
                     sx={{
                       position: "sticky",
-                      left: 80,
+                      left: 75,
                       zIndex: 200,
                       background: "#fff",
                       textAlign: "center",
@@ -288,6 +297,7 @@ const CompetitorDial = ({
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(column)
                           ? "sticky"
@@ -296,21 +306,25 @@ const CompetitorDial = ({
                           column === "Sno"
                             ? 0
                             : column === "SKU"
-                            ? 8
+                            ? 10
                             : column === "Product"
-                            ? 16
+                            ? 18
                             : column === "Brand"
                             ? 23
                             : column === "Category"
                             ? 27.45
+                            : column === "SalesPrice"
+                            ? 33.1
                             : column === "GST"
-                            ? 32.45
+                            ? 38.8
                             : 60
-                        }rem`, // Adjust the values as needed
-                        zIndex: 100,
-                        background: "#fff",
+                        }rem`,
 
-                        // rowGap:`${column === "Product" ? "1rem" : ""}`
+                        background:"#fff",
+                        zIndex: 100,
+
+                        // background: `${column === "Product" ? "red" : "#fff"}`,
+                        // paddingX:`${column === "Product" ? "15rem" : "#fff"}`,
                       }}
                     >
                       {[
@@ -319,10 +333,13 @@ const CompetitorDial = ({
                         "Product",
                         "Brand",
                         "Category",
+                        "SalesPrice",
                         "GST",
                       ].includes(column) ? (
                         column === "GST" ? (
                           `${parseFloat(item[column]).toFixed(0)} %`
+                        ) : column === "SalesPrice" ? (
+                          ` ₹ ${(item[column]).toFixed(0)}`
                         ) : (
                           item[column]
                         )
@@ -385,7 +402,7 @@ const CompetitorDial = ({
                               defaultValue={item[column]?.URL}
                               name="url"
                               style={{
-                                textIndent: "0.8rem",
+                                textIndent: "1.5rem",
                                 width: "6rem",
                                 padding: 4,
                               }} // Adjust the value according to your preference

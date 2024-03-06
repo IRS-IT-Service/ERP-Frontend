@@ -22,7 +22,15 @@ export const sellerApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    deactiveSeller: builder.mutation({
+      query: (params) => {
+        return {
+          url: `${SELLER_URL}/toggle/${params}`,
+          method: "PUT",
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetAllSellerQuery, useVerifySellerMutation } = sellerApiSlice;
+export const { useGetAllSellerQuery, useVerifySellerMutation,useDeactiveSellerMutation } = sellerApiSlice;
