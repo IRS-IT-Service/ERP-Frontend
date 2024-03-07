@@ -1,4 +1,4 @@
-import React, { useState ,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -17,45 +17,36 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {useAddBulkSellerPriceMutation} from "../../../features/api/productApiSlice"
-import {CircularProgress} from "@mui/material";
+import { useAddBulkSellerPriceMutation } from "../../../features/api/productApiSlice";
+import { CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
-const RangeDial = ({ data, open, close ,refetch }) => {
+const RangeDial = ({ data, open, close, refetch }) => {
   const [isVerify, setIsverify] = useState(null);
 
-const [setBulk ,{isLoading}] = useAddBulkSellerPriceMutation()
-
-
+  const [setBulk, { isLoading }] = useAddBulkSellerPriceMutation();
 
   const handleCheck = (e) => {
-    const {value} = e.target
+    const { value } = e.target;
 
-    if (value < data.Mqr){
-      alert("Input value is not less than the minimum quantity requested.")
-      setIsverify(true)
-      return
-    } 
-    setIsverify(false)
-    
+    if (value < data.Mqr) {
+      alert("Input value is not less than the minimum quantity requested.");
+      setIsverify(true);
+      return;
+    }
+    setIsverify(false);
   };
   const [inputData, setInputData] = useState([
-    { from:data.Mqr, to: "", price: "", discount: "" },
+    { from: data.Mqr, to: "", price: "", discount: "" },
   ]);
 
-  useEffect(()=>{
-    if(data.bulkSellerPrice.length > 0){
-      setInputData([...data.bulkSellerPrice])
+  useEffect(() => {
+    if (data.bulkSellerPrice.length > 0) {
+      setInputData([...data.bulkSellerPrice]);
     }
-    
-
-
-  },[])
+  }, []);
 
   const handleAddRow = () => {
-    setInputData([
-      ...inputData,
-      { from: "", to: "", price: "", discount: "" },
-    ]);
+    setInputData([...inputData, { from: "", to: "", price: "", discount: "" }]);
   };
   const handleDeleteRow = (index) => {
     const newData = [...inputData];
@@ -65,7 +56,7 @@ const [setBulk ,{isLoading}] = useAddBulkSellerPriceMutation()
 
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
-    const newData = [...inputData];
+     const newData = [...inputData];
     const sellPrice = +data.SellerPrice;
     if (name === "price") {
       if (value > sellPrice) {
@@ -78,39 +69,57 @@ const [setBulk ,{isLoading}] = useAddBulkSellerPriceMutation()
       ).toFixed(0);
       setInputData(newData);
     } else if (name === "discount") {
+      if (+value > 100) {
+        return;
+      }
       newData[index]["discount"] = +value;
       newData[index]["price"] =
         sellPrice - (sellPrice * (+value / 100)).toFixed(0);
       setInputData(newData);
     } else {
-       newData[index][name] = +value;
+      newData[index][name] = +value;
       setInputData(newData);
     }
   };
-
-  const HandleSubmit = async() => {
-    if(isVerify){
-      return
-    }
-  try{
-    const info ={
-   datas:[
-      {
-        sku:data.SKU,
-        sellerPrice:inputData
+  const areAllKeysFilled = (obj) => {
+    for (let key in obj) {
+      if (!obj[key]) {
+        return false;
       }
-    ]
+    }
+    return true;
+  };
 
-  }
-const res = await setBulk(info).unwrap()
+  const HandleSubmit = async () => {
+    const isValid = inputData.every((item) => areAllKeysFilled(item));
+    if (isVerify) {
+      toast.error(
+        "Input value is not less than the minimum quantity requested."
+      );
+      return;
+    }
+    if (!isValid) {
+      toast.error("Please fill all the required feildes.");
+      return;
+    }
+    try {
+      const info = {
+        datas: [
+          {
+            sku: data.SKU,
+            sellerPrice: inputData,
+          },
+        ],
+      };
+      const res = await setBulk(info).unwrap();
 
-toast.success("Successfully submitted");
-setInputData([{from:data.Mqr, to: "", price: "", discount: ""}]);
-close()
-refetch()
-  }catch(err){
-console.log(err)
-  }
+      toast.success("Successfully submitted");
+      setInputData([{ from: data.Mqr, to: "", price: "", discount: "" }]);
+      close();
+      refetch();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -136,12 +145,18 @@ console.log(err)
         {data?.bulkSellerPrice ? (
           <DialogContent>
             {/* columns info */}
+            <Box sx={{display:"flex" ,justifyContent:"space-between" ,alignItems:"center"}}>
             <Typography sx={{ fontWeigth: "bold", marginTop: 2 }}>
               Seller Price:{" "}
               <span style={{ color: "red" }}>
                 ₹ {(+data.SellerPrice).toFixed(0)}
               </span>
             </Typography>
+            
+                          <Button variant="contained" sx={{background:"green"}} onClick={() => handleAddRow()}>
+                            <AddIcon />
+                          </Button>
+                          </Box>
             <TableContainer
               component={Paper}
               sx={{ height: 400, overflow: "auto", marginTop: "1rem" }}
@@ -172,7 +187,7 @@ console.log(err)
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {inputData.map((data, index) => (
+                  {inputData?.map((data, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row" align="center">
                         {index + 1}
@@ -182,9 +197,8 @@ console.log(err)
                           <input
                             type="text"
                             name="from"
-                            onBlur={handleCheck}                    
-                            
-                            value={inputData[index].from}
+                            onBlur={handleCheck}
+                            value={inputData[index]?.from}
                             onChange={(e) => handleInputChange(index, e)}
                             style={{
                               width: "3rem",
@@ -195,8 +209,7 @@ console.log(err)
                           <input
                             type="text"
                             name="to"
-                            value={inputData[index].to}
-                           
+                            value={inputData[index]?.to}
                             onChange={(e) => handleInputChange(index, e)}
                             style={{
                               width: "3rem",
@@ -210,7 +223,7 @@ console.log(err)
                         <input
                           type="text"
                           name="price"
-                          value={inputData[index].price}
+                          value={inputData[index]?.price}
                           onChange={(e) => handleInputChange(index, e)}
                           style={{
                             width: "10rem",
@@ -223,7 +236,7 @@ console.log(err)
                         <input
                           type="text"
                           name="discount"
-                          value={inputData[index].discount}
+                          value={inputData[index]?.discount}
                           onChange={(e) => handleInputChange(index, e)}
                           style={{
                             width: "5rem",
@@ -232,17 +245,15 @@ console.log(err)
                           }}
                         />
                       </TableCell>
-                      <TableCell >
-                        {inputData.length > 1 && (
-                          <Button onClick={() => handleDeleteRow(index)}>
-                            <DeleteIcon />
-                          </Button>
+                      <TableCell>
+                        {inputData.length > 0 && (
+                      
+                            <DeleteIcon onClick={() => handleDeleteRow(index)} sx={{color:"gray", "&:hover":{
+                              color:"red",cursor: "pointer"
+                            }}} />
+                       
                         )}
-                        {inputData.length === index + 1 && (
-                          <Button onClick={() => handleAddRow(index)}>
-                            <AddIcon />
-                          </Button>
-                        )}
+                    
                       </TableCell>
                     </TableRow>
                   ))}
@@ -255,8 +266,16 @@ console.log(err)
         )}
 
         <DialogActions>
-          <Button variant="contained" disabled={isLoading} onClick={HandleSubmit}>
-           {isLoading ? <CircularProgress style={{color:"#fff"}} size={30} /> : "Save" }
+          <Button
+            variant="contained"
+            disabled={isLoading}
+            onClick={HandleSubmit}
+          >
+            {isLoading ? (
+              <CircularProgress style={{ color: "#fff" }} size={30} />
+            ) : (
+              "Save"
+            )}
           </Button>
           <Button variant="contained" onClick={close}>
             Close
