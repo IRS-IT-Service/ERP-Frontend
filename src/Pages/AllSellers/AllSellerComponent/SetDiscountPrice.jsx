@@ -288,19 +288,7 @@ const HandleSet = (params) =>{
       type: "number",
       valueFormatter: (params) => `${params.value} %`,
     },
-    // {
-    //   field: "LandingCost",
-    //   headerName: "Cost ₹",
-    //   flex: 0.3,
-    //   minWidth: 70,
-    //   maxWidth: 120,
-    //   align: "center",
-    //   headerAlign: "center",
-    //   headerClassName: "super-app-theme--header",
-    //   cellClassName: "super-app-theme--cell",
-    //   type: "number",
-    //   valueFormatter: (params) => `₹ ${params.value}`,
-    // },
+
     {
       field: "Mqr",
       headerName: "MQR ",
