@@ -117,6 +117,7 @@ import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketi
 import UpdateProductBulk from "./Pages/UpdateProduct/components/UpdateProductBulk";
 import UpdateProductMain from "./Pages/UpdateProduct/UpdateProductMain";
 import MessageTemplate from "./Pages/MessageTemplate/MessageTemplate";
+import SetDiscountPrice from "./Pages/AllSellers/AllSellerComponent/SetDiscountPrice";
 
 function App() {
   /// initialize
@@ -355,6 +356,7 @@ function App() {
               <Route path="" element={<PrivateRoute />}>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="product-list" element={<Home_page />} />
+                <Route path="/setDicountpricerange" element={<SetDiscountPrice/>} />
                 <Route
                   path="/Users"
                   element={

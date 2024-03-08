@@ -43,8 +43,7 @@ const BulkMessageTable = () => {
   const [open, setOpen] = useState(false);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [customerNumber, setCustomerNumber] = useState([]);
-  const [message, setMessage] = useState("");
-  const [file, setFile] = useState("");
+
   const [input, setInput] = useState({ CustomerName: "", CustomerNumber: "" });
   const [rows, setRows] = useState([]);
   const [msgDialogbox, setMsgDialogbox] = useState(false);
@@ -67,12 +66,12 @@ const BulkMessageTable = () => {
     isloading: getloading,
   } = useGetCustomerNumberQuery();
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    setFileUploaded(true);
+  // const handleFileUpload = (event) => {
+  //   const file = event.target.files[0];
+  //   setFileUploaded(true);
 
-    setFile(file);
-  };
+  //   setFile(file);
+  // };
 
   const handleClickOpen = () => {
        navigate('/addCusotmerforMarketing');
@@ -114,39 +113,39 @@ const BulkMessageTable = () => {
     }
   }, [getAllCustomers]);
 
-  const handleSubmit = async (event) => {
-    try {
-      const customerNumberRegex = /^\d{10}$/;
-      if (!input.CustomerName || !input.CustomerNumber) {
-        toast.error("Please fill Customer Name or Customer Number ");
-      } else if (!customerNumberRegex.test(input.CustomerNumber)) {
-        toast.error("Please Enter Correct Customer Number");
-      } else {
-        const info = {
-          name: input.CustomerName,
-          number: input.CustomerNumber,
-        };
-        const res = await addCustomer(info).unwrap();
-        if (res.message !== "Customer Successfully Added") {
-          return;
-        }
-        toast.success("Customer Successfully Added");
-        setInput([]);
-        handleClose();
-        refetch();
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const handleSubmit = async (event) => {
+  //   try {
+  //     const customerNumberRegex = /^\d{10}$/;
+  //     if (!input.CustomerName || !input.CustomerNumber) {
+  //       toast.error("Please fill Customer Name or Customer Number ");
+  //     } else if (!customerNumberRegex.test(input.CustomerNumber)) {
+  //       toast.error("Please Enter Correct Customer Number");
+  //     } else {
+  //       const info = {
+  //         name: input.CustomerName,
+  //         number: input.CustomerNumber,
+  //       };
+  //       const res = await addCustomer(info).unwrap();
+  //       if (res.message !== "Customer Successfully Added") {
+  //         return;
+  //       }
+  //       toast.success("Customer Successfully Added");
+  //       setInput([]);
+  //       handleClose();
+  //       refetch();
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setInput((prevInput) => ({
-      ...prevInput,
-      [name]: value,
-    }));
-  };
+  // const handleInputChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setInput((prevInput) => ({
+  //     ...prevInput,
+  //     [name]: value,
+  //   }));
+  // };
 
   const handleSelectionChange = (selectionModel) => {
     if (!Array.isArray(selectionModel)) return;
@@ -247,6 +246,7 @@ const BulkMessageTable = () => {
             </Button>
             <Button
               variant='outlined'
+              disabled
               sx={{
                 margin: '0.6rem',
                 backgroundColor: color,
@@ -263,6 +263,7 @@ const BulkMessageTable = () => {
             </Button>
             <Button
               variant='outlined'
+              disabled
               sx={{
                 margin: '0.6rem',
                 backgroundColor: color,
@@ -277,6 +278,7 @@ const BulkMessageTable = () => {
             </Button>
             <Button
               variant='outlined'
+              disabled
               sx={{
                 margin: '0.6rem',
                 backgroundColor: color,
@@ -328,6 +330,8 @@ const BulkMessageTable = () => {
           handleCloseMsgDialogbox={handleCloseMsgDialogbox}
           sendingType={sendingType}
           title={title}
+          customerNumber={customerNumber}
+          setCustomerNumber={setCustomerNumber}
         />
       )}
 

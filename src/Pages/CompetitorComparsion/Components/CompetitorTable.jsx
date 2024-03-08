@@ -88,7 +88,7 @@ const CompetitorTable = () => {
   useEffect(() => {
     if (allCompetitor) {
       const updatedColumns = allCompetitor?.data?.flatMap((item) =>
-        item?.Competitors?.map((competitor,index) => ({
+        item?.Competitors?.map((competitor, index) => ({
           field: `${competitor?.Name}`,
           headerName: `${competitor?.Name}`,
           flex: 0.3,
@@ -98,25 +98,48 @@ const CompetitorTable = () => {
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
           renderCell: (params) => {
-          
-            return(
-                <TableCell align="center">
-        
-
-   
-                                   <Box sx={{
-                                    display:"flex",
-                                    gap:1,
-                                    alignItems:"center",
-                                 
-                                   }}>{ params.row[`${competitor.Name}`]?.URL &&  <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>} {params.row[`${competitor.Name}`]?.URL && <span>  <a href={`https://${params.row[`${competitor?.Name}`]?.URL}`} target="_blank" rel="noopener noreferrer">  <Tooltip
-                                   title={`${params.row[`${competitor?.Name}`]?.URL}`}
-                                   placement="top"
-                                   key={index}
-                                 ><InfoIcon sx={{width:"15px" ,marginTop:0.5 ,color:"black"}}  /></Tooltip> </a> </span> } </Box>
-                                 
-            </TableCell>
-            )
+            return (
+              <TableCell align="center">
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    alignItems: "center",
+                  }}
+                >
+                  {params.row[`${competitor.Name}`]?.URL && (
+                    <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>
+                  )}{" "}
+                  {params.row[`${competitor.Name}`]?.URL && (
+                    <span>
+                      {" "}
+                      <a
+                        href={`https://${
+                          params.row[`${competitor?.Name}`]?.URL
+                        }`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {" "}
+                        <Tooltip
+                          title={`${params.row[`${competitor?.Name}`]?.URL}`}
+                          placement="top"
+                          key={index}
+                        >
+                          <InfoIcon
+                            sx={{
+                              width: "15px",
+                              marginTop: 0.5,
+                              color: "black",
+                            }}
+                          />
+                        </Tooltip>{" "}
+                      </a>{" "}
+                    </span>
+                  )}{" "}
+                </Box>
+              </TableCell>
+            );
           },
           cellClassName: "super-app-theme--cell",
         }))
@@ -152,14 +175,13 @@ const CompetitorTable = () => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         let CompName = {};
-     
+
         item.CompetitorPrice.forEach((compItem) => {
-          CompName[compItem.Name] = { 
+          CompName[compItem.Name] = {
             Price: compItem.Price,
-            URL: compItem.URL
-          };;
-        })
-       
+            URL: compItem.URL,
+          };
+        });
 
         return {
           id: index,
@@ -172,11 +194,10 @@ const CompetitorTable = () => {
           GST: item.GST.toFixed(2),
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
-
+          SalesPrice:item.SalesPrice,
           Category: item.Category,
           competitor: item.CompetitorPrice,
           ...CompName,
-    
         };
       });
       dispatch(setAllProductsV2(allProductData.data));
@@ -330,6 +351,18 @@ const CompetitorTable = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "SalesPrice",
+      headerName: "SalesPrice",
+      flex: 0.3,
+      minWidth: 200,
+      maxWidth: 300,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `₹ ${params.value}`
     },
 
     {
@@ -516,22 +549,26 @@ const CompetitorTable = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {allCompetitor?.data[0]?.Competitors?.map((row, index) => {
-                        return (
-                          <TableRow
-                            key={index}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                          >
-                            <TableCell component="th" scope="row">
-                              {index + 1}
-                            </TableCell>
-                            <TableCell>{row.Name}</TableCell>
-                            <TableCell>{row.URL}</TableCell>
-                          </TableRow>
-                        );
-                      })}
+                      {allCompetitor?.data[0]?.Competitors?.map(
+                        (row, index) => {
+                          return (
+                            <TableRow
+                              key={index}
+                              sx={{
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}
+                            >
+                              <TableCell component="th" scope="row">
+                                {index + 1}
+                              </TableCell>
+                              <TableCell>{row.Name}</TableCell>
+                              <TableCell>{row.URL}</TableCell>
+                            </TableRow>
+                          );
+                        }
+                      )}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -618,8 +655,8 @@ const CompetitorTable = () => {
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected
-                 apiRef={apiRef}
-                 components={{
+                apiRef={apiRef}
+                components={{
                   Footer: CustomFooter,
                 }}
                 slotProps={{
