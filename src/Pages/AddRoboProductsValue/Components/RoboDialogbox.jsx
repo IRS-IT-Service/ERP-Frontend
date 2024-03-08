@@ -61,6 +61,7 @@ export default function RoboDialogbox({
   const url = upload && URL.createObjectURL(upload);
 
   const upoladedFile = Logos.filter((logo) => logo.BrandName === selectedItem);
+  console.log(upoladedFile)
   return (
     <React.Fragment>
       <Dialog
@@ -133,7 +134,7 @@ export default function RoboDialogbox({
                   <Typography sx={{ fontSize: "15px" }}>
                     Uploaded Logo
                   </Typography>
-                  {upoladedFile[0]?.BrandLogo && (
+                  {upoladedFile[0]?.BrandImage && (
                     <Box
                       sx={{
                         marginTop: "15px",
@@ -145,7 +146,7 @@ export default function RoboDialogbox({
                       }}
                     >
                       <img
-                        src={upoladedFile[0]?.BrandLogo?.url}
+                        src={upoladedFile[0]?.BrandImage?.url}
                         style={{
                           width: "150px",
                           height: "150px",
