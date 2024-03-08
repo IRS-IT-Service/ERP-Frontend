@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { useAddDynamicValueMutation } from "../../../features/api/productApiSlice";
 import { useGetDynamicValueQuery } from "../../../features/api/productApiSlice";
 import RoboDialogbox from "./RoboDialogbox";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 const RoboProductTable = () => {
   const [selectValue, setSelectValue] = useState("");
@@ -37,7 +38,7 @@ const RoboProductTable = () => {
   };
 
   const handleInput = (event) => {
-    setAddvalue((event.target.value).toUpperCase());
+    setAddvalue(event.target.value.toUpperCase());
   };
 
   const handleAdd = () => {
@@ -71,11 +72,6 @@ const RoboProductTable = () => {
   const [del, setDel] = React.useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedtable, setSelectedTable] = useState(null);
-
-  const handleItemClick = (item) => {
-    setSelectedItem(item);
-    setOpenDialog(true);
-  };
 
   const handleClickOpen = (item, table) => {
     setDel(true);
@@ -240,34 +236,55 @@ const RoboProductTable = () => {
               width: "20vw",
             }}
           >
-            {getDyanmicValue?.data?.[0]?.Brand?.map((item, index) => (
-              <Box sx={{ display: "flex", gap: 1 }} key={index}>
-                <Typography sx={{ fontSize: "1.4rem" }}>
-                  {index + 1}.
-                </Typography>
+            {getDyanmicValue?.data?.[0]?.Brand?.map((item, index) => {
+              const isBrandWithLogo =
+                getDyanmicValue?.data?.[0]?.BrandWithLogo?.some(
+                  (brandItem) => brandItem.BrandName === item
+                );
+
+              return (
                 <Box
-                  sx={{
-                    display: "flex",
-                    justifyItems: "center",
-                    justifyContent: "space-between",
-                    width: "100%",
-                  }}
+                  sx={{ display: "flex", justifyContent: "space-evenly" }}
+                  key={index}
                 >
-                  <Typography sx={{ fontSize: "1.4rem" }}>{item}</Typography>{" "}
-                  <Typography sx={{ fontSize: "1.4rem", marginRight: "1rem" }}>
-                    <i
-                      className="fa-solid fa-trash"
-                      style={{
-                        color: "blue",
-                        cursor: "pointer",
-                        fontSize: "1.2rem",
-                      }}
-                      onClick={() => handleClickOpen(item, "Brand")}
-                    ></i>
+                  <Typography sx={{ fontSize: "1.4rem" }}>
+                    {index + 1}.
                   </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <Typography sx={{ fontSize: "1.4rem" }}>{item}</Typography>{" "}
+                    <Typography
+                      sx={{ fontSize: "1.4rem", marginRight: "1rem" }}
+                    >
+                      <i
+                        className="fa-solid fa-trash"
+                        style={{
+                          color: "blue",
+                          cursor: "pointer",
+                          fontSize: "1.2rem",
+                        }}
+                        onClick={() => handleClickOpen(item, "Brand")}
+                      ></i>
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <AddPhotoAlternateIcon
+                      onClick={() => handleClickOpen(item, "BrandWithLogo")}
+                      sx={{
+                        color: isBrandWithLogo ? "green" : "red", 
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-            ))}
+              );
+            })}
           </Box>
         </Box>
         <Box
@@ -468,6 +485,7 @@ const RoboProductTable = () => {
           selectedItem={selectedItem}
           selectedtable={selectedtable}
           fetch={refetch}
+          Logos = {getDyanmicValue?.data?.[0]?.BrandWithLogo}
         />
       )}
     </Box>

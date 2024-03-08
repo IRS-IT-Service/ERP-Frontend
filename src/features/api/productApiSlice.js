@@ -308,16 +308,16 @@ export const productApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${PRODUCT_URL}/bulkUpdateProducts`,
           method: "PUT",
-          body:data
+          body: data,
         };
       },
     }),
-    addBulkSellerPrice: builder.mutation({
+    addBrandLogo: builder.mutation({
       query: (data) => {
         return {
-          url: `${PRODUCT_URL}/addBulksellerPrice`,
+          url: `${PRODUCT_URL}/addBrandLogo`,
           method: "POST",
-          body:data
+          body: data,
         };
       },
     }),
@@ -361,5 +361,5 @@ export const {
   useAddCompetitorPriceMutation,
   useUpdateBulkProductMutation,
   useDeleteDyanmicValueMutation,
-  useAddBulkSellerPriceMutation,
+  useAddBrandLogoMutation,
 } = productApiSlice;
