@@ -312,6 +312,15 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    addBrandLogo: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/addBrandLogo`,
+          method: "POST",
+          body:data
+        };
+      },
+    }),
   }),
 });
 
@@ -352,4 +361,5 @@ export const {
   useAddCompetitorPriceMutation,
   useUpdateBulkProductMutation,
   useDeleteDyanmicValueMutation,
+  useAddBrandLogoMutation
 } = productApiSlice;
