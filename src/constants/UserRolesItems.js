@@ -128,7 +128,7 @@ const userRolesData = [
     childrens: [
       {
         id: 5,
-        name: "WholeSale buyer List",
+        name: "WholeSale Buyer List",
         path: "/AllSellerList",
         icon: "fa-solid fa-list",
       },
@@ -143,6 +143,13 @@ const userRolesData = [
         name: "Wholesale Req",
         path: "/sellerVerify",
         icon: "fa-solid fa-user-plus",
+      },
+      {
+        id: 70,
+        name: "Set Discount Price Range",
+        path: "/setDicountpricerange",
+        icon: "fa-solid fa-tag",
+        notification: true,
       },
     ],
   },
@@ -485,16 +492,17 @@ const userRolesData = [
         notification: true,
       },
       {
-        id: 68,
+        id: 69,
         name: "MessageTemplate",
         path: "/MessageTemplate",
         icon: "fa fa-comment",
         notification: true,
       },
+
     ],
   },
 ];
 
-// last routes is 68
+// last routes is 70
 
 export default userRolesData;
