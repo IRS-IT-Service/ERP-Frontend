@@ -1,8 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import AddViewAssets from "./components/AddViewAssets";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setHeader } from "../../features/slice/uiSlice";
+import { useDispatch } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -72,8 +74,17 @@ const infoDetail = [
   },
 ];
 const AssetsMain = () => {
+
+  const dispatch = useDispatch()
   // infodialog state
 const description = "This is Company Assets you can add assets and download assets details"
+
+useEffect(()=>{
+  dispatch(setHeader({
+    Name:"Company Assets",
+    handleClick:handleOpen
+  }))
+},[])
 
 const [infoOpen, setInfoOpen] = useState(false);
 const handleClose = () => {
@@ -90,11 +101,11 @@ const handleOpen = ()=>{
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={"Company Assets"}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
       <Box>
         <AddViewAssets />
       </Box>

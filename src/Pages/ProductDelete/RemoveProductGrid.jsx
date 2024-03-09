@@ -31,6 +31,7 @@ import { toast } from "react-toastify";
 import { useDeleteProductMutation } from "../../features/api/productApiSlice";
 import { useSocket } from "../../CustomProvider/useWebSocket";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -117,15 +118,8 @@ const RemoveProductGrid = () => {
    const description =
    "This is Product Removal you can delete  here any product ";
 
- const [infoOpen, setInfoOpen] = useState(false);
- const handleClose = () => {
-   setInfoOpen(!infoOpen);
- };
- const handleOpen = () => {
-   setInfoOpen(true);
- };
+
   /// initialization
-  const dispatch = useDispatch();
   const apiRef = useGridApiRef();
   const socket = useSocket();
   const {
@@ -182,6 +176,17 @@ const RemoveProductGrid = () => {
   }, [allProductData]);
 
   console.log(allProductData)
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`Product Removal`));
+  }, []);
 
   /// Function
 
@@ -432,7 +437,7 @@ const RemoveProductGrid = () => {
     <Box sx={{ width: "100%", height: "100%" }}>
       <DrawerHeader />
       <Loading loading={isLoading || isFetching} />
-      <Header Name="Product Removal"  info={true} customOnClick={handleOpen}/>
+      {/* <Header Name="Product Removal"  info={true} customOnClick={handleOpen}/> */}
       <FilterBar apiRef={apiRef} />
       <Grid container>
         <Grid item xs={12} sx={{ mt: "5px" }}>
@@ -582,7 +587,7 @@ const RemoveProductGrid = () => {
            <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

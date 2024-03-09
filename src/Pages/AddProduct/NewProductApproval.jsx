@@ -129,8 +129,6 @@ const NewProductApproval = () => {
         type: "newProduct",
       };
 
-     
-
       const res = await approvalApi(params).unwrap();
 
       toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
@@ -148,8 +146,8 @@ const NewProductApproval = () => {
     setSelectedItems(selectionModel);
 
     const newSelectedRowsData = rows
-    .filter((item) => selectionModel.includes(item.id))
-    .map((item) => item.Name);
+      .filter((item) => selectionModel.includes(item.id))
+      .map((item) => item.Name);
 
     setSelectedItemsData(newSelectedRowsData);
   };

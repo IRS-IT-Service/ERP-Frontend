@@ -16,6 +16,7 @@ import {
   CircularProgress,
   Typography,
   selectClasses,
+  Checkbox,
 } from "@mui/material";
 import { useAddCompetitorPriceMutation } from "../../../features/api/productApiSlice";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -24,6 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import HttpIcon from "@mui/icons-material/Http";
+import { CheckBox } from "@mui/icons-material";
 const CompetitorDial = ({
   openCompetitor,
   handleCloseCompetitor,
@@ -42,6 +44,7 @@ const CompetitorDial = ({
     CompName: "",
     url: "",
     Price: "",
+    isStock: false,
   });
 
   const handleSubmit = async () => {
@@ -58,6 +61,7 @@ const CompetitorDial = ({
     const main = {
       datas: info,
     };
+    console.log(main);
     try {
       const res = await addCompair(main).unwrap();
       toast.success("Competitor price added successfully");
@@ -82,12 +86,13 @@ const CompetitorDial = ({
   }, [paramsData]);
 
   const handleCompetitor = (SKU, CompName, e) => {
-    const { value, name } = e.target;
-    if (name === "url") {
-      setPrice({ ...price, SKU: SKU, CompName: CompName, url: value });
-    } else {
-      setPrice({ ...price, SKU: SKU, CompName: CompName, Price: value });
-    }
+    const { value, name, checked } = e.target;
+    setPrice((prev) => ({
+      ...prev,
+      SKU: SKU,
+      CompName: CompName,
+      [name]: name === "isStock" ? checked : value,
+    }));
   };
 
   useEffect(() => {
@@ -95,6 +100,7 @@ const CompetitorDial = ({
       Name: price.CompName,
       Price: +price.Price,
       URL: price.url,
+      inStock: price.isStock,
     };
 
     const existingSKUIndex = compairePrice.findIndex(
@@ -320,7 +326,7 @@ const CompetitorDial = ({
                             : 60
                         }rem`,
 
-                        background:"#fff",
+                        background: "#fff",
                         zIndex: 100,
 
                         // background: `${column === "Product" ? "red" : "#fff"}`,
@@ -339,7 +345,7 @@ const CompetitorDial = ({
                         column === "GST" ? (
                           `${parseFloat(item[column]).toFixed(0)} %`
                         ) : column === "SalesPrice" ? (
-                          ` ₹ ${(item[column]).toFixed(0)}`
+                          ` ₹ ${item[column].toFixed(0)}`
                         ) : (
                           item[column]
                         )
@@ -371,6 +377,7 @@ const CompetitorDial = ({
                             </span>
                             <input
                               defaultValue={item[column]?.Price}
+                              name="Price"
                               style={{
                                 textIndent: "0.8rem",
                                 width: "6rem",
@@ -410,6 +417,24 @@ const CompetitorDial = ({
                                 handleCompetitor(item.SKU, column, e)
                               }
                             />
+                          </Box>
+                          <Box>
+                            <span
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              Stock:
+                              <Checkbox
+                                defaultChecked={item[column]?.inStock}
+                                name="isStock"
+                                onChange={(e) =>
+                                  handleCompetitor(item.SKU, column, e)
+                                }
+                              ></Checkbox>
+                            </span>
                           </Box>
                         </Box>
                       )}

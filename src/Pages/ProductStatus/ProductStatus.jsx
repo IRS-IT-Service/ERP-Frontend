@@ -1,9 +1,11 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import ProductHistory from "../Home_Page/Components/ProductHistory";
 import ProductStatusGrid from "./Components/ProductStatusGrid";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -102,13 +104,6 @@ const ProductStatus = () => {
   const description =
     "This is the Product Status you can check product details  ";
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
   /// local state
   const [openHistory, setOpenHistory] = useState(false);
   const [productDetails, setProductDetails] = useState({});
@@ -120,13 +115,24 @@ const ProductStatus = () => {
     setOpenHistory(false);
   };
 
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`Product Status`));
+  }, []);
+
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Product Status"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Product Status"} info={true} customOnClick={handleOpen} /> */}
 
       <ProductStatusGrid
         setOpenHistory={setOpenHistory}
@@ -142,7 +148,7 @@ const ProductStatus = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>
