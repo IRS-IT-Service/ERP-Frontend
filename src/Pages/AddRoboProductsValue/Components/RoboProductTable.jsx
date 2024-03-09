@@ -250,7 +250,7 @@ const RoboProductTable = () => {
               flexDirection: "column",
               justifyContent: "start",
               overflowY: "auto",
-              maxHeight: "70vh",
+              maxHeight: "74vh",
               width: "20vw",
             }}
           >
@@ -351,7 +351,7 @@ const RoboProductTable = () => {
               flexDirection: "column",
               justifyContent: "start",
               overflowY: "auto",
-              maxHeight: "70vh",
+              maxHeight: "74vh",
               width: "20vw",
             }}
           >
@@ -431,7 +431,7 @@ const RoboProductTable = () => {
               flexDirection: "column",
               justifyContent: "start",
               overflowY: "auto",
-              maxHeight: "70vh",
+              maxHeight: "74vh",
               width: "20vw",
             }}
           >
@@ -502,7 +502,7 @@ const RoboProductTable = () => {
               flexDirection: "column",
               justifyContent: "start",
               overflowY: "auto",
-              maxHeight: "50vh",
+              maxHeight: "74vh",
               width: "20vw",
             }}
           >
