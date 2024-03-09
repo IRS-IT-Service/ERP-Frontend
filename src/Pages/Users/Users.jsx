@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import {
   Box,
   styled,
@@ -21,6 +21,8 @@ import { useGetAllUsersQuery } from "../../features/api/usersApiSlice";
 import MasterPassword from "./Components/MasterPasswordDialog";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch } from "react-redux";
+import { setHeader } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -114,6 +116,7 @@ const Users = () => {
   const [openMaster, setOpenMaster] = useState(false);
   //Global state
   // const { themeColor } = useSelector((state) => state.ui);
+  const dispatch = useDispatch()
 
   /// rtk query
   const {
@@ -129,6 +132,13 @@ const Users = () => {
   const handleClickOpenMaster = () => {
     setOpenMaster(true);
   };
+  
+  useEffect(()=>{
+    dispatch(setHeader({
+      Name:"Users Section",
+      handleClick:handleOpen
+    }))
+  },[])
 
   // infodialog state
   const description =
@@ -148,7 +158,7 @@ const Users = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header Name={"Users Section"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Users Section"} info={true} customOnClick={handleOpen} /> */}
       <UserList
         isFetching={isFetching}
         refetchAllUser={refetchAllUser}

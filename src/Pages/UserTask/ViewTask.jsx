@@ -20,12 +20,13 @@ import { useGetTaskUpdateQuery } from "../../features/api/usersApiSlice";
 import Loading from "../../components/Common/Loading";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatDate, formatTime, formateDateAndTime } from "../../commonFunctions/commonFunctions";
 import axios from "axios";
 import { USERS_URL } from "../../constants/ApiEndpoints";
 import BASEURL from "../../constants/BaseApi";
 import { flushSync } from "react-dom";
+import { setHeader } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -54,6 +55,8 @@ const ViewTask = () => {
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
+
+  const dispatch = useDispatch()
 
   /// rtk query
   const { data, isLoading, isFetching } = useGetTaskUpdateQuery(
@@ -123,6 +126,13 @@ const ViewTask = () => {
     setSelectedDate({ end: startDate, start: endDate });
   }, []);
 
+  useEffect(()=>{
+    dispatch(setHeader({
+      Name:"Employee Tasks",
+      handleClick:handleOpen
+    }))
+  },[])
+
   return (
     <Box
       component="main"
@@ -135,7 +145,7 @@ const ViewTask = () => {
       }}
     >
       <DrawerHeader />
-      <Header Name={"Employee Tasks"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Employee Tasks"} info={true} customOnClick={handleOpen} /> */}
 
       <Loading loading={isLoading || isFetching} />
       {/* <Box

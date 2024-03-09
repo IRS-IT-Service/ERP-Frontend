@@ -1,10 +1,12 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import "./Home_Page.css";
 import { Box, styled } from "@mui/material";
 import ProductHistory from "./Components/ProductHistory";
 import Content from "./Components/Content";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch } from "react-redux";
+import { setHeader } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -53,15 +55,24 @@ const handleOpen = ()=>{
  setInfoOpen(true);
 }
 
+const dispatch = useDispatch()
+
+useEffect(()=>{
+  dispatch(setHeader({
+    Name:"Product List",
+    handleClick:handleOpen
+  }))
+},[])
+
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Product List"}
+      {/* <Header Name={"Product List"}
       info={true}
-      customOnClick={handleOpen}/>
+      customOnClick={handleOpen}/> */}
  
       <Content />
       

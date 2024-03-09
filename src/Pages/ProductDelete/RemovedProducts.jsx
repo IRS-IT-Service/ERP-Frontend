@@ -12,6 +12,7 @@ import Loading from "../../components/Common/Loading";
 import CachedIcon from "@mui/icons-material/Cached";
 import Header from "../../components/Common/Header";
 import { useSocket } from "../../CustomProvider/useWebSocket";
+import { setHeader } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -65,6 +66,12 @@ const RemovedProduct = () => {
       setItemCount(data?.itemsPerPage);
     }
   }, [data]);
+
+  useEffect(()=>{
+    dispatch(setHeader({
+      Name:"Removed Product",
+    }))
+  },[])
 
   /// Columns
   const columns = [
@@ -175,7 +182,6 @@ const RemovedProduct = () => {
     <Box sx={{ width: "100%", height: "100%" }}>
       <DrawerHeader />
       <Loading loading={isLoading || isFetching} />
-      <Header Name="Removed Product" />
 
       <Grid container>
         <Grid item xs={12} sx={{ mt: "5px" }}>

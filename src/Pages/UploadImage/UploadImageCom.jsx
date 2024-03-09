@@ -1,8 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import UploadImageGrid from "./component/UploadImageGrid";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setHeader } from "../../features/slice/uiSlice";
+import { useDispatch } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -91,7 +93,7 @@ const infoDetail = [
 
 const UploadImageCom = () => {
   const description = 'This is for uploading and editing products. You can upload images and edit product details'
-
+  const dispatch = useDispatch()
    const [infoOpen, setInfoOpen] = useState(false);
    const handleClose = () => {
      setInfoOpen(!infoOpen);
@@ -99,6 +101,12 @@ const UploadImageCom = () => {
    const handleOpen = ()=>{
     setInfoOpen(true);
    }
+   useEffect(()=>{
+    dispatch(setHeader({
+      Name:"Upload Image / Edit Product",
+      handleClick:handleOpen
+    }))
+  },[])
 
   return (
     <Box
@@ -107,9 +115,9 @@ const UploadImageCom = () => {
     >
       <DrawerHeader />
 
-      <Header Name={"Upload Image / Edit Product"}
+      {/* <Header Name={"Upload Image / Edit Product"}
        info={true}
-       customOnClick={handleOpen} />
+       customOnClick={handleOpen} /> */}
       <InfoDialogBox
        infoDetails={infoDetail}
        description={description}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -25,7 +25,8 @@ import Loading from "../../components/Common/Loading";
 import { formateDateAndTime } from "../../commonFunctions/commonFunctions";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -177,6 +178,7 @@ const ERPHistory = () => {
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
+  const dispatch = useDispatch()
 
   /// rtk query
   const { data, isLoading, isFetching } = useGetAllUserHistoryQuery({
@@ -200,6 +202,13 @@ const ERPHistory = () => {
     setInfoOpen(true);
   };
 
+  useEffect(()=>{
+    dispatch(setHeader({
+      Name:"History Portal",
+      handleClick:handleOpen
+    }))
+  },[])
+
   return (
     <Box
       component="main"
@@ -212,7 +221,7 @@ const ERPHistory = () => {
       }}
     >
       <DrawerHeader />
-      <Header Name={"History Portal"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"History Portal"} info={true} customOnClick={handleOpen} /> */}
 
       <Loading loading={isLoading || isFetching} />
       <Box
