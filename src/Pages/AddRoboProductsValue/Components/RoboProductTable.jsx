@@ -44,6 +44,8 @@ const RoboProductTable = () => {
   };
 
   const handleInput = (event) => {
+    if (!selectValue)
+      return toast.error("Please Select a value before adding dynamic value");
     if (selectValue === "Brand") {
       setAddvalue(event.target.value.toUpperCase());
     } else {
@@ -89,10 +91,6 @@ const RoboProductTable = () => {
     setDel(false);
   };
 
-  // funnction for searching
-  const handleSearchOnChange = (value) => {
-    setInputSearch(value);
-  };
   return (
     <Box
       sx={{
@@ -147,7 +145,7 @@ const RoboProductTable = () => {
                 value={addvalue}
               />
             </Box>
-            <Button sx={{}} variant="outlined" onClick={handleAdd}>
+            <Button sx={{}} variant="contained" onClick={handleAdd}>
               Add
             </Button>
           </Box>
@@ -163,7 +161,7 @@ const RoboProductTable = () => {
           <Box
             sx={{
               border: "1px solid black",
-              height: "7vh",
+              height: "6vh",
               width: "87%",
               margin: 1,
               display: "flex",
@@ -204,7 +202,7 @@ const RoboProductTable = () => {
               </Box>
             ))}
           </Box>
-          <Button variant="outlined" onClick={handleSave}>
+          <Button variant="contained" onClick={handleSave}>
             Save
           </Button>
         </Box>

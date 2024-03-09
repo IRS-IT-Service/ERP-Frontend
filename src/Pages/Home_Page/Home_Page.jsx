@@ -11,52 +11,61 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-// infoDialog box data 
-const infoDetail = [{
-  name: 'Sort By Brand', 
-  screenshot: (<img
-    src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-    height={"60%"}
-    width={"90%"}
-  />), 
-  instruction: "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand", 
- 
-},{
-  name: 'Sort By Category', 
-  screenshot: (<img
-    src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-    height={"60%"}
-    width={"90%"}
-  />), 
-  instruction: "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product", 
- 
-},{
-  name: 'Search', 
-  screenshot: (<img
-    src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
-    height={"60%"}
-    width={"90%"}
-  />), 
-  instruction: "If you click the search box, you can search for any product or brand here", 
- 
-},]
-
-
+// infoDialog box data
+const infoDetail = [
+  {
+    name: "Sort By Brand",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+  },
+  {
+    name: "Sort By Category",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
+  },
+  {
+    name: "Search",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click the search box, you can search for any product or brand here",
+  },
+];
 
 const Home_Page = () => {
-     // infodialog state
-const description = "This is the product list, where you can view all the product listings"
+  // infodialog state
+  const description =
+    "This is the product list, where you can view all the product listings";
 
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-const { isInfoOpen } = useSelector((state) => state.ui);
-const handleClose = () => {
-  dispatch(setInfo(false));
-};
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
 
-useEffect(() => {
-  dispatch(setHeader("Product List"));
-}, []);
+  useEffect(() => {
+    dispatch(setHeader("Product List"));
+  }, []);
 
   return (
     <Box
@@ -67,13 +76,13 @@ useEffect(() => {
       {/* <Header Name={"Product List"}
       info={true}
       customOnClick={handleOpen}/> */}
- 
+
       <Content />
-      
-         {/* infoDialog table */}
-         <InfoDialogBox
-       infoDetails={infoDetail}
-       description={description}
+
+      {/* infoDialog table */}
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
         open={isInfoOpen}
         close={handleClose}
       />

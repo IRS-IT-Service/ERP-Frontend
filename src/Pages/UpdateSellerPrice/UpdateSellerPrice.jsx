@@ -147,6 +147,7 @@ const UpdateSellerPrice = () => {
   };
   
  const params = useParams().SalesPrice
+
  const dispatch = useDispatch();
 
  const { isInfoOpen } = useSelector((state) => state.ui);
@@ -156,7 +157,7 @@ const UpdateSellerPrice = () => {
 
  useEffect(() => {
    dispatch(setHeader(`Update ${params}`));
- }, []);
+ }, [params]);
 
 
   return (

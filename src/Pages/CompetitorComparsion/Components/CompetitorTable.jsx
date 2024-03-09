@@ -191,10 +191,10 @@ const CompetitorTable = () => {
             (allProductData.data.currentPage - 1) * allProductData.data.limit,
           SKU: item.SKU,
           Product: item.Name,
-          GST: item.GST.toFixed(2),
+          GST: item.GST,
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
-          SalesPrice:item.SalesPrice,
+          SalesPrice: item.SalesPrice,
           Category: item.Category,
           competitor: item.CompetitorPrice,
           ...CompName,
@@ -362,7 +362,7 @@ const CompetitorTable = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `₹ ${params.value}`
+      valueFormatter: (params) => `₹ ${params.value}`,
     },
 
     {
@@ -597,7 +597,7 @@ const CompetitorTable = () => {
             <Box
               sx={{
                 width: "100%",
-                height: "78vh",
+                height: "87vh",
                 "& .super-app-theme--header": {
                   background: "#eee",
                   color: "black",
