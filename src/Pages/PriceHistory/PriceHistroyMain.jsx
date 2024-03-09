@@ -1,8 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import PriceHistroy from "./Component/PriceHistroy";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -85,13 +87,16 @@ const PriceHistroyMain = () => {
    const description =
    "This is the Price History. You can view a particular price ";
 
- const [infoOpen, setInfoOpen] = useState(false);
- const handleClose = () => {
-   setInfoOpen(!infoOpen);
- };
- const handleOpen = () => {
-   setInfoOpen(true);
- };
+   const dispatch = useDispatch();
+
+   const { isInfoOpen } = useSelector((state) => state.ui);
+   const handleClose = () => {
+     dispatch(setInfo(false));
+   };
+   
+   useEffect(() => {
+     dispatch(setHeader(`Price History`));
+   }, []);
   /// local state
 
   const [openHistory, setOpenHistory] = useState(false);
@@ -110,14 +115,14 @@ const PriceHistroyMain = () => {
       sx={{ flexGrow: 5, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Price History"}  info={true} customOnClick={handleOpen}/>
+      {/* <Header Name={"Price History"}  info={true} customOnClick={handleOpen}/> */}
   
       <PriceHistroy />
         {/* infoDialog table */}
         <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

@@ -20,6 +20,8 @@ import { formatDate } from "../../../commonFunctions/commonFunctions";
 import { useGetAllOverseasShipmentQuery } from "../../../features/api/RestockOrderApiSlice";
 
 import Header from "../../../components/Common/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -187,25 +189,28 @@ const AllOverseasShipment = () => {
   // infodialog state
   const description =
     "This is Employee Task where you can view the employee's daily tasks";
+  
+    const dispatch = useDispatch();
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+    const { isInfoOpen } = useSelector((state) => state.ui);
+    const handleClose = () => {
+      dispatch(setInfo(false));
+    };
+    
+    useEffect(() => {
+      dispatch(setHeader(`Incoming Shipment`));
+    }, []);
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={"Incoming Shipment"}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
 
       <StyledBox>
         <Loading loading={overseasShipmentLoading} />

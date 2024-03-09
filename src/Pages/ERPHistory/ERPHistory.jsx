@@ -178,7 +178,6 @@ const ERPHistory = () => {
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
-  const dispatch = useDispatch()
 
   /// rtk query
   const { data, isLoading, isFetching } = useGetAllUserHistoryQuery({
@@ -194,20 +193,16 @@ const ERPHistory = () => {
   const description =
     "This is User Section helps manage user control, allowing the admin to grant or revoke access as needed";
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+    const dispatch = useDispatch();
 
-  useEffect(()=>{
-    dispatch(setHeader({
-      Name:"History Portal",
-      handleClick:handleOpen
-    }))
-  },[])
+    const { isInfoOpen } = useSelector((state) => state.ui);
+    const handleClose = () => {
+      dispatch(setInfo(false));
+    };
+   
+    useEffect(() => {
+      dispatch(setHeader(`History Portal`));
+    }, []);
 
   return (
     <Box
@@ -360,7 +355,7 @@ const ERPHistory = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

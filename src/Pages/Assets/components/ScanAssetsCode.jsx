@@ -29,7 +29,7 @@ import {
 import { useGetSingleAssetsMutation } from "../../../features/api/assetsSlice";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
-import { setHeader } from "../../../features/slice/uiSlice";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const useStyles = makeStyles({
   tableContainer: {
@@ -97,14 +97,7 @@ const ScanAssetsCode = () => {
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
-
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen1 = () => {
-    setInfoOpen(true);
-  };
+  
   const classes = useStyles();
   const socket = useSocket();
 
@@ -131,14 +124,16 @@ const ScanAssetsCode = () => {
     setOpen(!open);
   };
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  useEffect(()=>{
-    dispatch(setHeader({
-      Name:"Asset Scan",
-      handleClick:handleOpen1
-    }))
-  },[])
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`Asset Scan`));
+  }, []);
 
   // api calling
   useEffect(() => {
@@ -401,7 +396,7 @@ const ScanAssetsCode = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

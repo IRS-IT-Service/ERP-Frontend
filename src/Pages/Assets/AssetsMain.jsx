@@ -3,8 +3,8 @@ import { Box, styled } from "@mui/material";
 import AddViewAssets from "./components/AddViewAssets";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { setHeader } from "../../features/slice/uiSlice";
-import { useDispatch } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -75,24 +75,20 @@ const infoDetail = [
 ];
 const AssetsMain = () => {
 
-  const dispatch = useDispatch()
+
   // infodialog state
 const description = "This is Company Assets you can add assets and download assets details"
 
-useEffect(()=>{
-  dispatch(setHeader({
-    Name:"Company Assets",
-    handleClick:handleOpen
-  }))
-},[])
+const dispatch = useDispatch();
 
-const [infoOpen, setInfoOpen] = useState(false);
+const { isInfoOpen } = useSelector((state) => state.ui);
 const handleClose = () => {
-  setInfoOpen(!infoOpen);
+  dispatch(setInfo(false));
 };
-const handleOpen = ()=>{
- setInfoOpen(true);
-}
+
+useEffect(() => {
+  dispatch(setHeader(`Company Assets`));
+}, []);
 
 
   return (
@@ -113,7 +109,7 @@ const handleOpen = ()=>{
       <InfoDialogBox
        infoDetails={infoDetail}
        description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

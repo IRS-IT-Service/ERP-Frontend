@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import {
   Box,
   styled,
@@ -14,6 +14,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 import Header from "../../components/Common/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const infoDetail = [
   {
@@ -79,26 +81,30 @@ const DiscountQuery = () => {
             Please note that you can only select products with recorded sales or
             MRP prices.`;
 
-   const [infoOpen, setInfoOpen] = useState(false);
-   const handleClose = () => {
-     setInfoOpen(!infoOpen);
-   };
-   const handleOpen = () => {
-     setInfoOpen(true);
-   };
+  
+            const dispatch = useDispatch();
+
+            const { isInfoOpen } = useSelector((state) => state.ui);
+            const handleClose = () => {
+              dispatch(setInfo(false));
+            };
+            
+            useEffect(() => {
+              dispatch(setHeader(`Sales Details`));
+            }, []);
   return (
     <Box
       component='main'
       sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
-      <Header Name={'Sales Details'} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={'Sales Details'} info={true} customOnClick={handleOpen} /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

@@ -12,9 +12,10 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Header from "../../components/Common/Header";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useGetAllVendorQuery } from "../../features/api/RestockOrderApiSlice";
 import { RedoRounded } from "@mui/icons-material";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -68,13 +69,24 @@ const AddProforma = () => {
 
   console.log(form);
 
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+  
+  useEffect(() => {
+    dispatch(setHeader(`Add Performa`));
+  }, []);
+
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Add Performa"} />
+      {/* <Header Name={"Add Performa"} /> */}
       <Box
         sx={{
           width: "100%",
@@ -87,7 +99,7 @@ const AddProforma = () => {
         <Box
           className="formContainer"
           sx={{
-            marginTop: { xs: "10px", sm: "100px" },
+            marginTop: { xs: "10px", sm: "50px" },
             width: "37%",
             minWidth: "350px",
             display: "flex",

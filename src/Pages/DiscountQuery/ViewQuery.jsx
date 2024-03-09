@@ -19,7 +19,7 @@ import { formatDate } from "../../commonFunctions/commonFunctions";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useDispatch, useSelector } from "react-redux";
-import { setHeader } from "../../features/slice/uiSlice";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -450,22 +450,17 @@ const ViewQuery = () => {
           barcode, click on "Download." If you wish to view the barcode, you can
           do so by clicking on "View."`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose1 = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen1 = () => {
-    setInfoOpen(true);
-  };
-
-  useEffect(()=>{
-    dispatch(setHeader({
-      Name:"Barcode Stick",
-      handleClick:handleOpen1
-    }))
-  },[])
+ 
+  useEffect(() => {
+    dispatch(setHeader(`Barcode Stick`));
+  }, []);
 
   return (
     <Box sx={{ width: "100%", minHeight: "93vh", overflowY: "hidden" }}>
@@ -476,7 +471,7 @@ const ViewQuery = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose1}
       />
 
