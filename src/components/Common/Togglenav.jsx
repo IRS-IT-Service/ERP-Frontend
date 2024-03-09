@@ -130,7 +130,7 @@ const ToggleNav = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { HeaderName } = useSelector((state) => state.ui);
-console.log(HeaderName)
+
   /// rtk query
   const {
     data: unApprovedcount,
@@ -356,7 +356,8 @@ console.log(HeaderName)
                 }}
               />
             </Box>
-          </Box><Header Name={HeaderName.Name} info={true} customOnClick={HeaderName.handleClick} />
+          </Box>
+          <Header Name={HeaderName} info={true}  />
           <Box
             sx={{
               display: "flex",

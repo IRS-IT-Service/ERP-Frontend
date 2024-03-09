@@ -1,8 +1,15 @@
 import React from "react";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { setInfo } from "../../features/slice/uiSlice";
+import { useDispatch } from "react-redux";
 
-const Header = ({ Name, info, customOnClick }) => {
+const Header = ({ Name, info}) => {
+const dispatch = useDispatch()
+
+  const handleOpen = () => {
+    dispatch(setInfo(true))
+  };
 
   return (
     <Box
@@ -45,7 +52,7 @@ const Header = ({ Name, info, customOnClick }) => {
                     transform: "scale(1.2)",
                   },
                 }}
-                onClick={customOnClick}
+                onClick={handleOpen}
               >
                 <InfoOutlinedIcon />
               </IconButton>

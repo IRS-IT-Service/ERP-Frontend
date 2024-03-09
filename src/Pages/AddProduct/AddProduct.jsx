@@ -81,10 +81,7 @@ const AddRoboProducts = () => {
     setInfoOpen(true);
   };
 useEffect(()=>{
-  dispatch(setHeader({
-    Name:"Add Product",
-    handleClick:handleOpen
-  }))
+  dispatch(setHeader("Add Product"))
 },[])
   return (
     <Box

@@ -5,20 +5,18 @@ const initialState = {
   Mode: false,
   ShowSide_nav: true,
   ToggleMenu: false,
+  HeaderName: "",
+
+  isInfoOpen: false,
   themeColor: localStorage.getItem("themeColor")
     ? JSON.parse(localStorage.getItem("themeColor"))
     : {
-      name: "blue",
-      themeColor1: "linear-gradient(0deg, #01127D, #04012F)",
-      sideBarColor1: "#4459ee",
-      sideBarColor2: "#b3cbff",
-      textColor:"#fff"
+        name: "blue",
+        themeColor1: "linear-gradient(0deg, #01127D, #04012F)",
+        sideBarColor1: "#4459ee",
+        sideBarColor2: "#b3cbff",
+        textColor: "#fff",
       },
-      HeaderName:{
-        Name:"",
-        handleClick:""
-      }    
-      
 };
 
 const uiSlice = createSlice({
@@ -39,13 +37,21 @@ const uiSlice = createSlice({
       state.themeColor = actions.payload;
       localStorage.setItem("themeColor", JSON.stringify(actions.payload));
     },
-setHeader:(state, action) =>{
-  state.HeaderName = action.payload
-}
-    
+    setHeader: (state, action) => {
+      state.HeaderName = action.payload;
+    },
+    setInfo: (state, action) => {
+      state.isInfoOpen = action.payload;
+    },
   },
 });
 
-export const { toggleMode, toggleShowNav, Showmenu, setTheme ,setHeader } =
-  uiSlice.actions;
+export const {
+  toggleMode,
+  toggleShowNav,
+  Showmenu,
+  setTheme,
+  setHeader,
+  setInfo,
+} = uiSlice.actions;
 export default uiSlice.reducer;

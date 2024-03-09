@@ -3,8 +3,8 @@ import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import RoboProductTable from "./Components/RoboProductTable";
-import { useDispatch } from "react-redux";
-import { setHeader } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -102,22 +102,18 @@ const AddRoboProductsValue = () => {
   const description =
     "This is the Product Status you can check product details  ";
 
-    const dispatch = useDispatch()
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
+    dispatch(setInfo(false));
   };
 
-  useEffect(()=>{
-    dispatch(setHeader({
-      Name:"Add Robo Product Value",
-      handleClick:handleOpen
-    }))
-  },[])
-  
+  useEffect(() => {
+    dispatch(setHeader("Add Robo Product Value"));
+  }, []);
+
   return (
     <Box
       component="main"
@@ -134,7 +130,7 @@ const AddRoboProductsValue = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
       <RoboProductTable />
