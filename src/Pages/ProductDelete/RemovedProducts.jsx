@@ -12,7 +12,7 @@ import Loading from "../../components/Common/Loading";
 import CachedIcon from "@mui/icons-material/Cached";
 import Header from "../../components/Common/Header";
 import { useSocket } from "../../CustomProvider/useWebSocket";
-import { setHeader } from "../../features/slice/uiSlice";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -21,7 +21,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const RemovedProduct = () => {
   /// initialization
-  const dispatch = useDispatch();
   const apiRef = useGridApiRef();
   const socket = useSocket();
 
@@ -67,11 +66,16 @@ const RemovedProduct = () => {
     }
   }, [data]);
 
-  useEffect(()=>{
-    dispatch(setHeader({
-      Name:"Removed Product",
-    }))
-  },[])
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`Removed Product`));
+  }, []);
 
   /// Columns
   const columns = [

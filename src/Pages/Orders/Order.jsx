@@ -47,6 +47,8 @@ const handleClose = () => {
 const handleOpen = ()=>{
  setInfoOpen(true);
 }
+
+
   return (
     <Box
       component="main"

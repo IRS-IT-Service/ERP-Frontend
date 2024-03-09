@@ -31,7 +31,7 @@ import { toast } from "react-toastify";
 import { useDeleteProductMutation } from "../../features/api/productApiSlice";
 import { useSocket } from "../../CustomProvider/useWebSocket";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { setHeader } from "../../features/slice/uiSlice";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -118,15 +118,8 @@ const RemoveProductGrid = () => {
    const description =
    "This is Product Removal you can delete  here any product ";
 
- const [infoOpen, setInfoOpen] = useState(false);
- const handleClose = () => {
-   setInfoOpen(!infoOpen);
- };
- const handleOpen = () => {
-   setInfoOpen(true);
- };
+
   /// initialization
-  const dispatch = useDispatch();
   const apiRef = useGridApiRef();
   const socket = useSocket();
   const {
@@ -184,12 +177,16 @@ const RemoveProductGrid = () => {
 
   console.log(allProductData)
 
-  useEffect(()=>{
-    dispatch(setHeader({
-      Name:"Product Removal",
-      handleClick:handleOpen
-    }))
-  },[])
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`Product Removal`));
+  }, []);
 
   /// Function
 
@@ -590,7 +587,7 @@ const RemoveProductGrid = () => {
            <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

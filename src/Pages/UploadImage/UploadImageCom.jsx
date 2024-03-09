@@ -3,8 +3,8 @@ import { Box, styled } from "@mui/material";
 import UploadImageGrid from "./component/UploadImageGrid";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { setHeader } from "../../features/slice/uiSlice";
-import { useDispatch } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -93,20 +93,16 @@ const infoDetail = [
 
 const UploadImageCom = () => {
   const description = 'This is for uploading and editing products. You can upload images and edit product details'
-  const dispatch = useDispatch()
-   const [infoOpen, setInfoOpen] = useState(false);
-   const handleClose = () => {
-     setInfoOpen(!infoOpen);
-   };
-   const handleOpen = ()=>{
-    setInfoOpen(true);
-   }
-   useEffect(()=>{
-    dispatch(setHeader({
-      Name:"Upload Image / Edit Product",
-      handleClick:handleOpen
-    }))
-  },[])
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader("Upload Image / Edit Product"));
+  }, []);
 
   return (
     <Box
@@ -121,7 +117,7 @@ const UploadImageCom = () => {
       <InfoDialogBox
        infoDetails={infoDetail}
        description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
       
