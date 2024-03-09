@@ -1,8 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import CompetitorTable from "./Components/CompetitorTable";
+import { useDispatch } from "react-redux";
+import { setHeader } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -107,17 +109,26 @@ const CompetitorComparsion = () => {
   const handleOpen = () => {
     setInfoOpen(true);
   };
+
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    dispatch(setHeader({
+      Name:"Competitor Comparison",
+      handleClick:handleOpen
+    }))
+  },[])
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={"Competitor Comparison"}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
      
       {/* infoDialog table */}
       <InfoDialogBox

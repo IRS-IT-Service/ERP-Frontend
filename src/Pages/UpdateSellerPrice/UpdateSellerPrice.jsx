@@ -1,10 +1,12 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import ProductHistory from "../Home_Page/Components/ProductHistory";
 import UpdatePriceGrid from "./components/UpdatePriceGrid";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setHeader } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -150,8 +152,17 @@ const UpdateSellerPrice = () => {
   const handleCloseHistory = () => {
     setOpenHistory(false);
   };
-
+  
  const params = useParams().SalesPrice
+
+const dispatch = useDispatch()
+
+ useEffect(()=>{
+  dispatch(setHeader({
+    Name:`Update ${params}`,
+    handleClick:handleOpen
+  }))
+},[])
 
   return (
     <Box

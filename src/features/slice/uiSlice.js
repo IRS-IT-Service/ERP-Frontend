@@ -14,6 +14,11 @@ const initialState = {
       sideBarColor2: "#b3cbff",
       textColor:"#fff"
       },
+      HeaderName:{
+        Name:"",
+        handleClick:""
+      }    
+      
 };
 
 const uiSlice = createSlice({
@@ -34,11 +39,13 @@ const uiSlice = createSlice({
       state.themeColor = actions.payload;
       localStorage.setItem("themeColor", JSON.stringify(actions.payload));
     },
-
+setHeader:(state, action) =>{
+  state.HeaderName = action.payload
+}
     
   },
 });
 
-export const { toggleMode, toggleShowNav, Showmenu, setTheme } =
+export const { toggleMode, toggleShowNav, Showmenu, setTheme ,setHeader } =
   uiSlice.actions;
 export default uiSlice.reducer;

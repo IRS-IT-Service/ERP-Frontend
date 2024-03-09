@@ -1,10 +1,11 @@
-import { React, useState } from "react";
+import { React, useState ,useEffect } from "react";
 import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import AddProductBoxesDetails from "./component/AddProductBoxesDetails";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -65,9 +66,10 @@ const infoDetail = [
 const AddRoboProducts = () => {
   /// initialize
   const navigate = useNavigate();
-
+  const dispatch = useDispatch()
   /// global state
   const { themeColor } = useSelector((state) => state.ui);
+
   // infodialog state
   const description = "This is to add a product. You can add a product here";
 
@@ -78,14 +80,19 @@ const AddRoboProducts = () => {
   const handleOpen = () => {
     setInfoOpen(true);
   };
-
+useEffect(()=>{
+  dispatch(setHeader({
+    Name:"Add Product",
+    handleClick:handleOpen
+  }))
+},[])
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header Name={"Add Product"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Add Product"} info={true} customOnClick={handleOpen} /> */}
       <Box
         sx={{
           width: "100%",

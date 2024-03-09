@@ -1,9 +1,11 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import ProductHistory from "../Home_Page/Components/ProductHistory";
 import ProductStatusGrid from "./Components/ProductStatusGrid";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setHeader } from "../../features/slice/uiSlice";
+import { useDispatch } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -120,13 +122,22 @@ const ProductStatus = () => {
     setOpenHistory(false);
   };
 
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    dispatch(setHeader({
+      Name:"Product Status",
+      handleClick:handleOpen
+    }))
+  },[])
+
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Product Status"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Product Status"} info={true} customOnClick={handleOpen} /> */}
 
       <ProductStatusGrid
         setOpenHistory={setOpenHistory}

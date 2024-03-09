@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
-import { setTheme } from "../../features/slice/uiSlice";
+import { setTheme} from "../../features/slice/uiSlice";
 import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
 import { logout as dispatchLogout } from "../../features/slice/authSlice";
 import logo2 from "../../assets/IRS2.png";
@@ -29,6 +29,8 @@ import { useLogoutMutation } from "../../features/api/usersApiSlice";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { useNavigate } from "react-router-dom";
 import themeColors from "../../constants/ThemeColor";
+import Header from "./Header";
+
 const drawerWidth = 220;
 
 const openedMixin = (theme) => ({
@@ -127,7 +129,8 @@ const ToggleNav = () => {
   const [themeSelector, setThemeSelector] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const { HeaderName } = useSelector((state) => state.ui);
+console.log(HeaderName)
   /// rtk query
   const {
     data: unApprovedcount,
@@ -316,6 +319,7 @@ const ToggleNav = () => {
           }}
         >
           <Box>
+            
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -352,7 +356,7 @@ const ToggleNav = () => {
                 }}
               />
             </Box>
-          </Box>
+          </Box><Header Name={HeaderName.Name} info={true} customOnClick={HeaderName.handleClick} />
           <Box
             sx={{
               display: "flex",
