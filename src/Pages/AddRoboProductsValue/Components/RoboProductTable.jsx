@@ -21,6 +21,12 @@ const RoboProductTable = () => {
   const [selectValue, setSelectValue] = useState("");
   const [addvalue, setAddvalue] = useState("");
   const [values, setValues] = useState([]);
+  const [del, setDel] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedtable, setSelectedTable] = useState(null);
+  const [inputSearchBrand, setInputSearchBrand] = useState("");
+  const [inputSearchCategory, setInputSearchCategory] = useState("");
+  const [inputSearchSubCategory, setInputSearchSubCategory] = useState("");
 
   //rtk Querry
   const [addDynamicValue] = useAddDynamicValueMutation();
@@ -38,7 +44,11 @@ const RoboProductTable = () => {
   };
 
   const handleInput = (event) => {
-    setAddvalue(event.target.value.toUpperCase());
+    if (selectValue === "Brand") {
+      setAddvalue(event.target.value.toUpperCase());
+    } else {
+      setAddvalue(event.target.value);
+    }
   };
 
   const handleAdd = () => {
@@ -57,7 +67,6 @@ const RoboProductTable = () => {
   const handleSave = async () => {
     if (!selectValue || values.length === 0)
       return toast.error("Please select value option");
-
     try {
       const info = { name: selectValue, values: values };
       const result = await addDynamicValue(info).unwrap();
@@ -69,9 +78,6 @@ const RoboProductTable = () => {
       console.log(error);
     }
   };
-  const [del, setDel] = React.useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedtable, setSelectedTable] = useState(null);
 
   const handleClickOpen = (item, table) => {
     setDel(true);
@@ -83,6 +89,10 @@ const RoboProductTable = () => {
     setDel(false);
   };
 
+  // funnction for searching
+  const handleSearchOnChange = (value) => {
+    setInputSearch(value);
+  };
   return (
     <Box
       sx={{
@@ -95,7 +105,6 @@ const RoboProductTable = () => {
       <Box
         sx={{
           display: "flex",
-
           width: "100%",
         }}
       >
@@ -107,7 +116,7 @@ const RoboProductTable = () => {
               alignItems: "center",
             }}
           >
-            <FormControl sx={{ m: 1, minWidth: 300 }} size="large">
+            <FormControl sx={{ m: 1, minWidth: 200 }} size="large">
               <InputLabel
                 id="demo-select-small-label"
                 sx={{ color: "black", fontWeight: "bold" }}
@@ -128,45 +137,40 @@ const RoboProductTable = () => {
                 <MenuItem value="GST">GST</MenuItem>
               </Select>
             </FormControl>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <TextField
-              sx={{ m: 1, minWidth: 400 }}
-              id="outlined-basic"
-              label="Add Value"
-              variant="outlined"
-              onChange={handleInput}
-              value={addvalue}
-            />
-
-            <Button
-              sx={{ width: "4vw" }}
-              variant="outlined"
-              onClick={handleAdd}
-            >
+            <Box>
+              <TextField
+                sx={{ m: 1, minWidth: 400 }}
+                id="outlined-basic"
+                label="Add Value"
+                variant="outlined"
+                onChange={handleInput}
+                value={addvalue}
+              />
+            </Box>
+            <Button sx={{}} variant="outlined" onClick={handleAdd}>
               Add
             </Button>
           </Box>
         </Box>
-        <Box sx={{ width: "50%" }}>
+        <Box
+          sx={{
+            width: "50%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Box
             sx={{
-              border: "2px solid black",
-              height: "15vh",
-              width: "90%",
-              margin: 2,
+              border: "1px solid black",
+              height: "7vh",
+              width: "87%",
+              margin: 1,
               display: "flex",
               flexWrap: "wrap",
               justifyContent: "start",
-              gap: 2,
+              gap: 1,
               borderRadius: "10px",
-              padding: 2,
               overflow: "hidden",
             }}
           >
@@ -200,13 +204,13 @@ const RoboProductTable = () => {
               </Box>
             ))}
           </Box>
+          <Button variant="outlined" onClick={handleSave}>
+            Save
+          </Button>
         </Box>
       </Box>
 
-      <Button variant="outlined" onClick={handleSave}>
-        Click TO Save
-      </Button>
-      <Box sx={{ display: "flex", gap: 2, m: 2 }}>
+      <Box sx={{ display: "flex", gap: 2, m: 1 }}>
         <Box
           sx={{
             border: "1px solid black",
@@ -215,28 +219,49 @@ const RoboProductTable = () => {
             alignItems: "center",
           }}
         >
-          <Typography
-            variant="h6"
+          <Box
             sx={{
-              background: "blue",
+              display: "flex",
               width: "100%",
-              textAlign: "center",
-              color: "white",
+              justifyContent: "space-around",
+              background: "blue",
             }}
           >
-            Brand
-          </Typography>
+            <input
+              placeholder="Search Brand"
+              style={{ outline: "blue" }}
+              value={inputSearchBrand}
+              onChange={(e) => setInputSearchBrand(e.target.value)}
+            ></input>
+            <Typography
+              variant="h6"
+              sx={{
+                textAlign: "center",
+                color: "white",
+              }}
+            >
+              Brand
+            </Typography>
+          </Box>
+
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               justifyContent: "start",
               overflowY: "auto",
-              maxHeight: "50vh",
+              maxHeight: "70vh",
               width: "20vw",
             }}
           >
-            {getDyanmicValue?.data?.[0]?.Brand?.map((item, index) => {
+            {[
+              ...(getDyanmicValue?.data?.[0]?.Brand?.filter((item) =>
+                item.toLowerCase().includes(inputSearchBrand)
+              ) || []),
+              ...(getDyanmicValue?.data?.[0]?.Brand?.filter(
+                (item) => !item.toLowerCase().includes(inputSearchBrand)
+              ) || []),
+            ].map((item, index) => {
               const isBrandWithLogo =
                 getDyanmicValue?.data?.[0]?.BrandWithLogo?.some(
                   (brandItem) => brandItem.BrandName === item
@@ -277,7 +302,7 @@ const RoboProductTable = () => {
                     <AddPhotoAlternateIcon
                       onClick={() => handleClickOpen(item, "BrandWithLogo")}
                       sx={{
-                        color: isBrandWithLogo ? "green" : "red", 
+                        color: isBrandWithLogo ? "green" : "red",
                         cursor: "pointer",
                       }}
                     />
@@ -296,31 +321,48 @@ const RoboProductTable = () => {
             position: "relative",
           }}
         >
-          <Typography
-            variant="h6"
+          <Box
             sx={{
-              background: "blue",
+              display: "flex",
               width: "100%",
-              textAlign: "center",
-              color: "white",
-              position: "sticky",
-              top: 0,
-              zIndex: 1,
+              justifyContent: "space-around",
+              background: "blue",
             }}
           >
-            Category
-          </Typography>
+            <input
+              placeholder="Search Category"
+              style={{ outline: "blue" }}
+              value={inputSearchCategory}
+              onChange={(e) => setInputSearchCategory(e.target.value)}
+            ></input>
+            <Typography
+              variant="h6"
+              sx={{
+                textAlign: "center",
+                color: "white",
+              }}
+            >
+              Category
+            </Typography>
+          </Box>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               justifyContent: "start",
               overflowY: "auto",
-              maxHeight: "50vh",
+              maxHeight: "70vh",
               width: "20vw",
             }}
           >
-            {getDyanmicValue?.data?.[0]?.Category?.map((item, index) => (
+            {[
+              ...(getDyanmicValue?.data?.[0]?.Category?.filter((item) =>
+                item.toLowerCase().includes(inputSearchCategory)
+              ) || []),
+              ...(getDyanmicValue?.data?.[0]?.Category?.filter(
+                (item) => !item.toLowerCase().includes(inputSearchCategory)
+              ) || []),
+            ].map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
                 <Typography sx={{ fontSize: "1.4rem" }}>
                   {index + 1}.
@@ -359,31 +401,48 @@ const RoboProductTable = () => {
             position: "relative",
           }}
         >
-          <Typography
-            variant="h6"
+          <Box
             sx={{
-              background: "blue",
+              display: "flex",
               width: "100%",
-              textAlign: "center",
-              color: "white",
-              position: "sticky",
-              top: 0,
-              zIndex: 1,
+              justifyContent: "space-around",
+              background: "blue",
             }}
           >
-            Subcategory
-          </Typography>
+            <input
+              placeholder="Search Sub Category"
+              style={{ outline: "blue" }}
+              value={inputSearchSubCategory}
+              onChange={(e) => setInputSearchSubCategory(e.target.value)}
+            ></input>
+            <Typography
+              variant="h6"
+              sx={{
+                textAlign: "center",
+                color: "white",
+              }}
+            >
+              Sub Category
+            </Typography>
+          </Box>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               justifyContent: "start",
               overflowY: "auto",
-              maxHeight: "50vh",
+              maxHeight: "70vh",
               width: "20vw",
             }}
           >
-            {getDyanmicValue?.data?.[0]?.SubCategory?.map((item, index) => (
+            {[
+              ...(getDyanmicValue?.data?.[0]?.SubCategory?.filter((item) =>
+                item.toLowerCase().includes(inputSearchSubCategory)
+              ) || []),
+              ...(getDyanmicValue?.data?.[0]?.SubCategory?.filter(
+                (item) => !item.toLowerCase().includes(inputSearchSubCategory)
+              ) || []),
+            ].map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
                 <Typography sx={{ fontSize: "1.4rem" }}>
                   {index + 1}.
@@ -485,7 +544,7 @@ const RoboProductTable = () => {
           selectedItem={selectedItem}
           selectedtable={selectedtable}
           fetch={refetch}
-          Logos = {getDyanmicValue?.data?.[0]?.BrandWithLogo}
+          Logos={getDyanmicValue?.data?.[0]?.BrandWithLogo}
         />
       )}
     </Box>
