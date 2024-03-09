@@ -5,8 +5,8 @@ import ProductHistory from "./Components/ProductHistory";
 import Content from "./Components/Content";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useDispatch } from "react-redux";
-import { setHeader } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -47,22 +47,16 @@ const Home_Page = () => {
      // infodialog state
 const description = "This is the product list, where you can view all the product listings"
 
-const [infoOpen, setInfoOpen] = useState(false);
+const dispatch = useDispatch();
+
+const { isInfoOpen } = useSelector((state) => state.ui);
 const handleClose = () => {
-  setInfoOpen(!infoOpen);
+  dispatch(setInfo(false));
 };
-const handleOpen = ()=>{
- setInfoOpen(true);
-}
 
-const dispatch = useDispatch()
-
-useEffect(()=>{
-  dispatch(setHeader({
-    Name:"Product List",
-    handleClick:handleOpen
-  }))
-},[])
+useEffect(() => {
+  dispatch(setHeader("Product List"));
+}, []);
 
   return (
     <Box
@@ -80,7 +74,7 @@ useEffect(()=>{
          <InfoDialogBox
        infoDetails={infoDetail}
        description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

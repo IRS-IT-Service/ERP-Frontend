@@ -3,8 +3,8 @@ import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import CompetitorTable from "./Components/CompetitorTable";
-import { useDispatch } from "react-redux";
-import { setHeader } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -101,23 +101,18 @@ const CompetitorComparsion = () => {
   // infodialog state
   const description =
     "This is the Product Status you can check product details  ";
+    const dispatch = useDispatch();
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+    const { isInfoOpen } = useSelector((state) => state.ui);
+    const handleClose = () => {
+      dispatch(setInfo(false));
+    };
+   
+    useEffect(() => {
+      dispatch(setHeader(`Competitor Comparison`));
+    }, []);
+  
 
-  const dispatch = useDispatch()
-
-  useEffect(()=>{
-    dispatch(setHeader({
-      Name:"Competitor Comparison",
-      handleClick:handleOpen
-    }))
-  },[])
   return (
     <Box
       component="main"
@@ -134,7 +129,7 @@ const CompetitorComparsion = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
       <CompetitorTable />

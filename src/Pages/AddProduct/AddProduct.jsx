@@ -5,7 +5,7 @@ import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import AddProductBoxesDetails from "./component/AddProductBoxesDetails";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setHeader } from "../../features/slice/uiSlice";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -66,23 +66,22 @@ const infoDetail = [
 const AddRoboProducts = () => {
   /// initialize
   const navigate = useNavigate();
-  const dispatch = useDispatch()
   /// global state
   const { themeColor } = useSelector((state) => state.ui);
 
   // infodialog state
   const description = "This is to add a product. You can add a product here";
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
-useEffect(()=>{
-  dispatch(setHeader("Add Product"))
-},[])
+
+  useEffect(() => {
+    dispatch(setHeader("Add Product"));
+  }, []);
   return (
     <Box
       component="main"
@@ -133,7 +132,7 @@ useEffect(()=>{
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>
