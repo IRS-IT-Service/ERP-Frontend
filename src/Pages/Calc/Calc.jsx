@@ -42,10 +42,11 @@ import {
   useUpdateCalcMutation,
 } from "../../features/api/productApiSlice";
 import { useSocket } from "../../CustomProvider/useWebSocket";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../components/Common/Loading";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -128,13 +129,17 @@ const Calc = () => {
   const description1 =
     "This is a Price Calculator where you can calculate the price ";
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose1 = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen1 = () => {
-    setInfoOpen(true);
-  };
+
+  const dispatch = useDispatch();
+
+const { isInfoOpen } = useSelector((state) => state.ui);
+const handleClose1 = () => {
+  dispatch(setInfo(false));
+};
+
+useEffect(() => {
+  dispatch(setHeader(`Price Calculator`));
+}, []);
 
   /// intialize
   const { id } = useParams();
@@ -1832,11 +1837,11 @@ const Calc = () => {
   return (
     <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%" }}>
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={"Price Calculator"}
         info={true}
         customOnClick={handleOpen1}
-      />
+      /> */}
 
       <Loading loading={oneCalcLoading} />
 
@@ -2566,7 +2571,7 @@ const Calc = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description1}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose1}
       />
     </Box>

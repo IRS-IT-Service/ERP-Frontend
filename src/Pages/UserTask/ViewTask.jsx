@@ -20,12 +20,13 @@ import { useGetTaskUpdateQuery } from "../../features/api/usersApiSlice";
 import Loading from "../../components/Common/Loading";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatDate, formatTime, formateDateAndTime } from "../../commonFunctions/commonFunctions";
 import axios from "axios";
 import { USERS_URL } from "../../constants/ApiEndpoints";
 import BASEURL from "../../constants/BaseApi";
 import { flushSync } from "react-dom";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -54,6 +55,7 @@ const ViewTask = () => {
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
+
 
   /// rtk query
   const { data, isLoading, isFetching } = useGetTaskUpdateQuery(
@@ -108,19 +110,24 @@ const ViewTask = () => {
   const description =
     "This is Employee Task where you can view the employee's daily tasks";
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+  
   /// use effect
   useEffect(() => {
     let startDate = new Date();
     let endDate = new Date();
     endDate.setDate(startDate.getDate() - 5);
     setSelectedDate({ end: startDate, start: endDate });
+  }, []);
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`Employee Tasks`));
   }, []);
 
   return (
@@ -135,7 +142,7 @@ const ViewTask = () => {
       }}
     >
       <DrawerHeader />
-      <Header Name={"Employee Tasks"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Employee Tasks"} info={true} customOnClick={handleOpen} /> */}
 
       <Loading loading={isLoading || isFetching} />
       {/* <Box
@@ -359,7 +366,7 @@ const ViewTask = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

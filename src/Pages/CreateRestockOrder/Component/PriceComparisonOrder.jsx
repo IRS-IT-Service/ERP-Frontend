@@ -8,6 +8,8 @@ import CompareAssignDialog from "../../RestockOrderList/component/CompareAssignD
 import Loading from "../../../components/Common/Loading";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import Header from "../../../components/Common/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -193,6 +195,18 @@ const PriceComparisonOrder = () => {
     },
   ];
 
+  
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+  
+  useEffect(() => {
+    dispatch(setHeader(`Price Comparison`));
+  }, []);
+
   return (
     <>
       <Box
@@ -200,7 +214,7 @@ const PriceComparisonOrder = () => {
         sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
       >
         <DrawerHeader />
-        <Header Name={"Price Comparison"} />
+        {/* <Header Name={"Price Comparison"} /> */}
 
         {openDialog ? (
           <CompareAssignDialog

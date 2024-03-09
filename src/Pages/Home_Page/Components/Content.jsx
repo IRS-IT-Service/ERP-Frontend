@@ -63,7 +63,7 @@ const Content = ({ autoHeight, text }) => {
           LandingCost: item.LandingCost.toFixed(2),
           SalesPrice: item.SalesPrice.toFixed(2),
           MRP: item.MRP.toFixed(2),
-          GST: item.GST.toFixed(2),
+          GST: item.GST,
           SellerPrice: item.SellerPrice.toFixed(2),
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
@@ -363,7 +363,7 @@ const Content = ({ autoHeight, text }) => {
           <Box
             sx={{
               width: "100%",
-              height: "78vh",
+              height: "86vh",
               "& .super-app-theme--header": {
                 background: "#eee",
                 color: "black",

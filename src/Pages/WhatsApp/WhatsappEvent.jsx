@@ -1,8 +1,9 @@
 import { Box, Button, Grid, styled, Typography } from "@mui/material";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import WhastsAppDial from "./components/WhastsAppDial";
 import Header from "../../components/Common/Header";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -132,13 +133,16 @@ const WhatsappEvent = () => {
   const description =
     "This is Company Assets you can add assets and download assets details";
 
-  const [infoOpen, setInfoOpen] = useState(false);
+    const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`WhatsApp Event`));
+  }, []);
 
   return (
     <Box
@@ -153,7 +157,7 @@ const WhatsappEvent = () => {
       }}
     >
       <DrawerHeader />
-      <Header Name={"WhatsApp Event"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"WhatsApp Event"} info={true} customOnClick={handleOpen} /> */}
       <Box sx={{ marginTop: "2rem" }}>
         <Grid
           container

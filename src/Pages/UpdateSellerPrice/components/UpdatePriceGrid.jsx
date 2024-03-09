@@ -608,10 +608,10 @@ const Content = ({
     },
     {
       field: "ThresholdQty",
-      headerName: "Threshold",
+      headerName: "Thld",
       flex: 0.3,
-      minWidth: 90,
-      maxWidth: 100,
+      minWidth: 60,
+      maxWidth: 70,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -823,8 +823,8 @@ const Content = ({
         field: "Mqr",
         headerName: "MQR",
         flex: 0.3,
-        minWidth: 90,
-        maxWidth: 100,
+        minWidth: 60,
+        maxWidth: 70,
         align: "center",
         headerAlign: "center",
         headerClassName: "super-app-theme--header",
@@ -841,8 +841,8 @@ const Content = ({
         align: "center",
         headerAlign: "center",
         flex: 0.2,
-        minWidth: 100,
-        maxWidth: 100,
+        minWidth: 80,
+        maxWidth: 80,
         type: "number",
         valueFormatter: (params) => `${params.value} %`,
         // maxWidth: 130,
@@ -855,8 +855,8 @@ const Content = ({
         align: "center",
         headerAlign: "center",
         flex: 0.2,
-        minWidth: 100,
-        maxWidth: 120,
+        minWidth: 80,
+        maxWidth: 80,
         type: "number",
         valueFormatter: (params) => `${params.value} %`,
         // maxWidth: 130,
@@ -892,7 +892,6 @@ const Content = ({
         flex: 0.2,
         minWidth: 100,
         maxWidth: 100,
-
         type: "number",
         valueFormatter: (params) => `₹ ${params.value}`,
         // maxWidth: 130,
@@ -1120,7 +1119,11 @@ const Content = ({
       <FilterBarV2
         customButton1={bulkUpdateCustomButton}
         customButton2={hiddenColumnCustomButton}
-        customButton3={condition === "SalesPrice" ? liveSalesCalcCustomButton : liveSellerCalcCustomButton}
+        customButton3={
+          condition === "SalesPrice"
+            ? liveSalesCalcCustomButton
+            : liveSellerCalcCustomButton
+        }
         // customButton4={liveSellerCalcCustomButton}
         count={selectedItems}
         apiRef={apiRef}
@@ -1170,7 +1173,7 @@ const Content = ({
           <Box
             sx={{
               width: "100%",
-              height: "78vh",
+              height: "85vh",
               "& .super-app-theme--header": {
                 background: "#eee",
                 color: "black",

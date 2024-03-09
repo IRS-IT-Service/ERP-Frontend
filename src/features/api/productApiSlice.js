@@ -324,7 +324,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
     addBulkSellerPrice: builder.mutation({
       query: (data) => {
         return {
-          url:` ${PRODUCT_URL}/addBulksellerPrice`,
+          url:`${PRODUCT_URL}/addBulksellerPrice`,
           method: "POST",
           body:data
         };

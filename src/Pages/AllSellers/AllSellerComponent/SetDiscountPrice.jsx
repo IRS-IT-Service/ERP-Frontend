@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import AddCardIcon from '@mui/icons-material/AddCard';
 import AddIcon from '@mui/icons-material/Add';
 import RangeDial from "./RangeDial";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 // for refresh data
 const DrawerHeader = styled("div")(({ theme }) => ({
     ...theme.mixins.toolbar,
@@ -69,17 +70,21 @@ const SetDiscountPrice = ({ autoHeight, text }) => {
   const [infoOpen, setInfoOpen] = useState(false);
   const [data, setData] = useState();
 
-const handleClose = () => {
-  setInfoOpen(!infoOpen);
-};
-const handleOpen = ()=>{
- setInfoOpen(true);
-}
 
 const HandleSet = (params) =>{
     handleOpen()
     setData(params)
 }
+
+
+const { isInfoOpen } = useSelector((state) => state.ui);
+const handleClose = () => {
+  dispatch(setInfo(false));
+};
+
+useEffect(() => {
+  dispatch(setHeader(`Set Discount Price Range`));
+}, []);
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -417,9 +422,9 @@ const HandleSet = (params) =>{
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
               <DrawerHeader />
-              <Header Name={"Set Discount Price Range"}
+      {/* <Header Name={"Set Discount Price Range"}
       info={true}
-      customOnClick={handleOpen}/>
+      customOnClick={handleOpen}/> */}
       <FilterBarV2 apiRef={apiRef}  />
 
       <Grid container>

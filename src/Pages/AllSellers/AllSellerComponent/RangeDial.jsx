@@ -195,7 +195,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
                       <TableCell align="center">
                         <Box sx={{ display: "flex" }}>
                           <input
-                            type="text"
+                            type="number"
                             name="from"
                             onBlur={handleCheck}
                             value={inputData[index]?.from}
@@ -207,7 +207,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
                           />
                           <Typography sx={{ margin: "2px" }}>-</Typography>
                           <input
-                            type="text"
+                            type="number"
                             name="to"
                             value={inputData[index]?.to}
                             onChange={(e) => handleInputChange(index, e)}
@@ -221,7 +221,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
                       </TableCell>
                       <TableCell align="center">
                         <input
-                          type="text"
+                          type="number"
                           name="price"
                           value={inputData[index]?.price}
                           onChange={(e) => handleInputChange(index, e)}
@@ -234,7 +234,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
                       </TableCell>
                       <TableCell align="center">
                         <input
-                          type="text"
+                          type="number"
                           name="discount"
                           value={inputData[index]?.discount}
                           onChange={(e) => handleInputChange(index, e)}

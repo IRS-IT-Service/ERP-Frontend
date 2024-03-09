@@ -1,8 +1,10 @@
-import {React,useState} from "react";
+import {React,useEffect,useState} from "react";
 import { Box, styled } from "@mui/material";
 import SellerVerificationList from "./Component/SellerVerificationList";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -22,28 +24,31 @@ const SellerVerification = () => {
   // infodialog state
 const description = "This is a wholesale request; you can view all the wholesaler requests"
 
-const [infoOpen, setInfoOpen] = useState(false);
+const dispatch = useDispatch();
+
+const { isInfoOpen } = useSelector((state) => state.ui);
 const handleClose = () => {
-  setInfoOpen(!infoOpen);
+  dispatch(setInfo(false));
 };
-const handleOpen = ()=>{
- setInfoOpen(true);
-}
+
+useEffect(() => {
+  dispatch(setHeader(`WholeSale Requests`));
+}, []);
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header Name={"WholeSale Requests"}  info={true}
-        customOnClick={handleOpen}/>
+      {/* <Header Name={"WholeSale Requests"}  info={true}
+        customOnClick={handleOpen}/> */}
  
       <SellerVerificationList />
         {/* infoDialog table */}
         <InfoDialogBox
        infoDetails={infoDetail}
        description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

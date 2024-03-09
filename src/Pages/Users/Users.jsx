@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import {
   Box,
   styled,
@@ -21,6 +21,8 @@ import { useGetAllUsersQuery } from "../../features/api/usersApiSlice";
 import MasterPassword from "./Components/MasterPasswordDialog";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -114,6 +116,7 @@ const Users = () => {
   const [openMaster, setOpenMaster] = useState(false);
   //Global state
   // const { themeColor } = useSelector((state) => state.ui);
+  
 
   /// rtk query
   const {
@@ -130,17 +133,22 @@ const Users = () => {
     setOpenMaster(true);
   };
 
+
   // infodialog state
   const description =
     "This is User Section helps manage user control, allowing the admin to grant or revoke access as needed";
 
-  const [infoOpen, setInfoOpen] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+  
+  useEffect(() => {
+    dispatch(setHeader("Users Section"));
+  }, []);
 
   return (
     <Box
@@ -148,7 +156,7 @@ const Users = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header Name={"Users Section"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Users Section"} info={true} customOnClick={handleOpen} /> */}
       <UserList
         isFetching={isFetching}
         refetchAllUser={refetchAllUser}
@@ -160,7 +168,7 @@ const Users = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>
