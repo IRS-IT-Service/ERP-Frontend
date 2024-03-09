@@ -101,17 +101,16 @@ const CompetitorComparsion = () => {
   // infodialog state
   const description =
     "This is the Product Status you can check product details  ";
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    const { isInfoOpen } = useSelector((state) => state.ui);
-    const handleClose = () => {
-      dispatch(setInfo(false));
-    };
-   
-    useEffect(() => {
-      dispatch(setHeader(`Competitor Comparison`));
-    }, []);
-  
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Competitor Comparison`));
+  }, []);
 
   return (
     <Box
@@ -124,7 +123,7 @@ const CompetitorComparsion = () => {
         info={true}
         customOnClick={handleOpen}
       /> */}
-     
+
       {/* infoDialog table */}
       <InfoDialogBox
         infoDetails={infoDetail}

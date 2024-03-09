@@ -98,6 +98,10 @@ const CompetitorTable = () => {
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
           renderCell: (params) => {
+            const matchedCompetitor = params.row.competitor.find(
+              (comp) => comp.Name === competitor.Name
+            );
+            const inStock = matchedCompetitor?.inStock;
             return (
               <TableCell align="center">
                 <Box
@@ -107,10 +111,10 @@ const CompetitorTable = () => {
                     alignItems: "center",
                   }}
                 >
-                  {params.row[`${competitor.Name}`]?.URL && (
+                  {params.row[`${competitor.Name}`] && (
                     <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>
                   )}{" "}
-                  {params.row[`${competitor.Name}`]?.URL && (
+                  {params.row[`${competitor.Name}`] && (
                     <span>
                       {" "}
                       <a
@@ -137,6 +141,11 @@ const CompetitorTable = () => {
                       </a>{" "}
                     </span>
                   )}{" "}
+                  {params.row[`${competitor.Name}`] && (
+                    <span style={{ fontSize: "15px" }}>
+                      {inStock ? "✅" : "❌"}
+                    </span>
+                  )}
                 </Box>
               </TableCell>
             );
@@ -180,6 +189,7 @@ const CompetitorTable = () => {
           CompName[compItem.Name] = {
             Price: compItem.Price,
             URL: compItem.URL,
+            inStock:compItem.inStock
           };
         });
 
