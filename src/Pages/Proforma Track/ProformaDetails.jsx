@@ -7,13 +7,14 @@ import {
   InputBase,
   IconButton,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../components/Common/Header';
 import { formatDate } from '../../commonFunctions/commonFunctions';
 import './ProformaDetails.css';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosNewSharpIcon from '@mui/icons-material/ArrowBackIosNewSharp';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
 // import { FaPlus } from 'react-icons/fa';
 
@@ -42,6 +43,19 @@ const ProformaDetails = () => {
   const showDialogHandler = () => {
     setShowForm(!showForm);
   };
+
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+  
+  useEffect(() => {
+    dispatch(setHeader(`Performa Details`));
+  }, []);
+  
   return (
     <Box
       component='main'
@@ -56,7 +70,7 @@ const ProformaDetails = () => {
       }}
     >
       <DrawerHeader />
-      <Header Name={'Performa Details'} />
+      {/* <Header Name={'Performa Details'} /> */}
 
       <Box
         className=''

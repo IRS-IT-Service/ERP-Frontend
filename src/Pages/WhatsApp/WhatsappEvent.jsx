@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import WhastsAppDial from "./components/WhastsAppDial";
 import Header from "../../components/Common/Header";
-import { setHeader } from "../../features/slice/uiSlice";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -133,22 +133,16 @@ const WhatsappEvent = () => {
   const description =
     "This is Company Assets you can add assets and download assets details";
 
-  const [infoOpen, setInfoOpen] = useState(false);
+    const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
-
-  const dispatch = useDispatch()
-
-  useEffect(()=>{
-    dispatch(setHeader({
-      Name:"WhatsApp Event",
-      handleClick:handleOpen
-    }))
-  },[])
+ 
+  useEffect(() => {
+    dispatch(setHeader(`WhatsApp Event`));
+  }, []);
 
   return (
     <Box
