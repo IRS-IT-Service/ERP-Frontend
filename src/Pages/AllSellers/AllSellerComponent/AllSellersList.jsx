@@ -34,6 +34,7 @@ const AllSellersList = () => {
   const [deativeSeller, { isLoading }] = useDeactiveSellerMutation();
 
   /// useEffect
+  console.log(allSellerData)
 
   useEffect(() => {
     if (allSellerData?.status === "success") {
@@ -41,6 +42,8 @@ const AllSellersList = () => {
         return {
           ...item,
           id: index,
+          userName:item.name,
+          companyName:item.companyName,
           name: item.document?.concernPerson,
           Sno: index + 1,
           mobile: item.document?.mobileNo,
@@ -75,9 +78,20 @@ const AllSellersList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
+    // {
+    //   field: "sellerId",
+    //   headerName: "Seller Id",
+    //   flex: 0.3,
+    //   minWidth: 100,
+    //   // maxWidth: 100,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    // },
     {
-      field: "sellerId",
-      headerName: "Seller Id",
+      field: "userName",
+      headerName: "User Name",
       flex: 0.3,
       minWidth: 100,
       // maxWidth: 100,
@@ -88,7 +102,18 @@ const AllSellersList = () => {
     },
     {
       field: "name",
-      headerName: "Name",
+      headerName: "Concern Person",
+      flex: 0.3,
+      minWidth: 100,
+      // maxWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "companyName",
+      headerName: "Company Name",
       flex: 0.3,
       minWidth: 150,
       // maxWidth: 150,
