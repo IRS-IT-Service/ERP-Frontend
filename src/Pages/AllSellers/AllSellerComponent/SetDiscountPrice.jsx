@@ -17,6 +17,7 @@ import AddCardIcon from '@mui/icons-material/AddCard';
 import AddIcon from '@mui/icons-material/Add';
 import RangeDial from "./RangeDial";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 // for refresh data
 const DrawerHeader = styled("div")(({ theme }) => ({
     ...theme.mixins.toolbar,
@@ -52,7 +53,11 @@ const DrawerHeader = styled("div")(({ theme }) => ({
    
   },]
 
+
+
 const SetDiscountPrice = ({ autoHeight, text }) => {
+  const description =
+  "This is set Discount Price Range";
   /// initialization
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
@@ -67,17 +72,21 @@ const SetDiscountPrice = ({ autoHeight, text }) => {
   /// local state
   const [rows, setRows] = useState([]);
   const [hiddenColumns, setHiddenColumns] = useState({});
-  const [infoOpen, setInfoOpen] = useState(false);
+  const [openDial, setOpenDial] = useState(false);
   const [data, setData] = useState();
 
 
 const HandleSet = (params) =>{
-    handleOpen()
+  setOpenDial(true)
     setData(params)
 }
 
+const handleDialClose = () =>{
+  setOpenDial(false)
+}
 
 const { isInfoOpen } = useSelector((state) => state.ui);
+
 const handleClose = () => {
   dispatch(setInfo(false));
 };
@@ -475,12 +484,19 @@ useEffect(() => {
           </Box>
         </Grid>
       </Grid>
-    { infoOpen && <RangeDial
-         open={infoOpen}
-         close={handleClose}
+    { openDial && <RangeDial
+         open={openDial}
+         close={handleDialClose}
          data={data}
          refetch={refetch}
       /> }
+            <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={isInfoOpen}
+        close={handleClose}
+    
+      />
     </Box>
   );
 };
