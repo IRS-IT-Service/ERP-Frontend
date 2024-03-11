@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Grid, Button, Box, styled } from "@mui/material";
+import {
+  Grid,
+  Button,
+  Box,
+  styled,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import CartGrid from "../../../components/Common/CardGrid";
 import { useNavigate } from "react-router-dom";
-import { useGetAllSellerQuery } from "../../../features/api/sellerApiSlice";
+import { useDeleteSellerMutation, useGetAllSellerQuery } from "../../../features/api/sellerApiSlice";
 import Loading from "../../../components/Common/Loading";
+import { toast } from "react-toastify";
+import { formatDate } from "../../../commonFunctions/commonFunctions";
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
 }));
@@ -12,6 +23,8 @@ const SellerVerificationList = () => {
   /// initialization
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [open, setOpen] = useState(false);
 
   /// global state
 
@@ -25,6 +38,7 @@ const SellerVerificationList = () => {
     data: allSellerData,
     isLoading: SellerList,
   } = useGetAllSellerQuery("both");
+  const [deleteSeller,{isLoading}] = useDeleteSellerMutation()
 
   /// useEffect
 
@@ -34,17 +48,29 @@ const SellerVerificationList = () => {
         return {
           ...item,
           id: index,
+          sellerId: item.sellerId,
+          Date:formatDate(item.createdAt),
+          UserName: item.name,
           status:
             item.personalQuery === "not_submit"
               ? "Pending"
               : item.personalQuery,
           Sno: index + 1,
-          gstActive:item.document?.gstActive
+          gstActive: item.document?.gstActive,
         };
       });
       setRow(data);
     }
   }, [allSellerData]);
+
+  const handleDelete = async(sellerId) => {
+    try {
+      const result = await deleteSeller(sellerId);
+      toast.success("Seller deleted successfully");
+      refetchSeller()
+      setOpen(false)
+    } catch (error) {}
+  };
   const columns = [
     {
       field: "Sno",
@@ -56,9 +82,19 @@ const SellerVerificationList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
+    // {
+    //   field: "sellerId",
+    //   headerName: "Seller Id",
+    //   flex: 0.3,
+    //   minWidth: 100,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    // },
     {
-      field: "sellerId",
-      headerName: "Seller Id",
+      field: "UserName",
+      headerName: "UserName",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -86,7 +122,6 @@ const SellerVerificationList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-
     {
       field: "email",
       headerClassName: "super-app-theme--header",
@@ -97,6 +132,16 @@ const SellerVerificationList = () => {
       minWidth: 260,
     },
     {
+      field: "Date",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerName: "Created Date",
+      align: "center",
+      headerAlign: "center",
+      minWidth: 150,
+      
+    },
+    {
       field: "gstActive",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
@@ -105,7 +150,9 @@ const SellerVerificationList = () => {
       headerAlign: "center",
       minWidth: 150,
       cellClassName: (params) => {
-        return params.value === 'Active' ? "green" : 'super-app-theme--cell-red';
+        return params.value === "Active"
+          ? "green"
+          : "super-app-theme--cell-red";
       },
     },
     {
@@ -137,6 +184,35 @@ const SellerVerificationList = () => {
           }}
         >
           View
+        </Button>
+      ),
+    },
+    {
+      field: "Delete",
+      headerName: "Delete",
+      sortable: false,
+      minWidth: 130,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => (
+        <Button onClick={() => setOpen(!open)}>
+          {open && (
+            <Dialog open={open}>
+              <DialogTitle></DialogTitle>
+              <DialogContent>
+                You will loose this document from the database
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpen(!open)}>Close</Button>
+                <Button onClick={() => handleDelete(params.row.sellerId)}>
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
+          )}
+          delete
         </Button>
       ),
     },

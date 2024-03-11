@@ -385,6 +385,9 @@ const Content = ({
             ? ((item.SalesPrice * item.GST) / 100 + item.SalesPrice).toFixed(2)
             : 0,
           Brand: item.Brand,
+          SellerPriceWithGST: item.SalesPrice
+          ? ((item.SellerPrice * item.GST) / 100 + item.SellerPrice).toFixed(2)
+          : 0,
           isVerifiedSellerPrice: item.isVerifiedSellerPrice,
           isRejectedSellerPrice: item.isRejectedSellerPrice,
           isVerifiedQuantity: item.isVerifiedQuantity,
@@ -887,6 +890,20 @@ const Content = ({
         headerClassName: "super-app-theme--header--Seller",
         cellClassName: "super-app-theme--cell",
         headerName: "W price ₹",
+        align: "center",
+        headerAlign: "center",
+        flex: 0.2,
+        minWidth: 100,
+        maxWidth: 100,
+        type: "number",
+        valueFormatter: (params) => `₹ ${params.value}`,
+        // maxWidth: 130,
+      },
+      {
+        field: "SellerPriceWithGST",
+        headerClassName: "super-app-theme--header--Seller",
+        cellClassName: "super-app-theme--cell",
+        headerName: "W price Inc(GST) ₹",
         align: "center",
         headerAlign: "center",
         flex: 0.2,

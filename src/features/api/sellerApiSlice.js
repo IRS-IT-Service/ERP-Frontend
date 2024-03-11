@@ -30,7 +30,15 @@ export const sellerApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    deleteSeller: builder.mutation({
+      query: (params) => {
+        return {
+          url: `${SELLER_URL}/deleteSeller/${params}`,
+          method: "DELETE",
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetAllSellerQuery, useVerifySellerMutation,useDeactiveSellerMutation } = sellerApiSlice;
+export const { useGetAllSellerQuery, useVerifySellerMutation,useDeactiveSellerMutation ,useDeleteSellerMutation} = sellerApiSlice;
