@@ -61,9 +61,9 @@ const CompetitorDial = ({
     const main = {
       datas: info,
     };
-    console.log(main);
+
     try {
-      const res = await addCompair(main).unwrap();
+      // const res = await addCompair(main).unwrap();
       toast.success("Competitor price added successfully");
       handleCloseCompetitor();
       setCompairePrice([{}]);
@@ -84,17 +84,21 @@ const CompetitorDial = ({
 
     setCompairePrice(newLocalData);
   }, [paramsData]);
-
+console.log(price)
   const handleCompetitor = (SKU, CompName, e) => {
+  
     const { value, name, checked } = e.target;
     setPrice((prev) => ({
       ...prev,
       SKU: SKU,
       CompName: CompName,
       [name]: name === "isStock" ? checked : value,
+   
     }));
   };
-
+// console.log(
+//   paramsData
+// )
   useEffect(() => {
     const newCompetitor = {
       Name: price.CompName,
@@ -117,6 +121,7 @@ const CompetitorDial = ({
             if (existingCompetitorIndex !== -1) {
               const updatedCompetitorArray = [...data.competitor];
               updatedCompetitorArray[existingCompetitorIndex] = newCompetitor;
+              console.log(updatedCompetitorArray)
               return { ...data, competitor: updatedCompetitorArray };
             } else {
               return {
@@ -134,9 +139,9 @@ const CompetitorDial = ({
       });
     }
   }, [price, setPrice]);
-
+ 
   const newColumns = columns.filter((column) => column !== "Sno");
-
+console.log(compairePrice)
   return (
     <Dialog
       open={openCompetitor}

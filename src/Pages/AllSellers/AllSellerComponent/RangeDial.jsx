@@ -14,6 +14,7 @@ import {
   TableRow,
   Box,
   Typography,
+  Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,7 +23,7 @@ import { CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 const RangeDial = ({ data, open, close, refetch }) => {
   const [isVerify, setIsverify] = useState(null);
-
+  const sellerWithGst = ((+data.SellerPrice /100)* (100 + +data.GST)).toFixed(0)
   const [setBulk, { isLoading }] = useAddBulkSellerPriceMutation();
 
   const handleCheck = (e) => {
@@ -36,7 +37,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
     setIsverify(false);
   };
   const [inputData, setInputData] = useState([
-    { from: data.Mqr, to: "", price: "", discount: "" },
+    { from: data.Mqr + 1, to: "", price: "", discount: "" },
   ]);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
      const newData = [...inputData];
-    const sellPrice = +data.SellerPrice;
+    const sellPrice = +sellerWithGst;
     if (name === "price") {
       if (value > sellPrice) {
         return;
@@ -146,12 +147,31 @@ const RangeDial = ({ data, open, close, refetch }) => {
           <DialogContent>
             {/* columns info */}
             <Box sx={{display:"flex" ,justifyContent:"space-between" ,alignItems:"center"}}>
-            <Typography sx={{ fontWeigth: "bold", marginTop: 2 }}>
+            <Typography sx={{ fontSize:"12px" ,fontWeigth: "bold", marginTop: 2 }}>
+     Landing Cost:{" "}
+               <span style={{ color: "red" }}>
+                 ₹ {(+data.LandingCost).toFixed(0)}
+              </span>
+            </Typography>
+            <Typography sx={{ fontSize:"12px" ,fontWeigth: "bold", marginTop: 2 }}>
               Seller Price:{" "}
               <span style={{ color: "red" }}>
                 ₹ {(+data.SellerPrice).toFixed(0)}
               </span>
             </Typography>
+            <Typography sx={{ fontSize:"12px" ,fontWeigth: "bold", marginTop: 2 }}>
+              MQR:{" "}
+              <span style={{ color: "red" }}>
+                 {+data?.Mqr}
+              </span>
+            </Typography>
+            <Typography sx={{ fontSize:"12px" ,fontWeigth: "bold", marginTop: 2 }}>
+              Seller Price  Inc({`GST ${(+data?.GST).toFixed(0)}%`}):{" "}
+              <span style={{ color: "red" }}>
+                ₹ {sellerWithGst}
+              </span>
+            </Typography>
+          
             
                           <Button variant="contained" sx={{background:"green"}} onClick={() => handleAddRow()}>
                             <AddIcon />
@@ -182,12 +202,15 @@ const RangeDial = ({ data, open, close, refetch }) => {
                       Discount %
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="center">
+                      Profit %
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }} align="center">
                       Action
                     </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {inputData?.map((data, index) => (
+                  {inputData?.map((datas, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row" align="center">
                         {index + 1}
@@ -244,6 +267,15 @@ const RangeDial = ({ data, open, close, refetch }) => {
                             height: "2rem",
                           }}
                         />
+                      </TableCell>
+                      <TableCell sx={{
+                        textAlign: "center",
+                      }}>
+                  {
+             (((+inputData[index]?.price - +data?.LandingCost) / +data?.LandingCost ) * 100).toFixed(0) 
+
+                  } %
+                    
                       </TableCell>
                       <TableCell>
                         {inputData.length > 0 && (
