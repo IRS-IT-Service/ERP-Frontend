@@ -1,38 +1,39 @@
-import React from 'react';
-import { useState, useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+import React from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useGridApiRef } from '@mui/x-data-grid';
-import { styled } from '@mui/material/styles';
-import { Grid, Button, Typography, Box } from '@mui/material';
-import BarcodeHistoryDialog from './BarcodeHistoryDialog';
-import FilterBar from '../../../components/Common/FilterBar';
-import CartGrid from '../../../components/Common/CardGrid';
-import Loading from '../../../components/Common/Loading';
-import Header from '../../../components/Common/Header';
+import { useGridApiRef } from "@mui/x-data-grid";
+import { styled } from "@mui/material/styles";
+import { Grid, Button, Typography, Box } from "@mui/material";
+import BarcodeHistoryDialog from "./BarcodeHistoryDialog";
+import FilterBar from "../../../components/Common/FilterBar";
+import CartGrid from "../../../components/Common/CardGrid";
+import Loading from "../../../components/Common/Loading";
+import Header from "../../../components/Common/Header";
 import {
   useGetBarcodesDispatchHistoryQuery,
   useGetBarcodesReturnHistoryQuery,
-} from '../../../features/api/barcodeApiSlice';
+} from "../../../features/api/barcodeApiSlice";
 
-import InfoDialogBox from '../../../components/Common/InfoDialogBox';
+import InfoDialogBox from "../../../components/Common/InfoDialogBox";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
 }));
 
-const DrawerHeader = styled('div')(({ theme }) => ({
+const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: 'Barcode No',
+    name: "Barcode No",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/barcodeHistory.png?updatedAt=1703065501421'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/barcodeHistory.png?updatedAt=1703065501421"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -49,17 +50,19 @@ const BarcodeHistory = () => {
   const description = `
 In the "Barcode History" section, you can view the product history, including dispatch and return details. Access this information by clicking the "View" button in the barcode number column.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
+    dispatch(setInfo(false));
   };
 
+  useEffect(() => {
+    dispatch(setHeader(`Barcode History`));
+  }, []);
+
   /// initialize
-  const [search, setSearch] = useState('');
-  const dispatch = useDispatch();
+  const [search, setSearch] = useState("");
   const apiRef = useGridApiRef();
   // const [filterData,setFilterData] = useState([]);
 
@@ -134,70 +137,70 @@ In the "Barcode History" section, you can view the product history, including di
 
   const columns = [
     {
-      field: 'Sno',
-      headerName: 'Sno',
+      field: "Sno",
+      headerName: "Sno",
       flex: 0.2,
       minWidth: 40,
       maxWidth: 50,
-      align: 'center',
-      headerAlign: 'center',
+      align: "center",
+      headerAlign: "center",
 
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
-      field: 'SKU',
-      headerName: 'SKU',
+      field: "SKU",
+      headerName: "SKU",
       flex: 0.2,
       width: 100,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
     },
     {
-      field: 'type',
-      headerName: 'Type',
+      field: "type",
+      headerName: "Type",
       flex: 0.2,
       width: 100,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: (params) =>
-        params.row.type === 'Return' ? (
-          <Typography color='error'>Return</Typography>
+        params.row.type === "Return" ? (
+          <Typography color="error">Return</Typography>
         ) : (
-          <Typography color='green'>Dispatch</Typography>
+          <Typography color="green">Dispatch</Typography>
         ),
     },
     {
-      field: 'Name',
-      headerName: 'Name',
+      field: "Name",
+      headerName: "Name",
       flex: 0.3,
       minWidth: 250,
-      align: 'center',
-      headerAlign: 'center',
+      align: "center",
+      headerAlign: "center",
 
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
-      field: 'Brand',
-      headerName: 'Brand',
+      field: "Brand",
+      headerName: "Brand",
       flex: 0.2,
       minWidth: 150,
-      align: 'center',
-      headerAlign: 'center',
+      align: "center",
+      headerAlign: "center",
 
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
-      field: 'view',
-      headerName: 'Barcode no',
+      field: "view",
+      headerName: "Barcode no",
       minWidth: 120,
-      align: 'center',
-      headerAlign: 'center',
-      headerClassName: 'super-app-theme--header',
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: (params) => {
         const handleViewClick = () => {
           setSerialData({
@@ -232,7 +235,7 @@ In the "Barcode History" section, you can view the product history, including di
         Name: item.Name,
         Brand: item.Brand,
         SNo: item.SNo,
-        type: item.type ? item.type : 'Dispatch',
+        type: item.type ? item.type : "Dispatch",
       };
     });
   };
@@ -241,47 +244,47 @@ In the "Barcode History" section, you can view the product history, including di
 
   return (
     <Box
-      component='main'
-      sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={'Barcode History'} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Barcode History"} info={true} customOnClick={handleOpen} /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 
       <Box
         sx={{
-          height: '100%',
-          width: '100%',
+          height: "100%",
+          width: "100%",
         }}
       >
         <input
-          placeholder='search from SKU , Name , Brand'
+          placeholder="search from SKU , Name , Brand"
           style={{
-            width: '30rem',
-            padding: '10px 25px',
-            margin: '2px 0',
-            borderRadius: '20px',
+            width: "30rem",
+            padding: "10px 25px",
+            margin: "2px 0",
+            borderRadius: "20px",
           }}
-          name='search'
+          name="search"
           onChange={handleOnchange}
           value={search}
         />
         <StyledBox>
-          <Grid item xs={12} sx={{ mt: '5px' }}>
+          <Grid item xs={12} sx={{ mt: "5px" }}>
             <Loading loading={DisptachLoading || ReturnLoading} />
             <CartGrid
               columns={columns}
               apiRef={apiRef}
               rows={filteredData?.length > 0 ? rowss(filteredData) : []}
               rowHeight={40}
-              Height={'74vh'}
+              Height={"74vh"}
               hiddenColumns={hiddenColumns}
               setHiddenColumns={setHiddenColumns}
             />

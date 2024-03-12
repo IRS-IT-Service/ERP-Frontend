@@ -56,6 +56,8 @@ const StyleTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const infoDetail = [
   {
@@ -82,13 +84,16 @@ const SubSerialNumber = () => {
   const description = `
 Here, you can input the barcode numbers of product components, also known as sub-serial numbers.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+const dispatch = useDispatch();
+
+const { isInfoOpen } = useSelector((state) => state.ui);
+const handleClose = () => {
+  dispatch(setInfo(false));
+};
+
+useEffect(() => {
+  dispatch(setHeader(`Sub Serial No`));
+}, []);
 
 
   /// initialization
@@ -246,13 +251,13 @@ Here, you can input the barcode numbers of product components, also known as sub
         sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
       >
         <DrawerHeader />
-        <Header Name={'Sub Serial No'} info={true} customOnClick={handleOpen} />
+        {/* <Header Name={'Sub Serial No'} info={true} customOnClick={handleOpen} /> */}
 
         {/* Dialog info Box */}
         <InfoDialogBox
           infoDetails={infoDetail}
           description={description}
-          open={infoOpen}
+          open={isInfoOpen}
           close={handleClose}
         />
 
