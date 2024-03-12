@@ -1,9 +1,11 @@
-import React, { useState} from "react";
+import React, { useEffect, useState} from "react";
 import VerifyComponent from "./component/VerifyComponent";
 import { Box, styled } from "@mui/material";
 import ToggleNav from "../../components/Common/Togglenav";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -35,13 +37,17 @@ const Verify = () => {
 
   const description = `The "barcode stick module" is designed for products; when you scan a product's barcode, it provides details such as SKU, creation date, barcode number, and brand name.`;
 
-   const [infoOpen, setInfoOpen] = useState(false);
-   const handleClose = () => {
-     setInfoOpen(!infoOpen);
-   };
-   const handleOpen = ()=>{
-    setInfoOpen(true);
-   }
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Barcode Stick`));
+  }, []);
+
   return (
     <Box
       component='main'
@@ -49,13 +55,13 @@ const Verify = () => {
     >
       <DrawerHeader />
       
-      <Header Name={'Barcode Stick'} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={'Barcode Stick'} info={true} customOnClick={handleOpen} /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

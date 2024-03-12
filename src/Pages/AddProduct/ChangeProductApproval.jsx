@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   styled,
   Box,
@@ -26,7 +26,8 @@ import { useState } from "react";
 import Loading from "../../components/Common/Loading";
 import Header from "../../components/Common/Header";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -123,7 +124,21 @@ const ChangeProductApproval = () => {
 
     // Compare the sorted arrays
     return JSON.stringify(sortedArray1) === JSON.stringify(sortedArray2);
+
+    
   }
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Product Change Approval`));
+  }, []);
+
   return (
     <Box
       component="main"
@@ -131,7 +146,7 @@ const ChangeProductApproval = () => {
     >
       <DrawerHeader />
       <Loading loading={isLoading || isFetching || approvalLoading} />
-      <Header Name={"Product Change Approval"} />
+      {/* <Header Name={"Product Change Approval"} /> */}
 
       <Box
         sx={{

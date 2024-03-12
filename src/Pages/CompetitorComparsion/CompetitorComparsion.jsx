@@ -131,7 +131,7 @@ const CompetitorComparsion = () => {
         open={isInfoOpen}
         close={handleClose}
       />
-      <CompetitorTable />
+      <CompetitorTable /> 
     </Box>
   );
 };

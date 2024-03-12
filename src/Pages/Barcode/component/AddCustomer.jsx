@@ -7,10 +7,11 @@ import {
 import { toast } from "react-toastify";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid"; // Import DataGrid
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCustomerInfo } from "../../../features/slice/productSlice";
 import Header from "../../../components/Common/Header";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 // const infoDetail = [
 //   {
@@ -74,13 +75,15 @@ const AddCustomer = () => {
   const description = `
 Adding customer details is the fundamental purpose of the "Add Customer Detail" feature.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Add Customer Details`));
+  }, []);
   /// initialization
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -237,17 +240,17 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
           flexDirection: 'column',
         }}
       >
-        <Header
+        {/* <Header
           Name={'Add Customer Details'}
           info={true}
           customOnClick={handleOpen}
-        />
+        /> */}
 
         {/* Dialog info Box */}
         <InfoDialogBox
           // infoDetails={infoDetail}
           description={description}
-          open={infoOpen}
+          open={isInfoOpen}
           close={handleClose}
         />
        

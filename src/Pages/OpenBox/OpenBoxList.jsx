@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, styled, Button, Dialog, CircularProgress } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -9,6 +9,8 @@ import { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import { toast } from "react-toastify";
 import Header from "../../components/Common/Header";
+import { setHeader } from "../../features/slice/uiSlice";
+import { useDispatch } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -136,6 +138,17 @@ const OpenBoxList = () => {
     },
   ];
 
+  const dispatch = useDispatch();
+
+  // const { isInfoOpen } = useSelector((state) => state.ui);
+  // const handleClose = () => {
+  //   dispatch(setInfo(false));
+  // };
+
+  useEffect(() => {
+    dispatch(setHeader(`Opened Boxes`));
+  }, []);
+
   /// Function
 
   return (
@@ -144,7 +157,7 @@ const OpenBoxList = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header Name={"Opened Boxes"}/>
+      {/* <Header Name={"Opened Boxes"}/> */}
       <Box>
     
         <Box
