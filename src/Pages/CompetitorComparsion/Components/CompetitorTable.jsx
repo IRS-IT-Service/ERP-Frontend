@@ -21,6 +21,7 @@ import {
   TablePagination,
   Tooltip,
   Grid,
+  Modal,
 } from "@mui/material";
 import {
   DataGrid,
@@ -29,7 +30,10 @@ import {
 } from "@mui/x-data-grid";
 import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import InfoIcon from "@mui/icons-material/Info";
-import { useAddCompetitorMutation } from "../../../features/api/productApiSlice";
+import {
+  useAddCompetitorMutation,
+  useDeleteCompetitorMutation,
+} from "../../../features/api/productApiSlice";
 import { useGetAllCompetitorQuery } from "../../../features/api/productApiSlice";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,6 +42,8 @@ import Loading from "../../../components/Common/Loading";
 import CachedIcon from "@mui/icons-material/Cached";
 import { setAllProductsV2 } from "../../../features/slice/productSlice";
 import CompetitorDial from "./CompetitorDial";
+import { formatDate } from "../../../commonFunctions/commonFunctions";
+import { DeleteRounded } from "@mui/icons-material";
 const columnsData = [
   { field: "Sno", headerName: "S.No" },
   { field: "SKU", headerName: "SKU" },
@@ -69,6 +75,8 @@ const CompetitorTable = () => {
     refetch: productrefetch,
   } = useGetAllCompetitorQuery();
 
+  const [deleteCompetitor, { isLoading }] = useDeleteCompetitorMutation();
+
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
     useSelector((state) => state.product);
 
@@ -76,7 +84,8 @@ const CompetitorTable = () => {
   const [data, setData] = useState([]);
 
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState({ Name: "", URL: "", Date: "" });
+  const [openModal, setOpenModal] = useState(false);
+  const [input, setInput] = useState({ Name: "", Date: "" });
   const [rows, setRows] = useState([]);
   const [filterColumns, setFilterColumns] = useState([]);
   const [competitorColumns, setCompetitorColumns] = useState([]);
@@ -84,6 +93,7 @@ const CompetitorTable = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [nametoDelete, setNameToDelete] = useState("");
 
   useEffect(() => {
     if (allCompetitor) {
@@ -189,7 +199,7 @@ const CompetitorTable = () => {
           CompName[compItem.Name] = {
             Price: compItem.Price,
             URL: compItem.URL,
-            inStock:compItem.inStock
+            inStock: compItem.inStock,
           };
         });
 
@@ -442,7 +452,7 @@ const CompetitorTable = () => {
 
   const addCustomer = (
     <Button variant="outlined" onClick={handleClickOpen}>
-      Add Competitor
+      Add/Delete Competitor
     </Button>
   );
 
@@ -461,19 +471,17 @@ const CompetitorTable = () => {
     const newSelectedRow = selectedRows.filter((item) => item.id !== id);
     setSelectedRows(newSelectedRow);
   };
+
   const handleAdd = async () => {
     try {
       if (!input) return toast.error("Please fill the data");
       const data = {
         Competitors: [input],
       };
-      const result = await addCompetitor(data);
+      const result = await addCompetitor(data).unwrap();
 
-      if (!result.data.success) {
-        return;
-      }
       toast.success("Competitor added successfully");
-      setInput({});
+      setInput({ Name: "", Date: "" });
       refetch();
       productrefetch();
     } catch (error) {
@@ -481,112 +489,140 @@ const CompetitorTable = () => {
     }
   };
 
+  const handleOpenModel = (name) => {
+    setOpenModal(!openModal);
+    setNameToDelete(name);
+  };
+
+  const handleDelete = async () => {
+    if (!nametoDelete) return toast.error("Please select a competitor name");
+    try {
+      const result = await deleteCompetitor({ name: nametoDelete }).unwrap();
+      toast.success(`${nametoDelete} deleted successfully}`);
+      setNameToDelete("");
+      productrefetch();
+      setOpenModal(!openModal);
+    } catch (error) {}
+  };
+
   return (
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle
-            id="alert-dialog-title"
-            sx={{
-              textAlign: "center",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography sx={{ fontWeight: "bold" }}>Add Competitor</Typography>
-            <Button onClick={handleClose} sx={{ fontWeight: "bold" }}>
-              {" "}
-              Cancel
-            </Button>
-          </DialogTitle>
-
-          <DialogContent>
-            <Box
+        {open && (
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle
+              id="alert-dialog-title"
               sx={{
-                gap: "12px",
-                justifyContent: "center",
-                alignItems: "center",
+                textAlign: "center",
+                display: "flex",
+                justifyContent: "space-between",
               }}
             >
+              <Typography sx={{ fontWeight: "bold" }}>
+                Add Competitor
+              </Typography>
+              <Button onClick={() => handleClose()} sx={{ fontWeight: "bold" }}>
+                {" "}
+                Cancel
+              </Button>
+            </DialogTitle>
+
+            <DialogContent>
               <Box
                 sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
+                  gap: "12px",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <TextField
-                  id="outlined-basic"
-                  label="Competitor Name"
-                  variant="outlined"
-                  sx={{ width: "100%" }}
-                  name="Name"
-                  value={input.Name}
-                  onChange={handleOnChange}
-                />
-                <TextField
-                  id="outlined-basic1"
-                  label="URL"
-                  variant="outlined"
-                  sx={{ width: "100%" }}
-                  name="URL"
-                  onChange={handleOnChange}
-                />
-
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  onClick={handleAdd}
-                  disabled={addCompetitorLoading}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
                 >
-                  {addCompetitorLoading ? <CircularProgress /> : "Add"}
-                </Button>
-              </Box>
-              <Box sx={{ marginTop: "12px" }}>
-                <TableContainer component={Paper} sx={{ maxHeight: 300 }}>
-                  <Table
-                    sx={{ minWidth: 500 }}
-                    size="medium"
-                    aria-label="a dense table"
+                  <TextField
+                    id="outlined-basic"
+                    label="Competitor Name"
+                    variant="outlined"
+                    sx={{ width: "100%" }}
+                    name="Name"
+                    value={input.Name}
+                    onChange={handleOnChange}
+                  />
+                  {/* <TextField
+                    id="outlined-basic1"
+                    label="URL"
+                    variant="outlined"
+                    sx={{ width: "100%" }}
+                    name="URL"
+                    onChange={handleOnChange}
+                  /> */}
+
+                  <Button
+                    type="submit"
+                    variant="outlined"
+                    onClick={handleAdd}
+                    disabled={addCompetitorLoading}
                   >
-                    <TableHead
-                      sx={{ position: "sticky", top: 0, background: "white" }}
+                    {addCompetitorLoading ? <CircularProgress /> : "Add"}
+                  </Button>
+                </Box>
+                <Box sx={{ marginTop: "12px" }}>
+                  <TableContainer component={Paper} sx={{ maxHeight: 300 }}>
+                    <Table
+                      sx={{ minWidth: 500 }}
+                      size="medium"
+                      aria-label="a dense table"
                     >
-                      <TableRow>
-                        <TableCell>Sno</TableCell>
-                        <TableCell>Competitor Name</TableCell>
-                        <TableCell>Url</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {allCompetitor?.data[0]?.Competitors?.map(
-                        (row, index) => {
-                          return (
-                            <TableRow
-                              key={index}
-                              sx={{
-                                "&:last-child td, &:last-child th": {
-                                  border: 0,
-                                },
-                              }}
-                            >
-                              <TableCell component="th" scope="row">
-                                {index + 1}
-                              </TableCell>
-                              <TableCell>{row.Name}</TableCell>
-                              <TableCell>{row.URL}</TableCell>
-                            </TableRow>
-                          );
-                        }
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                      <TableHead
+                        sx={{ position: "sticky", top: 0, background: "white" }}
+                      >
+                        <TableRow>
+                          <TableCell>Sno</TableCell>
+                          <TableCell>Competitor Name</TableCell>
+                          <TableCell>Create Date</TableCell>
+                          <TableCell>Delete</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {allCompetitor?.data[0]?.Competitors?.map(
+                          (row, index) => {
+                            return (
+                              <TableRow
+                                key={index}
+                                sx={{
+                                  "&:last-child td, &:last-child th": {
+                                    border: 0,
+                                  },
+                                }}
+                              >
+                                <TableCell component="th" scope="row">
+                                  {index + 1}
+                                </TableCell>
+                                <TableCell>{row.Name}</TableCell>
+                                <TableCell>{formatDate(row.Date)}</TableCell>
+                                <TableCell>
+                                  <Button
+                                    onClick={() => handleOpenModel(row.Name)}
+                                  >
+                                    <DeleteRounded />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          }
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Box>
               </Box>
-            </Box>
-          </DialogContent>
-          <DialogActions></DialogActions>
-        </Dialog>
+            </DialogContent>
+            <DialogActions></DialogActions>
+          </Dialog>
+        )}
       </Box>
       <Box sx={{ height: "100%", wdth: "100%" }}>
         <FilterBarV2
@@ -675,17 +711,72 @@ const CompetitorTable = () => {
               />
             </Box>
           </Grid>
-          <CompetitorDial
-            openCompetitor={openCompetitor}
-            handleCloseCompetitor={handleCloseCompetitor}
-            paramsData={selectedRows}
-            handleOpenCompetitor={handleOpenCompetitor}
-            columns={filterColumns}
-            handleRemoveCompetitorItem={handleRemoveCompetitorItem}
-            productrefetch={productrefetch}
-            refetch={refetch}
-          />
+          {openCompetitor && (
+            <CompetitorDial
+              openCompetitor={openCompetitor}
+              handleCloseCompetitor={handleCloseCompetitor}
+              paramsData={selectedRows}
+              handleOpenCompetitor={handleOpenCompetitor}
+              columns={filterColumns}
+              handleRemoveCompetitorItem={handleRemoveCompetitorItem}
+              productrefetch={productrefetch}
+              refetch={refetch}
+            />
+          )}
         </Grid>
+        {openModal && (
+          <Modal
+            open={openModal}
+            onClose={() => setOpenModal(!openModal)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 400,
+                bgcolor: "background.paper",
+                border: "2px solid #000",
+                boxShadow: 24,
+                // p: 2,
+              }}
+            >
+              <Typography
+                sx={{ textAlign: "center", padding: "8px", fontWeight: "bold" }}
+              >
+                Deleting the Competitor :{" "}
+                <span style={{ fontSize: "25px" }}>{nametoDelete}</span>
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 4,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "4px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => setOpenModal(!openModal)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ background: "red" }}
+                  onClick={() => handleDelete()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? <CircularProgress /> : "OK"}{" "}
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
+        )}
       </Box>
     </div>
   );
