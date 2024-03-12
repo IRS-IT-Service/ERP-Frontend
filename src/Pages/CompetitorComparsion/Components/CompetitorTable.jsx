@@ -126,7 +126,7 @@ const CompetitorTable = () => {
                     alignItems: "center",
                   }}
                 >
-                  {params.row[`${competitor.Name}`]?.URL && (
+                  {params.row[`${competitor.Name}`] && (
                     <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>
                   )}{" "}
                   {params.row[`${competitor.Name}`]?.URL && (
@@ -158,7 +158,7 @@ const CompetitorTable = () => {
                   )}{" "}   
                 </Box>
                 {params.row[`${competitor.Name}`] && (
-                    <Box style={{ fontSize: "10px" ,position:"absolute" ,top:21 }}>
+                    <Box style={{ fontSize: "10px" ,position:"absolute" ,top:19.5 }}>
                       {inStock ? <span style={{color:"#0c2de8"}}>in Stock</span> : <span style={{color:"red"}}>Out Stock</span>}
                     </Box>
                   )}
@@ -507,7 +507,9 @@ const CompetitorTable = () => {
       toast.success(`${nametoDelete} deleted successfully}`);
       setNameToDelete("");
       productrefetch();
-      setOpenModal(!openModal);
+      setOpenModal(false);
+      setOpen(false)
+
     } catch (error) {}
   };
 
@@ -649,7 +651,7 @@ const CompetitorTable = () => {
             <Box
               sx={{
                 width: "100%",
-                height: "78vh",
+                height: "84vh",
                 "& .super-app-theme--header": {
                   background: "#eee",
                   color: "black",
@@ -767,7 +769,7 @@ const CompetitorTable = () => {
               >
                 <Button
                   variant="contained"
-                  onClick={() => setOpenModal(!openModal)}
+                  onClick={() => setOpenModal(false)}
                 >
                   Cancel
                 </Button>

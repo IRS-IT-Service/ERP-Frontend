@@ -44,7 +44,7 @@ const CompetitorDial = ({
     CompName: "",
     url: "",
     Price: "",
-    inStock:false
+    inStock: false,
   });
 
   const handleSubmit = async () => {
@@ -64,10 +64,11 @@ const CompetitorDial = ({
     try {
       const res = await addCompair(main).unwrap();
       toast.success("Competitor price added successfully");
-      setCompairePrice([{}]);
       productrefetch();
       refetch();
       handleCloseCompetitor();
+      setCompairePrice([])
+      window.location.reload();
     } catch (err) {
       console.log(err);
     }
@@ -84,7 +85,6 @@ const CompetitorDial = ({
   }, [paramsData]);
 
   const handleCompetitor = (SKU, CompName, e, oldValue, oldValue2) => {
-   ;
     const { value, name, checked } = e.target;
     if (name === "url") {
       setPrice({
@@ -93,7 +93,7 @@ const CompetitorDial = ({
         CompName: CompName,
         url: value,
         Price: oldValue || price.Price,
-        inStock:oldValue2 || price.inStock
+        inStock: oldValue2 || price.inStock,
       });
     } else if (name === "Price") {
       setPrice({
@@ -102,16 +102,16 @@ const CompetitorDial = ({
         CompName: CompName,
         Price: value,
         url: oldValue || price.url,
-        inStock:oldValue2 || price.inStock
+        inStock: oldValue2 || price.inStock,
       });
     } else {
       setPrice({
         ...price,
         SKU: SKU,
         CompName: CompName,
-        Price: oldValue || price.url,
+        Price: oldValue || price.Price,
         url: oldValue2 || price.url,
-        inStock:checked
+        inStock: checked,
       });
     }
   };
@@ -157,7 +157,7 @@ const CompetitorDial = ({
   }, [price, setPrice]);
 
   const newColumns = columns.filter((column) => column !== "Sno");
-console.log(compairePrice)
+  console.log(price);
   return (
     <Dialog
       open={openCompetitor}
@@ -461,8 +461,8 @@ console.log(compairePrice)
                             >
                               Stock:
                               <Checkbox
-                            defaultChecked={item[column]?.inStock}
-                              onChange={(e) =>
+                                defaultChecked={item[column]?.inStock}
+                                onChange={(e) =>
                                   handleCompetitor(
                                     item.SKU,
                                     column,
