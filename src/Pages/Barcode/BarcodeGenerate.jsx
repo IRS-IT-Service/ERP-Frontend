@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
-import { Box, styled } from '@mui/material';
-import BarcodeGenerateGrid from './component/BarcodeGenerateGrid';
-import Header from '../../components/Common/Header';
-import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import React, { useEffect, useState } from "react";
+import { Box, styled } from "@mui/material";
+import BarcodeGenerateGrid from "./component/BarcodeGenerateGrid";
+import Header from "../../components/Common/Header";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
-const DrawerHeader = styled('div')(({ theme }) => ({
+const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: 'Generate Barcode',
+    name: "Generate Barcode",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/generateBarcode.png?updatedAt=1702978365135'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/generateBarcode.png?updatedAt=1702978365135"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -29,12 +31,12 @@ const infoDetail = [
   },
 
   {
-    name: 'Buttons for Generate & Download Barcode',
+    name: "Buttons for Generate & Download Barcode",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/downloadBarcode.png?updatedAt=1702978364929'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/downloadBarcode.png?updatedAt=1702978364929"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -44,16 +46,16 @@ const infoDetail = [
       />
     ),
     instruction:
-      'When you click on the download button, it will download the generated barcode in Excel format.',
+      "When you click on the download button, it will download the generated barcode in Excel format.",
   },
 
   {
-    name: 'View Button',
+    name: "View Button",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/barcodeView.png?updatedAt=1703134934128'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/barcodeView.png?updatedAt=1703134934128"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -63,7 +65,7 @@ const infoDetail = [
       />
     ),
     instruction:
-      'When you click on the View Button, it will show you barcode for specific selected product.',
+      "When you click on the View Button, it will show you barcode for specific selected product.",
   },
 ];
 
@@ -74,26 +76,34 @@ function BarcodeGenerate() {
           barcode, click on "Download." If you wish to view the barcode, you can
           do so by clicking on "View."`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Barcode Generate`));
+  }, []);
+
   return (
     <Box
-      component='main'
-      sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={'Barcode Generate'} info={true} customOnClick={handleOpen} />
+      {/* <Header
+        Name={"Barcode Generate"}
+        info={true}
+        customOnClick={handleOpen}
+      /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
       <BarcodeGenerateGrid />
@@ -102,9 +112,6 @@ function BarcodeGenerate() {
 }
 
 export default BarcodeGenerate;
-
-
-
 
 // const infoDetail = [
 //   {
@@ -163,19 +170,11 @@ export default BarcodeGenerate;
 //   },
 // ];
 
-
-
-
 // const description = `The Barcode Generation function is  designed to create barcodes for
 //           products. This is accomplished by selecting the product, clicking on
 //           the "Generate" button, which will yield a new barcode. To obtain the
 //           barcode, click on "Download." If you wish to view the barcode, you can
 //           do so by clicking on "View."`;
-
-
-
-
-
 
 // const [isClicked, setIsClicked] = useState(false);
 
@@ -198,7 +197,6 @@ export default BarcodeGenerate;
 //         open={infoOpen}
 //         close={handleClose1}
 //       />
-
 
 // const rws = [
 //   createData(

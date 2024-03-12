@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import InfoDialogBox from '../../components/Common/InfoDialogBox';
-import { Box, styled } from '@mui/material';
-import SellerDetailsGrid from './components/SellerDetailsGrid';
-import Shipment from './components/Shipment';
-import Header from '../../components/Common/Header';
-import { useDispatch, useSelector } from 'react-redux';
-import { setHeader, setInfo } from '../../features/slice/uiSlice';
+import React, { useEffect, useState } from "react";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { Box, styled } from "@mui/material";
+import SellerDetailsGrid from "./components/SellerDetailsGrid";
+import Shipment from "./components/Shipment";
+import Header from "../../components/Common/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
-const DrawerHeader = styled('div')(({ theme }) => ({
+const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: 'Barcode Number',
+    name: "Barcode Number",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/barcode-no.png?updatedAt=1702964422158'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/barcode-no.png?updatedAt=1702964422158"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -31,12 +31,12 @@ const infoDetail = [
   },
 
   {
-    name: 'Shipment Detail',
+    name: "Shipment Detail",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ship-detail.png?updatedAt=1702964422051'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ship-detail.png?updatedAt=1702964422051"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -49,12 +49,12 @@ const infoDetail = [
   },
 
   {
-    name: 'Shipment Detail Tracking',
+    name: "Shipment Detail Tracking",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -74,19 +74,19 @@ const SellerDetails = () => {
           Number column allows you to retrieve all product details associated
           with the respective barcode.`;
 
+  const dispatch = useDispatch();
 
-          const dispatch = useDispatch();
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
 
-          const { isInfoOpen } = useSelector((state) => state.ui);
-          const handleClose = () => {
-            dispatch(setInfo(false));
-          };
-          
-          useEffect(() => {
-            dispatch(setHeader(`Sales Details`));
-          }, []);
+  useEffect(() => {
+    dispatch(setHeader(`Sales Details`));
+  }, []);
+  
   return (
-    <Box component='main' sx={{ flexGrow: 1, overflow: 'hidden' }}>
+    <Box component="main" sx={{ flexGrow: 1, overflow: "hidden" }}>
       <DrawerHeader />
       {/* <Header Name={'Sales Details'} info={true} customOnClick={handleOpen} /> */}
 

@@ -12,25 +12,19 @@ import {
   useGetUnApprovedCountQuery,
 } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Header from "../../../components/Common/Header";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { useSendMessageMutation } from "../../../features/api/whatsAppApiSlice";
 import { DataSaverOff } from "@mui/icons-material";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
   const description = `"This is an Approval Module for mutual functionalities such as Stock, MRP, Sales Price, Seller Price, and Cost. In this module, you grant permission by selecting the products. Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions."`;
-
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+  
 
   /// initialization
   const socket = useSocket();
@@ -39,6 +33,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
   // get query from url
   const { query } = useParams();
+
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
@@ -744,19 +739,31 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     },
   ];
 
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`${query} Approval`));
+  }, [query]);
+
   return (
     <Box sx={{ width: "100%" }}>
-      <Header
+      {/* <Header
         Name={`${query} Approval`}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         // infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

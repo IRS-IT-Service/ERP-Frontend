@@ -1,8 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import CreateBoxOpen from "./Components/CreateBoxOpen";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -32,13 +34,16 @@ const OpenBox = () => {
 
   const description = `In the Box Open section, you are required to scan the barcode of the product component. Afterward, you need to fill in data such as status and action.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Box open section`));
+  }, []);
 
   return (
     <Box
@@ -46,17 +51,17 @@ const OpenBox = () => {
       sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={'Box open section'}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

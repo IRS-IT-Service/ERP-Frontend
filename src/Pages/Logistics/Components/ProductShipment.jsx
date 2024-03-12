@@ -8,7 +8,8 @@ import Loading from "../../../components/Common/Loading";
 import Dateformat from "../../../components/Common/Dateformat";
 import Header from "../../../components/Common/Header";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const infoDetail = [
   {
@@ -69,13 +70,16 @@ const infoDetail = [
 const ProductShipment = () => {
   const description = `In this Shipment History Module, you can find the complete shipment history dispatched to the client. Clicking on the 'Reset Filter' button will reset the date.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose1 = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen1 = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Shipment History`));
+  }, []);
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
@@ -263,17 +267,17 @@ const ProductShipment = () => {
         mt: "66px",
       }}
     >
-      <Header
+      {/* <Header
         Name={"Shipment History"}
         info={true}
         customOnClick={handleOpen1}
-      />
+      /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         // infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose1}
       />
 

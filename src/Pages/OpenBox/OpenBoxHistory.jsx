@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, styled, Button, Dialog } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useGetAllBoxOpenHistoryQuery } from "../../features/api/barcodeApiSlice";
 import { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import Header from "../../components/Common/Header";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -96,6 +98,17 @@ const OpenBoxHistory = () => {
     },
   ];
 
+  const dispatch = useDispatch();
+
+  // const { isInfoOpen } = useSelector((state) => state.ui);
+  // const handleClose = () => {
+  //   dispatch(setInfo(false));
+  // };
+
+  useEffect(() => {
+    dispatch(setHeader(`Opened Box History`));
+  }, []);
+
   /// Function
 
   return (
@@ -104,7 +117,7 @@ const OpenBoxHistory = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header Name={"Opened Box History"}/>
+      {/* <Header Name={"Opened Box History"}/> */}
       <Box>
 
 

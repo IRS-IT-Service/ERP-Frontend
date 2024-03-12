@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dispatch_Return_Grid from "./component/Dispatch_Return_Grid";
 import { Box, styled } from "@mui/material";
 import AddCustomer from "./component/AddCustomer";
 import Header from "../../components/Common/Header";
-import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -11,12 +13,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: 'Customer Details',
+    name: "Customer Details",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/customerdetail.png?updatedAt=1703066749550'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/customerdetail.png?updatedAt=1703066749550"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -29,12 +31,12 @@ const infoDetail = [
   },
 
   {
-    name: 'Select Button',
+    name: "Select Button",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/selectDropdown.png?updatedAt=1703067502463'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/selectDropdown.png?updatedAt=1703067502463"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -48,35 +50,37 @@ This select dropdown offers options, and upon making a selection, it will displa
   },
 ];
 
-
 const Dispatch_Return = () => {
   const description = `
 In the barcode dispatch/return feature, you can add dispatched or returned products by scanning them. Additionally, you can check and filter them using the select option.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Barcode Dispatch Return`));
+  }, []);
+
   return (
-      
     <Box
-      component='main'
-      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header
-        Name={'Barcode Dispatch Return'}
+      {/* <Header
+        Name={"Barcode Dispatch Return"}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

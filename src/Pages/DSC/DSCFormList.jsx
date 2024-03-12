@@ -31,6 +31,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../CustomProvider/useWebSocket";
 import PdfDownloadDial from "./Components/PdfDownloadDial";
 import WebStatusDial from "./Components/WebStatusDial";
+import { setHeader } from '../../features/slice/uiSlice';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -158,6 +159,17 @@ const DSCFormList = () => {
     setDscData({});
     setOpenDial(!openDial);
   };
+
+
+
+  // const { isInfoOpen } = useSelector((state) => state.ui);
+  // const handleClose = () => {
+  //   dispatch(setInfo(false));
+  // };
+
+  useEffect(() => {
+    dispatch(setHeader(`DSC Form View`));
+  }, []);
 
   const handleDownloadPdf = (id) => {
     setDownloadLoading(true);

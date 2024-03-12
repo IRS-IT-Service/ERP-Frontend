@@ -1,8 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import BulkMessageTable from "./Components/BulkMessageTable";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -99,26 +101,30 @@ const BulkMessage = () => {
   const description =
     "This is the Product Status you can check product details  ";
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+    const dispatch = useDispatch();
+
+    const { isInfoOpen } = useSelector((state) => state.ui);
+    const handleClose = () => {
+      dispatch(setInfo(false));
+    };
+  
+    useEffect(() => {
+      dispatch(setHeader(`Bulk Message`));
+    }, []);
+
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Bulk Message"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Bulk Message"} info={true} customOnClick={handleOpen} /> */}
 
       {/* infoDialog table */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
       <BulkMessageTable />

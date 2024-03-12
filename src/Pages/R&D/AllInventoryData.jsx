@@ -34,6 +34,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 import { setRAndForm } from '../../features/slice/R&DSlice';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
 const infoDetail = [
   {
@@ -94,6 +95,17 @@ const infoDetail = [
 const AllInventoryData = () => {
   const description = `The Entry Form for Repairs Module is for the drone service center. Here, we enter customer details for drone services. After clicking the submit button, the data will be submitted.`;
 
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`All Inventory Data`));
+  }, []);
+  
   //alInventoryData rtk
   const { data: inventoryData } = useGetAllRDInventoryQuery();
   const columns = [
@@ -160,13 +172,6 @@ const AllInventoryData = () => {
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
 
   return (
     <Box
@@ -174,16 +179,16 @@ const AllInventoryData = () => {
       sx={{ flexGrow: 2, p: 0, width: '100%', overflow: 'hidden' }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={`All Inventory Data`}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 
