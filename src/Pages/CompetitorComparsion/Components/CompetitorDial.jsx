@@ -25,7 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import HttpIcon from "@mui/icons-material/Http";
-import { CheckBox } from "@mui/icons-material";
+
 const CompetitorDial = ({
   openCompetitor,
   handleCloseCompetitor,
@@ -44,7 +44,7 @@ const CompetitorDial = ({
     CompName: "",
     url: "",
     Price: "",
-    isStock: false,
+    inStock:false
   });
 
   const handleSubmit = async () => {
@@ -61,9 +61,8 @@ const CompetitorDial = ({
     const main = {
       datas: info,
     };
-
     try {
-      // const res = await addCompair(main).unwrap();
+      const res = await addCompair(main).unwrap();
       toast.success("Competitor price added successfully");
       handleCloseCompetitor();
       setCompairePrice([{}]);
@@ -84,27 +83,46 @@ const CompetitorDial = ({
 
     setCompairePrice(newLocalData);
   }, [paramsData]);
-console.log(price)
-  const handleCompetitor = (SKU, CompName, e) => {
-  
+
+  const handleCompetitor = (SKU, CompName, e, oldValue, oldValue2) => {
+   ;
     const { value, name, checked } = e.target;
-    setPrice((prev) => ({
-      ...prev,
-      SKU: SKU,
-      CompName: CompName,
-      [name]: name === "isStock" ? checked : value,
-   
-    }));
+    if (name === "url") {
+      setPrice({
+        ...price,
+        SKU: SKU,
+        CompName: CompName,
+        url: value,
+        Price: oldValue || price.Price,
+        inStock:oldValue2 || price.inStock
+      });
+    } else if (name === "Price") {
+      setPrice({
+        ...price,
+        SKU: SKU,
+        CompName: CompName,
+        Price: value,
+        url: oldValue || price.url,
+        inStock:oldValue2 || price.inStock
+      });
+    } else {
+      setPrice({
+        ...price,
+        SKU: SKU,
+        CompName: CompName,
+        Price: oldValue || price.url,
+        url: oldValue2 || price.url,
+        inStock:checked
+      });
+    }
   };
-// console.log(
-//   paramsData
-// )
+
   useEffect(() => {
     const newCompetitor = {
       Name: price.CompName,
       Price: +price.Price,
       URL: price.url,
-      inStock: price.isStock,
+      inStock: price.inStock,
     };
 
     const existingSKUIndex = compairePrice.findIndex(
@@ -121,7 +139,6 @@ console.log(price)
             if (existingCompetitorIndex !== -1) {
               const updatedCompetitorArray = [...data.competitor];
               updatedCompetitorArray[existingCompetitorIndex] = newCompetitor;
-              console.log(updatedCompetitorArray)
               return { ...data, competitor: updatedCompetitorArray };
             } else {
               return {
@@ -139,9 +156,9 @@ console.log(price)
       });
     }
   }, [price, setPrice]);
- 
+
   const newColumns = columns.filter((column) => column !== "Sno");
-console.log(compairePrice)
+
   return (
     <Dialog
       open={openCompetitor}
@@ -389,7 +406,13 @@ console.log(compairePrice)
                                 padding: 4,
                               }} // Adjust the value according to your preference
                               onChange={(e) =>
-                                handleCompetitor(item.SKU, column, e)
+                                handleCompetitor(
+                                  item.SKU,
+                                  column,
+                                  e,
+                                  item[column]?.URL,
+                                  item[column]?.inStock
+                                )
                               }
                             />
                           </Box>
@@ -419,7 +442,13 @@ console.log(compairePrice)
                                 padding: 4,
                               }} // Adjust the value according to your preference
                               onChange={(e) =>
-                                handleCompetitor(item.SKU, column, e)
+                                handleCompetitor(
+                                  item.SKU,
+                                  column,
+                                  e,
+                                  item[column]?.Price,
+                                  item[column]?.inStock
+                                )
                               }
                             />
                           </Box>
@@ -433,10 +462,15 @@ console.log(compairePrice)
                             >
                               Stock:
                               <Checkbox
-                                defaultChecked={item[column]?.inStock}
-                                name="isStock"
-                                onChange={(e) =>
-                                  handleCompetitor(item.SKU, column, e)
+                            defaultChecked={item[column]?.inStock}
+                              onChange={(e) =>
+                                  handleCompetitor(
+                                    item.SKU,
+                                    column,
+                                    e,
+                                    item[column]?.Price,
+                                    item[column]?.URL
+                                  )
                                 }
                               ></Checkbox>
                             </span>

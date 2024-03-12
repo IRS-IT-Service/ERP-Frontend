@@ -98,10 +98,6 @@ const CompetitorTable = () => {
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
           renderCell: (params) => {
-            const matchedCompetitor = params.row.competitor.find(
-              (comp) => comp.Name === competitor.Name
-            );
-            const inStock = matchedCompetitor?.inStock;
             return (
               <TableCell align="center">
                 <Box
@@ -111,10 +107,10 @@ const CompetitorTable = () => {
                     alignItems: "center",
                   }}
                 >
-                  {params.row[`${competitor.Name}`] && (
+                  {params.row[`${competitor.Name}`]?.URL && (
                     <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>
                   )}{" "}
-                  {params.row[`${competitor.Name}`] && (
+                  {params.row[`${competitor.Name}`]?.URL && (
                     <span>
                       {" "}
                       <a
@@ -141,11 +137,6 @@ const CompetitorTable = () => {
                       </a>{" "}
                     </span>
                   )}{" "}
-                  {params.row[`${competitor.Name}`] && (
-                    <span style={{ fontSize: "15px" }}>
-                      {inStock ? "✅" : "❌"}
-                    </span>
-                  )}
                 </Box>
               </TableCell>
             );
@@ -201,10 +192,10 @@ const CompetitorTable = () => {
             (allProductData.data.currentPage - 1) * allProductData.data.limit,
           SKU: item.SKU,
           Product: item.Name,
-          GST: item.GST,
+          GST: item.GST.toFixed(2),
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
-          SalesPrice: item.SalesPrice,
+          SalesPrice:item.SalesPrice,
           Category: item.Category,
           competitor: item.CompetitorPrice,
           ...CompName,
@@ -372,7 +363,7 @@ const CompetitorTable = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `₹ ${params.value}`,
+      valueFormatter: (params) => `₹ ${params.value}`
     },
 
     {
@@ -607,7 +598,7 @@ const CompetitorTable = () => {
             <Box
               sx={{
                 width: "100%",
-                height: "87vh",
+                height: "78vh",
                 "& .super-app-theme--header": {
                   background: "#eee",
                   color: "black",
