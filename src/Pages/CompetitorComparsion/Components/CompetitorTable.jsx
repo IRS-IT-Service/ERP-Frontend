@@ -108,8 +108,17 @@ const CompetitorTable = () => {
           headerAlign: "center",
           headerClassName: "super-app-theme--header",
           renderCell: (params) => {
+            const matchedCompetitor = params.row.competitor.find(
+              (comp) => comp.Name === competitor.Name
+            );
+            const inStock = matchedCompetitor?.inStock;
             return (
               <TableCell align="center">
+                <Box sx={{
+                  display: "flex",
+                 flexDirection: "column",
+                 position:"relative"
+                }}>
                 <Box
                   sx={{
                     display: "flex",
@@ -146,7 +155,13 @@ const CompetitorTable = () => {
                         </Tooltip>{" "}
                       </a>{" "}
                     </span>
-                  )}{" "}
+                  )}{" "}   
+                </Box>
+                {params.row[`${competitor.Name}`] && (
+                    <Box style={{ fontSize: "10px" ,position:"absolute" ,top:21 }}>
+                      {inStock ? <span style={{color:"#0c2de8"}}>in Stock</span> : <span style={{color:"red"}}>Out Stock</span>}
+                    </Box>
+                  )}
                 </Box>
               </TableCell>
             );

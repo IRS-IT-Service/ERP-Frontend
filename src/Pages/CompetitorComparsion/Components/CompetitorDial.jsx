@@ -49,7 +49,7 @@ const CompetitorDial = ({
 
   const handleSubmit = async () => {
     const finalValue = compairePrice.filter(
-      (item) => item.competitor?.length > 0
+      (item) => item.competitor?.length > 0 && item.competitor[0].Name !== ""
     );
     let info = finalValue.map((item) => {
       return {
@@ -64,10 +64,10 @@ const CompetitorDial = ({
     try {
       const res = await addCompair(main).unwrap();
       toast.success("Competitor price added successfully");
-      handleCloseCompetitor();
       setCompairePrice([{}]);
       productrefetch();
       refetch();
+      handleCloseCompetitor();
     } catch (err) {
       console.log(err);
     }
@@ -80,7 +80,6 @@ const CompetitorDial = ({
         ...item,
       };
     });
-
     setCompairePrice(newLocalData);
   }, [paramsData]);
 
@@ -158,7 +157,7 @@ const CompetitorDial = ({
   }, [price, setPrice]);
 
   const newColumns = columns.filter((column) => column !== "Sno");
-
+console.log(compairePrice)
   return (
     <Dialog
       open={openCompetitor}
