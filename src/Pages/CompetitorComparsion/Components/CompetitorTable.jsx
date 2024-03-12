@@ -149,7 +149,7 @@ const CompetitorTable = () => {
                             sx={{
                               width: "15px",
                               marginTop: 0.5,
-                              color: "black",
+                              color: inStock ? "green" : "red",
                             }}
                           />
                         </Tooltip>{" "}
@@ -157,11 +157,11 @@ const CompetitorTable = () => {
                     </span>
                   )}{" "}   
                 </Box>
-                {params.row[`${competitor.Name}`] && (
+                {/* {params.row[`${competitor.Name}`] && (
                     <Box style={{ fontSize: "10px" ,position:"absolute" ,top:19.5 }}>
                       {inStock ? <span style={{color:"#0c2de8"}}>in Stock</span> : <span style={{color:"red"}}>Out Stock</span>}
                     </Box>
-                  )}
+                  )} */}
                 </Box>
               </TableCell>
             );
@@ -430,6 +430,26 @@ const CompetitorTable = () => {
           <Button size="small" onClick={() => status()}>
             <CachedIcon />
           </Button>
+          <Box sx={{
+            display: "flex",
+             alignItems: "center",
+             gap:1
+          }}>
+        <Typography sx={{fontWeight:"bold" ,fontSize: "12px"}}>In Stock</Typography> <InfoIcon
+                            sx={{
+                              fontSize: "18px",
+                         color:"green"
+                            }}
+                          />
+
+      
+        <Typography sx={{fontWeight:"bold" ,fontSize: "12px"}}>Out Stock</Typography> <InfoIcon
+                            sx={{
+                              fontSize: "18px",
+                         color:"red"
+                            }}
+                          />
+          </Box>
           <TablePagination
             component="div"
             count={totalProductCount}
