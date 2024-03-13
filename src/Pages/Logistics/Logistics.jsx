@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import InwardLogistics from "./Components/InwardLogistics";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -67,13 +69,16 @@ const infoDetail = [
 const Logistics = () => {
   const description = `"This inward logistics Module" is designed for tracking the logistics that are shipped to the IRS. After filling in all the details and clicking on the submit button, the system will save all the information and display it on the portal.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Inward Logistics`));
+  }, []);
 
   return (
     <Box
@@ -81,17 +86,17 @@ const Logistics = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={"Inward Logistics"}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

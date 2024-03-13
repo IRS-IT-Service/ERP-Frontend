@@ -11,7 +11,8 @@ import Loading from "../../components/Common/Loading";
 import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -138,6 +139,18 @@ const AddCommonRepair = () => {
       console.log(err);
     }
   };
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Add Common Repair Issues`));
+  }, []);
+  
   return (
     <Box
       component="main"
@@ -148,9 +161,9 @@ const AddCommonRepair = () => {
         loading={isLoading || isFetching || addCommmonLoading || deleteLoading}
       />
 
-      <Box sx={{ marginTop: "2px", padding: "6px", background: "#D5D9E5" }}>
+      {/* <Box sx={{ marginTop: "2px", padding: "6px", background: "#D5D9E5" }}>
         <h3 style={{ textAlign: "center" }}>Add Common Repair Issues</h3>
-      </Box>
+      </Box> */}
 
       <Box
         sx={{
