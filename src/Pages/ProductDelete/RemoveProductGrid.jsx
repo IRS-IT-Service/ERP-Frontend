@@ -583,6 +583,7 @@ const RemoveProductGrid = () => {
           </Box>
         </DialogContent>
       </Dialog>
+      
            {/* infoDialog table */}
            <InfoDialogBox
         infoDetails={infoDetail}
