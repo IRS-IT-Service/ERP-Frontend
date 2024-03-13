@@ -62,7 +62,6 @@ const Content = ({
 
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
     useSelector((state) => state.product);
-
   /// local state
   const [rows, setRows] = useState([]);
   const [editedRows, setEditedRows] = useState([]);
@@ -76,6 +75,7 @@ const Content = ({
   const [openCalc, setOpenCalc] = useState(false);
   const [buttonType, setButtontype] = useState("");
   const [isRejectedOn, setisRejectedOn] = useState(false);
+  const [buttonBlink, setButtonBlink] = useState("");
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -84,38 +84,8 @@ const Content = ({
   const [totalProductCount, setTotalProductCount] = useState(0);
   const [localData, setLocalData] = useState([]);
 
-  /// function
-  function getUniqueItems(arr1, arr2, key) {
-    // Combine both arrays
-    const combinedArray = arr1.concat(arr2);
-
-    // Use a Set to track unique items based on the specified key
-    const uniqueItemsSet = new Set();
-
-    // Filter the combined array to get unique items
-    const uniqueItems = combinedArray.filter((item) => {
-      const keyValue = item[key];
-      if (!uniqueItemsSet.has(keyValue)) {
-        uniqueItemsSet.add(keyValue);
-        return true;
-      }
-      return false;
-    });
-
-    return uniqueItems;
-  }
-  function findUniqueElements(arr1, arr2) {
-    // Create a set for the second array
-    const set2 = new Set(arr2);
-
-    // Filter the first array to get elements that are unique to it
-    const uniqueElements = arr1.filter((item) => !set2.has(item));
-
-    return uniqueElements[0];
-  }
-
+ 
   /// rtk query
-
   const {
     data: allProductData,
     isLoading: productLoading,
@@ -125,17 +95,6 @@ const Content = ({
     pollingInterval: 1000 * 300,
   });
 
-  // const {
-  //   data: allProductData,
-  //   isLoading: productLoading,
-  //   refetch,
-  //   isFetching,
-  // } = useGetAllProductQuery(
-  //   { searchTerm: searchTerm || undefined },
-  //   {
-  //     pollingInterval: 1000 * 300,
-  //   }
-  // );;
 
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
@@ -386,8 +345,10 @@ const Content = ({
             : 0,
           Brand: item.Brand,
           SellerPriceWithGST: item.SalesPrice
-          ? ((item.SellerPrice * item.GST) / 100 + item.SellerPrice).toFixed(2)
-          : 0,
+            ? ((item.SellerPrice * item.GST) / 100 + item.SellerPrice).toFixed(
+                2
+              )
+            : 0,
           isVerifiedSellerPrice: item.isVerifiedSellerPrice,
           isRejectedSellerPrice: item.isRejectedSellerPrice,
           isVerifiedQuantity: item.isVerifiedQuantity,
@@ -414,15 +375,22 @@ const Content = ({
     }
   }, [allProductData, triggerDefault]);
 
-  const handleRejectFilter = async () => {
-    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+ 
 
-    if (isRejectedOn) {
-      setFilterString(`type=update&page=1`);
-      setisRejectedOn(false);
+  // function for fetch data on latest query
+  const fetchDataWithQuery = (query) => {
+    if (!buttonBlink) {
+      setFilterString(
+        `${
+          filterString === "page=1"
+            ? `type=${query}&page=1`
+            : filterString + `type=${query}&page=1`
+        }`
+      );
+      setButtonBlink(query);
     } else {
-      setFilterString(`&page=1`);
-      setisRejectedOn(true);
+      setFilterString("page=1");
+      setButtonBlink();
     }
   };
 
@@ -1027,59 +995,103 @@ const Content = ({
           <Box display="flex" gap="20px">
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Waiting Approval</span>
-              <Box
-                bgcolor="#FF7F50"
+              <Button
                 sx={{
                   border: "0.5px solid black",
                   width: "25px",
                   height: "20px",
                   borderRadius: "10px",
+                  backgroundColor: `${
+                    buttonBlink === "waitingApproval" ? "white" : "#FF7F50"
+                  }`,
                 }}
-              ></Box>
+                onClick={() => fetchDataWithQuery("waitingApproval")}
+              ></Button>
+            </Box>
+            <Box display="flex" alignItems="center" gap="10px">
+              <span style={{ fontWeight: "bold" }}>New Product</span>
+              <Button
+                sx={{
+                  border: "0.5px solid black",
+                  width: "10px",
+                  height: "20px",
+                  borderRadius: "10px",
+                  backgroundColor: `${
+                    buttonBlink === "newProduct" ? "white" : "violet"
+                  }`,
+                }}
+                onClick={() => fetchDataWithQuery("newProduct")}
+              ></Button>
             </Box>
             <Box display="flex" alignItems="center" gap="10px">
               <span style={{ fontWeight: "bold" }}>Update Rejected</span>
-              <Box
+              <Button
                 sx={{
                   border: "0.5px solid black",
                   width: "25px",
                   height: "20px",
                   borderRadius: "10px",
                   cursor: "pointer",
-                  backgroundColor: "#B22222",
+                  backgroundColor: `${
+                    buttonBlink === "update" ? "white" : "#B22222"
+                  }`,
                   color: "#ffff",
                   "&:hover": {
                     backgroundColor: "#ffff",
                     color: "#B22222",
                   },
                 }}
-                onClick={handleRejectFilter}
-              ></Box>
+                onClick={() => fetchDataWithQuery("update")}
+              ></Button>
             </Box>
             <Box display="flex" alignItems="center" gap="10px">
-              <span style={{ fontWeight: "bold" }}>Sales Columns</span>
-              <Box
-                bgcolor="#93C54B"
+              <span style={{ fontWeight: "bold" }}>Updated Product</span>
+              <Button
                 sx={{
                   border: "0.5px solid black",
                   width: "25px",
                   height: "20px",
                   borderRadius: "10px",
+                  cursor: "pointer",
+                  backgroundColor: `${
+                    buttonBlink === "updatedProduct" ? "white" : "grey"
+                  }`,
+                  color: "#ffff",
+                  "&:hover": {
+                    backgroundColor: "#ffff",
+                    color: "#B22222",
+                  },
                 }}
-              ></Box>
+                onClick={() => fetchDataWithQuery("updatedProduct")}
+              ></Button>
             </Box>
-            <Box display="flex" alignItems="center" gap="10px">
-              <span style={{ fontWeight: "bold" }}>Seller Columns</span>
-              <Box
-                bgcolor="#606CF2"
-                sx={{
-                  border: "0.5px solid black",
-                  width: "25px",
-                  height: "20px",
-                  borderRadius: "10px",
-                }}
-              ></Box>
-            </Box>
+            {condition === "SalesPrice" ? (
+              <Box display="flex" alignItems="center" gap="10px">
+                <span style={{ fontWeight: "bold" }}>Sales Columns</span>
+                <Box
+                  bgcolor="#93C54B"
+                  sx={{
+                    border: "0.5px solid black",
+                    width: "25px",
+                    height: "20px",
+                    borderRadius: "10px",
+                  }}
+                ></Box>
+              </Box>
+            ) : (
+              <Box display="flex" alignItems="center" gap="10px">
+                <span style={{ fontWeight: "bold" }}>Seller Columns</span>
+                <Box
+                  bgcolor="#606CF2"
+                  sx={{
+                    border: "0.5px solid black",
+                    width: "25px",
+                    height: "20px",
+                    borderRadius: "10px",
+                  }}
+                ></Box>
+              </Box>
+            )}
           </Box>
 
           <TablePagination

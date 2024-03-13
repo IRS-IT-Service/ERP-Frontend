@@ -4,13 +4,21 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
+import ReplayIcon from "@mui/icons-material/Replay";
 import {
   useAddBrandLogoMutation,
   useDeleteDyanmicValueMutation,
 } from "../../../features/api/productApiSlice";
 import { CatchingPokemonSharp } from "@mui/icons-material";
 import { toast } from "react-toastify";
-import { Box, CircularProgress, DialogTitle, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  DialogTitle,
+  Typography,
+  TextField,
+} from "@mui/material";
+import generateUniqueId from "generate-unique-id";
 
 export default function RoboDialogbox({
   open,
@@ -23,13 +31,37 @@ export default function RoboDialogbox({
   const [upload, setUpload] = useState(null);
   const [deleteValue] = useDeleteDyanmicValueMutation();
   const [addBrandLogo, { isLoading }] = useAddBrandLogoMutation();
+  const [captcha, setCaptcha] = useState(null);
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [openCaptcha, setOpenCaptcha] = useState(false);
+  const [timerError, setTimerError] = useState(false);
 
   const handleDeleteValue = async () => {
     try {
-      const info = { query: selectedtable, values: selectedItem };
-      const result = await deleteValue(info).unwrap();
-      toast.success("Delected Successfully");
-      fetch();
+      if (captchaInput === captcha) {
+        const info = { query: selectedtable, values: selectedItem };
+
+        const result = await deleteValue(info).unwrap();
+
+        if (result.status === true) {
+          toast.success("Deleted Successfully");
+          setOpenCaptcha(false);
+          setCaptchaInput("");
+          fetch();
+        } else {
+          toast.error("Some Error Occured Plz Try Again!");
+          setOpenCaptcha(false);
+          setCaptchaInput("");
+          fetch();
+        }
+      } else {
+        captchaRegen();
+        toast.error("Invalid Captcha");
+        setTimerError(true);
+        setTimeout(() => {
+          setTimerError(false);
+        }, 3000);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -61,7 +93,79 @@ export default function RoboDialogbox({
   const url = upload && URL.createObjectURL(upload);
 
   const upoladedFile = Logos.filter((logo) => logo.BrandName === selectedItem);
-  console.log(upoladedFile)
+  console.log(upoladedFile);
+
+  const CaptchaElementGenerator = () => {
+    if (!captcha) {
+      return (
+        <Box
+          sx={{
+            paddingTop: "7px",
+            paddingBottom: "9px",
+            // margin: "5px",
+            letterSpacing: "6px",
+            width: "200px",
+            height: "40px",
+            backgroundColor: "grey",
+            borderRadius: "5px",
+            textAlign: "center",
+            marginBottom: "10px",
+            display: "inline-block",
+          }}
+        ></Box>
+      );
+    }
+
+    return (
+      <Box
+        sx={{
+          paddingTop: "7px",
+          paddingBottom: "9px",
+          // margin: "5px",
+          letterSpacing: "6px",
+          width: "200px",
+          height: "40px",
+          backgroundColor: "grey",
+          borderRadius: "5px",
+          textAlign: "center",
+          marginBottom: "10px",
+          display: "inline-block",
+        }}
+      >
+        {captcha.split("").map((item, index) => {
+          const min = 1;
+          const max = 25;
+
+          const randomNumber =
+            Math.floor(Math.random() * (max - min + 1)) + min;
+          let transformValue = `rotate(${randomNumber}deg)`;
+
+          return (
+            <Typography
+              key={index}
+              sx={{
+                display: "inline-block",
+                margin: "5px",
+                transform: transformValue,
+              }}
+            >
+              {item}
+            </Typography>
+          );
+        })}
+      </Box>
+    );
+  };
+
+  const captchaRegen = () => {
+    setCaptcha(
+      generateUniqueId({
+        length: 6,
+        useLetters: true,
+      })
+    );
+  };
+
   return (
     <React.Fragment>
       <Dialog
@@ -81,7 +185,7 @@ export default function RoboDialogbox({
                 sx={{
                   display: "flex",
                   marginTop: "10px",
-                  gap:"200px",
+                  gap: "200px",
                   width: "500px",
                   height: "250px",
                 }}
@@ -164,6 +268,51 @@ export default function RoboDialogbox({
             <DialogContentText>
               Are you sure want to Delete {selectedtable} Named: {selectedItem}?
             </DialogContentText>
+            <DialogContent
+              sx={{
+                padding: "0",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "10px",
+                // textAlign: "center", // Add this line to center the content
+              }}
+            >
+              <Box
+                sx={{
+                  backgroundColor: "#80bfff",
+                  padding: "5px",
+                  fontWeight: "bold",
+                }}
+              >
+              </Box>
+              <Box
+                sx={{
+                  marginTop: "10px",
+                  marginBottom: "10px",
+                  paddingLeft: "20px",
+                }}
+              >
+                {CaptchaElementGenerator()}
+
+                <Button
+                  sx={{
+                    marginBottom: "10px",
+                  }}
+                  onClick={captchaRegen}
+                >
+                  <ReplayIcon />
+                </Button>
+
+                <TextField
+                  placeholder="Enter captcha"
+                  sx={{ display: "block" }}
+                  value={captchaInput}
+                  onChange={(e) => {
+                    setCaptchaInput(e.target.value);
+                  }}
+                />
+              </Box>
+            </DialogContent>
           </DialogContent>
         )}
         <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
@@ -172,7 +321,6 @@ export default function RoboDialogbox({
             <Button
               onClick={() => {
                 handleDeleteValue();
-                handleClose();
               }}
             >
               Ok
