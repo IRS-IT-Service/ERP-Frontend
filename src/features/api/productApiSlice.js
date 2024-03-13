@@ -240,10 +240,11 @@ export const productApiSlice = apiSlice.injectEndpoints({
       },
     }),
     deleteProduct: builder.mutation({
-      query: (id) => {
+      query: (params) => {
         return {
-          url: `${PRODUCT_URL}/deleteProduct/${id}`,
+          url: `${PRODUCT_URL}/deleteProduct/${params.id}`,
           method: "DELETE",
+          body:params
         };
       },
     }),
@@ -339,6 +340,15 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    sendOtpForDeleteProduct: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/deleteProductOtp`,
+          method:"Post",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -382,4 +392,5 @@ export const {
   useAddBrandLogoMutation,
   useAddBulkSellerPriceMutation,
   useDeleteCompetitorMutation,
+  useSendOtpForDeleteProductMutation,
 } = productApiSlice;

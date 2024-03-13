@@ -43,6 +43,10 @@ const approvalItems = [
     icon: "fa-solid fa-fa-solid fa-arrow-right-arrow-left",
   },
   {
+    name: "Stock Approval",
+    icon: "fa-solid fa-fa-solid fa-arrow-right-arrow-left",
+  },
+  {
     name: "Whole Sale Signup",
     icon: "fa-solid fa-right-to-bracket",
   },
