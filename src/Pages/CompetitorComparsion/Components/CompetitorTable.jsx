@@ -44,6 +44,8 @@ import { setAllProductsV2 } from "../../../features/slice/productSlice";
 import CompetitorDial from "./CompetitorDial";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import { DeleteRounded } from "@mui/icons-material";
+import ReplayIcon from "@mui/icons-material/Replay";
+import generateUniqueId from "generate-unique-id";
 const columnsData = [
   { field: "Sno", headerName: "S.No" },
   { field: "SKU", headerName: "SKU" },
@@ -94,6 +96,10 @@ const CompetitorTable = () => {
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [nametoDelete, setNameToDelete] = useState("");
+  const [captcha, setCaptcha] = useState(null);
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [openCaptcha, setOpenCaptcha] = useState(false);
+  const [timerError, setTimerError] = useState(false);
 
   useEffect(() => {
     if (allCompetitor) {
@@ -114,52 +120,64 @@ const CompetitorTable = () => {
             const inStock = matchedCompetitor?.inStock;
             return (
               <TableCell align="center">
-                <Box sx={{
-                  display: "flex",
-                 flexDirection: "column",
-                 position:"relative"
-                }}>
                 <Box
                   sx={{
                     display: "flex",
-                    gap: 1,
-                    alignItems: "center",
+                    flexDirection: "column",
+                    position: "relative",
                   }}
                 >
-                  {params.row[`${competitor.Name}`] && (
-                    <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>
-                  )}{" "}
-                  {params.row[`${competitor.Name}`]?.URL && (
-                    <span>
-                      {" "}
-                      <a
-                        href={`https://${
-                          params.row[`${competitor?.Name}`]?.URL
-                        }`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      alignItems: "center",
+                    }}
+                  >
+                    {params.row[`${competitor.Name}`] && (
+                      <span>{params.row[`${competitor.Name}`]?.Price} ₹ </span>
+                    )}{" "}
+                    {params.row[`${competitor.Name}`]?.URL && (
+                      <span>
                         {" "}
-                        <Tooltip
-                          title={`${params.row[`${competitor?.Name}`]?.URL}`}
-                          placement="top"
-                          key={index}
+                        <a
+                          href={`https://${
+                            params.row[`${competitor?.Name}`]?.URL
+                          }`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
-                          <InfoIcon
-                            sx={{
-                              width: "15px",
-                              marginTop: 0.5,
-                              color: "black",
-                            }}
-                          />
-                        </Tooltip>{" "}
-                      </a>{" "}
-                    </span>
-                  )}{" "}   
-                </Box>
-                {params.row[`${competitor.Name}`] && (
-                    <Box style={{ fontSize: "10px" ,position:"absolute" ,top:19.5 }}>
-                      {inStock ? <span style={{color:"#0c2de8"}}>in Stock</span> : <span style={{color:"red"}}>Out Stock</span>}
+                          {" "}
+                          <Tooltip
+                            title={`${params.row[`${competitor?.Name}`]?.URL}`}
+                            placement="top"
+                            key={index}
+                          >
+                            <InfoIcon
+                              sx={{
+                                width: "15px",
+                                marginTop: 0.5,
+                                color: "black",
+                              }}
+                            />
+                          </Tooltip>{" "}
+                        </a>{" "}
+                      </span>
+                    )}{" "}
+                  </Box>
+                  {params.row[`${competitor.Name}`] && (
+                    <Box
+                      style={{
+                        fontSize: "10px",
+                        position: "absolute",
+                        top: 19.5,
+                      }}
+                    >
+                      {inStock ? (
+                        <span style={{ color: "#0c2de8" }}>in Stock</span>
+                      ) : (
+                        <span style={{ color: "red" }}>Out Stock</span>
+                      )}
                     </Box>
                   )}
                 </Box>
@@ -220,7 +238,7 @@ const CompetitorTable = () => {
           GST: item.GST.toFixed(2),
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
-          SalesPrice:item.SalesPrice,
+          SalesPrice: item.SalesPrice,
           Category: item.Category,
           competitor: item.CompetitorPrice,
           ...CompName,
@@ -388,7 +406,7 @@ const CompetitorTable = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `₹ ${params.value}`
+      valueFormatter: (params) => `₹ ${params.value}`,
     },
 
     {
@@ -503,14 +521,102 @@ const CompetitorTable = () => {
   const handleDelete = async () => {
     if (!nametoDelete) return toast.error("Please select a competitor name");
     try {
-      const result = await deleteCompetitor({ name: nametoDelete }).unwrap();
-      toast.success(`${nametoDelete} deleted successfully}`);
-      setNameToDelete("");
-      productrefetch();
-      setOpenModal(false);
-      setOpen(false)
-
+      if (captchaInput === captcha) {
+        const result = await deleteCompetitor({ name: nametoDelete }).unwrap();
+        if (result.status === true) {
+          toast.success(`${nametoDelete} deleted successfully`);
+          setNameToDelete("");
+          productrefetch();
+          setOpenModal(false);
+          setOpen(false);
+          setOpenCaptcha(false);
+          setCaptchaInput("");
+        } else {
+          toast.error("Some Error Occured Plz Try Again!");
+          setOpenCaptcha(false);
+          setCaptchaInput("");
+          fetch();
+        }
+      } else {
+        captchaRegen();
+        toast.error("Invalid Captcha");
+        setTimerError(true);
+        setTimeout(() => {
+          setTimerError(false);
+        }, 3000);
+      }
     } catch (error) {}
+  };
+
+  const CaptchaElementGenerator = () => {
+    if (!captcha) {
+      return (
+        <Box
+          sx={{
+            paddingTop: "7px",
+            paddingBottom: "9px",
+            // margin: "5px",
+            letterSpacing: "6px",
+            width: "200px",
+            height: "40px",
+            backgroundColor: "grey",
+            borderRadius: "5px",
+            textAlign: "center",
+            marginBottom: "10px",
+            display: "inline-block",
+          }}
+        ></Box>
+      );
+    }
+
+    return (
+      <Box
+        sx={{
+          paddingTop: "7px",
+          paddingBottom: "9px",
+          // margin: "5px",
+          letterSpacing: "6px",
+          width: "200px",
+          height: "40px",
+          backgroundColor: "grey",
+          borderRadius: "5px",
+          textAlign: "center",
+          marginBottom: "10px",
+          display: "inline-block",
+        }}
+      >
+        {captcha.split("").map((item, index) => {
+          const min = 1;
+          const max = 25;
+
+          const randomNumber =
+            Math.floor(Math.random() * (max - min + 1)) + min;
+          let transformValue = `rotate(${randomNumber}deg)`;
+
+          return (
+            <Typography
+              key={index}
+              sx={{
+                display: "inline-block",
+                margin: "5px",
+                transform: transformValue,
+              }}
+            >
+              {item}
+            </Typography>
+          );
+        })}
+      </Box>
+    );
+  };
+
+  const captchaRegen = () => {
+    setCaptcha(
+      generateUniqueId({
+        length: 6,
+        useLetters: true,
+      })
+    );
   };
 
   return (
@@ -758,6 +864,50 @@ const CompetitorTable = () => {
                 Deleting the Competitor :{" "}
                 <span style={{ fontSize: "25px" }}>{nametoDelete}</span>
               </Typography>
+              <DialogContent
+                sx={{
+                  padding: "0",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "10px",
+                  // textAlign: "center", // Add this line to center the content
+                }}
+              >
+                <Box
+                  sx={{
+                    backgroundColor: "#80bfff",
+                    padding: "5px",
+                    fontWeight: "bold",
+                  }}
+                ></Box>
+                <Box
+                  sx={{
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                    paddingLeft: "20px",
+                  }}
+                >
+                  {CaptchaElementGenerator()}
+
+                  <Button
+                    sx={{
+                      marginBottom: "10px",
+                    }}
+                    onClick={captchaRegen}
+                  >
+                    <ReplayIcon />
+                  </Button>
+
+                  <TextField
+                    placeholder="Enter captcha"
+                    sx={{ display: "block" }}
+                    value={captchaInput}
+                    onChange={(e) => {
+                      setCaptchaInput(e.target.value);
+                    }}
+                  />
+                </Box>
+              </DialogContent>
               <Box
                 sx={{
                   display: "flex",
@@ -767,10 +917,7 @@ const CompetitorTable = () => {
                   padding: "4px",
                 }}
               >
-                <Button
-                  variant="contained"
-                  onClick={() => setOpenModal(false)}
-                >
+                <Button variant="contained" onClick={() => setOpenModal(false)}>
                   Cancel
                 </Button>
                 <Button

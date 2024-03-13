@@ -22,6 +22,7 @@ import { useGetAllOverseasShipmentQuery } from "../../../features/api/RestockOrd
 import Header from "../../../components/Common/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -35,6 +36,12 @@ const useStyles = makeStyles((theme) => ({
     color: "white !important",
   },
 }));
+
+
+//Todo
+const infoDetail = [
+    
+];
 
 const AllOverseasShipment = () => {
   /// initialize
@@ -187,19 +194,20 @@ const AllOverseasShipment = () => {
     },
   ];
   // infodialog state
+  //Todo
   const description =
     "This is Employee Task where you can view the employee's daily tasks";
-  
-    const dispatch = useDispatch();
 
-    const { isInfoOpen } = useSelector((state) => state.ui);
-    const handleClose = () => {
-      dispatch(setInfo(false));
-    };
-    
-    useEffect(() => {
-      dispatch(setHeader(`Incoming Shipment`));
-    }, []);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Incoming Shipment`));
+  }, []);
   return (
     <Box
       component="main"
@@ -366,6 +374,13 @@ const AllOverseasShipment = () => {
             Height={"85vh"}
           />
         </Box>
+
+        <InfoDialogBox
+          infoDetails={infoDetail}
+          description={description}
+          open={isInfoOpen}
+          close={handleClose}
+        />
       </StyledBox>
     </Box>
   );

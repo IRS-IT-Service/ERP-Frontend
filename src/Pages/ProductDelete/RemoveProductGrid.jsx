@@ -21,7 +21,10 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllProducts } from "../../features/slice/productSlice";
-import { useGetAllProductQuery } from "../../features/api/productApiSlice";
+import {
+  useGetAllProductQuery,
+  useSendOtpForDeleteProductMutation,
+} from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
 import CachedIcon from "@mui/icons-material/Cached";
 import Header from "../../components/Common/Header";
@@ -68,11 +71,12 @@ const infoDetail = [
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
         height={"60%"}
         width={"90%"}
-      />  
+      />
     ),
     instruction:
       "If you click the search product, you can search for any product or brand here",
-  },  {
+  },
+  {
     name: "Search-SKU",
     screenshot: (
       <img
@@ -83,7 +87,8 @@ const infoDetail = [
     ),
     instruction:
       "If you click search SKU, you can search for any product or brand by SKU number here ",
-  },  {
+  },
+  {
     name: "Remove",
     screenshot: (
       <img
@@ -94,8 +99,7 @@ const infoDetail = [
     ),
     instruction:
       "If you click this button you can remove that particular product",
-  }, 
-  
+  },
 ];
 
 // for refresh data
@@ -114,18 +118,14 @@ function CustomFooter(props) {
 }
 
 const RemoveProductGrid = () => {
-   // infodialog state
-   const description =
-   "This is Product Removal you can delete  here any product ";
-
+  // infodialog state
+  const description =
+    "This is Product Removal you can delete  here any product ";
 
   /// initialization
   const apiRef = useGridApiRef();
   const socket = useSocket();
-  const {
-
-    userInfo,
-  } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
   /// global state
   const { searchTerm, forceSearch } = useSelector((state) => state.product);
 
@@ -133,11 +133,11 @@ const RemoveProductGrid = () => {
   const [rows, setRows] = useState([]);
   const [openCaptcha, setOpenCaptcha] = useState(false);
   const [captcha, setCaptcha] = useState(null);
-  const [captchaInput, setCaptchaInput] = useState("");
+  const [captchaInput, setCaptchaInput] = useState(); // this is otp input box now
   const [timerError, setTimerError] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
 
-
+  const { name } = useSelector((state) => state.auth.userInfo);
   /// rtk query
 
   const {
@@ -148,6 +148,8 @@ const RemoveProductGrid = () => {
   } = useGetAllProductQuery({ searchTerm: searchTerm, type: "restock" });
 
   const [deleteApi, { isLoading: deleteLoading }] = useDeleteProductMutation();
+  const [sendOtpForDelete, { isLoading: otoLoading }] =
+    useSendOtpForDeleteProductMutation();
 
   /// handlers
 
@@ -175,18 +177,25 @@ const RemoveProductGrid = () => {
     }
   }, [allProductData]);
 
-  console.log(allProductData)
-
   const dispatch = useDispatch();
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
     dispatch(setInfo(false));
   };
- 
+
   useEffect(() => {
     dispatch(setHeader(`Product Removal`));
   }, []);
+
+  const handleSendOtp = async () => {
+    try {
+      const data = { user: name, name: selectedRow.Name, sku: selectedRow.SKU };
+      const result = await sendOtpForDelete(data).unwrap();
+      setCaptchaInput();
+      toast.success("Otp sent successfully to admin");
+    } catch (error) {}
+  };
 
   /// Function
 
@@ -263,35 +272,21 @@ const RemoveProductGrid = () => {
 
   const handleSubmit = async () => {
     try {
-      if (captchaInput === captcha) {
-        const res = await deleteApi(selectedRow.SKU).unwrap();
-        if (res.success === true) {
-          const liveStatusData = {
-            message: `${userInfo.name} Deleted The Product With SKU  ${selectedRow.SKU}`,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
-          };
-          socket.emit("liveStatusServer", liveStatusData);
-          toast.success(res.message);
-          setOpenCaptcha(false);
-          setCaptchaInput("");
-          setSelectedRow(null);
-          refetch();
-        } else {
-          toast.error("Some Error Occured Plz Try Again!");
-          setOpenCaptcha(false);
-          setCaptchaInput("");
-          setSelectedRow(null);
-          refetch();
-        }
-      } else {
-        captchaRegen();
-        toast.error("Invalid Captcha");
-        setTimerError(true);
-        setTimeout(() => {
-          setTimerError(false);
-        }, 3000);
+      const info = { id: selectedRow.SKU, otp: captchaInput };
+      const res = await deleteApi(info).unwrap();
+      if (res.success === true) {
+        const liveStatusData = {
+          message: `${userInfo.name} Deleted The Product With SKU  ${selectedRow.SKU}`,
+          time: new Date().toLocaleTimeString("en-IN", {
+            timeZone: "Asia/Kolkata",
+          }),
+        };
+        socket.emit("liveStatusServer", liveStatusData);
+        toast.success(res.message);
+        setCaptchaInput("");
+        setSelectedRow(null);
+        setOpenCaptcha(false);
+        refetch();
       }
     } catch (e) {
       console.log("Error at Product Removal section");
@@ -499,7 +494,7 @@ const RemoveProductGrid = () => {
             color: "#fff",
           }}
         >
-          <span style={{ marginLeft: "30%" }}> Captcha Verification</span>
+          <span style={{ marginLeft: "30%" }}> Otp Verification</span>
           <div>
             <i
               className="fa-solid fa-circle-xmark"
@@ -553,22 +548,27 @@ const RemoveProductGrid = () => {
             sx={{
               marginTop: "10px",
               marginBottom: "10px",
-              paddingLeft: "20px",
+              padding: "20px",
+              display:"flex",
+              gap:"10px"
             }}
           >
-            {CaptchaElementGenerator()}
+            {/* {CaptchaElementGenerator()} */}
 
-            <Button
+            {/* <Button
               sx={{
                 marginBottom: "10px",
               }}
               onClick={captchaRegen}
             >
               <ReplayIcon />
+            </Button> */}
+            <Button variant="outlined" disabled={otoLoading} onClick={() => handleSendOtp()}>
+              {otoLoading ? <CircularProgress /> : "Click To Send Otp"}
             </Button>
 
             <TextField
-              placeholder="Enter captcha"
+              placeholder="Enter otp"
               sx={{ display: "block" }}
               value={captchaInput}
               onChange={(e) => {
@@ -583,8 +583,8 @@ const RemoveProductGrid = () => {
           </Box>
         </DialogContent>
       </Dialog>
-           {/* infoDialog table */}
-           <InfoDialogBox
+      {/* infoDialog table */}
+      <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
         open={isInfoOpen}
