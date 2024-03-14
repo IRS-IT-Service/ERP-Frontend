@@ -26,7 +26,7 @@ import { formateDateAndTime } from "../../commonFunctions/commonFunctions";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useDispatch, useSelector } from "react-redux";
-import { setHeader } from "../../features/slice/uiSlice";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -256,7 +256,7 @@ const ERPHistory = () => {
             },
           }}
         >
-          <FormControl fullWidth>
+          <FormControl fullWidth >
             <InputLabel id="demo-simple-select-label">
               History Category
             </InputLabel>
