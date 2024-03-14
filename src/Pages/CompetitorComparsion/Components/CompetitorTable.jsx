@@ -157,7 +157,7 @@ const CompetitorTable = () => {
                               sx={{
                                 width: "15px",
                                 marginTop: 0.5,
-                                color: "black",
+                                color: inStock ? "green" : "red",
                               }}
                             />
                           </Tooltip>{" "}
@@ -165,21 +165,7 @@ const CompetitorTable = () => {
                       </span>
                     )}{" "}
                   </Box>
-                  {params.row[`${competitor.Name}`] && (
-                    <Box
-                      style={{
-                        fontSize: "10px",
-                        position: "absolute",
-                        top: 19.5,
-                      }}
-                    >
-                      {inStock ? (
-                        <span style={{ color: "#0c2de8" }}>in Stock</span>
-                      ) : (
-                        <span style={{ color: "red" }}>Out Stock</span>
-                      )}
-                    </Box>
-                  )}
+         
                 </Box>
               </TableCell>
             );
@@ -448,6 +434,26 @@ const CompetitorTable = () => {
           <Button size="small" onClick={() => status()}>
             <CachedIcon />
           </Button>
+          <Box sx={{
+            display: "flex",
+             alignItems: "center",
+             gap:1
+          }}>
+        <Typography sx={{fontWeight:"bold" ,fontSize: "12px"}}>In Stock</Typography> <InfoIcon
+                            sx={{
+                              fontSize: "18px",
+                         color:"green"
+                            }}
+                          />
+
+      
+        <Typography sx={{fontWeight:"bold" ,fontSize: "12px"}}>Out Stock</Typography> <InfoIcon
+                            sx={{
+                              fontSize: "18px",
+                         color:"red"
+                            }}
+                          />
+          </Box>
           <TablePagination
             component="div"
             count={totalProductCount}
@@ -495,10 +501,15 @@ const CompetitorTable = () => {
     const newSelectedRow = selectedRows.filter((item) => item.id !== id);
     setSelectedRows(newSelectedRow);
   };
-
+ 
   const handleAdd = async () => {
     try {
-      if (!input) return toast.error("Please fill the data");
+      const isValid = input.Name !== undefined && input.Name !== "";
+      if (!isValid) {
+        toast.error("Please fill the data");
+        return 
+      }
+      console.log("hiii")
       const data = {
         Competitors: [input],
       };
@@ -531,10 +542,12 @@ const CompetitorTable = () => {
           setOpen(false);
           setOpenCaptcha(false);
           setCaptchaInput("");
+          captchaRegen()
         } else {
           toast.error("Some Error Occured Plz Try Again!");
           setOpenCaptcha(false);
           setCaptchaInput("");
+          captchaRegen()
           fetch();
         }
       } else {
@@ -610,6 +623,7 @@ const CompetitorTable = () => {
     );
   };
 
+
   const captchaRegen = () => {
     setCaptcha(
       generateUniqueId({
@@ -618,6 +632,10 @@ const CompetitorTable = () => {
       })
     );
   };
+
+  // useEffect(()=>{
+  //   captchaRegen()
+  // },[])
 
   return (
     <div>
@@ -859,10 +877,10 @@ const CompetitorTable = () => {
               }}
             >
               <Typography
-                sx={{ textAlign: "center", padding: "8px", fontWeight: "bold" }}
+                sx={{ textAlign: "center", padding: "8px" }}
               >
                 Deleting the Competitor :{" "}
-                <span style={{ fontSize: "25px" }}>{nametoDelete}</span>
+                <span style={{ fontSize: "20px" ,fontWeight:"bold" }}>{nametoDelete}</span>
               </Typography>
               <DialogContent
                 sx={{

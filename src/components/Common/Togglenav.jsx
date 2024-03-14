@@ -357,7 +357,7 @@ const ToggleNav = () => {
               />
             </Box>
           </Box>
-          <Header Name={HeaderName} info={true}  />
+         {HeaderName && <Header Name={HeaderName} info={true}  /> }
           <Box
             sx={{
               display: "flex",
