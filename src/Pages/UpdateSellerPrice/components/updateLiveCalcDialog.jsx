@@ -886,7 +886,7 @@ setIsLoading(true)
                                    title={`${items.URL}`}
                                    placement="top"
                                    key={index}
-                                 ><InfoIcon sx={{width:"15px" ,marginTop:0.5 ,color:"black"}}  /></Tooltip> </a> </span> } </Box>
+                                 ><InfoIcon sx={{width:"15px" ,marginTop:0.5 ,color:items.inStock ? "green" : "red"}}  /></Tooltip> </a> </span> } </Box>
                                   </TableCell>
                                 );
                               })}
