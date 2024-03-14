@@ -219,7 +219,7 @@ const MyAccountDetails = () => {
               <TableRow>
                 <TableCell className={classes.tableCell}>GST Number</TableCell>
                 <TableCell>{personalDetails?.details.gst} </TableCell>
-                <TableCell className={classes.tableCell}>
+                {/* <TableCell className={classes.tableCell}>
                   GST Certificate
                 </TableCell>
                 <TableCell>
@@ -239,39 +239,16 @@ const MyAccountDetails = () => {
                       FileType={FileType}
                     />
                   )}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className={classes.tableCell}>MSME Number</TableCell>
+                </TableCell> */}
+                 <TableCell className={classes.tableCell}>MSME Number</TableCell>
                 <TableCell>
                   {personalDetails?.details.msme
                     ? personalDetails?.details.msme
                     : "Not available"}
                 </TableCell>
-                <TableCell className={classes.tableCell}>
-                  MSME Certificate
-                </TableCell>
-                <TableCell>
-                  <Button
-                    disabled={
-                      personalDetails?.details.files.msmeFile ? false : true
-                    }
-                    onClick={() => handleDialog("MSME")}
-                  >
-                    View
-                  </Button>
-                  {openView && FileType === "MSME" && (
-                    <ViewCertificate
-                      open={openView}
-                      handleDialog={handleDialog}
-                      personalDetails={personalDetails}
-                      FileType={FileType}
-                    />
-                  )}
-                </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className={classes.tableCell}>
+              <TableCell className={classes.tableCell}>
                   Bank details
                 </TableCell>
                 <TableCell>
@@ -293,7 +270,31 @@ const MyAccountDetails = () => {
                     />
                   )}
                 </TableCell>
+       
                 <TableCell className={classes.tableCell}>
+                  MSME Certificate
+                </TableCell>
+                <TableCell>
+                  <Button
+                    disabled={
+                      personalDetails?.details.files.msmeFile ? false : true
+                    }
+                    onClick={() => handleDialog("MSME")}
+                  >
+                    View
+                  </Button>
+                  {openView && FileType === "MSME" && (
+                    <ViewCertificate
+                      open={openView}
+                      handleDialog={handleDialog}
+                      personalDetails={personalDetails}
+                      FileType={FileType}
+                    />
+                  )}
+                </TableCell>
+               
+                
+                {/* <TableCell className={classes.tableCell}>
                   Cancel Cheque
                 </TableCell>
                 <TableCell>
@@ -313,7 +314,7 @@ const MyAccountDetails = () => {
                       FileType={FileType}
                     />
                   )}
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             </TableBody>
           </Table>

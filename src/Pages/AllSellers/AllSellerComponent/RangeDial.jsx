@@ -23,7 +23,9 @@ import { CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 const RangeDial = ({ data, open, close, refetch }) => {
   const [isVerify, setIsverify] = useState(null);
-  const sellerWithGst = ((+data.SellerPrice /100)* (100 + +data.GST)).toFixed(0)
+  const sellerWithGst = ((+data.SellerPrice / 100) * (100 + +data.GST)).toFixed(
+    0
+  );
   const [setBulk, { isLoading }] = useAddBulkSellerPriceMutation();
 
   const handleCheck = (e) => {
@@ -37,8 +39,9 @@ const RangeDial = ({ data, open, close, refetch }) => {
     setIsverify(false);
   };
   const [inputData, setInputData] = useState([
-    { from: data.Mqr + 1, to: "", price: "", discount: "" },
+    { from: data.Mqr + 1, to: "", price: "",priceWithGST:"", discount: "" },
   ]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (data.bulkSellerPrice.length > 0) {
@@ -46,9 +49,18 @@ const RangeDial = ({ data, open, close, refetch }) => {
     }
   }, []);
 
-  const handleAddRow = () => {
-    setInputData([...inputData, { from: "", to: "", price: "", discount: "" }]);
-  };
+
+    const handleAddRow = () => {
+      if (inputData.length > 0 && inputData[inputData.length - 1].to < inputData[inputData.length - 1].from) {
+        setError("Please fill maximum range");
+        return;
+      }
+    
+      const newFrom = inputData.length > 0 ? inputData[inputData.length - 1].to + 1 : data.Mqr + 1;
+    
+      setInputData([...inputData, { from: newFrom, to: "", price: "", priceWithGST: "", discount: "" }]);
+      setError("");
+    };
   const handleDeleteRow = (index) => {
     const newData = [...inputData];
     newData.splice(index, 1);
@@ -57,8 +69,8 @@ const RangeDial = ({ data, open, close, refetch }) => {
 
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
-     const newData = [...inputData];
-    const sellPrice = +sellerWithGst;
+    const newData = [...inputData];
+    const sellPrice = +data.SellerPrice;
     if (name === "price") {
       if (value > sellPrice) {
         return;
@@ -73,11 +85,12 @@ const RangeDial = ({ data, open, close, refetch }) => {
       if (+value > 100) {
         return;
       }
+      let newPrice = sellPrice - (sellPrice * (+value / 100)).toFixed(0);
       newData[index]["discount"] = +value;
-      newData[index]["price"] =
-        sellPrice - (sellPrice * (+value / 100)).toFixed(0);
+      newData[index]["price"] =newPrice
+      newData[index]["priceWithGST"] =(+(+newPrice / 100) * (100 + +data.GST))
       setInputData(newData);
-    } else {
+    } else{
       newData[index][name] = +value;
       setInputData(newData);
     }
@@ -94,16 +107,21 @@ const RangeDial = ({ data, open, close, refetch }) => {
   const HandleSubmit = async () => {
     const isValid = inputData.every((item) => areAllKeysFilled(item));
     if (isVerify) {
-      toast.error(
+      setError(
         "Input value is not less than the minimum quantity requested."
       );
       return;
     }
+    if (inputData.length > 0 && inputData[inputData.length - 1].to < inputData[inputData.length - 1].from) {
+      setError("Please fill maximum range");
+      return;
+    }
     if (!isValid) {
-      toast.error("Please fill all the required feildes.");
+      setError("Please fill all the required feildes.");
       return;
     }
     try {
+
       const info = {
         datas: [
           {
@@ -117,6 +135,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
       toast.success("Successfully submitted");
       setInputData([{ from: data.Mqr, to: "", price: "", discount: "" }]);
       close();
+      setError("")
       refetch();
     } catch (err) {
       console.log(err);
@@ -146,37 +165,62 @@ const RangeDial = ({ data, open, close, refetch }) => {
         {data?.bulkSellerPrice ? (
           <DialogContent>
             {/* columns info */}
-            <Box sx={{display:"flex" ,justifyContent:"space-between" ,alignItems:"center"}}>
-            <Typography sx={{ fontSize:"12px" ,fontWeigth: "bold", marginTop: 2 }}>
-     Landing Cost:{" "}
-               <span style={{ color: "red" }}>
-                 ₹ {(+data.LandingCost).toFixed(0)}
-              </span>
-            </Typography>
-            <Typography sx={{ fontSize:"12px" ,fontWeigth: "bold", marginTop: 2 }}>
-              Seller Price:{" "}
-              <span style={{ color: "red" }}>
-                ₹ {(+data.SellerPrice).toFixed(0)}
-              </span>
-            </Typography>
-            <Typography sx={{ fontSize:"12px" ,fontWeigth: "bold", marginTop: 2 }}>
-              MQR:{" "}
-              <span style={{ color: "red" }}>
-                 {+data?.Mqr}
-              </span>
-            </Typography>
-            <Typography sx={{ fontSize:"12px" ,fontWeigth: "bold", marginTop: 2 }}>
-              Seller Price  Inc({`GST ${(+data?.GST).toFixed(0)}%`}):{" "}
-              <span style={{ color: "red" }}>
-                ₹ {sellerWithGst}
-              </span>
-            </Typography>
-          
-            
-                          <Button variant="contained" sx={{background:"green"}} onClick={() => handleAddRow()}>
-                            <AddIcon />
-                          </Button>
-                          </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                sx={{ fontSize: "12px", fontWeigth: "bold", marginTop: 2 }}
+              >
+                Landing Cost:{" "}
+                <span style={{ color: "red" }}>
+                  ₹ {(+data.LandingCost).toFixed(0)}
+                </span>
+              </Typography>
+              <Typography
+                sx={{ fontSize: "12px", fontWeigth: "bold", marginTop: 2 }}
+              >
+                Seller Price:{" "}
+                <span style={{ color: "red" }}>
+                  ₹ {(+data.SellerPrice).toFixed(0)}
+                </span>
+              </Typography>
+              <Typography
+                sx={{ fontSize: "12px", fontWeigth: "bold", marginTop: 2 }}
+              >
+                Profit:{" "}
+                <span style={{ color: "red" }}>
+                  {(
+                    ((+data.SellerPrice - +data.LandingCost) /
+                      +data.LandingCost) *
+                    100
+                  ).toFixed(0)}{" "}
+                  %
+                </span>
+              </Typography>
+              <Typography
+                sx={{ fontSize: "12px", fontWeigth: "bold", marginTop: 2 }}
+              >
+                MQR: <span style={{ color: "red" }}>{+data?.Mqr}</span>
+              </Typography>
+              <Typography
+                sx={{ fontSize: "12px", fontWeigth: "bold", marginTop: 2 }}
+              >
+                Seller Price Inc({`GST ${(+data?.GST).toFixed(0)}%`}):{" "}
+                <span style={{ color: "red" }}>₹ {sellerWithGst}</span>
+              </Typography>
+
+              <Button
+                variant="contained"
+                sx={{ background: "green" }}
+                onClick={() => handleAddRow()}
+              >
+                <AddIcon />
+              </Button>
+            </Box>
             <TableContainer
               component={Paper}
               sx={{ height: 400, overflow: "auto", marginTop: "1rem" }}
@@ -194,6 +238,9 @@ const RangeDial = ({ data, open, close, refetch }) => {
                     <TableCell sx={{ fontWeight: "bold" }}>S.No</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="center">
                       QTY Range
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }} align="center">
+                      Price Inc({`GST ${(+data?.GST).toFixed(0)}%`})
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }} align="center">
                       Price
@@ -221,6 +268,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
                             type="number"
                             name="from"
                             onBlur={handleCheck}
+                            readOnly
                             value={inputData[index]?.from}
                             onChange={(e) => handleInputChange(index, e)}
                             style={{
@@ -233,14 +281,20 @@ const RangeDial = ({ data, open, close, refetch }) => {
                             type="number"
                             name="to"
                             value={inputData[index]?.to}
+                            readOnly={inputData.length - 1 > index ? true : false}
                             onChange={(e) => handleInputChange(index, e)}
                             style={{
                               width: "3rem",
                               textAlign: "center",
                               height: "2rem",
+                        
                             }}
                           />
+                      
                         </Box>
+                      </TableCell>
+                      <TableCell align="center">
+                    {(inputData[index].priceWithGST && (+(inputData[index].priceWithGST)).toFixed(0) )}
                       </TableCell>
                       <TableCell align="center">
                         <input
@@ -268,24 +322,31 @@ const RangeDial = ({ data, open, close, refetch }) => {
                           }}
                         />
                       </TableCell>
-                      <TableCell sx={{
-                        textAlign: "center",
-                      }}>
-                  {
-             (((+inputData[index]?.price - +data?.LandingCost) / +data?.LandingCost ) * 100).toFixed(0) 
-
-                  } %
-                    
+                      <TableCell
+                        sx={{
+                          textAlign: "center",
+                        }}
+                      >
+                        {(
+                          ((+inputData[index]?.price - +data?.LandingCost) /
+                            +data?.LandingCost) *
+                          100
+                        ).toFixed(0)}{" "}
+                        %
                       </TableCell>
                       <TableCell>
                         {inputData.length > 0 && (
-                      
-                            <DeleteIcon onClick={() => handleDeleteRow(index)} sx={{color:"gray", "&:hover":{
-                              color:"red",cursor: "pointer"
-                            }}} />
-                       
+                          <DeleteIcon
+                            onClick={() => handleDeleteRow(index)}
+                            sx={{
+                              color: "gray",
+                              "&:hover": {
+                                color: "red",
+                                cursor: "pointer",
+                              },
+                            }}
+                          />
                         )}
-                    
                       </TableCell>
                     </TableRow>
                   ))}
@@ -298,6 +359,18 @@ const RangeDial = ({ data, open, close, refetch }) => {
         )}
 
         <DialogActions>
+          <Box sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+          }}>
+          <Typography sx={{color:"red" , fontSize:"0.8rem"}}>{error}</Typography>
+          <Box sx={{
+            display: "flex",
+         
+            gap:1
+          }}>
           <Button
             variant="contained"
             disabled={isLoading}
@@ -312,6 +385,8 @@ const RangeDial = ({ data, open, close, refetch }) => {
           <Button variant="contained" onClick={close}>
             Close
           </Button>
+          </Box>
+          </Box>
         </DialogActions>
       </Dialog>
     </div>
