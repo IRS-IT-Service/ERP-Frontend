@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useState, useRef } from "react";
 import {
   DataGrid,
   useGridApiRef,
@@ -15,9 +15,10 @@ import {
   useGenerateBarcodeMutation,
   useGetAllBarcodesSkusQuery,
   useGetBarcodeMutation,
+  useGetAllBarcodesQuery,
 } from "../../../features/api/barcodeApiSlice";
 import Loading from "../../../components/Common/Loading";
-import FilterBar from "../../../components/Common/FilterBar";
+import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import BASEURL from "../../../constants/BaseApi";
 import { BARCODE_URL } from "../../../constants/ApiEndpoints";
 import axios from "axios";
@@ -26,30 +27,28 @@ import { toast } from "react-toastify"; // Import this to show toast messages
 import BarcodeDialogbox from "./BarcodeDialogbox";
 import Nodata from "../../../assets/error.gif";
 import CachedIcon from "@mui/icons-material/Cached";
+import { setAllProductsV2 } from "../../../features/slice/productSlice";
+import TablePagination from "@mui/material/TablePagination";
+
+import {
+  setCheckedBrand,
+  setCheckedCategory,
+  setCheckedGST,
+  setDeepSearch,
+} from "../../../features/slice/productSlice";
 
 // for refresh data
-function CustomFooter(props) {
-  const { status } = props;
-  return (
-    <GridToolbarContainer>
-      <Box display="flex" justifyContent="space-between" width="100%">
-        <Button size="small" onClick={() => status()}>
-          <CachedIcon />
-        </Button>
-        <GridPagination />
-      </Box>
-    </GridToolbarContainer>
-  );
-}
 
 const BarcodeGenerateGrid = () => {
   /// initialize
   const dispatch = useDispatch();
   const apiRef = useGridApiRef();
+  const debouncing = useRef();
 
   /// global state
-  const { searchTerm, forceSearch } = useSelector((state) => state.product);
-
+  const { checkedBrand, checkedCategory, checkedGST, deepSearch } = useSelector(
+    (state) => state.product
+  );
   /// local state
 
   const [rows, setRows] = useState([]);
@@ -58,27 +57,29 @@ const BarcodeGenerateGrid = () => {
   const [isGeneratingBarcode, setIsGeneratingBarcode] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [data, setData] = useState([]);
-  const [isChecking, setIsChecking] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState({});
+  const [buttonBlink, setButtonBlink] = useState("");
+
+  /// pagination State
+  const [filterString, setFilterString] = useState("page=1");
+  const [page, setPage] = useState(1);
+  const [rowPerPage, setRowPerPage] = useState(100);
+  const [totalProductCount, setTotalProductCount] = useState(0);
 
   // Rtk query
   const {
-    data: allProductData,
-    isLoading: productLoading,
-    refetch,
-    isFetching,
-  } = useGetAllProductQuery(
-    { searchTerm: searchTerm || undefined },
-    {
-      pollingInterval: 1000 * 300,
-    }
-  );
+    data: allBarcodes,
+    isLoading: barcodeLoading,
+    refetch: barcodeRefetch,
+    isFetching: isFetchingBarcode,
+  } = useGetAllBarcodesQuery(filterString, { pollingInterval: 1000 * 300 });
+
+  // this api is not getting used now
   const [generateBarcodeMutation, { isLoading: isGenerating }] =
     useGenerateBarcodeMutation();
 
+  // this api for single sku barcode view
   const [getBarcode, { isLoading, isError }] = useGetBarcodeMutation();
-  const { data: barcodes, refetch: getAllBarcoderefetch } =
-    useGetAllBarcodesSkusQuery();
 
   // seleciton change for button
   const handleSelectionChange = (selectionModel) => {
@@ -99,6 +100,7 @@ const BarcodeGenerateGrid = () => {
     setIsDialogOpen(false);
   };
 
+  // this function is getting used for generating new barcodes
   const handleGenerateClick = async () => {
     try {
       if (selectedItems.length === 0) {
@@ -118,13 +120,13 @@ const BarcodeGenerateGrid = () => {
     }
   };
 
+  // download barcodes which is not sticked in excel file
   const handleDownloadClick = async () => {
     try {
       if (selectedItems.length === 0) {
         window.alert("Please select Product First");
         return;
       }
-
       const body = {
         SKUs: selectedItems,
       };
@@ -153,6 +155,7 @@ const BarcodeGenerateGrid = () => {
     }
   };
 
+  // to view all barcode for a single sku
   const handleViewBarcode = async (sku) => {
     try {
       const { data } = await getBarcode(sku);
@@ -166,33 +169,114 @@ const BarcodeGenerateGrid = () => {
     }
   };
 
+  // datagrid rows api
   useEffect(() => {
-    if (allProductData?.status === "success") {
-      const data = allProductData?.data.map((item, index) => {
+    if (allBarcodes?.status === true) {
+      const data = allBarcodes?.data?.data.map((item, index) => {
         return {
           id: item.SKU,
           SKU: item.SKU,
-          mainImage: item?.mainImage?.url,
           Name: item.Name,
           Quantity: item.ActualQuantity,
           genQuantity: item.Quantity,
           Brand: item.Brand,
+          Category: item.Category,
+          GST: item.GST,
+          Color: item.Color,
         };
       });
-
-      dispatch(setAllProducts({ ...allProductData }));
       setRows(data);
+      dispatch(setAllProductsV2(allBarcodes?.data));
+      setRows(data);
+      setRowPerPage(allBarcodes?.data?.limit);
+      setTotalProductCount(allBarcodes?.data?.totalProductCount);
+      setPage(allBarcodes?.data?.currentPage);
     }
-  }, [allProductData]);
+  }, [allBarcodes]);
+
+  // FOR CHECKBOX SELECTION
+  const isRowSelectable = (params) => {
+    const quantity =
+      params.row.genQuantity ||
+      params.row.Color === "red" ||
+      params.row.Color === "yellow";
+    return quantity > 0;
+  };
+
+  // function for fetch data on latest query
+  const fetchDataWithQuery = (query) => {
+    if (!buttonBlink) {
+      setFilterString(
+        `${
+          filterString === "page=1"
+            ? `type=${query}&page=1`
+            : filterString + `type=${query}&page=1`
+        }`
+      );
+      setButtonBlink(query);
+    } else {
+      setFilterString("page=1");
+      setButtonBlink();
+    }
+  };
 
   useEffect(() => {
-    getAllBarcoderefetch();
-  }, [allProductData]);
+    barcodeRefetch();
+    return () => {
+      dispatch(setCheckedBrand([])),
+        dispatch(setCheckedCategory([])),
+        dispatch(setCheckedGST([])),
+        dispatch(setDeepSearch(""));
+      // apiRef?.current?.setPage(0),
+      // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    };
+  }, []);
 
-  const isRowSelectable = (params) => {
-    const quantity = params.row.genQuantity;
-    return quantity > 0 || isChecking;
-  };
+  // BARCODE CATEGORY GST ON SELECTION FROM FILTER BAR
+  useEffect(() => {
+    let newFilterString = "";
+    checkedBrand.forEach((item, index) => {
+      if (index === 0) {
+        newFilterString += `brand=${item}`;
+      } else {
+        newFilterString += `&brand=${item}`;
+      }
+    });
+
+    checkedCategory.forEach((item, index) => {
+      newFilterString += `&category=${item}`;
+    });
+
+    checkedGST.forEach((item, index) => {
+      if (index === 0) {
+        newFilterString += `&gst=${item}`;
+      } else {
+        newFilterString += `&gst=${item}`;
+      }
+    });
+    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
+      setFilterString(`${newFilterString}page=1`);
+      return;
+    }
+
+    setFilterString(`${newFilterString}&page=1`);
+    setButtonBlink("");
+  }, [checkedBrand, checkedCategory, checkedGST]);
+
+  // search by name and sku
+  useEffect(() => {
+    // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    clearTimeout(debouncing.current);
+    if (!deepSearch) {
+      setFilterString(`page=1`);
+      return;
+    } else {
+      debouncing.current = setTimeout(() => {
+        setFilterString(`deepSearch=${deepSearch}&page=1`);
+      }, 1000);
+      setButtonBlink("");
+    }
+  }, [deepSearch]);
 
   const BarCodeButton = (
     <Box
@@ -209,7 +293,7 @@ const BarcodeGenerateGrid = () => {
             m: "10px 10px 0px 10px",
           }}
         >
-          <Button
+          {/* <Button
             sx={{ mr: "12px" }}
             variant="contained"
             onClick={handleGenerateClick}
@@ -217,7 +301,7 @@ const BarcodeGenerateGrid = () => {
             startIcon={isGeneratingBarcode && <CircularProgress size={20} />}
           >
             {isGeneratingBarcode ? "Generating..." : "Generate"}
-          </Button>
+          </Button> */}
           <Button
             variant="contained"
             onClick={handleDownloadClick}
@@ -229,6 +313,124 @@ const BarcodeGenerateGrid = () => {
       )}
     </Box>
   );
+
+  function CustomFooter(props) {
+    const { status } = props;
+    return (
+      <GridToolbarContainer>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+        >
+          <Button size="small" onClick={() => status()}>
+            <CachedIcon />
+          </Button>
+
+          <Box display="flex" gap="20px">
+            <Box display="flex" alignItems="center" gap="10px">
+              <span style={{ fontWeight: "bold" }}>Less Than 50% Sticked</span>
+              <Button
+                sx={{
+                  border: "0.5px solid black",
+                  width: "25px",
+                  height: "20px",
+                  borderRadius: "10px",
+                  backgroundColor: `${buttonBlink === "red" ? "white" : "red"}`,
+                }}
+                onClick={() => fetchDataWithQuery("red")}
+              ></Button>
+            </Box>
+            <Box display="flex" alignItems="center" gap="10px">
+              <span style={{ fontWeight: "bold" }}>More Than 50% Sticked</span>
+              <Button
+                sx={{
+                  border: "0.5px solid black",
+                  width: "10px",
+                  height: "20px",
+                  borderRadius: "10px",
+                  backgroundColor: `${
+                    buttonBlink === "yellow" ? "white" : "yellow"
+                  }`,
+                }}
+                onClick={() => fetchDataWithQuery("yellow")}
+              ></Button>
+            </Box>
+            <Box display="flex" alignItems="center" gap="10px">
+              <span style={{ fontWeight: "bold" }}>100% Sticked</span>
+              <Button
+                sx={{
+                  border: "0.5px solid black",
+                  width: "25px",
+                  height: "20px",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  backgroundColor: `${
+                    buttonBlink === "green" ? "white" : "green"
+                  }`,
+                  color: "#ffff",
+                  "&:hover": {
+                    backgroundColor: "#ffff",
+                    color: "#B22222",
+                  },
+                }}
+                onClick={() => fetchDataWithQuery("green")}
+              ></Button>
+            </Box>
+            <Box display="flex" alignItems="center" gap="10px">
+              <span style={{ fontWeight: "bold" }}>No Barcode</span>
+              <Button
+                sx={{
+                  border: "0.5px solid black",
+                  width: "25px",
+                  height: "20px",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  backgroundColor: `blue`,
+
+                  backgroundColor: `${
+                    buttonBlink === "blue" ? "white" : "blue"
+                  }`,
+                  color: "#ffff",
+                  "&:hover": {
+                    backgroundColor: "#ffff",
+                    color: "#B22222",
+                  },
+                }}
+                onClick={() => fetchDataWithQuery("blue")}
+              ></Button>
+            </Box>
+          </Box>
+
+          <TablePagination
+            component="div"
+            count={totalProductCount}
+            page={page - 1}
+            onPageChange={(event, newPage) => {
+              setPage(newPage + 1);
+
+              let paramString = filterString;
+
+              let param = new URLSearchParams(paramString);
+
+              param.set("page", newPage + 1);
+
+              let newFilterString = param.toString();
+
+              setFilterString(newFilterString);
+
+              // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+            }}
+            rowsPerPage={rowPerPage}
+            onRowsPerPageChange={(event) => {
+              setRowPerPage(event.target.value);
+            }}
+          />
+        </Box>
+      </GridToolbarContainer>
+    );
+  }
 
   const columns = [
     {
@@ -264,6 +466,28 @@ const BarcodeGenerateGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
+      field: "Category",
+      headerName: "Category",
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "GST",
+      headerName: "GST",
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
       field: "Quantity",
       headerName: "QTY",
       flex: 0.3,
@@ -285,40 +509,16 @@ const BarcodeGenerateGrid = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-        const { SKU } = params.row;
-        const check = barcodes?.data?.includes(SKU);
-        setIsChecking(check);
-        const allSno = barcodes?.allData?.filter((item) => item.SKU === SKU);
-        const checkVerify =
-          allSno && allSno[0]?.SNo
-            ? allSno[0]?.SNo?.filter((item) => item.isProcessed === true)
-                .length || 0
-            : "";
-        const checkLength =
-          allSno && allSno[0]?.SNo ? allSno[0]?.SNo.length || 0 : "";
-        const StickValue = Math.round((checkVerify / checkLength) * 100);
-
-        // console
-        let color;
-
-        if (StickValue >= 0 && StickValue <= 49) {
-          color = "red";
-        } else if (StickValue >= 50 && StickValue <= 99) {
-          color = "orange";
-        } else if (StickValue >= 100) {
-          color = "green";
-        }
+        const { SKU, Color } = params.row;
         const handleonViewClick = () => {
           handleViewBarcode(SKU);
         };
-
         return (
           <>
             <Button
-              disabled={!check}
               variant="contained"
               sx={{
-                backgroundColor: color,
+                backgroundColor: `${Color}`,
                 color: "#fff",
               }}
               onClick={handleonViewClick}
@@ -338,27 +538,33 @@ const BarcodeGenerateGrid = () => {
         width: "100%",
       }}
     >
-      <FilterBar
+      {/* <FilterBar
         apiRef={apiRef}
         CustomText={BarCodeButton}
         hiddenColumns={hiddenColumns}
         setHiddenColumns={setHiddenColumns}
         count={selectedItems}
+      /> */}
+      <FilterBarV2
+        apiRef={apiRef}
+        customButton1={BarCodeButton}
+        count={selectedItems}
       />
+
       <BarcodeDialogbox
         open={isDialogOpen}
         onClose={closeDialog}
         serialNumbers={data}
       />
       <Grid container>
-        {productLoading || isFetching ? (
+        {barcodeLoading || isFetchingBarcode ? (
           <Loading loading={true} />
         ) : (
           <Grid item xs={12} sx={{ mt: "5px" }}>
             <Box
               sx={{
                 width: "100%",
-                height: "74vh",
+                height: "85vh",
                 "& .super-app-theme--header": {
                   background: "#eee",
                   color: "black",
@@ -392,7 +598,7 @@ const BarcodeGenerateGrid = () => {
                 onColumnVisibilityModelChange={(newModel) =>
                   setHiddenColumns(newModel)
                 }
-                isRowSelectable={isRowSelectable} // Call the function to disable rows with Quantity 0
+                isRowSelectable={isRowSelectable}
                 components={{
                   NoRowsOverlay: () => (
                     <Box
@@ -432,7 +638,7 @@ const BarcodeGenerateGrid = () => {
                   Footer: CustomFooter,
                 }}
                 slotProps={{
-                  footer: { status: refetch },
+                  footer: { status: barcodeRefetch },
                 }}
               />
             </Box>

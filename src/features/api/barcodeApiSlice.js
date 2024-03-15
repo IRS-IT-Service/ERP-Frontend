@@ -228,6 +228,12 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
           body: data,
         }),
       }),
+      getAllBarcodes: builder.query({
+        query: (filter) => ({
+          url: `${BARCODE_URL}/getAllBarcodesV2?${filter}`,
+          method: `GET`,
+        }),
+      }),
   }),
 });
 
@@ -266,4 +272,5 @@ export const {
   useAddProjectItemMutation,
   useUpdateAssignedStatusMutation,
   useUpdateDamagedStatusMutation,
+  useGetAllBarcodesQuery
 } = BarcodeSlice;
