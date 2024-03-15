@@ -157,7 +157,7 @@ const CompetitorDial = ({
   }, [price, setPrice]);
 
   const newColumns = columns.filter((column) => column !== "Sno");
-  console.log(price);
+
   return (
     <Dialog
       open={openCompetitor}

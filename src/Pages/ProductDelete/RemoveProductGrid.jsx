@@ -285,6 +285,7 @@ const RemoveProductGrid = () => {
         toast.success(res.message);
         setCaptchaInput("");
         setSelectedRow(null);
+        setOpenCaptcha(false);
         refetch();
       }
     } catch (e) {
