@@ -351,7 +351,7 @@ const BarcodeGenerateGrid = () => {
                   height: "20px",
                   borderRadius: "10px",
                   backgroundColor: `${
-                    buttonBlink === "yellow" ? "white" : "yellow"
+                    buttonBlink === "yellow" ? "white" : "orange"
                   }`,
                 }}
                 onClick={() => fetchDataWithQuery("yellow")}
@@ -518,7 +518,7 @@ const BarcodeGenerateGrid = () => {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: `${Color}`,
+                backgroundColor: `${Color === "yellow" ? "Orange": Color}`,
                 color: "#fff",
               }}
               onClick={handleonViewClick}
