@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -42,11 +42,11 @@ export default function RoboDialogbox({
         const info = { query: selectedtable, values: selectedItem };
 
         const result = await deleteValue(info).unwrap();
-
         if (result.status === true) {
           toast.success("Deleted Successfully");
           setOpenCaptcha(false);
           setCaptchaInput("");
+          handleClose();
           fetch();
         } else {
           toast.error("Some Error Occured Plz Try Again!");
@@ -93,7 +93,6 @@ export default function RoboDialogbox({
   const url = upload && URL.createObjectURL(upload);
 
   const upoladedFile = Logos.filter((logo) => logo.BrandName === selectedItem);
-  console.log(upoladedFile);
 
   const CaptchaElementGenerator = () => {
     if (!captcha) {
@@ -150,6 +149,7 @@ export default function RoboDialogbox({
               }}
             >
               {item}
+              {console.log(item)}
             </Typography>
           );
         })}
@@ -165,6 +165,9 @@ export default function RoboDialogbox({
       })
     );
   };
+  useEffect(() => {
+    captchaRegen();
+  }, []);
 
   return (
     <React.Fragment>
@@ -283,8 +286,7 @@ export default function RoboDialogbox({
                   padding: "5px",
                   fontWeight: "bold",
                 }}
-              >
-              </Box>
+              ></Box>
               <Box
                 sx={{
                   marginTop: "10px",
