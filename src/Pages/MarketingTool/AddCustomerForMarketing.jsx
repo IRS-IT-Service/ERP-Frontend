@@ -19,6 +19,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 // import { IoMdArrowBack } from 'react-icons/io';
 
 
@@ -214,6 +215,18 @@ const AddCustomerForMarketing = () => {
   const handleNavigation = () => {
     navigate('/BulkMessage');
   };
+
+
+  const dispatch = useDispatch();
+
+    const { isInfoOpen } = useSelector((state) => state.ui);
+    const handleClose = () => {
+      dispatch(setInfo(false));
+    };
+  
+    useEffect(() => {
+      dispatch(setHeader(`Bulk Add Customer`));
+    }, []);
   
   return (
     <>
@@ -222,7 +235,7 @@ const AddCustomerForMarketing = () => {
         sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
       >
         <DrawerHeader />
-        <Header Name={'Bulk Add Product'} />
+        {/* <Header Name={'Bulk Add Product'} /> */}
         <Box
           sx={{
             width: '100%',
