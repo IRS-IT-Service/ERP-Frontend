@@ -9,7 +9,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef, } from "react";
 import { toast } from "react-toastify";
 
 import { useAddDynamicValueMutation } from "../../../features/api/productApiSlice";
@@ -18,6 +18,10 @@ import RoboDialogbox from "./RoboDialogbox";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 const RoboProductTable = () => {
+  const brandContainerRef = useRef(null);
+  const categoryContainerRef = useRef(null);
+  const subCategoryContainerRef = useRef(null);
+
   const [selectValue, setSelectValue] = useState("");
   const [addvalue, setAddvalue] = useState("");
   const [values, setValues] = useState([]);
@@ -27,6 +31,7 @@ const RoboProductTable = () => {
   const [inputSearchBrand, setInputSearchBrand] = useState("");
   const [inputSearchCategory, setInputSearchCategory] = useState("");
   const [inputSearchSubCategory, setInputSearchSubCategory] = useState("");
+  const [error , setError] = useState(null)
 
   //rtk Querry
   const [addDynamicValue] = useAddDynamicValueMutation();
@@ -40,16 +45,27 @@ const RoboProductTable = () => {
     const selectedValue = event.target.value;
     if (values.length === 0) {
       setSelectValue(selectedValue);
+      setError(null)
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = 0;
     }
   };
 
   const handleInput = (event) => {
-    if (!selectValue)
-      return toast.error("Please Select a value before adding dynamic value");
+    if (!selectValue){
+    setError("Select Value First")
+      return 
+    }
     if (selectValue === "Brand") {
       setAddvalue(event.target.value.toUpperCase());
+      setError(null)
     } else {
       setAddvalue(event.target.value);
+      setError(null)
     }
   };
 
@@ -90,6 +106,28 @@ const RoboProductTable = () => {
   const handleClose = () => {
     setDel(false);
   };
+const handleSearch = (e) =>{
+
+const {name,value} = e.target;
+
+if(name === "brand") {
+  setInputSearchBrand(value)
+  if (brandContainerRef.current) {
+    brandContainerRef.current.scrollTop = 0;
+  }
+}else if(name === "category"){
+  setInputSearchCategory(value)
+  if (categoryContainerRef.current) {
+    categoryContainerRef.current.scrollTop = 0;
+  }
+}else {
+  setInputSearchSubCategory(value)
+  if (subCategoryContainerRef.current) {
+    subCategoryContainerRef.current.scrollTop = 0;
+  }
+}
+}
+
 
   return (
     <Box
@@ -104,6 +142,7 @@ const RoboProductTable = () => {
         sx={{
           display: "flex",
           width: "100%",
+   
         }}
       >
         <Box sx={{ width: "50%" }}>
@@ -112,9 +151,10 @@ const RoboProductTable = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              
             }}
           >
-            <FormControl sx={{ m: 1, minWidth: 200 }} size="large">
+            <FormControl sx={{ m: 2, minWidth: 200 }} size="large">
               <InputLabel
                 id="demo-select-small-label"
                 sx={{ color: "black", fontWeight: "bold" }}
@@ -135,14 +175,17 @@ const RoboProductTable = () => {
                 <MenuItem value="GST">GST</MenuItem>
               </Select>
             </FormControl>
-            <Box>
+            <Box sx={{width:400 ,padding:2}} >
               <TextField
-                sx={{ m: 1, minWidth: 400 }}
+           
                 id="outlined-basic"
                 label="Add Value"
                 variant="outlined"
+                fullWidth
                 onChange={handleInput}
                 value={addvalue}
+                error={error}
+                helperText={error}
               />
             </Box>
             <Button sx={{}} variant="contained" onClick={handleAdd}>
@@ -210,6 +253,7 @@ const RoboProductTable = () => {
 
       <Box sx={{ display: "flex", gap: 2, m: 1 }}>
         <Box
+      
           sx={{
             border: "1px solid black",
             display: "flex",
@@ -227,9 +271,10 @@ const RoboProductTable = () => {
           >
             <input
               placeholder="Search Brand"
+              name="brand"
               style={{ outline: "blue" }}
               value={inputSearchBrand}
-              onChange={(e) => setInputSearchBrand(e.target.value)}
+              onChange={handleSearch}
             ></input>
             <Typography
               variant="h6"
@@ -243,6 +288,7 @@ const RoboProductTable = () => {
           </Box>
 
           <Box
+              ref={brandContainerRef}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -254,10 +300,10 @@ const RoboProductTable = () => {
           >
             {[
               ...(getDyanmicValue?.data?.[0]?.Brand?.filter((item) =>
-                item.toLowerCase().includes(inputSearchBrand)
+                item.toLowerCase().includes(inputSearchBrand.toLocaleLowerCase())
               ) || []),
               ...(getDyanmicValue?.data?.[0]?.Brand?.filter(
-                (item) => !item.toLowerCase().includes(inputSearchBrand)
+                (item) => !item.toLowerCase().includes(inputSearchBrand.toLocaleLowerCase())
               ) || []),
             ].map((item, index) => {
               const isBrandWithLogo =
@@ -330,8 +376,9 @@ const RoboProductTable = () => {
             <input
               placeholder="Search Category"
               style={{ outline: "blue" }}
+              name="category"
               value={inputSearchCategory}
-              onChange={(e) => setInputSearchCategory(e.target.value)}
+              onChange={handleSearch}
             ></input>
             <Typography
               variant="h6"
@@ -344,6 +391,7 @@ const RoboProductTable = () => {
             </Typography>
           </Box>
           <Box
+                ref={categoryContainerRef}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -355,10 +403,10 @@ const RoboProductTable = () => {
           >
             {[
               ...(getDyanmicValue?.data?.[0]?.Category?.filter((item) =>
-                item.toLowerCase().includes(inputSearchCategory)
+                item.toLowerCase().includes(inputSearchCategory.toLocaleLowerCase())
               ) || []),
               ...(getDyanmicValue?.data?.[0]?.Category?.filter(
-                (item) => !item.toLowerCase().includes(inputSearchCategory)
+                (item) => !item.toLowerCase().includes(inputSearchCategory.toLocaleLowerCase())
               ) || []),
             ].map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
@@ -410,9 +458,10 @@ const RoboProductTable = () => {
             <input
               placeholder="Search Sub Category"
               style={{ outline: "blue" }}
+              name="subCategory"
               value={inputSearchSubCategory}
-              onChange={(e) => setInputSearchSubCategory(e.target.value)}
-            ></input>
+              onChange={handleSearch}
+            />
             <Typography
               variant="h6"
               sx={{
@@ -424,6 +473,7 @@ const RoboProductTable = () => {
             </Typography>
           </Box>
           <Box
+                ref={subCategoryContainerRef}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -435,10 +485,10 @@ const RoboProductTable = () => {
           >
             {[
               ...(getDyanmicValue?.data?.[0]?.SubCategory?.filter((item) =>
-                item.toLowerCase().includes(inputSearchSubCategory)
+                item.toLowerCase().includes(inputSearchSubCategory?.toLocaleLowerCase())
               ) || []),
               ...(getDyanmicValue?.data?.[0]?.SubCategory?.filter(
-                (item) => !item.toLowerCase().includes(inputSearchSubCategory)
+                (item) => !item.toLowerCase().includes(inputSearchSubCategory?.toLocaleLowerCase())
               ) || []),
             ].map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
