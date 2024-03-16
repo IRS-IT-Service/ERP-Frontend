@@ -436,9 +436,9 @@ const UploadImageGrid = () => {
     {
       field: "uploadImg",
       headerName: "Upload",
-      flex: 0.3,
-      minWidth: 70,
-      maxWidth: 70,
+      flex: 0.2,
+      minWidth: 50,
+  
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
