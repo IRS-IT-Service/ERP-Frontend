@@ -225,6 +225,7 @@ const UploadImageGrid = () => {
           Category: item.Category,
           imageCount: item.sideImage?.length,
           isChanged: item.isChanged,
+          GST: +item?.GST.toFixed(0),
         };
       });
       dispatch(setAllProductsV2(allProductData.data));
@@ -373,6 +374,18 @@ const UploadImageGrid = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "GST",
+      headerName: "GST",
+      flex: 0.2,
+      minWidth: 50,
+      // maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `${params.value} %`,
     },
 
     {
@@ -671,11 +684,11 @@ const UploadImageGrid = () => {
                         sx={{
                           minWidth: 100,
                           height: 80,
-                          background: 'green',
-                          borderRadius: '5px',
-                          position: 'relative',
-                          cursor: 'pointer',
-                          objectFit: 'contain',
+                          background: "green",
+                          borderRadius: "5px",
+                          position: "relative",
+                          cursor: "pointer",
+                          objectFit: "contain",
                         }}
                         image={img?.lowUrl}
                         alt="side Image"
