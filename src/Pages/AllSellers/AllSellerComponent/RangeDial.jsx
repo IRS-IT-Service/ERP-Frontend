@@ -268,7 +268,6 @@ const RangeDial = ({ data, open, close, refetch }) => {
                             type="number"
                             name="from"
                             onBlur={handleCheck}
-                            readOnly
                             value={inputData[index]?.from}
                             onChange={(e) => handleInputChange(index, e)}
                             style={{

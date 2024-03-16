@@ -98,7 +98,7 @@ useEffect(() => {
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
   const [page, setPage] = useState(1);
-  const [rowPerPage, setRowPerPage] = useState(100);
+  const [rowPerPage, setRowPerPage] = useState(50);
   const [totalProductCount, setTotalProductCount] = useState(0);
 
   /// rtk query
@@ -130,7 +130,7 @@ useEffect(() => {
           LandingCost: item.LandingCost.toFixed(2),
           SalesPrice: item.SalesPrice.toFixed(2),
           MRP: item.MRP.toFixed(2),
-          GST: item.GST.toFixed(2),
+          GST: item.GST.toFixed(0),
           SellerPrice: item.SellerPrice.toFixed(2),
           Brand: item.Brand,
           Mqr: item.Mqr,
