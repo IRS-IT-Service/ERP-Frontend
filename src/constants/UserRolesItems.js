@@ -501,8 +501,24 @@ const userRolesData = [
 
     ],
   },
+
+  {
+    title: "Other",
+    icon: "fa-regular fa-comment-dots",
+    childrens: [
+      {
+        id: 71,
+        name: "Student Info",
+        path: "/studentInfo",
+        icon: "fa-solid fa-circle-info",
+        notification: true,
+      },
+  
+
+    ],
+  },
 ];
 
-// last routes is 70
+// last routes is 71
 
 export default userRolesData;

@@ -1,6 +1,7 @@
 import { apiSlice } from "./apiSlice";
 import { Assets_URL } from "../../constants/ApiEndpoints";
 
+
 export const assetsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     reducerPath: "assetsApi",
@@ -23,6 +24,7 @@ export const assetsApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+
     getSingleAssets: builder.mutation({
       query: (data) => {
         return {

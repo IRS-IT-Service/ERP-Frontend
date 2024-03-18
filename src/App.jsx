@@ -118,6 +118,7 @@ import UpdateProductBulk from "./Pages/UpdateProduct/components/UpdateProductBul
 import UpdateProductMain from "./Pages/UpdateProduct/UpdateProductMain";
 import MessageTemplate from "./Pages/MessageTemplate/MessageTemplate";
 import SetDiscountPrice from "./Pages/AllSellers/AllSellerComponent/SetDiscountPrice";
+import Studentinfo from "./Pages/Other/Studentinfo";
 
 function App() {
   /// initialize
@@ -390,6 +391,7 @@ function App() {
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
                 <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
                 <Route path="/addBrand" element={<AddBrand />} />
+                <Route path="/studentInfo" element={<Studentinfo />} />
                 {/* <Route
                   path="/UpdateSellerPrice"
                   element={
