@@ -1,10 +1,13 @@
-import React from "react";
+import { React, useEffect, useState } from "react";
 
 import TextField from "@mui/material/TextField";
 import { Box, Container, styled } from "@mui/material";
 import ToggleNav from "../../components/Common/Togglenav";
 import LandingComponent from "./Component/LandingComponent";
 import LandingPage from "../../components/Common/LandingPage";
+import { useDispatch} from "react-redux";
+import { setHeader} from "../../features/slice/uiSlice";
+
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "grey" : "#eee",
   display: "flex",
@@ -16,6 +19,13 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const Verify = () => {
+  const dispatch = useDispatch();
+
+  
+  useEffect(() => {
+    dispatch(setHeader(""));
+  }, []);
+
   return (
     <Box
       component="main"
