@@ -27,7 +27,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
     0
   );
   const [setBulk, { isLoading }] = useAddBulkSellerPriceMutation();
-
+  const Profit = ((+data.SellerPrice - +data.LandingCost) / +data.LandingCost) * 100;
   const handleCheck = (e) => {
     const { value } = e.target;
 
@@ -39,7 +39,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
     setIsverify(false);
   };
   const [inputData, setInputData] = useState([
-    { from: data.Mqr + 1, to: "", price: "",priceWithGST:"", discount: "" },
+    { from: data.Mqr + 1, to: "", price: "", priceWithGST: "", discount: "" },
   ]);
   const [error, setError] = useState("");
 
@@ -49,18 +49,26 @@ const RangeDial = ({ data, open, close, refetch }) => {
     }
   }, []);
 
+  const handleAddRow = () => {
+    if (
+      inputData.length > 0 &&
+      inputData[inputData.length - 1].to < inputData[inputData.length - 1].from
+    ) {
+      setError("Please fill maximum range");
+      return;
+    }
 
-    const handleAddRow = () => {
-      if (inputData.length > 0 && inputData[inputData.length - 1].to < inputData[inputData.length - 1].from) {
-        setError("Please fill maximum range");
-        return;
-      }
-    
-      const newFrom = inputData.length > 0 ? inputData[inputData.length - 1].to + 1 : data.Mqr + 1;
-    
-      setInputData([...inputData, { from: newFrom, to: "", price: "", priceWithGST: "", discount: "" }]);
-      setError("");
-    };
+    const newFrom =
+      inputData.length > 0
+        ? inputData[inputData.length - 1].to + 1
+        : data.Mqr + 1;
+
+    setInputData([
+      ...inputData,
+      { from: newFrom, to: "", price: "", priceWithGST: "", discount: "" },
+    ]);
+    setError("");
+  };
   const handleDeleteRow = (index) => {
     const newData = [...inputData];
     newData.splice(index, 1);
@@ -68,6 +76,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
   };
 
   const handleInputChange = (index, event) => {
+
     const { name, value } = event.target;
     const newData = [...inputData];
     const sellPrice = +data.SellerPrice;
@@ -87,10 +96,10 @@ const RangeDial = ({ data, open, close, refetch }) => {
       }
       let newPrice = sellPrice - (sellPrice * (+value / 100)).toFixed(0);
       newData[index]["discount"] = +value;
-      newData[index]["price"] =newPrice
-      newData[index]["priceWithGST"] =(+(+newPrice / 100) * (100 + +data.GST))
+      newData[index]["price"] = newPrice;
+      newData[index]["priceWithGST"] = +(+newPrice / 100) * (100 + +data.GST);
       setInputData(newData);
-    } else{
+    } else {
       newData[index][name] = +value;
       setInputData(newData);
     }
@@ -107,12 +116,13 @@ const RangeDial = ({ data, open, close, refetch }) => {
   const HandleSubmit = async () => {
     const isValid = inputData.every((item) => areAllKeysFilled(item));
     if (isVerify) {
-      setError(
-        "Input value is not less than the minimum quantity requested."
-      );
+      setError("Input value is not less than the minimum quantity requested.");
       return;
     }
-    if (inputData.length > 0 && inputData[inputData.length - 1].to < inputData[inputData.length - 1].from) {
+    if (
+      inputData.length > 0 &&
+      inputData[inputData.length - 1].to < inputData[inputData.length - 1].from
+    ) {
       setError("Please fill maximum range");
       return;
     }
@@ -121,7 +131,6 @@ const RangeDial = ({ data, open, close, refetch }) => {
       return;
     }
     try {
-
       const info = {
         datas: [
           {
@@ -135,12 +144,16 @@ const RangeDial = ({ data, open, close, refetch }) => {
       toast.success("Successfully submitted");
       setInputData([{ from: data.Mqr, to: "", price: "", discount: "" }]);
       close();
-      setError("")
+      setError("");
       refetch();
     } catch (err) {
       console.log(err);
     }
   };
+
+  //Profit
+
+
 
   return (
     <div>
@@ -215,7 +228,7 @@ const RangeDial = ({ data, open, close, refetch }) => {
 
               <Button
                 variant="contained"
-                sx={{ background: "green" }}
+                sx={{ background: "green",mt:1 }}
                 onClick={() => handleAddRow()}
               >
                 <AddIcon />
@@ -280,20 +293,21 @@ const RangeDial = ({ data, open, close, refetch }) => {
                             type="number"
                             name="to"
                             value={inputData[index]?.to}
-                            readOnly={inputData.length - 1 > index ? true : false}
+                            readOnly={
+                              inputData.length - 1 > index ? true : false
+                            }
                             onChange={(e) => handleInputChange(index, e)}
                             style={{
                               width: "3rem",
                               textAlign: "center",
                               height: "2rem",
-                        
                             }}
                           />
-                      
                         </Box>
                       </TableCell>
                       <TableCell align="center">
-                    {(inputData[index].priceWithGST && (+(inputData[index].priceWithGST)).toFixed(0) )}
+                        {inputData[index].priceWithGST &&
+                          (+inputData[index].priceWithGST).toFixed(0)}
                       </TableCell>
                       <TableCell align="center">
                         <input
@@ -327,9 +341,8 @@ const RangeDial = ({ data, open, close, refetch }) => {
                         }}
                       >
                         {(
-                          ((+inputData[index]?.price - +data?.LandingCost) /
-                            +data?.LandingCost) *
-                          100
+                          Profit - +inputData[index]?.discount  
+                          
                         ).toFixed(0)}{" "}
                         %
                       </TableCell>
@@ -358,33 +371,39 @@ const RangeDial = ({ data, open, close, refetch }) => {
         )}
 
         <DialogActions>
-          <Box sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-          }}>
-          <Typography sx={{color:"red" , fontSize:"0.8rem"}}>{error}</Typography>
-          <Box sx={{
-            display: "flex",
-         
-            gap:1
-          }}>
-          <Button
-            variant="contained"
-            disabled={isLoading}
-            onClick={HandleSubmit}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
           >
-            {isLoading ? (
-              <CircularProgress style={{ color: "#fff" }} size={30} />
-            ) : (
-              "Save"
-            )}
-          </Button>
-          <Button variant="contained" onClick={close}>
-            Close
-          </Button>
-          </Box>
+            <Typography sx={{ color: "red", fontSize: "0.8rem" }}>
+              {error}
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+
+                gap: 1,
+              }}
+            >
+              <Button
+                variant="contained"
+                disabled={isLoading}
+                onClick={HandleSubmit}
+              >
+                {isLoading ? (
+                  <CircularProgress style={{ color: "#fff" }} size={30} />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+              <Button variant="contained" onClick={close}>
+                Close
+              </Button>
+            </Box>
           </Box>
         </DialogActions>
       </Dialog>
