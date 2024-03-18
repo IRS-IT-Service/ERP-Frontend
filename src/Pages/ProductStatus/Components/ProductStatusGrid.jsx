@@ -90,7 +90,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
         sku: id,
         body: { data: status, type: type },
       };
-
       const res = await notationUpdateApi(data).unwrap();
       setRows((prevRow) => {
         return prevRow.map((item) => {
@@ -101,6 +100,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           }
         });
       });
+      toast.success(res?.message)
     } catch (error) {
       console.error("An error occurred during login:", error);
     }
@@ -487,6 +487,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             {" "}
             <Switch
               checked={params.row.isEcwidSync}
+              disabled={!params.row.SalesPrice}
               onChange={(e) => {
                 handleIsActiveyncUpdate(
                   params.row.SKU,
@@ -632,7 +633,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       <Box
         sx={{
           width: "100%",
-          height: "78vh",
+          height: "85vh",
           "& .super-app-theme--header": {
             background: "#eee",
             color: "black",

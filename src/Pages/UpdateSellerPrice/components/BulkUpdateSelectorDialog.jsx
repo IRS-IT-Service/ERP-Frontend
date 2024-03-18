@@ -3,11 +3,11 @@ import { Button, Dialog, DialogTitle, DialogActions, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { NearbyError } from "@mui/icons-material";
+
 const BulkUpdateSelectorDialog = ({ list, open, setOpen }) => {
   const [newList, setNewList] = useState(list?.filter((item) => item.id !== 7));
   // console.log(newList);
   const [selectedItems, setSelectedItems] = useState([]);
-  console.log("selcected items", selectedItems);
   /// initialize
   const navigate = useNavigate();
 

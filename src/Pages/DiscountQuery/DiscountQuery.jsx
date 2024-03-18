@@ -90,7 +90,7 @@ const DiscountQuery = () => {
             };
             
             useEffect(() => {
-              dispatch(setHeader(`Sales Details`));
+              dispatch(setHeader(`Create Sales Query`));
             }, []);
   return (
     <Box
@@ -98,7 +98,7 @@ const DiscountQuery = () => {
       sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
-      {/* <Header Name={'Sales Details'} info={true} customOnClick={handleOpen} /> */}
+   
 
       {/* Dialog info Box */}
       <InfoDialogBox

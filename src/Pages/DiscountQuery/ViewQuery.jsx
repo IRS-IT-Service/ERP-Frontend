@@ -444,11 +444,7 @@ const ViewQuery = () => {
   // Merge columns based on isAdminRoute
   const finalColumns = isOnAdminRoute ? adminColumns : userColumns;
 
-  const description = `The Barcode Generation function is  designed to create barcodes for
-          products. This is accomplished by selecting the product, clicking on
-          the "Generate" button, which will yield a new barcode. To obtain the
-          barcode, click on "Download." If you wish to view the barcode, you can
-          do so by clicking on "View."`;
+  const description = `View Query`;
 
 
   const dispatch = useDispatch();
@@ -459,7 +455,7 @@ const ViewQuery = () => {
   };
  
   useEffect(() => {
-    dispatch(setHeader(`Barcode Stick`));
+    dispatch(setHeader(`View Query`));
   }, []);
 
   return (
