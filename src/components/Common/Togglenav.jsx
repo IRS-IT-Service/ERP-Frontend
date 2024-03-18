@@ -18,6 +18,7 @@ import {
   Menu,
   MenuItem,
   Badge,
+  Link 
 } from "@mui/material";
 import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
@@ -30,6 +31,8 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { useNavigate } from "react-router-dom";
 import themeColors from "../../constants/ThemeColor";
 import Header from "./Header";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+
 
 const drawerWidth = 220;
 
@@ -147,6 +150,7 @@ const ToggleNav = () => {
   const handleDrawer = () => {
     dispatch(toggleShowNav());
   };
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -335,6 +339,7 @@ const ToggleNav = () => {
             >
               <MenuIcon />
             </IconButton>
+        
             <Box
               sx={{
                 marginLeft: "1.5rem",
@@ -343,8 +348,11 @@ const ToggleNav = () => {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-evenly",
+                cursor:"pointer",
               }}
+          onClick={() =>navigate("/") }
             >
+              
               {" "}
               <img
                 src={logo2}
@@ -355,7 +363,9 @@ const ToggleNav = () => {
                   width: "100%",
                 }}
               />
+               
             </Box>
+       
           </Box>
          {HeaderName && <Header Name={HeaderName} info={true}  /> }
           <Box
