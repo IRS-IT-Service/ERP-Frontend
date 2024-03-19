@@ -632,7 +632,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             </Typography>{" "}
             <Box
               sx={{
-                "& .MuiSwitch-switchBase": {
+                ".MuiSwitch-switchBase": {
                   color: "#EC5802",
                 },
               }}
