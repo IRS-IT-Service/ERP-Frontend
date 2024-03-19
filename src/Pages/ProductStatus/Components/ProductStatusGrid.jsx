@@ -224,6 +224,10 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     }
   }, [deepSearch]);
 
+  const getNoImageFunc = () => {
+    setFilterString("type=NoImage");
+  };
+
   //Columns*******************
   const columns = [
     {
@@ -505,7 +509,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           <Box
             sx={{
               "& .MuiSwitch-switchBase": {
-                color: isEcwidavail ? "#EC5802" : "",
+                color: isEcwidavail ? "#EC5802" : "black",
               },
               "& .MuiSwitch-switchBase.Mui-checked": {
                 color: isEcwidavail ? "#135F04" : "",
@@ -634,7 +638,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               sx={{
                 "& .MuiSwitch-switchBase.Mui-disabled": {
                   color: "#EC5802",
-            
                 },
               }}
             >
@@ -642,7 +645,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               <Switch disabled={true} />
             </Box>
             <Typography sx={{ fontWeight: "bold", fontSize: "12px" }}>
-            SKU in Ecwid disabled due to missing sales price
+              SKU in Ecwid disabled due to missing sales price
             </Typography>{" "}
             <Box
               sx={{
@@ -654,6 +657,24 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             >
               {" "}
               <Switch disabled={true} />
+            </Box>
+            <Typography sx={{ fontWeight: "bold", fontSize: "12px" }}>
+              SKU not available in Ecwid
+            </Typography>{" "}
+            <Box
+              sx={{
+                "& .MuiSwitch-switchBase.Mui-disabled": {
+                  color: "Black",
+                },
+              }}
+            >
+              {" "}
+              <Switch disabled={true} />
+            </Box>
+            <Box sx={{cursor:"pointer" ,display:"flex" ,gap:1,alignItems:"center"}} onClick={() => getNoImageFunc()} >
+              <Typography sx={{ fontWeight: "bold", fontSize: "12px" }} >Arrange By NoImage</Typography>
+              {" "}
+              <ImageNotSupportedIcon onClick={() => getNoImageFunc()} />
             </Box>
           </Box>
           <TablePagination
