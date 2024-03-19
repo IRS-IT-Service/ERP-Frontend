@@ -632,13 +632,14 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             </Typography>{" "}
             <Box
               sx={{
-                "& .MuiSwitch-switchBase": {
+                "& .MuiSwitch-switchBase.Mui-disabled": {
                   color: "#EC5802",
+            
                 },
               }}
             >
               {" "}
-              <Switch disabled="true" />
+              <Switch disabled={true} />
             </Box>
             <Typography sx={{ fontWeight: "bold", fontSize: "12px" }}>
             SKU in Ecwid disabled due to missing sales price
@@ -652,7 +653,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               }}
             >
               {" "}
-              <Switch disabled="true" />
+              <Switch disabled={true} />
             </Box>
           </Box>
           <TablePagination
