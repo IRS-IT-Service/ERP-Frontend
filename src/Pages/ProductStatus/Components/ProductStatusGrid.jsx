@@ -507,10 +507,10 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               "& .MuiSwitch-switchBase": {
                 color: isEcwidavail ? "#EC5802" : "",
               },
-              ".MuiSwitch-switchBase.Mui-checked": {
+              "& .MuiSwitch-switchBase.Mui-checked": {
                 color: isEcwidavail ? "#135F04" : "",
               },
-              ".MuiSwitch-switchBase.Mui-disabled": {
+              "& .MuiSwitch-switchBase.Mui-disabled": {
                 color: isEcwidavail ? "#EC5802" : "",
                 opacity: 0.5,
               },
@@ -632,7 +632,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             </Typography>{" "}
             <Box
               sx={{
-                ".MuiSwitch-switchBase": {
+                "& .MuiSwitch-switchBase": {
                   color: "#EC5802",
                 },
               }}
@@ -645,7 +645,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             </Typography>{" "}
             <Box
               sx={{
-                ".MuiSwitch-switchBase.Mui-disabled": {
+                "& .MuiSwitch-switchBase.Mui-disabled": {
                   color: "#EC5802",
                   opacity: 0.5,
                 },
