@@ -349,6 +349,15 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    productAvailinEcwid: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/findProductAvailabiltyEcwid`,
+          method:"Post",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -393,4 +402,5 @@ export const {
   useAddBulkSellerPriceMutation,
   useDeleteCompetitorMutation,
   useSendOtpForDeleteProductMutation,
+  useProductAvailinEcwidMutation
 } = productApiSlice;
