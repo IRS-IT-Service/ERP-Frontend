@@ -27,6 +27,7 @@ import {
 import {
   useUpdateNotationMutation,
   useGetAllProductV2Query,
+  useProductAvailinEcwidMutation,
 } from "../../../features/api/productApiSlice";
 
 import Loading from "../../../components/Common/Loading";
@@ -53,6 +54,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   /// local state
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedSKU, setSelectedSKU] = useState([]);
   // console.log(selectedItems.length);
   const [open, setOpen] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState({});
@@ -83,6 +85,19 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
 
   const [notationUpdateApi, { isLoading: NotationLoading }] =
     useUpdateNotationMutation();
+  //availability of sku in ecwid
+  const [availProduct, { isLoading: EcwidLoading }] =
+    useProductAvailinEcwidMutation();
+
+  const handleavailEcwid = async (sku) => {
+    try {
+      const res = await availProduct(sku).unwrap();
+
+      setSelectedSKU(res.product);
+    } catch (error) {
+      console.error("An error occurred during login:", error);
+    }
+  };
 
   const handleIsActiveyncUpdate = async (id, status, type) => {
     try {
@@ -100,7 +115,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           }
         });
       });
-      toast.success(res?.message)
+      toast.success(res?.message);
     } catch (error) {
       console.error("An error occurred during login:", error);
     }
@@ -143,7 +158,9 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
+      const data2 = [];
       const data = allProductData?.data?.products?.map((item, index) => {
+        data2.push(item.SKU);
         return {
           id: item.SKU,
           Sno:
@@ -165,7 +182,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           isImageExist: item.mainImage?.fileId ? true : false,
         };
       });
-
+      handleavailEcwid(data2);
       dispatch(setAllProductsV2(allProductData.data));
       setRows(data);
       setRowPerPage(allProductData.data.limit);
@@ -482,8 +499,23 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        const SKU = params.row.SKU;
+        const isEcwidavail = selectedSKU.includes(SKU);
         return (
-          <div>
+          <Box
+            sx={{
+              "& .MuiSwitch-switchBase": {
+                color: isEcwidavail ? "#EC5802" : "",
+              },
+              ".MuiSwitch-switchBase.Mui-checked": {
+                color: isEcwidavail ? "#135F04" : "",
+              },
+              ".MuiSwitch-switchBase.Mui-disabled": {
+                color: isEcwidavail ? "#EC5802" : "",
+                opacity: 0.5,
+              },
+            }}
+          >
             {" "}
             <Switch
               checked={params.row.isEcwidSync}
@@ -496,7 +528,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
                 );
               }}
             />
-          </div>
+          </Box>
         );
       },
     },
@@ -569,7 +601,11 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       >
         Download with True / False
       </Button>
-      <Button sx={{ marginLeft: "5px" }} onClick={() => navigate("/updateBulkProduct")} variant="contained">
+      <Button
+        sx={{ marginLeft: "5px" }}
+        onClick={() => navigate("/updateBulkProduct")}
+        variant="contained"
+      >
         Bulk Update Admin
       </Button>
     </Box>
@@ -584,6 +620,41 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           <Button size="small" onClick={() => status()}>
             <CachedIcon />
           </Button>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            <Typography sx={{ fontWeight: "bold", fontSize: "12px" }}>
+              SKU available in Ecwid
+            </Typography>{" "}
+            <Box
+              sx={{
+                "& .MuiSwitch-switchBase": {
+                  color: "#EC5802",
+                },
+              }}
+            >
+              {" "}
+              <Switch disabled="true" />
+            </Box>
+            <Typography sx={{ fontWeight: "bold", fontSize: "12px" }}>
+            SKU in Ecwid disabled due to missing sales price
+            </Typography>{" "}
+            <Box
+              sx={{
+                ".MuiSwitch-switchBase.Mui-disabled": {
+                  color: "#EC5802",
+                  opacity: 0.5,
+                },
+              }}
+            >
+              {" "}
+              <Switch disabled="true" />
+            </Box>
+          </Box>
           <TablePagination
             component="div"
             count={totalProductCount}
@@ -629,7 +700,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
         handleExcelDownload={handleExcelDownload}
         loading={loading}
       />
-      <Loading loading={productLoading || isFetching} />
+      <Loading loading={productLoading || isFetching || EcwidLoading} />
       <Box
         sx={{
           width: "100%",
