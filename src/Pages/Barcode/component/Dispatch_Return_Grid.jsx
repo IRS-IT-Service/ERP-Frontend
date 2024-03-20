@@ -139,6 +139,12 @@ const Dispatch_Return_Grid = () => {
   }
 
   const handleChangeBarcode = async (e) => {
+    // added extra check if the customer name has not filled at the time of dispatching
+    if (selectedOption === "Dispatch") {
+      if (Object.keys(value).length === 0) {
+        handleOpenDialog();
+        return;
+      }}
     setBarcode(e.target.value);
     let isDispatchError = null;
     if (e.target.value.length === 16) {
