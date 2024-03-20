@@ -47,6 +47,7 @@ import Loading from "../../components/Common/Loading";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useAddPriceHistoryMutation } from "../../features/api/PriceHistoryApiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -129,17 +130,18 @@ const Calc = () => {
   const description1 =
     "This is a Price Calculator where you can calculate the price ";
 
-
   const dispatch = useDispatch();
+  const [addpriceHistory, { isLoading: addpriceHistoryLoading }] =
+    useAddPriceHistoryMutation();
 
-const { isInfoOpen } = useSelector((state) => state.ui);
-const handleClose1 = () => {
-  dispatch(setInfo(false));
-};
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose1 = () => {
+    dispatch(setInfo(false));
+  };
 
-useEffect(() => {
-  dispatch(setHeader(`Price Calculator`));
-}, []);
+  useEffect(() => {
+    dispatch(setHeader(`Price Calculator`));
+  }, []);
 
   /// intialize
   const { id } = useParams();
@@ -555,11 +557,45 @@ useEffect(() => {
       console.log(err);
     }
   };
+//function for Price History
+  const matchSKUs = (usdPrice, rmbPrice, qty) => {
+    let skus = [];
+
+    if (!usdPrice) {
+      skus = Object.keys(rmbPrice);
+    } else {
+      skus = Object.keys(usdPrice);
+    }
+
+    const matchedProducts = [];
+
+    skus.forEach((sku) => {
+      if (rmbPrice[sku] !== undefined && qty[sku] !== undefined) {
+        matchedProducts.push({
+          SKU: sku,
+          priceHistory: [
+            {
+              RMB: rmbPrice[sku],
+              USD: usdPrice[sku],
+              Quantity: qty[sku],
+              conversionRate:
+                rmbPrice[sku] > usdPrice[sku]
+                  ? rmbPrice[sku] / usdPrice[sku]
+                  : usdPrice[sku] / rmbPrice[sku],
+            },
+          ],
+        });
+      }
+    });
+
+    return matchedProducts;
+  };
 
   const handleSyncLandingCost = async () => {
     try {
       const result = [];
-      for (const sku in landingCostExGst) {
+      
+     for (const sku in landingCostExGst) {
         if (landingCostExGst.hasOwnProperty(sku)) {
           result.push({
             SKU: sku,
@@ -581,20 +617,21 @@ useEffect(() => {
         return;
       }
 
+      const matchedProducts = matchSKUs(usdPrice, rmbPrice, qty);
+
       const params = {
         type: "LandingCost",
         body: { products: filteredArray },
       };
       const res = await updateProductsApi(params).unwrap();
+      const res1 = await addpriceHistory(matchedProducts).unwrap();
       handleSaveCalcData(true);
       toast.success("Landing Cost Synced Successfully");
       const liveStatusData = {
         message: `${userInfo.name} updated LandingCost of ${filteredArray
           .map((product) => `${product.SKU} to ${product.value}`)
           .join(", ")} `,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       setTimeout(() => {
         socket.emit("liveStatusServer", liveStatusData);
@@ -608,7 +645,10 @@ useEffect(() => {
   const handleSyncOneLandingCost = async (
     SKU,
     currentLandingCost,
-    NewLandingCost
+    NewLandingCost,
+    RMB,
+    USD,
+    QTY
   ) => {
     try {
       if (!NewLandingCost) {
@@ -624,16 +664,28 @@ useEffect(() => {
         type: "LandingCost",
         body: { products: [{ SKU: SKU, value: Math.ceil(NewLandingCost) }] },
       };
+      const value = [
+        {
+          SKU: SKU,
+          priceHistory: [
+            {
+              conversionRate: RMB > USD ? +RMB / +USD : +USD / +RMB,
+              Quantity: +QTY,
+              RMB: +RMB,
+              USD: +USD,
+            },
+          ],
+        },
+      ];
       const res = await updateProductsApi(params).unwrap();
+      const res1 = await addpriceHistory(value).unwrap();
       handleSaveCalcData(true);
       toast.success(`${SKU} Landing Cost updated successfully`);
       const liveStatusData = {
         message: `${userInfo.name} updated LandingCost of ${SKU} to ${Math.ceil(
           NewLandingCost
         )}`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       setTimeout(() => {
         socket.emit("liveStatusServer", liveStatusData);
@@ -2112,7 +2164,10 @@ useEffect(() => {
                                 handleSyncOneLandingCost(
                                   row.SKU,
                                   row.LandingCost,
-                                  landingCostExGst[row.SKU]
+                                  landingCostExGst[row.SKU],
+                                  rmbPrice[row.SKU],
+                                  usdPrice[row.SKU],
+                                  qty[row.SKU]
                                 );
                               }}
                             >

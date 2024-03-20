@@ -144,9 +144,7 @@ const ScanAssetsCode = () => {
           if (response?.data?.status === "success") {
             const liveStatusData = {
               message: `${userInfo.name} Scanned Assets of Code ${input} `,
-              time: new Date().toLocaleTimeString("en-IN", {
-                timeZone: "Asia/Kolkata",
-              }),
+              time: new Date(),
             };
             socket.emit("liveStatusServer", liveStatusData);
 

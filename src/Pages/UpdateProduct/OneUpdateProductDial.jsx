@@ -156,9 +156,7 @@ const OneUpdateProductDial = ({
       if (res.status === "success") {
         const liveStatusData = {
           message: `${userInfo.name} updated ${SKU} update product`,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         toast.success(res.message);

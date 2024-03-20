@@ -317,7 +317,7 @@ const ProductShipment = () => {
             <input
               placeholder="Date"
               type="date"
-              sx={{
+              style={{
                 width: "10rem",
                 padding: "10px 25px",
                 margin: "2px 0",
