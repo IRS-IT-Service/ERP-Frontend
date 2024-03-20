@@ -85,9 +85,7 @@ const NewProductApproval = () => {
         message: `${userInfo.name}  ${
           status ? "Approved" : "Rejected"
         } ${name} `,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
 
       const datas = {

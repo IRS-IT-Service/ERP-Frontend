@@ -85,7 +85,6 @@ const Content = ({
   const [totalProductCount, setTotalProductCount] = useState(0);
   const [localData, setLocalData] = useState([]);
 
- 
   /// rtk query
   const {
     data: allProductData,
@@ -95,7 +94,6 @@ const Content = ({
   } = useGetAllProductV2Query(filterString, {
     pollingInterval: 1000 * 300,
   });
-
 
   const [updateProductsApi, { isLoading: updateProductLoading }] =
     useUpdateProductsColumnMutation();
@@ -191,7 +189,6 @@ const Content = ({
 
         return result;
       }, []);
-
       if (newEditedRows.length > 0) {
         await Promise.all(
           newEditedRows.map(async (item) => {
@@ -205,9 +202,7 @@ const Content = ({
               message: `${userInfo.name} updated ${item.query} of ${item.data
                 .map((product) => `${product.name} to ${product.value}`)
                 .join(", ")} `,
-              time: new Date().toLocaleTimeString("en-IN", {
-                timeZone: "Asia/Kolkata",
-              }),
+              time: new Date(),
             };
             const addProductHistory = {
               userId: userInfo.adminId,
@@ -375,8 +370,6 @@ const Content = ({
       setPage(allProductData.data.currentPage);
     }
   }, [allProductData, triggerDefault]);
-
- 
 
   // function for fetch data on latest query
   const fetchDataWithQuery = (query) => {

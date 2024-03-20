@@ -73,9 +73,7 @@ const UpdateProductBulk = () => {
       const res = await bulkUpdateProduct(info).unwrap();
       const liveStatusData = {
         message: `${userInfo.name} updated bulk product`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       socket.emit("liveStatusServer", liveStatusData);
       const whatsappMessage = {

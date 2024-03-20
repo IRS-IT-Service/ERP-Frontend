@@ -631,9 +631,7 @@ const Calc = () => {
         message: `${userInfo.name} updated LandingCost of ${filteredArray
           .map((product) => `${product.SKU} to ${product.value}`)
           .join(", ")} `,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       setTimeout(() => {
         socket.emit("liveStatusServer", liveStatusData);
@@ -687,9 +685,7 @@ const Calc = () => {
         message: `${userInfo.name} updated LandingCost of ${SKU} to ${Math.ceil(
           NewLandingCost
         )}`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       setTimeout(() => {
         socket.emit("liveStatusServer", liveStatusData);

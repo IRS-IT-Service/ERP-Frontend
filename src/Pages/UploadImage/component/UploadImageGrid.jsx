@@ -172,9 +172,7 @@ const UploadImageGrid = () => {
       await uploadSideImageApi(body).unwrap();
       const liveStatusData = {
         message: `${userInfo.name} uploaded Image to SKU ${imageSKU}`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       socket.emit("liveStatusServer", liveStatusData);
       toast.success("Images uploaded successfully", {
