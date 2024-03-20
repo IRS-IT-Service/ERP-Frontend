@@ -557,7 +557,7 @@ const Calc = () => {
       console.log(err);
     }
   };
-
+//function for Price History
   const matchSKUs = (usdPrice, rmbPrice, qty) => {
     let skus = [];
 
@@ -594,8 +594,8 @@ const Calc = () => {
   const handleSyncLandingCost = async () => {
     try {
       const result = [];
-      const priceHistory = [];
-      for (const sku in landingCostExGst) {
+      
+     for (const sku in landingCostExGst) {
         if (landingCostExGst.hasOwnProperty(sku)) {
           result.push({
             SKU: sku,
