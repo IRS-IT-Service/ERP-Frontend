@@ -116,7 +116,7 @@ const PriceHistoryDialogue = ({
                   <StyledTableCell align="center">$ {item.USD}</StyledTableCell>
                   <StyledTableCell align="center">¥ {item.RMB}</StyledTableCell>
                   <StyledTableCell align="center">
-                    ¥ {item.conversionRate}
+                    ¥ {(+item.conversionRate).toFixed(2)}
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {item.Quantity}

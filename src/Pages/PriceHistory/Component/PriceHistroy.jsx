@@ -23,6 +23,7 @@ import {
 import { setAllProducts } from "../../../features/slice/productSlice";
 import PriceHistoryDialogue from "./PriceHistoryDialogue";
 import Loading from "../../../components/Common/Loading";
+import { formatDate } from "../../../commonFunctions/commonFunctions";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -59,7 +60,6 @@ const PriceHistroy = ({ autoHeight }) => {
     isFetching,
   } = useGetAllProductQuery({ searchTerm: searchTerm, type: "priceHistory" });
 
-
   /// Local state
   const [paramsData, setParamsData] = useState({
     brand: "",
@@ -83,6 +83,11 @@ const PriceHistroy = ({ autoHeight }) => {
           Name: item.Name,
           Brand: item.Brand,
           Category: item.Category,
+          QTY: item.priceHistory ? item.priceHistory.Quantity : "",
+          conversionRate: item.priceHistory
+            ? item.priceHistory.conversionRate
+            : "",
+Date: item.priceHistory ? formatDate(item.priceHistory.Date ) : "",
           GST: item.GST,
           prevRMB: item.priceHistory ? item.priceHistory.RMB : "",
           prevUSD: item.priceHistory ? item.priceHistory.USD : "",
@@ -93,7 +98,6 @@ const PriceHistroy = ({ autoHeight }) => {
       setRows(data);
     }
   }, [allProductData]);
-
 
   /// handlers
   const handleCloseHistory = () => {
@@ -151,9 +155,9 @@ const PriceHistroy = ({ autoHeight }) => {
     {
       field: "SKU",
       headerName: "SKU",
-      flex: 0.2,
+      flex: 0.4,
       minWidth: 100,
-      maxWidth: 130,
+      maxWidth: 150,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -183,8 +187,9 @@ const PriceHistroy = ({ autoHeight }) => {
     {
       field: "Name",
       headerName: "Name",
-      flex: 0.2,
-      minWidth: 300,
+      flex: 1,
+      minWidth: 400,
+      maxWidth: 500,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -193,9 +198,9 @@ const PriceHistroy = ({ autoHeight }) => {
     {
       field: "Brand",
       headerName: "Brand",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 140,
+      flex: 0.1,
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -204,9 +209,9 @@ const PriceHistroy = ({ autoHeight }) => {
     {
       field: "Category",
       headerName: "Category",
-      flex: 0.3,
-      minWidth: 90,
-      maxWidth: 100,
+      flex: 0.4,
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -216,20 +221,57 @@ const PriceHistroy = ({ autoHeight }) => {
       field: "GST",
       headerName: "GST%",
       flex: 0.2,
-      minWidth: 60,
-      maxWidth: 80,
+      minWidth: 50,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       valueFormatter: (params) => `${params.value} %`,
     },
+    // {
+    //   field: "Date",
+    //   headerName: "Date",
+    //   flex: 0.2,
+    //   minWidth: 50,
+    //   maxWidth: 150,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    // },
+    // {
+    //   field: "QTY",
+    //   headerName: "Purchase Qty",
+    //   flex: 0.2,
+    //   minWidth: 100,
+    //   maxWidth: 200,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    // },
+    // {
+    //   field: "conversionRate",
+    //   headerName: "Conversion Rate",
+    //   flex: 0.2,
+    //   minWidth: 100,
+    //   maxWidth: 200,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    //   renderCell: (params) => {
+    //     const value = params.row.conversionRate;
+    //     return <Typography variant="body2">{value && (+value).toFixed(2)}</Typography>;
+    //   },
+    // },
     {
       field: "prevRMB",
       headerName: "Prev RMB",
       flex: 0.2,
-      minWidth: 80,
-      maxWidth: 100,
+      minWidth: 100,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",

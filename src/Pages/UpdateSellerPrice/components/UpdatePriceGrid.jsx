@@ -60,6 +60,7 @@ const Content = ({
     hiddenColumns: latestHiddenColumns,
   } = useSelector((state) => state.auth);
 
+
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
     useSelector((state) => state.product);
   /// local state
