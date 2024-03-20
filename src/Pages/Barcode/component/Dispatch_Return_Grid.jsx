@@ -139,6 +139,12 @@ const Dispatch_Return_Grid = () => {
   }
 
   const handleChangeBarcode = async (e) => {
+    // added extra check if the customer name has not filled at the time of dispatching
+    if (selectedOption === "Dispatch") {
+      if (Object.keys(value).length === 0) {
+        handleOpenDialog();
+        return;
+      }}
     setBarcode(e.target.value);
     let isDispatchError = null;
     if (e.target.value.length === 16) {
@@ -269,9 +275,7 @@ const Dispatch_Return_Grid = () => {
 
         const liveStatusData = {
           message: `${userInfo.name} ${resultMessages.join(", ")}`,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date()
         };
         socket.emit("liveStatusServer", liveStatusData);
 
@@ -332,9 +336,7 @@ const Dispatch_Return_Grid = () => {
           .join(", ");
         const liveStatusData = {
           message: `${userInfo.name}   ${result} `,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         const returnbarcodeHistroy = {

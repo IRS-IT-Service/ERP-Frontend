@@ -83,9 +83,7 @@ const Order2Vendor = ({
         const res = await assignOrderApi(data).unwrap();
         const liveStatusData = {
           message: `${userInfo.name} Created Overseas Order `,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date()
         };
         socket.emit("liveStatusServer", liveStatusData);
         toast.success("Restock order was successfully processed");

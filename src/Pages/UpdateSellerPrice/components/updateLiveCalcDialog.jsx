@@ -163,9 +163,7 @@ setIsLoading(true)
             message: `${userInfo.name} updated SalesPrice of ${updatedSalesPrice
               .map((product) => `${product.name} to ${product.value}`)
               .join(", ")} `,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
+            time: new Date(),
           };
           const whatsappMessage = {
             message: liveStatusData.message,
@@ -198,9 +196,7 @@ setIsLoading(true)
             message: `${userInfo.name} updated SalesTax of ${updatedSalesTax
               .map((product) => `${product.name} to ${product.value}`)
               .join(", ")} `,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
+            time: new Date(),
           };
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SalesTax updated successfully");
@@ -262,9 +258,7 @@ setIsLoading(true)
             } updated SellerPrice of ${updatedSellerPrice
               .map((product) => `${product.name} to ${product.value}`)
               .join(", ")} `,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
+            time: new Date()
           };
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SellerPrice updated successfully");
@@ -297,9 +291,7 @@ setIsLoading(true)
             message: `${userInfo.name} updated SalesTax of ${updatedSellerTax
               .map((product) => `${product.name} to ${product.value}`)
               .join(", ")} `,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
+            time: new Date(),
           };
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SellerTax updated successfully");

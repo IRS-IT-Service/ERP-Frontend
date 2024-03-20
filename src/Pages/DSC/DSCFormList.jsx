@@ -201,9 +201,7 @@ const DSCFormList = () => {
 
       const liveStatusData = {
         message: `${userInfo.name} Updated Status To ${params.status} Of DSC Form Token ${params.token}  `,
-        time: new Date().toLocaleTimeString('en-IN', {
-          timeZone: 'Asia/Kolkata',
-        }),
+        time: new Date(),
       };
       socket.emit('liveStatusServer', liveStatusData);
       toast.success('Repair Query updated successfully');
