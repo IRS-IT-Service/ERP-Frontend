@@ -73,7 +73,6 @@ const Dropup = () => {
   const handleItemClick = (item) => {
     setSelectedItem(item === selectedItem ? null : item);
     setValue(item);
-    console.log(item);
   };
 
   /// rtk query
@@ -304,7 +303,6 @@ const Dropup = () => {
                               color=" #666666"
                             >
                               {formateDateAndTime(item.time)}
-                              {console.log(item.time)}
                             </Typography>
                             <CloseIcon
                               onClick={() => {
