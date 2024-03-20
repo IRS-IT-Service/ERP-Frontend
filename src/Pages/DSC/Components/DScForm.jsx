@@ -368,9 +368,7 @@ const DScForm = () => {
 
       const liveStatusData = {
         message: `${userInfo.name} Created DSC Form With Token Id : ${res?.data?.Token}`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       socket.emit("liveStatusServer", liveStatusData);
       dispatch(removeDscformDetails());

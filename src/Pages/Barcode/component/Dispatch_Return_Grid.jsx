@@ -269,9 +269,7 @@ const Dispatch_Return_Grid = () => {
 
         const liveStatusData = {
           message: `${userInfo.name} ${resultMessages.join(", ")}`,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date()
         };
         socket.emit("liveStatusServer", liveStatusData);
 
@@ -332,9 +330,7 @@ const Dispatch_Return_Grid = () => {
           .join(", ");
         const liveStatusData = {
           message: `${userInfo.name}   ${result} `,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         const returnbarcodeHistroy = {

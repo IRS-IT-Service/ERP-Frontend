@@ -125,9 +125,7 @@ const UpdatePriceBulk = () => {
         message: `${userInfo.name} updated ${query} of ${params.products
           .map((product) => `${product.SKU} to ${product.value}`)
           .join(", ")} `,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       socket.emit("liveStatusServer", liveStatusData);
       const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}

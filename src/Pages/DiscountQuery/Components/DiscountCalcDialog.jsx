@@ -228,9 +228,7 @@ const DiscountCalcDialog = ({
         const res = await createQueryApi(params).unwrap();
         const liveStatusData = {
           message: `${userInfo.name} Created a New DiscountQuery for Customer ${formData.customerName} `,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         toast.success(res.message);

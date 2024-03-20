@@ -1,6 +1,6 @@
 import React from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { formatDate } from "../../commonFunctions/commonFunctions";
+import { formatDate, formateDateAndTime } from "../../commonFunctions/commonFunctions";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Box, Button, Typography, Switch, createTheme } from "@mui/material";
 import { useState } from "react";
@@ -303,7 +303,8 @@ const Dropup = () => {
                               fontSize=".9rem"
                               color=" #666666"
                             >
-                              {item.time}
+                              {formateDateAndTime(item.time)}
+                              {console.log(item.time)}
                             </Typography>
                             <CloseIcon
                               onClick={() => {

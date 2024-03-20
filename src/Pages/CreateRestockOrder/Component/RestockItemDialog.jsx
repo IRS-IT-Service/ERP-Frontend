@@ -110,9 +110,7 @@ const RestockItemDialog = ({
         const res = await createRestockOrderApi(data).unwrap();
         const liveStatusData = {
           message: `${userInfo.name} Created Restock Order `,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         toast.success("Restock order was successfully processed");
@@ -157,9 +155,7 @@ const RestockItemDialog = ({
         const res = await createPriceComparision(data).unwrap();
         const liveStatusData = {
           message: `${userInfo.name} Created Price Comparison Order `,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         toast.success("Price comparision has successfully processed");

@@ -111,9 +111,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
         message: `${userInfo.name}   ${
           bool ? "Approved" : "Rejected"
         } ${query}  Update for ${params.row.Name}`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date()
       };
 
       const addProductHistory = {
@@ -169,9 +167,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
         } ${query}  Update for Products ${products
           .map((item) => item.name)
           .join(", ")}`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       const addProductHistory = {
         userId: userInfo.adminId,

@@ -277,9 +277,7 @@ const RemoveProductGrid = () => {
       if (res.success === true) {
         const liveStatusData = {
           message: `${userInfo.name} Deleted The Product With SKU  ${selectedRow.SKU}`,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         toast.success(res.message);
