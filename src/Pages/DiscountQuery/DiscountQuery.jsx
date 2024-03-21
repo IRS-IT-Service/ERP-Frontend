@@ -1,14 +1,8 @@
 import { React, useEffect, useState } from "react";
-import {
-  Box,
-  styled,
-
-} from '@mui/material';
+import { Box, styled } from "@mui/material";
 import DiscountQueryGrid from "./Components/DiscountQueryGrid";
 import DiscountInfoDialogue from "./Components/DiscountInfoDialog";
-import InfoDialogBox from '../../components/Common/InfoDialogBox';
-
-
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -19,12 +13,12 @@ import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const infoDetail = [
   {
-    name: 'Create Query',
+    name: "Create Query",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -37,12 +31,12 @@ const infoDetail = [
   },
 
   {
-    name: 'Discount Card',
+    name: "Discount Card",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -55,12 +49,12 @@ const infoDetail = [
   },
 
   {
-    name: 'Shipment Detail Tracking',
+    name: "Shipment Detail Tracking",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -73,32 +67,29 @@ const infoDetail = [
   },
 ];
 
-
 const DiscountQuery = () => {
-   const description = `The "Create Sales Query" functionality is utilized to compute
+  const description = `The "Create Sales Query" functionality is utilized to compute
             discounts when a client requests a discount for multiple products.
             Additionally, you can save these discounts for future reference.
             Please note that you can only select products with recorded sales or
             MRP prices.`;
 
-  
-            const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-            const { isInfoOpen } = useSelector((state) => state.ui);
-            const handleClose = () => {
-              dispatch(setInfo(false));
-            };
-            
-            useEffect(() => {
-              dispatch(setHeader(`Create Sales Query`));
-            }, []);
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Create Sales Query`));
+  }, []);
   return (
     <Box
-      component='main'
-      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-   
 
       {/* Dialog info Box */}
       <InfoDialogBox
@@ -114,6 +105,5 @@ const DiscountQuery = () => {
     </Box>
   );
 };
-
 
 export default DiscountQuery;

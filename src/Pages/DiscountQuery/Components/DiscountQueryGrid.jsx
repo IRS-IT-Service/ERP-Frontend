@@ -1,10 +1,20 @@
-import { React, useEffect, useState ,useRef } from "react";
-import { DataGrid, useGridApiRef , GridToolbarContainer, } from "@mui/x-data-grid";
+import { React, useEffect, useState, useRef } from "react";
+import {
+  DataGrid,
+  useGridApiRef,
+  GridToolbarContainer,
+} from "@mui/x-data-grid";
 import Nodata from "../../../assets/empty-cart.png";
 import FilterBar from "../../../components/Common/FilterBar";
-import { Grid, Box, TablePagination ,Button } from "@mui/material";
+import { Grid, Box, TablePagination, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllProductsV2 } from "../../../features/slice/productSlice";
+import {
+  removeSelectedCreateQuery,
+  setSelectedCreateQuery,
+  setSelectedSkuQuery,
+  removeSelectedSkuQuery,
+} from "../../../features/slice/selectedItemsSlice";
 import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
@@ -20,8 +30,11 @@ const DiscountQueryGrid = () => {
 
   /// global state
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-  useSelector((state) => state.product);
-
+    useSelector((state) => state.product);
+  const { createQueryItems, createQuerySku } = useSelector(
+    (state) => state.seletedItems
+  );
+  console.log(createQueryItems, createQuerySku);
   /// local state
 
   const [showNoData, setShowNoData] = useState(false);
@@ -54,7 +67,12 @@ const DiscountQueryGrid = () => {
       selectionModel.includes(item.id)
     );
     setSelectedItemsData(newSelectedRowsData);
+    dispatch(setSelectedSkuQuery(selectionModel));
   };
+  console.log(selectedItemsData);
+  useEffect(() => {
+    dispatch(setSelectedCreateQuery(selectedItemsData));
+  }, [selectedItems]);
 
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
@@ -62,7 +80,9 @@ const DiscountQueryGrid = () => {
       (item) => item.SKU !== id
     );
     setSelectedItemsData(newSelectedRowsData);
+    dispatch(removeSelectedCreateQuery(newSelectedRowsData));
     setSelectedItems(newSelectedItems);
+    dispatch(removeSelectedSkuQuery(newSelectedItems));
   };
 
   const handleOpenDialog = () => {
@@ -81,7 +101,10 @@ const DiscountQueryGrid = () => {
           MRP: item.MRP,
           Quantity: item.ActualQuantity,
           SalesPrice: item.SalesPrice,
-          SalesPriceGst:(((item.SalesPrice * item.GST) / 100) + item.SalesPrice ).toFixed(0) ,
+          SalesPriceGst: (
+            (item.SalesPrice * item.GST) / 100 +
+            item.SalesPrice
+          ).toFixed(0),
           Brand: item.Brand,
           Category: item.Category,
         };
@@ -126,7 +149,6 @@ const DiscountQueryGrid = () => {
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
-    
     clearTimeout(debouncing.current);
     if (!deepSearch) {
       setFilterString(`page=1`);
@@ -143,8 +165,8 @@ const DiscountQueryGrid = () => {
     {
       field: "Sno",
       headerName: "Sno",
-minWidth:30,
-maxWidth:40,
+      minWidth: 30,
+      maxWidth: 40,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -154,8 +176,8 @@ maxWidth:40,
       field: "SKU",
       headerName: "SKU",
 
-      minWidth:200,
-      maxWidth:300,
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -164,7 +186,7 @@ maxWidth:40,
     {
       field: "Name",
       headerName: "Product ",
-flex:0.1,
+      flex: 0.1,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -224,8 +246,8 @@ flex:0.1,
       headerName: "Sales",
       align: "center",
       headerAlign: "center",
-      minWidth:200,
-      maxWidth:300,
+      minWidth: 200,
+      maxWidth: 300,
       valueFormatter: (params) => `₹ ${(+params.value).toFixed(0)} `,
     },
     {
@@ -234,8 +256,8 @@ flex:0.1,
       cellClassName: "super-app-theme--cell",
       headerName: "Sales Price Inclu (GST) ₹",
       align: "center",
-      minWidth:200,
-      maxWidth:300,
+      minWidth: 200,
+      maxWidth: 300,
       valueFormatter: (params) => `₹ ${(+params.value).toFixed(0)} `,
     },
   ];
@@ -277,10 +299,11 @@ flex:0.1,
 
   return (
     <Box>
-           <FilterBarV2 apiRef={apiRef} 
-                customButton={selectedItems.length ? "Create Query" : ""}
-                customOnClick={handleOpenDialog}
-            />
+      <FilterBarV2
+        apiRef={apiRef}
+        customButton={selectedItems.length ? "Create Query" : ""}
+        customOnClick={handleOpenDialog}
+      />
       <DiscountCalcDialog
         data={selectedItemsData}
         apiRef={apiRef}
@@ -329,14 +352,13 @@ flex:0.1,
                 onRowSelectionModelChange={handleSelectionChange}
                 isRowSelectable={(params) => params.row.SalesPrice > 0}
                 rowSelectionModel={selectedItems}
+                keepNonExistentRowsSelected
                 components={{
                   Footer: CustomFooter,
                 }}
                 slotProps={{
                   footer: { status: refetch },
                 }}
-          
-             
               />
             </Box>
           </Grid>
