@@ -460,22 +460,23 @@ const userRolesData = [
       },
     ],
   },
+
   {
     title: "R&D",
-    icon: "fa fa-wrench",
+    icon: "fa-brands fa-r-project",
     childrens: [
       {
         id: 54,
-        name: "All Inventory Data",
+        name: "R&D Inventory",
         path: "/AllInventoryData",
-        icon: "fa fa-wrench",
+        icon: "fa-solid fa-warehouse",
         notification: true,
       },
       {
         id: 68,
         name: "R&D Projects",
         path: "/ResearchNewProject",
-        icon: "fa fa-wrench",
+        icon: "fa-brands fa-researchgate",
         notification: true,
       },
     ],

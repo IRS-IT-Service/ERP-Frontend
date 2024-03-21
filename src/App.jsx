@@ -109,8 +109,8 @@ import AddRoboProductsValue from "./Pages/AddRoboProductsValue/AddRoboProductsVa
 import BulkAddProduct from "./Pages/AddProduct/BulkAddProduct";
 import RemovedProduct from "./Pages/ProductDelete/RemovedProducts";
 import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorComparsion";
-import AllInventoryData from "./Pages/R&D/AllInventoryData";
-import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
+import AllInventoryData from "./Pages/R&D_old/AllInventoryData";
+import ResearchNewProject from "./Pages/R&D_old/ResearchNewProject";
 import BulkMessage from "./Pages/BulkMessage/BulkMessage";
 import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
 import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
