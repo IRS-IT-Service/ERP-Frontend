@@ -61,6 +61,9 @@ const DiscountCalcDialog = ({
   open,
   setOpen,
   handleOpenDialog,
+  removeSelectedCreateQuery,
+  removeSelectedSkuQuery,
+  dispatch,
 }) => {
   /// initialize
   const socket = useSocket();
@@ -242,6 +245,8 @@ const DiscountCalcDialog = ({
           customerName: "",
           mobileNo: "",
         });
+        dispatch(removeSelectedCreateQuery());
+        dispatch(removeSelectedSkuQuery());
         handleCloseDialog();
       } catch (e) {
         console.log("error at Discount Query create ", e);

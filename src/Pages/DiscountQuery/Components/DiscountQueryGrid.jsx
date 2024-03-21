@@ -34,7 +34,6 @@ const DiscountQueryGrid = () => {
   const { createQueryItems, createQuerySku } = useSelector(
     (state) => state.seletedItems
   );
-  console.log(createQueryItems, createQuerySku);
   /// local state
 
   const [showNoData, setShowNoData] = useState(false);
@@ -59,6 +58,7 @@ const DiscountQueryGrid = () => {
     pollingInterval: 1000 * 300,
   });
 
+
   /// handlers
 
   const handleSelectionChange = (selectionModel) => {
@@ -69,10 +69,25 @@ const DiscountQueryGrid = () => {
     setSelectedItemsData(newSelectedRowsData);
     dispatch(setSelectedSkuQuery(selectionModel));
   };
-  console.log(selectedItemsData);
+
+  useEffect(()=>{
+    return () => {
+      dispatch(removeSelectedCreateQuery())
+      dispatch(removeSelectedSkuQuery())
+    }
+  },[])
+
   useEffect(() => {
-    dispatch(setSelectedCreateQuery(selectedItemsData));
-  }, [selectedItems]);
+    if (
+      selectedItemsData.length > 0 &&
+      (!createQueryItems || createQueryItems.length === 0)
+    ) {
+      dispatch(setSelectedCreateQuery(selectedItemsData));
+    } else if (createQueryItems.length > 0 && selectedItemsData.length > 0) {
+      const newData = [...createQueryItems, ...selectedItemsData];
+      dispatch(setSelectedCreateQuery(newData));
+    }
+  }, [selectedItemsData]);
 
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
@@ -80,11 +95,13 @@ const DiscountQueryGrid = () => {
       (item) => item.SKU !== id
     );
     setSelectedItemsData(newSelectedRowsData);
-    dispatch(removeSelectedCreateQuery(newSelectedRowsData));
     setSelectedItems(newSelectedItems);
-    dispatch(removeSelectedSkuQuery(newSelectedItems));
   };
-
+  const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
+  const uniqueSKUsArray = Array.from(uniqueSKUs);
+  const realData = uniqueSKUsArray?.filter((item) =>
+    selectedItems.find((docs) => item.SKU === docs)
+  );
   const handleOpenDialog = () => {
     setOpen(true);
   };
@@ -305,11 +322,14 @@ const DiscountQueryGrid = () => {
         customOnClick={handleOpenDialog}
       />
       <DiscountCalcDialog
-        data={selectedItemsData}
+        data={realData}
         apiRef={apiRef}
         removeSelectedItems={removeSelectedItems}
         open={open}
         setOpen={setOpen}
+        dispatch= {dispatch}
+        removeSelectedCreateQuery={removeSelectedCreateQuery}
+        removeSelectedSkuQuery={removeSelectedSkuQuery}
       />
       <Grid container>
         {productLoading || isFetching ? (
