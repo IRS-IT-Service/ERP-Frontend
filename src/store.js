@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import DscFormSlice from "./features/slice/DscFormSlice";
 import RAndDFormSlice from "./features/slice/R&DSlice"
 import LiveCalcReducer from "./features/slice/LiveCalcReducer";
+import selectedItemsSlice from "./features/slice/selectedItemsSlice";
 
 /// Custom error handling middleware
 
@@ -71,6 +72,7 @@ const store = configureStore({
     dscForm:DscFormSlice,
     randdform:RAndDFormSlice,
     liveCalc: LiveCalcReducer,
+    seletedItems:selectedItemsSlice,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
