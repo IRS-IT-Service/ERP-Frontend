@@ -13,61 +13,61 @@ import Header from "../../../components/Common/Header";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
-// const infoDetail = [
-//   {
-//     name: 'Create Query',
-//     screenshot: (
-//       <img
-//         src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072'
-//         height={'100%'}
-//         width={'100%'}
-//         style={
-//           {
-//             // width: '10vw',
-//             // height: '10vh'
-//           }
-//         }
-//       />
-//     ),
-//     instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
-//   },
+const infoDetail = [
+  {
+    name: 'Create Query',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
+  },
 
-//   {
-//     name: 'Discount Card',
-//     screenshot: (
-//       <img
-//         src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460'
-//         height={'100%'}
-//         width={'100%'}
-//         style={
-//           {
-//             // width: '10vw',
-//             // height: '10vh'
-//           }
-//         }
-//       />
-//     ),
-//     instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
-//   },
+  {
+    name: 'Discount Card',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
+  },
 
-//   {
-//     name: 'Shipment Detail Tracking',
-//     screenshot: (
-//       <img
-//         src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590'
-//         height={'100%'}
-//         width={'100%'}
-//         style={
-//           {
-//             // width: '10vw',
-//             // height: '10vh'
-//           }
-//         }
-//       />
-//     ),
-//     instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
-//   },
-// ];
+  {
+    name: 'Shipment Detail Tracking',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+  },
+];
 
 
 const AddCustomer = () => {
@@ -248,7 +248,7 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
 
         {/* Dialog info Box */}
         <InfoDialogBox
-          // infoDetails={infoDetail}
+          infoDetails={infoDetail}
           description={description}
           open={isInfoOpen}
           close={handleClose}

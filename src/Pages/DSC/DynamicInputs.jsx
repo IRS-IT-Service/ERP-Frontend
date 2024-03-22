@@ -4,16 +4,22 @@ import {
   useCreateFormDynamicDataMutation,
   useGetFormDynamicDataQuery,
 } from "../../features/api/dscApiSlice";
-const DrawerHeader = styled("div")(({ theme }) => ({
-  ...theme.mixins.toolbar,
-}));
-
 import Loading from "../../components/Common/Loading";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  ...theme.mixins.toolbar,
+}));
+
+
 
 const DynamicInputs = () => {
+
+  const description =
+  "This is the Product Status you can check product details  ";
   /// initialization
   const navigate = useNavigate();
   /// local state
@@ -86,6 +92,12 @@ const DynamicInputs = () => {
           })}
         </Box>
       </Box>
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={isInfoOpen}
+        close={handleClose}
+      />
     </Box>
   );
 };

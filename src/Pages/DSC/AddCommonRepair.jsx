@@ -13,12 +13,43 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
+
+const infoDetail = [
+  {
+    name: "Add Issue",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you Put Any Issue in 'Add Issue' Field and Click Plus Button Value set for particular Input Category",
+  },
+  {
+    name: "Delete",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If Click Delete Icon You Can Delete Specific Data",
+  },
+];
 const AddCommonRepair = () => {
+
+  const description =
+    "This is the Add Common Repair Issues, Here You Can Add Repair Issues";
   /// global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
@@ -519,6 +550,13 @@ const AddCommonRepair = () => {
           </Box>
         </Box>
       </Box>
+      
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={isInfoOpen}
+        close={handleClose}
+      />
     </Box>
   );
 };

@@ -13,7 +13,7 @@ import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const infoDetail = [
   {
-    name: "Create Query",
+    name: "Search",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
@@ -27,11 +27,11 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
+    instruction: `You Can Find Shipment History, When you enter Customer Name `,
   },
 
   {
-    name: "Discount Card",
+    name: "Date",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460"
@@ -45,7 +45,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
+    instruction: `Select From Date to To Date and Filter Shipment`,
   },
 
   {
@@ -63,7 +63,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+    instruction: `This is a tracking details section where we see products Name, SKU, Brand, and Barcode`,
   },
 ];
 
@@ -275,7 +275,7 @@ const ProductShipment = () => {
 
       {/* Dialog info Box */}
       <InfoDialogBox
-        // infoDetails={infoDetail}
+        infoDetails={infoDetail}
         description={description}
         open={isInfoOpen}
         close={handleClose1}
