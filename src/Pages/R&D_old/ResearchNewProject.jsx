@@ -42,14 +42,14 @@ import { toast } from 'react-toastify';
 const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
-import {
-  useAddProjectNameMutation,
-  useAddProjectItemMutation,
-  useGetAllProjectDataQuery,
-  useGetAllRDInventoryQuery,
-  useUpdateAssignedStatusMutation,
-  useUpdateDamagedStatusMutation,
-} from '../../features/api/barcodeApiSlice';
+// import {
+//   useAddProjectNameMutation,
+//   useAddProjectItemMutation,
+//   useGetAllProjectDataQuery,
+//   useGetAllRDInventoryQuery,
+//   useUpdateAssignedStatusMutation,
+//   useUpdateDamagedStatusMutation,
+// } from '../../features/api/barcodeApiSlice';
 import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
 const infoDetail = [
@@ -302,7 +302,7 @@ const ResearchNewProject = () => {
   const handleOpenCloseAddPart = (allPartsData, projectId) => {
     if (allPartsData && projectId) {
       const newState = { partsData: allPartsData, projectId: projectId };
-      console.log(newState);
+     
       setSelectedRow(newState);
     }
     setOpenCloseAddPart(!openCloseAddPart);
@@ -323,7 +323,7 @@ const ResearchNewProject = () => {
     setOpenCloseEP(!openCloseEP);
     setEditProject(row);
   };
-  console.log(editProject);
+
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 

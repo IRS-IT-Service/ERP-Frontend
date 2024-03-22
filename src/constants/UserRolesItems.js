@@ -467,16 +467,31 @@ const userRolesData = [
     childrens: [
       {
         id: 54,
-        name: "R&D Inventory",
-        path: "/AllInventoryData",
-        icon: "fa-solid fa-warehouse",
+        name: "Create parts req",
+        path: "/CreateReq",
+        icon:"fa-solid fa-cart-plus",
+     
         notification: true,
       },
       {
         id: 68,
         name: "R&D Projects",
-        path: "/ResearchNewProject",
+        path: "/Project",
         icon: "fa-brands fa-researchgate",
+        notification: true,
+      },
+      {
+        id: 72,
+        name: "R&D Inventory",
+        path: "/RnDInventory",
+        icon: "fa-solid fa-warehouse",
+        notification: true,
+      },
+      {
+        id: 73,
+        name: "Parts Received Approval",
+        path: "/ItemsAprroval",
+        icon: "fa-solid fa-check-double",
         notification: true,
       },
     ],
@@ -520,6 +535,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 71
+// last routes is 73
 
 export default userRolesData;
