@@ -19,62 +19,52 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-
 } from "@mui/material";
-import { DataGrid ,useGridApiRef } from "@mui/x-data-grid";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-
+import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 import { useAddProjectNameMutation } from "../../../features/api/RnDSlice";
 import { toast } from "react-toastify";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 const AddpartsDial = ({ open, close, refetch, data }) => {
   const [addProject, { isLoading, refetch: addRefetch }] =
     useAddProjectNameMutation();
-    let rows = [
-        { id: 1, Name: "Brand A", Brand: "Samsung", gst: 12, RnDStock: 150 },
-        { id: 2, Name: "Brand B", Brand: "Samsung", gst: 15, RnDStock: 200 },
-        { id: 3, Name: "Brand C", Brand: "Samsung", gst: 10, RnDStock: 100 },
-        { id: 4, Name: "Brand D", Brand: "Samsung", gst: 18, RnDStock: 300 },
-        { id: 5, Name: "Brand E", Brand: "Samsung", gst: 8, RnDStock: 250 },
-        { id: 6, Name: "Brand F", Brand: "Samsung", gst: 13, RnDStock: 170 },
-        { id: 7, Name: "Brand G", Brand: "Samsung", gst: 9, RnDStock: 220 },
-        { id: 8, Name: "Brand H", Brand: "Samsung", gst: 11, RnDStock: 180 },
-        { id: 9, Name: "Brand I", Brand: "Samsung", gst: 16, RnDStock: 280 },
-        { id: 10, Name: "Brand J", Brand: "Samsung", gst: 14, RnDStock: 190 },
-        { id: 11, Name: "Brand K", Brand: "Samsung", gst: 17, RnDStock: 260 },
-        { id: 12, Name: "Brand L", Brand: "Samsung", gst: 7, RnDStock: 130 },
-        { id: 13, Name: "Brand M", Brand: "Samsung", gst: 19, RnDStock: 320 },
-        { id: 14, Name: "Brand N", Brand: "Samsung", gst: 6, RnDStock: 110 },
-        { id: 15, Name: "Brand O", Brand: "Samsung", gst: 20, RnDStock: 350 },
-        { id: 16, Name: "Brand P", Brand: "Samsung", gst: 5, RnDStock: 80 },
-        { id: 17, Name: "Brand Q", Brand: "Samsung", gst: 21, RnDStock: 370 },
-        { id: 18, Name: "Brand R", Brand: "Samsung", gst: 4, RnDStock: 60 },
-        { id: 19, Name: "Brand S", Brand: "Samsung", gst: 22, RnDStock: 390 },
-        { id: 20, Name: "Brand T", Brand: "Samsung", gst: 3, RnDStock: 40 }
-        // Add more objects as needed
-    ];
+  let rows = [
+    { id: 1, Name: "Brand A", Brand: "Samsung", gst: 12, RnDStock: 150 },
+    { id: 2, Name: "Brand B", Brand: "Samsung", gst: 15, RnDStock: 200 },
+    { id: 3, Name: "Brand C", Brand: "Samsung", gst: 10, RnDStock: 100 },
+    { id: 4, Name: "Brand D", Brand: "Samsung", gst: 18, RnDStock: 300 },
+    { id: 5, Name: "Brand E", Brand: "Samsung", gst: 8, RnDStock: 250 },
+    { id: 6, Name: "Brand F", Brand: "Samsung", gst: 13, RnDStock: 170 },
+    { id: 7, Name: "Brand G", Brand: "Samsung", gst: 9, RnDStock: 220 },
+    { id: 8, Name: "Brand H", Brand: "Samsung", gst: 11, RnDStock: 180 },
+    { id: 9, Name: "Brand I", Brand: "Samsung", gst: 16, RnDStock: 280 },
+    { id: 10, Name: "Brand J", Brand: "Samsung", gst: 14, RnDStock: 190 },
+    { id: 11, Name: "Brand K", Brand: "Samsung", gst: 17, RnDStock: 260 },
+    { id: 12, Name: "Brand L", Brand: "Samsung", gst: 7, RnDStock: 130 },
+    { id: 13, Name: "Brand M", Brand: "Samsung", gst: 19, RnDStock: 320 },
+    { id: 14, Name: "Brand N", Brand: "Samsung", gst: 6, RnDStock: 110 },
+    { id: 15, Name: "Brand O", Brand: "Samsung", gst: 20, RnDStock: 350 },
+    { id: 16, Name: "Brand P", Brand: "Samsung", gst: 5, RnDStock: 80 },
+    { id: 17, Name: "Brand Q", Brand: "Samsung", gst: 21, RnDStock: 370 },
+    { id: 18, Name: "Brand R", Brand: "Samsung", gst: 4, RnDStock: 60 },
+    { id: 19, Name: "Brand S", Brand: "Samsung", gst: 22, RnDStock: 390 },
+    { id: 20, Name: "Brand T", Brand: "Samsung", gst: 3, RnDStock: 40 },
+    // Add more objects as needed
+  ];
 
-    const [selectedItems, setSelectedItems] = useState([]);
-    const [selectedItemsData, setSelectedItemsData] = useState([]);
-    const [quantity, setQuantity] = useState([{
-        id: 0,
-        Name: "",
-        Brand: "",
-        gst: 0,
-        quantity: 0,
-   
-    }]);
-    const apiRef = useGridApiRef();
-    const handleSelectionChange = (selectionModel) => {
-
-        setSelectedItems(selectionModel);
-        const newSelectedRowsData = rows.filter((item) =>
-          selectionModel.includes(item.id)
-        );
-        setSelectedItemsData(newSelectedRowsData);
-      };
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItemsData, setSelectedItemsData] = useState([]);
+  const [quantity, setQuantity] = useState([{}]);
+  const apiRef = useGridApiRef();
+  const handleSelectionChange = (selectionModel) => {
+    setSelectedItems(selectionModel);
+    const newSelectedRowsData = rows.filter((item) =>
+      selectionModel.includes(item.id)
+    );
+    setSelectedItemsData(newSelectedRowsData);
+  };
 
   const [projectValue, setProjectValue] = useState({
     projectName: "",
@@ -82,17 +72,11 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
   });
 
   const handleDelete = (id) => {
-    
-    
     const newSelectedItems = selectedItems.filter((row) => row !== id);
     handleSelectionChange(newSelectedItems);
-
-
   };
 
   const columns = [
-
- 
     {
       field: "Name",
       flex: 0.3,
@@ -139,42 +123,27 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
       align: "center",
     },
   ];
-console.log(quantity)
-const handleAddQty = (data ) =>{
-const {id ,Name ,Brand ,gst} = data
-    setQuantity((prev)=>{
-        return prev.map((item)=>{
-            console.log(item)
-            if(item.id === id){
-                return {
-                   ...item,
-                          
-                   quantity: item.quantity + 1
-    
-                }
-            }else{
-                return item
-            }
-        })
-    })
-}
-const handleDecrease = (data) =>{
-    const {id ,Name ,Brand ,gst} = data
-    setQuantity((prev)=>{
-        return prev.map((item)=>{
-            if(item.id === id){
-                return {
-                   ...item,
-                    quantity: item.quantity - 1
-                }
-            }else{
-                return item
-            }
-        })
-    })
-}
 
+  const handleQty = (id ,value) => {
 
+    if(value === NaN || value === undefined){
+        return
+    }
+   const newQuantity = parseInt(value);
+const changeQTY = selectedItemsData.map((item)=>{
+    if(item.id === id){
+        return{
+            ...item,
+            quantity: newQuantity > 0 ? newQuantity : 1
+        }
+       
+    }else {
+       return item
+    }
+})
+setSelectedItemsData(changeQTY)
+};
+console.log(selectedItemsData)
   const handleSubmit = async () => {
     try {
       const res = await addProject(projectValue).unwrap();
@@ -269,19 +238,19 @@ const handleDecrease = (data) =>{
             >
               Select Items
             </Typography>
-       <Box sx={{marginLeft :"10px" ,width:"30rem"}}>
-<TextField
-size="small"
-placeholder="Search by Name"
-fullWidth
-onChange={(e) => {
-    // setSkuFilter(e.target.value);
-    // setCheckedBrands([]);
-    // setCheckedCategory([]);
-    handleFilterChange("Name", "contains", e.target.value);
-  }}
-/>
-       </Box>
+            <Box sx={{ marginLeft: "10px", width: "30rem" }}>
+              <TextField
+                size="small"
+                placeholder="Search by Name"
+                fullWidth
+                onChange={(e) => {
+                  // setSkuFilter(e.target.value);
+                  // setCheckedBrands([]);
+                  // setCheckedCategory([]);
+                  handleFilterChange("Name", "contains", e.target.value);
+                }}
+              />
+            </Box>
             <Box
               sx={{
                 width: "100%",
@@ -337,59 +306,137 @@ onChange={(e) => {
             <TableContainer
               sx={{
                 maxHeight: 490,
-                overflow: 'auto',
-                marginTop:"2.5rem"
+                overflow: "auto",
+                marginTop: "2.5rem",
               }}
             >
               <Table
                 stickyHeader
-                aria-label='sticky table'
-                sx={{ border: '1px solid grey' }}
+                aria-label="sticky table"
+                sx={{ border: "1px solid grey" }}
               >
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ backgroundColor: '#eee',color:"black" ,textAlign:"center"}}>SNo</TableCell>
-                    <TableCell sx={{ backgroundColor: '#eee',color:"black" ,textAlign:"center"}}>Name</TableCell>
-                    <TableCell sx={{ backgroundColor: '#eee',color:"black" ,textAlign:"center"}}>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#eee",
+                        color: "black",
+                        textAlign: "center",
+                      }}
+                    >
+                      SNo
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#eee",
+                        color: "black",
+                        textAlign: "center",
+                      }}
+                    >
+                      Name
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#eee",
+                        color: "black",
+                        textAlign: "center",
+                      }}
+                    >
                       Brand
                     </TableCell>
-                   
-                    <TableCell sx={{ backgroundColor: '#eee',color:"black" ,textAlign:"center"}}>
+
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#eee",
+                        color: "black",
+                        textAlign: "center",
+                      }}
+                    >
                       GST
                     </TableCell>
-                    <TableCell sx={{ backgroundColor: '#eee',color:"black" ,textAlign:"center"}}>Requirment</TableCell>
-                    <TableCell sx={{ backgroundColor: '#eee',color:"black" ,textAlign:"center"}}>Action</TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#eee",
+                        color: "black",
+                        textAlign: "center",
+                      }}
+                    >
+                      Requirment
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#eee",
+                        color: "black",
+                        textAlign: "center",
+                      }}
+                    >
+                      Action
+                    </TableCell>
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
                   {selectedItemsData?.map((data, index) => (
-                    <TableRow key={index} >
-                      <TableCell sx={{textAlign:"center"}}>{index + 1}</TableCell>
-                      <TableCell sx={{textAlign:"center"}}>{data?.Name}</TableCell>
-                      <TableCell sx={{textAlign:"center"}}>{data?.Brand}</TableCell>
-                      <TableCell sx={{textAlign:"center"}}>{data?.gst}</TableCell>
-                      <TableCell sx={{display:"flex" ,justifyContent:"center"}}>
-                        <Box width="7rem" sx={{
-                            display:"flex",
-                            gap:1,
-                      
-                        }} >
-                        <AddCircleOutlineIcon sx={{ "&:hover": { color: "green" } , cursor:"pointer" }} onClick={()=>handleAddQty(data)}/>
-                <input style={{
-                    width:"100%",
-                    borderRadius:"0.5rem",
-             textAlign:"center",
-                    padding:4 ,
-            //    value={quantity[id].quantity}
-                 
-                }}  />
-                <RemoveCircleOutlineIcon sx={{ "&:hover": { color: "green" } , cursor:"pointer" }} onClick={()=>handleDecrease(data)} />
-                </Box>
+                    <TableRow key={index}>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {index + 1}
                       </TableCell>
-                      <TableCell sx={{textAlign:'center'}}>
-                      <DeleteIcon sx={{ "&:hover": { color: "red" } , cursor:"pointer" }} onClick={()=>handleDelete(data.id)} />
-                </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {data?.Name}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {data?.Brand}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        {data?.gst}
+                      </TableCell>
+                      <TableCell
+                        sx={{ display: "flex", justifyContent: "center" }}
+                      >
+                        <Box
+                          width="7rem"
+                          sx={{
+                            display: "flex",
+                            gap: 1,
+                          }}
+                        >
+                                 <RemoveCircleOutlineIcon
+                            sx={{
+                              "&:hover": { color: "green" },
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleQty(data.id ,data.quantity - 1 ) }
+                          />
+                      
+                          <input
+                            style={{
+                              width: "100%",
+                              borderRadius: "0.5rem",
+                              textAlign: "center",
+                              padding: 4,
+                            }}
+                            type="number"
+                            value={data?.quantity}
+                            onChange={(e) => handleQty(data.id ,e.target.value)}
+                          />
+                         <AddCircleOutlineIcon
+                            sx={{
+                              "&:hover": { color: "green" },
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleQty(data.id,data.quantity + 1 ) }
+                          />
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
+                        <DeleteIcon
+                          sx={{
+                            "&:hover": { color: "red" },
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleDelete(data.id)}
+                        />
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
