@@ -6,7 +6,7 @@ import {
 } from "@mui/x-data-grid";
 // import Nodata from "../../../assets/empty-cart.png";
 // import FilterBar from "../../../components/Common/FilterBar";
-import { Grid, Box, TablePagination, Button ,styled } from "@mui/material";
+import { Grid, Box, TablePagination, Button, styled } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllProductsV2 } from "../../features/slice/productSlice";
 import {
@@ -20,6 +20,7 @@ import { useGetAllProductV2Query } from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useGetAllRDInventoryQuery } from "../../features/api/RnDSlice";
 
 import { useNavigate } from "react-router-dom";
 import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
@@ -85,7 +86,6 @@ const infoDetail = [
 ];
 
 const RnDInventory = () => {
-
   const description = `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`;
   /// initialize
   const apiRef = useGridApiRef();
@@ -111,14 +111,6 @@ const RnDInventory = () => {
 
   const [showNoData, setShowNoData] = useState(false);
   const [rows, setRows] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedItemsData, setSelectedItemsData] = useState([]);
-  const [open, setOpen] = useState(false);
-
-  const [filterString, setFilterString] = useState("page=1");
-  const [page, setPage] = useState(1);
-  const [rowPerPage, setRowPerPage] = useState(100);
-  const [totalProductCount, setTotalProductCount] = useState(0);
 
   /// rtk query
 
@@ -127,62 +119,14 @@ const RnDInventory = () => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
-    pollingInterval: 1000 * 300,
-  });
-
+  } = useGetAllRDInventoryQuery();
 
   /// handlers
 
-  const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
-    const newSelectedRowsData = rows.filter((item) =>
-      selectionModel.includes(item.id)
-    );
-    setSelectedItemsData(newSelectedRowsData);
-    dispatch(setSelectedSkuQuery(selectionModel));
-  };
-
-  useEffect(()=>{
-    return () => {
-      dispatch(removeSelectedCreateQuery())
-      dispatch(removeSelectedSkuQuery())
-    }
-  },[])
-
-  useEffect(() => {
-    if (
-      selectedItemsData.length > 0 &&
-      (!createQueryItems || createQueryItems.length === 0)
-    ) {
-      dispatch(setSelectedCreateQuery(selectedItemsData));
-    } else if (createQueryItems.length > 0 && selectedItemsData.length > 0) {
-      const newData = [...createQueryItems, ...selectedItemsData];
-      dispatch(setSelectedCreateQuery(newData));
-    }
-  }, [selectedItemsData]);
-
-  const removeSelectedItems = (id) => {
-    const newSelectedItems = selectedItems.filter((item) => item !== id);
-    const newSelectedRowsData = selectedItemsData.filter(
-      (item) => item.SKU !== id
-    );
-    setSelectedItemsData(newSelectedRowsData);
-    setSelectedItems(newSelectedItems);
-  };
-  
-  const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
-  const uniqueSKUsArray = Array.from(uniqueSKUs);
-  const realData = uniqueSKUsArray?.filter((item) =>
-    selectedItems.find((docs) => item.SKU === docs)
-  );
-  const handleOpenDialog = () => {
-    setOpen(true);
-  };
   /// useEffect
   useEffect(() => {
-    if (allProductData?.success) {
-      const data = allProductData?.data?.products?.map((item, index) => {
+    if (allProductData?.status) {
+      const data = allProductData?.data?.map((item, index) => {
         return {
           id: item.SKU,
           Sno: index + 1,
@@ -190,66 +134,14 @@ const RnDInventory = () => {
           Name: item.Name,
           GST: item.GST,
           MRP: item.MRP,
-          Quantity: item.ActualQuantity,
-          SalesPrice: item.SalesPrice,
-          SalesPriceGst: (
-            (item.SalesPrice * item.GST) / 100 +
-            item.SalesPrice
-          ).toFixed(0),
           Brand: item.Brand,
-          Category: item.Category,
+          RandDQty: item.Quantity,
         };
       });
 
-      dispatch(setAllProductsV2(allProductData.data));
       setRows(data);
-
-      setRowPerPage(allProductData.data.limit);
-      setTotalProductCount(allProductData.data.totalProductCount);
-      setPage(allProductData.data.currentPage);
     }
   }, [allProductData]);
-
-  useEffect(() => {
-    let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
-    }
-
-    setFilterString(`${newFilterString}&page=1`);
-  }, [checkedBrand, checkedCategory, checkedGST]);
-
-  useEffect(() => {
-    clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
-      return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
-    }
-  }, [deepSearch]);
 
   //Columns*******************
   const columns = [
@@ -266,7 +158,6 @@ const RnDInventory = () => {
     {
       field: "SKU",
       headerName: "SKU",
-
       minWidth: 200,
       maxWidth: 300,
       align: "center",
@@ -286,33 +177,23 @@ const RnDInventory = () => {
     {
       field: "Brand",
       headerName: "Brand",
-
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-    {
-      field: "Category",
-      headerName: "Category",
 
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
     {
       field: "GST",
       headerName: "GST",
-
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       valueFormatter: (params) => ` ${(+params.value).toFixed(0)} %`,
     },
-       {
-      field: "",
+    {
+      field: "RandDQty",
       headerName: "In R&D Stock",
       align: "center",
       headerAlign: "center",
@@ -321,59 +202,18 @@ const RnDInventory = () => {
     },
   ];
 
-  function CustomFooter(props) {
-    const { status } = props;
-
-    return (
-      <GridToolbarContainer>
-        <Box display="flex" justifyContent="space-between" width="100%">
-          <Button size="small" onClick={() => status()}>
-            <CachedIcon />
-          </Button>
-          <TablePagination
-            component="div"
-            count={totalProductCount}
-            page={page - 1}
-            onPageChange={(event, newPage) => {
-              setPage(newPage + 1);
-
-              let paramString = filterString;
-
-              let param = new URLSearchParams(paramString);
-
-              param.set("page", newPage + 1);
-
-              let newFilterString = param.toString();
-
-              setFilterString(newFilterString);
-
-              apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-            }}
-            rowsPerPage={rowPerPage}
-          />
-        </Box>
-      </GridToolbarContainer>
-    );
-  }
-
   return (
     <Box
-    component="main"
-    sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
-  >
-    <DrawerHeader />
-      <FilterBarV2
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+    >
+      <DrawerHeader />
+      {/* <FilterBarV2
         apiRef={apiRef}
         customButton={selectedItems.length ? "Create Requirement" : ""}
         customOnClick={handleOpenDialog}
-      />
+      /> */}
 
-         <InfoDialogBox
-        infoDetails={infoDetail}
-        description={description}
-        open={isInfoOpen}
-        close={handleClose}
-      />
       <Grid container>
         {productLoading || isFetching ? (
           <Loading loading={true} />
@@ -416,12 +256,6 @@ const RnDInventory = () => {
                 // isRowSelectable={(params) => params.row.SalesPrice > 0}
                 // rowSelectionModel={selectedItems}
                 // keepNonExistentRowsSelected
-                components={{
-                  Footer: CustomFooter,
-                }}
-                slotProps={{
-                  footer: { status: refetch },
-                }}
               />
             </Box>
           </Grid>

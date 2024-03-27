@@ -208,6 +208,19 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
         method: `GET`,
       }),
     }),
+    createRandDInventry: builder.mutation({
+      query: (data) => ({
+        url: `${BARCODE_URL}/createReqRandD`,
+        method: `Post`,
+        body:data
+      }),
+    }),
+    getAllRandDInventry: builder.query({
+      query: () => ({
+        url: `${BARCODE_URL}/getAllRDInventory`,
+        method: `GET`,
+      }),
+    }),
   }),
 });
 
@@ -243,4 +256,5 @@ export const {
   useUpdateAssignedStatusMutation,
   useUpdateDamagedStatusMutation,
   useGetAllBarcodesQuery,
+  useCreateRandDInventryMutation,useGetAllRandDInventryQuery
 } = BarcodeSlice;
