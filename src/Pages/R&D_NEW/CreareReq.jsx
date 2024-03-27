@@ -6,7 +6,7 @@ import {
 } from "@mui/x-data-grid";
 // import Nodata from "../../../assets/empty-cart.png";
 // import FilterBar from "../../../components/Common/FilterBar";
-import { Grid, Box, TablePagination, Button ,styled } from "@mui/material";
+import { Grid, Box, TablePagination, Button, styled } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllProductsV2 } from "../../features/slice/productSlice";
 import {
@@ -24,6 +24,7 @@ import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import { useNavigate } from "react-router-dom";
 import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
 import CachedIcon from "@mui/icons-material/Cached";
+import { useGetAllProductWithRandDQuery } from "../../features/api/productApiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -85,7 +86,6 @@ const infoDetail = [
 ];
 
 const Inventory = () => {
-
   const description = `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`;
   /// initialize
   const apiRef = useGridApiRef();
@@ -127,10 +127,9 @@ const Inventory = () => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllProductWithRandDQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
-
 
   /// handlers
 
@@ -143,12 +142,12 @@ const Inventory = () => {
     dispatch(setSelectedSkuQuery(selectionModel));
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     return () => {
-      dispatch(removeSelectedCreateQuery())
-      dispatch(removeSelectedSkuQuery())
-    }
-  },[])
+      dispatch(removeSelectedCreateQuery());
+      dispatch(removeSelectedSkuQuery());
+    };
+  }, []);
 
   useEffect(() => {
     if (
@@ -189,12 +188,8 @@ const Inventory = () => {
           Name: item.Name,
           GST: item.GST,
           MRP: item.MRP,
-          Quantity: item.ActualQuantity,
-          SalesPrice: item.SalesPrice,
-          SalesPriceGst: (
-            (item.SalesPrice * item.GST) / 100 +
-            item.SalesPrice
-          ).toFixed(0),
+          Quantity: item.Quantity,
+          RandDQuantity: item.RAndDQuantity,
           Brand: item.Brand,
           Category: item.Category,
         };
@@ -265,7 +260,6 @@ const Inventory = () => {
     {
       field: "SKU",
       headerName: "SKU",
-
       minWidth: 200,
       maxWidth: 300,
       align: "center",
@@ -285,7 +279,6 @@ const Inventory = () => {
     {
       field: "Brand",
       headerName: "Brand",
-
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -294,21 +287,20 @@ const Inventory = () => {
     {
       field: "Category",
       headerName: "Category",
-
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
+
     {
       field: "GST",
       headerName: "GST",
-
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => ` ${(+params.value).toFixed(0)} %`,
+      valueFormatter: (params) => ` ${(+params.value)?.toFixed(0)} %`,
     },
     {
       field: "Quantity",
@@ -319,7 +311,7 @@ const Inventory = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "",
+      field: "RandDQuantity",
       headerName: "In R&D Stock",
       align: "center",
       headerAlign: "center",
@@ -365,10 +357,10 @@ const Inventory = () => {
 
   return (
     <Box
-    component="main"
-    sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
-  >
-    <DrawerHeader />
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+    >
+      <DrawerHeader />
       <FilterBarV2
         apiRef={apiRef}
         customButton={selectedItems.length ? "Create Requirement" : ""}
@@ -377,14 +369,14 @@ const Inventory = () => {
       <CreateReqDial
         data={realData}
         apiRef={apiRef}
-        removeSelectedItems={removeSelectedItems}
+        removeSelectedItems={setSelectedItems}
         open={open}
         setOpen={setOpen}
-        dispatch= {dispatch}
+        dispatch={dispatch}
         removeSelectedCreateQuery={removeSelectedCreateQuery}
         removeSelectedSkuQuery={removeSelectedSkuQuery}
       />
-         <InfoDialogBox
+      <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
         open={isInfoOpen}
