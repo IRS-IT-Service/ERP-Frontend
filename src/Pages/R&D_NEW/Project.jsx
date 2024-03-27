@@ -36,6 +36,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import ProjectAddDial from "./Dialogues/ProjectAddDial";
 import {useGetAllProjectDataQuery} from "../../features/api/RnDSlice"
+import AddpartsDial from "./Dialogues/AddpartsDial";
+import { Add } from "@mui/icons-material";
 
 /// styles
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -125,6 +127,9 @@ const dispatch = useDispatch();
   const [selected, setSelected] = useState({});
   const [openAddProject, setOpenAddProject] = useState(false);
   const [skip, setSkip] = useState(true);
+  const [AddpartsDialopen , setAddpartsDialopen] = useState(false);
+  const [projectDetails , setprojectDetails] = useState(false);
+  const [dialData , setDialdata] = useState({});
 
   /// rtk query
   const { data, isLoading, refetch, isFetching } = useGetAllProjectDataQuery();
@@ -144,6 +149,8 @@ const dispatch = useDispatch();
 
   const handleClose = () => {
     setOpenAddProject(false);
+    setAddpartsDialopen(false)
+    setprojectDetails({})
     setSelected({});
   };
 
@@ -172,7 +179,7 @@ const dispatch = useDispatch();
     setSkip(true);
     setSelected({});
   };
-console.log(queryParams)
+
   /// useEffects
   useEffect(() => {
     if (data?.status) {
@@ -189,6 +196,8 @@ console.log(queryParams)
       setRows(newRows);
     }
   }, [data, isFetching ,queryParams]);
+
+
 
   /// columns
 
@@ -267,15 +276,14 @@ console.log(queryParams)
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
+        const paramsData= params.row
+        
         return (
           <Button
+          variant="contained"
             onClick={() => {
-              setOpen(true);
-              rows.forEach((item) => {
-                if (item.id === params.row.id) {
-                  setSelected(item);
-                }
-              });
+              setAddpartsDialopen(true);
+              setprojectDetails(paramsData)
             }}
           >
             View
@@ -296,6 +304,7 @@ console.log(queryParams)
       renderCell: (params) => {
         return (
           <Button
+          variant="contained"
             onClick={() => {
               setOpen(true);
               rows.forEach((item) => {
@@ -427,6 +436,14 @@ open = {openAddProject}
 close ={handleClose}
 refetch={refetch}
 />}
+{
+  AddpartsDialopen && <AddpartsDial 
+  open = {AddpartsDial} 
+  close= {handleClose}
+  data = {projectDetails}
+  refetch={refetch}
+  />
+}
    
     </Box>
   );
