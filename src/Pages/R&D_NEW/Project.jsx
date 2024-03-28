@@ -37,7 +37,10 @@ import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import ProjectAddDial from "./Dialogues/ProjectAddDial";
 import {useGetAllProjectDataQuery} from "../../features/api/RnDSlice"
 import AddpartsDial from "./Dialogues/AddpartsDial";
-import { Add } from "@mui/icons-material";
+import { Add  } from "@mui/icons-material";
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+
+
 
 /// styles
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -130,6 +133,7 @@ const dispatch = useDispatch();
   const [AddpartsDialopen , setAddpartsDialopen] = useState(false);
   const [projectDetails , setprojectDetails] = useState(false);
   const [dialData , setDialdata] = useState({});
+  
 
   /// rtk query
   const { data, isLoading, refetch, isFetching } = useGetAllProjectDataQuery();
@@ -279,15 +283,16 @@ const dispatch = useDispatch();
         const paramsData= params.row
         
         return (
-          <Button
-          variant="contained"
+          <Add
+       
             onClick={() => {
               setAddpartsDialopen(true);
               setprojectDetails(paramsData)
             }}
+            sx={{"&:hover":{color:"red"} , cursor: "pointer"}}
           >
-            View
-          </Button>
+     
+          </Add>
         );
       },
     },
@@ -303,19 +308,9 @@ const dispatch = useDispatch();
       align: "center",
       renderCell: (params) => {
         return (
-          <Button
-          variant="contained"
-            onClick={() => {
-              setOpen(true);
-              rows.forEach((item) => {
-                if (item.id === params.row.id) {
-                  setSelected(item);
-                }
-              });
-            }}
-          >
-            View
-          </Button>
+          <ModeEditIcon sx={{"&:hover":{color:"red"} , cursor: "pointer"}} />
+        
+     
         );
       },
     },
@@ -442,6 +437,7 @@ refetch={refetch}
   close= {handleClose}
   data = {projectDetails}
   refetch={refetch}
+
   />
 }
    

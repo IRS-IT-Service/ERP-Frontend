@@ -424,6 +424,13 @@ const userRolesData = [
         icon: "fa-solid fa-cart-flatbed",
         notification: true,
       },
+      {
+        id: 73,
+        name: "Parts Requirement",
+        path: "/ItemsAprroval",
+        icon: "fa-solid fa-check-double",
+        notification: true,
+      },
     ],
   },
   {
@@ -487,13 +494,7 @@ const userRolesData = [
         icon: "fa-solid fa-warehouse",
         notification: true,
       },
-      {
-        id: 73,
-        name: "Parts Received Approval",
-        path: "/ItemsAprroval",
-        icon: "fa-solid fa-check-double",
-        notification: true,
-      },
+   
     ],
   },
   {
