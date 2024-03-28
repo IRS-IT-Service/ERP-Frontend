@@ -75,7 +75,6 @@ const CreateReqDial = ({
 
   const [Requireqty, setRequireqty] = useState({});
 
-
   /// rtk query
 
   const [createQueryApi, { isLoading }] = useCreateRandDInventryMutation();
@@ -88,7 +87,7 @@ const CreateReqDial = ({
 
   const handleQuantityChange = (event, item) => {
     const { value } = event.target;
-    if(value > item.Quantity) return toast.error("Plz enter value less than stock")
+    if (value > item.Quantity) return alert("Plz enter value less than stock");
     if (value <= item.Quantity) {
       setRequireqty({
         ...Requireqty,
@@ -102,16 +101,16 @@ const CreateReqDial = ({
     try {
       const requestData = data.map((item) => ({
         ...item,
-        ReqQty: Number(Requireqty[item.SKU])|| 0,
+        ReqQty: Number(Requireqty[item.SKU]) || 0,
       }));
-      const filterData = requestData.filter((item) => item.ReqQty === 0)
-      if(filterData.length > 0) return toast.error("Missing Require Quantiy ")
-      const result = await createQueryApi({datas:requestData}).unwrap();
-      toast.success("Request Query Sent Successfully")
+      const filterData = requestData.filter((item) => item.ReqQty === 0);
+      if (filterData.length > 0) return toast.error("Missing Require Quantiy");
+      const result = await createQueryApi({ datas: requestData }).unwrap();
+      toast.success("Request Query Sent Successfully");
       dispatch(removeSelectedCreateQuery());
       dispatch(removeSelectedSkuQuery());
-      removeSelectedItems([])
-      handleCloseDialog()
+      removeSelectedItems([]);
+      handleCloseDialog();
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }
