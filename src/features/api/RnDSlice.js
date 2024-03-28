@@ -21,7 +21,7 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
       }),
       addProjectItem: builder.mutation({
         query: (data) => ({
-          url: `r-and-d/addProjectItem`,
+          url: `r-and-d/addProjectItem/${data.id}`,
           method: 'POST',
           body: data,
         }),

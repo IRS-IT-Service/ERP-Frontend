@@ -1,4 +1,4 @@
-import React, { useState ,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  useStepContext,
 } from "@mui/material";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -27,39 +28,53 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { useAddProjectNameMutation } from "../../../features/api/RnDSlice";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
-const AddpartsDial = ({ open, close, refetch, data , }) => {
-  const [addProject, { isLoading, refetch: addRefetch }] =
-    useAddProjectNameMutation();
-  let rows = [
-    { id: 1, Name: "Brand A", Brand: "Samsung", gst: 12, RnDStock: 150 },
-    { id: 2, Name: "Brand B", Brand: "Samsung", gst: 15, RnDStock: 200 },
-    { id: 3, Name: "Brand C", Brand: "Samsung", gst: 10, RnDStock: 100 },
-    { id: 4, Name: "Brand D", Brand: "Samsung", gst: 18, RnDStock: 300 },
-    { id: 5, Name: "Brand E", Brand: "Samsung", gst: 8, RnDStock: 250 },
-    { id: 6, Name: "Brand F", Brand: "Samsung", gst: 13, RnDStock: 170 },
-    { id: 7, Name: "Brand G", Brand: "Samsung", gst: 9, RnDStock: 220 },
-    { id: 8, Name: "Brand H", Brand: "Samsung", gst: 11, RnDStock: 180 },
-    { id: 9, Name: "Brand I", Brand: "Samsung", gst: 16, RnDStock: 280 },
-    { id: 10, Name: "Brand J", Brand: "Samsung", gst: 14, RnDStock: 190 },
-    { id: 11, Name: "Brand K", Brand: "Samsung", gst: 17, RnDStock: 260 },
-    { id: 12, Name: "Brand L", Brand: "Samsung", gst: 7, RnDStock: 130 },
-    { id: 13, Name: "Brand M", Brand: "Samsung", gst: 19, RnDStock: 320 },
-    { id: 14, Name: "Brand N", Brand: "Samsung", gst: 6, RnDStock: 110 },
-    { id: 15, Name: "Brand O", Brand: "Samsung", gst: 20, RnDStock: 350 },
-    { id: 16, Name: "Brand P", Brand: "Samsung", gst: 5, RnDStock: 80 },
-    { id: 17, Name: "Brand Q", Brand: "Samsung", gst: 21, RnDStock: 370 },
-    { id: 18, Name: "Brand R", Brand: "Samsung", gst: 4, RnDStock: 60 },
-    { id: 19, Name: "Brand S", Brand: "Samsung", gst: 22, RnDStock: 390 },
-    { id: 20, Name: "Brand T", Brand: "Samsung", gst: 3, RnDStock: 40 },
-    // Add more objects as needed
-  ];
+import { useGetAllRandDInventryQuery } from "../../../features/api/barcodeApiSlice";
+import { useAddProjectItemMutation } from "../../../features/api/RnDSlice";
 
+const AddpartsDial = ({ open, close, refetch, data }) => {
+  // local state
+  const [rows, setRows] = useState([]);
+  const [quantity, setQuantity] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [localData, setLocalData] = useState([]);
- 
+
+  // api calling from rtk query
+  const [addProjectItems, { isLoading, refetch: addRefetch }] =
+    useAddProjectItemMutation();
+
+  const {
+    data: getAllRandDInventry,
+    isLoading: RandDLoading,
+    refetch: RandDRefetch,
+  } = useGetAllRandDInventryQuery();
+
+  // data grid row items
+  useEffect(() => {
+    if (getAllRandDInventry?.status) {
+      const result = getAllRandDInventry?.data?.map((item, index) => {
+        return {
+          id: item.SKU,
+          SKU: item.SKU,
+          Name: item.Name,
+          GST: item.GST,
+          RandDStock: item.Quantity,
+        };
+      });
+      setRows(result);
+    }
+  }, [getAllRandDInventry]);
+
+  // for searching items from data grid
+
   const apiRef = useGridApiRef();
 
+  useEffect(() => {
+    const matchingArray = selectedItemsData.slice();
+    setLocalData(matchingArray);
+  }, [selectedItemsData, setSelectedItemsData]);
+
+  // functions
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
     const newSelectedRowsData = rows.filter((item) =>
@@ -68,64 +83,86 @@ const AddpartsDial = ({ open, close, refetch, data , }) => {
     setSelectedItemsData(newSelectedRowsData);
   };
 
- 
-
-  const [projectValue, setProjectValue] = useState({
-    projectName: "",
-    description: "",
-  });
-
   const handleDelete = (id) => {
     const newSelectedItems = selectedItems.filter((row) => row !== id);
+    const updatedQuantity = { ...quantity };
+
+    if (updatedQuantity.hasOwnProperty(id)) {
+      delete updatedQuantity[id];
+      setQuantity(updatedQuantity);
+    }
     handleSelectionChange(newSelectedItems);
- 
+  };
+  const handleQty = (item, value) => {
+    if (value >= 0 && value <= item.RandDStock) {
+      setQuantity({
+        ...quantity,
+        [item.SKU]: value,
+      });
+    }
+  };
+  const handleFilterChange = (field, operator, value) => {
+    apiRef.current.setFilterModel({
+      items: [{ field: field, operator: operator, value: value }],
+    });
   };
 
-  useEffect(() => {
-    const matchingArray = selectedItemsData.slice()
-     
-    setLocalData(matchingArray)
-    
-      }, [selectedItemsData, setSelectedItemsData]);
+  const handleSubmit = async () => {
+    try {
+      const requestData = localData.map((item) => ({
+        ...item,
+        Quantity: Number(quantity[item.SKU]) || 0,
+      }));
+      let info = {
+        id: data.projectId,
+        items: requestData,
+      };
+      const filterData = requestData.filter((item) => item.Quantity === 0);
+      if (filterData.length > 0) return toast.error("Missing Require Quantiy");
+      const result = await addProjectItems(info).unwrap();
+      RandDRefetch()
+      
+    } catch (e) {
+      toast.error(e);
+    }
+  };
 
-
+  // data grid columns
   const columns = [
+    {
+      field: "id",
+      flex: 0.3,
+      headerName: "SKU",
+      minWidth: 50,
+      maxWidth: 150,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerAlign: "center",
+      align: "center",
+    },
     {
       field: "Name",
       flex: 0.3,
       headerName: "Name",
-      minWidth: 200,
-      maxWidth: 600,
+      minWidth: 300,
+      maxWidth: 500,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
       align: "center",
     },
     {
-      field: "Brand",
-      flex: 0.3,
-      headerName: "Brand",
-      minWidth: 100,
-      maxWidth: 200,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "gst",
-
+      field: "GST",
       headerName: "GST",
       minWidth: 50,
-      maxWidth: 100,
-
+      maxWidth: 50,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
       align: "center",
     },
     {
-      field: "R&DStock",
+      field: "RandDStock",
       flex: 0.3,
       headerName: "R&D Stock",
       minWidth: 50,
@@ -136,46 +173,6 @@ const AddpartsDial = ({ open, close, refetch, data , }) => {
       align: "center",
     },
   ];
-
-  const handleQty = (id ,value) => {
-
-    if(value === NaN || value === undefined){
-        return
-    }
-   const newQuantity = parseInt(value);
-const changeQTY = localData.map((item)=>{
-    if(item.id === id){
-        return{
-            ...item,
-            quantity: newQuantity > 0 ? newQuantity : 1
-        }
-       
-    }else {
-       return item
-    }
-})
-setLocalData(changeQTY)
-};
-console.log(localData)
-  const handleSubmit = async () => {
-    try {
-      const res = await addProject(projectValue).unwrap();
-      toast.success(`Project Added successfully`);
-      setProjectValue({
-        projectName: "",
-        description: "",
-      });
-      close();
-      refetch();
-    } catch (e) {
-      toast.error(e);
-    }
-  };
-  const handleFilterChange = (field, operator, value) => {
-    apiRef.current.setFilterModel({
-      items: [{ field: field, operator: operator, value: value }],
-    });
-  };
 
   return (
     <Dialog maxWidth="xl" open={open} onClose={close}>
@@ -237,7 +234,6 @@ console.log(localData)
         >
           <Box
             sx={{
-            
               height: "60vh",
               flex: 1,
             }}
@@ -291,6 +287,7 @@ console.log(localData)
               <DataGrid
                 columns={columns}
                 rows={rows}
+                loading= {RandDLoading}
                 rowHeight={40}
                 apiRef={apiRef}
                 Height={"50vh"}
@@ -303,7 +300,6 @@ console.log(localData)
           </Box>
           <Box
             sx={{
-      
               flex: 1,
             }}
           >
@@ -346,27 +342,18 @@ console.log(localData)
                         textAlign: "center",
                       }}
                     >
+                      SKU
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#eee",
+                        color: "black",
+                        textAlign: "center",
+                      }}
+                    >
                       Name
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        backgroundColor: "#eee",
-                        color: "black",
-                        textAlign: "center",
-                      }}
-                    >
-                      Brand
-                    </TableCell>
 
-                    <TableCell
-                      sx={{
-                        backgroundColor: "#eee",
-                        color: "black",
-                        textAlign: "center",
-                      }}
-                    >
-                      GST
-                    </TableCell>
                     <TableCell
                       sx={{
                         backgroundColor: "#eee",
@@ -395,14 +382,12 @@ console.log(localData)
                         {index + 1}
                       </TableCell>
                       <TableCell sx={{ textAlign: "center" }}>
+                        {data?.SKU}
+                      </TableCell>
+                      <TableCell sx={{ textAlign: "center" }}>
                         {data?.Name}
                       </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
-                        {data?.Brand}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center" }}>
-                        {data?.gst}
-                      </TableCell>
+
                       <TableCell
                         sx={{ display: "flex", justifyContent: "center" }}
                       >
@@ -413,14 +398,16 @@ console.log(localData)
                             gap: 1,
                           }}
                         >
-                                 <RemoveCircleOutlineIcon
+                          <RemoveCircleOutlineIcon
                             sx={{
                               "&:hover": { color: "green" },
                               cursor: "pointer",
                             }}
-                            onClick={() => handleQty(data.id ,data.quantity - 1 ) }
+                            onClick={() =>
+                              handleQty(data, quantity[data?.SKU] - 1)
+                            }
                           />
-                      
+
                           <input
                             style={{
                               width: "100%",
@@ -429,15 +416,17 @@ console.log(localData)
                               padding: 4,
                             }}
                             type="number"
-                            value={data?.quantity}
-                            onChange={(e) => handleQty(data.id ,e.target.value)}
+                            value={quantity[data?.SKU]}
+                            onChange={(e) => handleQty(data, e.target.value)}
                           />
-                         <AddCircleOutlineIcon
+                          <AddCircleOutlineIcon
                             sx={{
                               "&:hover": { color: "green" },
                               cursor: "pointer",
                             }}
-                            onClick={() => handleQty(data.id,data.quantity + 1 ) }
+                            onClick={() =>
+                              handleQty(data, quantity[data?.SKU] + 1)
+                            }
                           />
                         </Box>
                       </TableCell>

@@ -31,16 +31,15 @@ import { formatDate } from "../../commonFunctions/commonFunctions";
 import Loading from "../../components/Common/Loading";
 import { toast } from "react-toastify";
 import Header from "../../components/Common/Header";
-import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import ProjectAddDial from "./Dialogues/ProjectAddDial";
-import {useGetAllProjectDataQuery} from "../../features/api/RnDSlice"
+import { useGetAllProjectDataQuery } from "../../features/api/RnDSlice";
 import AddpartsDial from "./Dialogues/AddpartsDial";
-import { Add  } from "@mui/icons-material";
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
-
-
+import { Add } from "@mui/icons-material";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import EditUpdateDial from "./Dialogues/EditupdateDial";
 
 /// styles
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -64,15 +63,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-
 const infoDetail = [
   {
-    name: 'Approval Status Button',
+    name: "Approval Status Button",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvalStatus.png?updatedAt=1703075709896'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvalStatus.png?updatedAt=1703075709896"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -84,12 +82,12 @@ const infoDetail = [
     instruction: `All three are status buttons through which you can check the status of the product component.`,
   },
   {
-    name: 'Approval Status View',
+    name: "Approval Status View",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvalStatus.png?updatedAt=1703075709896'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvalStatus.png?updatedAt=1703075709896"
+        height={"100%"}
+        width={"100%"}
         style={
           {
             // width: '10vw',
@@ -100,15 +98,12 @@ const infoDetail = [
     ),
     instruction: `After clicking on View button a dialog box of approval status pop-up `,
   },
-];  
-    
-
+];
 
 const Project = () => {
+  const description = `"In R&D, new projects and previous projects are developed. We add materials used in the projects and provide status updates indicating whether the project is complete or ongoing.`;
 
-const description = `"In R&D, new projects and previous projects are developed. We add materials used in the projects and provide status updates indicating whether the project is complete or ongoing.`;
-
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose1 = () => {
@@ -118,7 +113,6 @@ const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setHeader(`R&D Project`));
   }, []);
-
 
   /// initialize
   const classes = useStyles();
@@ -130,10 +124,10 @@ const dispatch = useDispatch();
   const [selected, setSelected] = useState({});
   const [openAddProject, setOpenAddProject] = useState(false);
   const [skip, setSkip] = useState(true);
-  const [AddpartsDialopen , setAddpartsDialopen] = useState(false);
-  const [projectDetails , setprojectDetails] = useState(false);
-  const [dialData , setDialdata] = useState({});
-  
+  const [AddpartsDialopen, setAddpartsDialopen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [projectDetails, setprojectDetails] = useState(false);
+  const [dialData, setDialdata] = useState({});
 
   /// rtk query
   const { data, isLoading, refetch, isFetching } = useGetAllProjectDataQuery();
@@ -153,8 +147,8 @@ const dispatch = useDispatch();
 
   const handleClose = () => {
     setOpenAddProject(false);
-    setAddpartsDialopen(false)
-    setprojectDetails({})
+    setAddpartsDialopen(false);
+    setprojectDetails({});
     setSelected({});
   };
 
@@ -187,31 +181,29 @@ const dispatch = useDispatch();
   /// useEffects
   useEffect(() => {
     if (data?.status) {
-      const filterData = data.data.filter(item => item.status === queryParams)
+      const filterData = data.data.filter(
+        (item) => item.status === queryParams
+      );
       const newRows = filterData.map((item, index) => {
-
-        return { 
-          ...item, 
-          id: index + 1, 
-          date: formatDate(item.createdAt) 
+        return {
+          ...item,
+          id: index + 1,
+          date: formatDate(item.createdAt),
         };
       });
 
       setRows(newRows);
     }
-  }, [data, isFetching ,queryParams]);
-
-
+  }, [data, isFetching, queryParams]);
 
   /// columns
 
   const columns = [
     {
       field: "id",
- 
       headerName: "Sno",
       minWidth: 40,
-      maxWidth:50,
+      maxWidth: 50,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
@@ -219,10 +211,9 @@ const dispatch = useDispatch();
     },
     {
       field: "projectId",
-
       headerName: "Project ID",
       minWidth: 50,
-      maxWidth:80,
+      maxWidth: 80,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
@@ -233,7 +224,7 @@ const dispatch = useDispatch();
       flex: 0.3,
       headerName: "Project Name",
       minWidth: 300,
-      maxWidth:800,
+      maxWidth: 800,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
@@ -241,17 +232,15 @@ const dispatch = useDispatch();
     },
     {
       field: "status",
-
       headerName: "Status",
       minWidth: 150,
-      maxWidth:200,
+      maxWidth: 200,
 
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
-      
         const color =
           params.row.status === "Started"
             ? "green"
@@ -274,52 +263,54 @@ const dispatch = useDispatch();
       flex: 0.3,
       headerName: "Add Parts",
       minWidth: 150,
-      maxWidth:200,
+      maxWidth: 200,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
-        const paramsData= params.row
-        
+        const paramsData = params.row;
+
         return (
           <Add
-       
             onClick={() => {
               setAddpartsDialopen(true);
-              setprojectDetails(paramsData)
+              setprojectDetails(paramsData);
             }}
-            sx={{"&:hover":{color:"red"} , cursor: "pointer"}}
-          >
-     
-          </Add>
+            sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
+          ></Add>
         );
       },
     },
     {
       field: "Edit",
       flex: 0.3,
-      headerName: "Edit & Update Project" ,
+      headerName: "Edit & Update Project",
       minWidth: 150,
-      maxWidth:200,
+      maxWidth: 200,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
+        const paramsData = params.row;
         return (
-          <ModeEditIcon sx={{"&:hover":{color:"red"} , cursor: "pointer"}} />
-        
-     
+          <ModeEditIcon
+            sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
+            onClick={() => {
+              setOpenEdit(true);
+              setprojectDetails(paramsData);
+            }}
+          />
         );
       },
     },
     {
       field: "details",
       flex: 0.3,
-      headerName: "Project Details", 
+      headerName: "Project Details",
       minWidth: 150,
-      maxWidth:200,
+      maxWidth: 200,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
@@ -346,10 +337,18 @@ const dispatch = useDispatch();
   /// Custom toolbar
   const CustomToolbar = () => {
     return (
-      <Box sx={{ display: "flex", justifyContent: "space-between",alignItems:"center",px:"10px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: "10px",
+        }}
+      >
         <Box>
-          <Button variant="contained" onClick={()=>setOpenAddProject(true)}>
-          <i className="fa-solid fa-plus" style={{marginRight:"10px"}}/> Add Project
+          <Button variant="contained" onClick={() => setOpenAddProject(true)}>
+            <i className="fa-solid fa-plus" style={{ marginRight: "10px" }} />{" "}
+            Add Project
           </Button>
         </Box>
         <ToggleButtonGroup
@@ -359,7 +358,10 @@ const dispatch = useDispatch();
           onChange={handleChange}
           aria-label="Platform"
         >
-          <ToggleButton classes={{ selected: classes.selected }} value="Started">
+          <ToggleButton
+            classes={{ selected: classes.selected }}
+            value="Started"
+          >
             Start Project
           </ToggleButton>
           <ToggleButton
@@ -368,10 +370,7 @@ const dispatch = useDispatch();
           >
             Processing Project
           </ToggleButton>
-          <ToggleButton
-            classes={{ selected: classes.selected }}
-            value="Closed"
-          >
+          <ToggleButton classes={{ selected: classes.selected }} value="Closed">
             Closed Project
           </ToggleButton>
         </ToggleButtonGroup>
@@ -381,11 +380,11 @@ const dispatch = useDispatch();
 
   return (
     <Box
-      component='main'
-      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-  
+
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
@@ -397,24 +396,24 @@ const dispatch = useDispatch();
 
       <Box
         sx={{
-          width: '100%',
-          height: '82vh',
-          '& .super-app-theme--header': {
-            background: '#eee',
-            color: 'black',
-            alignItems: 'center'
+          width: "100%",
+          height: "82vh",
+          "& .super-app-theme--header": {
+            background: "#eee",
+            color: "black",
+            alignItems: "center",
           },
-          '& .vertical-lines .MuiDataGrid-cell': {
-            borderRight: '1px solid #e0e0e0',
+          "& .vertical-lines .MuiDataGrid-cell": {
+            borderRight: "1px solid #e0e0e0",
           },
-          '& .supercursor-app-theme--cell:hover': {
+          "& .supercursor-app-theme--cell:hover": {
             background:
-              'linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)',
-            color: 'white',
-            cursor: 'pointer',
+              "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
+            color: "white",
+            cursor: "pointer",
           },
-          '& .MuiDataGrid-columnHeaderTitleContainer': {
-            background: '#eee',
+          "& .MuiDataGrid-columnHeaderTitleContainer": {
+            background: "#eee",
           },
         }}
       >
@@ -426,21 +425,22 @@ const dispatch = useDispatch();
           }}
         />
       </Box>
-{openAddProject && <ProjectAddDial
-open = {openAddProject}
-close ={handleClose}
-refetch={refetch}
-/>}
-{
-  AddpartsDialopen && <AddpartsDial 
-  open = {AddpartsDial} 
-  close= {handleClose}
-  data = {projectDetails}
-  refetch={refetch}
-
-  />
-}
-   
+      {openAddProject && (
+        <ProjectAddDial
+          open={openAddProject}
+          close={handleClose}
+          refetch={refetch}
+        />
+      )}
+      {AddpartsDialopen && (
+        <AddpartsDial
+          open={AddpartsDial}
+          close={handleClose}
+          data={projectDetails}
+          refetch={refetch}
+        />
+      )}
+      {openEdit && <EditUpdateDial open={openEdit} setOpen={setOpenEdit} data={projectDetails}/>}
     </Box>
   );
 };
