@@ -6,25 +6,17 @@ import {
 } from "@mui/x-data-grid";
 // import Nodata from "../../../assets/empty-cart.png";
 // import FilterBar from "../../../components/Common/FilterBar";
-import { Grid, Box, TablePagination, Button, styled } from "@mui/material";
+import { Grid, Box, TablePagination, Button, styled ,TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { setAllProductsV2 } from "../../features/slice/productSlice";
-import {
-  removeSelectedCreateQuery,
-  setSelectedCreateQuery,
-  setSelectedSkuQuery,
-  removeSelectedSkuQuery,
-} from "../../features/slice/selectedItemsSlice";
-import FilterBarV2 from "../../components/Common/FilterBarV2";
-import { useGetAllProductV2Query } from "../../features/api/productApiSlice";
+
+
+
 import Loading from "../../components/Common/Loading";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
+
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import { useGetAllRDInventoryQuery } from "../../features/api/RnDSlice";
 
-import { useNavigate } from "react-router-dom";
-import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
-import CachedIcon from "@mui/icons-material/Cached";
+
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -90,7 +82,7 @@ const RnDInventory = () => {
   /// initialize
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
-  const debouncing = useRef();
+  const ref = useRef();
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
@@ -120,6 +112,13 @@ const RnDInventory = () => {
     refetch,
     isFetching,
   } = useGetAllRDInventoryQuery();
+
+  const handleFilterChange = (field, operator, value) => {
+    apiRef.current.setFilterModel({
+      items: [{ field: field, operator: operator, value: value }],
+    });
+  };
+
 
   /// handlers
 
@@ -208,17 +207,36 @@ const RnDInventory = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      {/* <FilterBarV2
-        apiRef={apiRef}
-        customButton={selectedItems.length ? "Create Requirement" : ""}
-        customOnClick={handleOpenDialog}
-      /> */}
-
+ 
       <Grid container>
         {productLoading || isFetching ? (
           <Loading loading={true} />
         ) : (
           <Grid item xs={12} sx={{ mt: "5px" }}>
+                 <Box sx={{ display:"flex" , gap:2, marginLeft: "10px", width: "50%" ,paddingY :1 }}>
+              <TextField
+                size="small"
+                placeholder="Search by Name"
+                fullWidth
+                onChange={(e) => {
+                  // setSkuFilter(e.target.value);
+                  // setCheckedBrands([]);
+                  // setCheckedCategory([]);
+                  handleFilterChange("Name", "contains", e.target.value);
+                }}
+              />
+               <TextField
+                size="small"
+                placeholder="Search by SKU"
+                fullWidth
+                onChange={(e) => {
+                  // setSkuFilter(e.target.value);
+                  // setCheckedBrands([]);
+                  // setCheckedCategory([]);
+                  handleFilterChange("SKU", "contains", e.target.value);
+                }}
+              />
+            </Box>
             <Box
               sx={{
                 width: "100%",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect } from "react";
 import {
   Box,
   Button,
@@ -27,7 +27,7 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { useAddProjectNameMutation } from "../../../features/api/RnDSlice";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
-const AddpartsDial = ({ open, close, refetch, data }) => {
+const AddpartsDial = ({ open, close, refetch, data , }) => {
   const [addProject, { isLoading, refetch: addRefetch }] =
     useAddProjectNameMutation();
   let rows = [
@@ -56,8 +56,10 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
-  const [quantity, setQuantity] = useState([{}]);
+  const [localData, setLocalData] = useState([]);
+ 
   const apiRef = useGridApiRef();
+
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
     const newSelectedRowsData = rows.filter((item) =>
@@ -65,6 +67,8 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
     );
     setSelectedItemsData(newSelectedRowsData);
   };
+
+ 
 
   const [projectValue, setProjectValue] = useState({
     projectName: "",
@@ -74,7 +78,16 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
   const handleDelete = (id) => {
     const newSelectedItems = selectedItems.filter((row) => row !== id);
     handleSelectionChange(newSelectedItems);
+ 
   };
+
+  useEffect(() => {
+    const matchingArray = selectedItemsData.slice()
+     
+    setLocalData(matchingArray)
+    
+      }, [selectedItemsData, setSelectedItemsData]);
+
 
   const columns = [
     {
@@ -130,7 +143,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
         return
     }
    const newQuantity = parseInt(value);
-const changeQTY = selectedItemsData.map((item)=>{
+const changeQTY = localData.map((item)=>{
     if(item.id === id){
         return{
             ...item,
@@ -141,9 +154,9 @@ const changeQTY = selectedItemsData.map((item)=>{
        return item
     }
 })
-setSelectedItemsData(changeQTY)
+setLocalData(changeQTY)
 };
-console.log(selectedItemsData)
+console.log(localData)
   const handleSubmit = async () => {
     try {
       const res = await addProject(projectValue).unwrap();
@@ -224,7 +237,7 @@ console.log(selectedItemsData)
         >
           <Box
             sx={{
-              border: "2px solid red",
+            
               height: "60vh",
               flex: 1,
             }}
@@ -290,7 +303,7 @@ console.log(selectedItemsData)
           </Box>
           <Box
             sx={{
-              border: "2px solid red",
+      
               flex: 1,
             }}
           >
@@ -376,7 +389,7 @@ console.log(selectedItemsData)
                 </TableHead>
 
                 <TableBody>
-                  {selectedItemsData?.map((data, index) => (
+                  {localData?.map((data, index) => (
                     <TableRow key={index}>
                       <TableCell sx={{ textAlign: "center" }}>
                         {index + 1}

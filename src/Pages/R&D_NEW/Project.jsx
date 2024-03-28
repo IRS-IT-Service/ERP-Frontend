@@ -133,6 +133,7 @@ const dispatch = useDispatch();
   const [AddpartsDialopen , setAddpartsDialopen] = useState(false);
   const [projectDetails , setprojectDetails] = useState(false);
   const [dialData , setDialdata] = useState({});
+  
 
   /// rtk query
   const { data, isLoading, refetch, isFetching } = useGetAllProjectDataQuery();
@@ -436,6 +437,7 @@ refetch={refetch}
   close= {handleClose}
   data = {projectDetails}
   refetch={refetch}
+
   />
 }
    
