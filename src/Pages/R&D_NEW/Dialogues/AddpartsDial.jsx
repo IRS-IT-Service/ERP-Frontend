@@ -121,7 +121,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
       if (filterData.length > 0) return toast.error("Missing Require Quantiy");
       const result = await addProjectItems(info).unwrap();
       RandDRefetch()
-      
+    
     } catch (e) {
       toast.error(e);
     }

@@ -440,7 +440,14 @@ const Project = () => {
           refetch={refetch}
         />
       )}
-      {openEdit && <EditUpdateDial open={openEdit} setOpen={setOpenEdit} data={projectDetails}/>}
+      {openEdit && (
+        <EditUpdateDial
+          open={openEdit}
+          setOpen={setOpenEdit}
+          data={projectDetails}
+          refetch={refetch}
+        />
+      )}
     </Box>
   );
 };

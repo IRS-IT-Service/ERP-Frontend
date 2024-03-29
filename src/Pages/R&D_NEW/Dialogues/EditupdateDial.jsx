@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -17,6 +17,9 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useAddProjectItemMutation } from "../../../features/api/RnDSlice";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify"; 
 
 const columns = [
   { field: "Sno", headerName: "S.No" },
@@ -37,36 +40,39 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
-import { useSelector } from "react-redux";
-import { TabOutlined } from "@mui/icons-material";
-import { productApiSlice } from "../../../features/api/productApiSlice";
+
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
   textAlign: "center",
 }));
 
-const EditUpdateDial = ({ data, open, setOpen }) => {
+const EditUpdateDial = ({ data, open, setOpen,refetch }) => {
   const { userInfo } = useSelector((state) => state.auth);
   const [projectItems, setProjectItems] = useState(data?.projectItem);
   /// local state
-  const [quantity, setQuantity] = useState({});
   const [updatedData, setUpdatedData] = useState([]);
+
+  // api calling from rtk query
+  const [addProjectItems, { isLoading, refetch: addRefetch }] =
+    useAddProjectItemMutation();
+
   // handlers
   useEffect(() => {
     setProjectItems(data?.projectItem);
   }, [data?.projectItem]);
-  
+
   const handleCloseDialog = () => {
     setOpen(false);
   };
 
   const handleQuantityChange = (item, newQuantity) => {
-    if (newQuantity >= 0 && newQuantity <= item.Quantity) {
+    const originalQuantity = data?.projectItem.find(
+      (docs) => docs.SKU === item.SKU
+    );
+    if (newQuantity >= 0 && newQuantity <= originalQuantity.Quantity) {
       const updatedItem = { ...item, Quantity: newQuantity };
-  
-      setUpdatedData((prev) => ({ ...prev, [item.SKU]: updatedItem }));
-  
+
       setProjectItems((prevData) => {
         return prevData.map((dataItem) => {
           if (dataItem.SKU === item.SKU) {
@@ -75,30 +81,34 @@ const EditUpdateDial = ({ data, open, setOpen }) => {
           return dataItem;
         });
       });
-  
-    
+
+      setUpdatedData((prev) => {
+        const filteredData = prev.filter(
+          (dataItem) => dataItem.SKU !== item.SKU
+        );
+        return [...filteredData, { ...item, Quantity: newQuantity }];
+      });
     }
   };
-  
-  
-  
-  
+
+
   // handling send query
   const handleSubmit = async () => {
+    console.log(updatedData)
+    if(updatedData.length <= 0 ) {
+      return toast.error("Please Select a Quantity to Chang")
+    }
     try {
-      //   const requestData = data.map((item) => ({
-      //     ...item,
-      //     ReqQty: Number(Requireqty[item.SKU]) || 0,
-      //   }));
-      //   const filterData = requestData.filter((item) => item.ReqQty === 0);
-      //   if (filterData.length > 0) return toast.error("Missing Require Quantiy");
-      //   const result = await createQueryApi({ datas: requestData }).unwrap();
-      //   toast.success("Request Query Sent Successfully");
-      //   dispatch(removeSelectedCreateQuery());
-      //   dispatch(removeSelectedSkuQuery());
-      //   removeSelectedItems([]);
-      //   handleCloseDialog();
-      console.log(updatedData);
+      const info = {
+        id:data?.projectId,
+        action:"update",
+        items:updatedData
+      }
+      const result = await addProjectItems(info).unwrap()
+      toast.success("Quantity updated successfully")
+      addRefetch()
+      refetch()
+     
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }
@@ -202,12 +212,12 @@ const EditUpdateDial = ({ data, open, setOpen }) => {
                               readOnly
                               type="number"
                               value={item.Quantity}
-                            //   onChange={(e) =>
-                            //     handleQuantityChange(
-                            //       item,
-                            //       parseInt(e.target.value)
-                            //     )
-                            //   }
+                              //   onChange={(e) =>
+                              //     handleQuantityChange(
+                              //       item,
+                              //       parseInt(e.target.value)
+                              //     )
+                              //   }
                             />
                             <AddCircleOutlineIcon
                               sx={{
@@ -246,15 +256,13 @@ const EditUpdateDial = ({ data, open, setOpen }) => {
               onClick={() => {
                 handleSubmit();
               }}
-              sx={{
-                width: "150px",
-              }}
+              
             >
-              {/* {isLoading ? (
+              {isLoading ? (
                 <CircularProgress size={24} color="inherit" />
-              ) : ( */}
-              "Send Request"
-              {/* )} */}
+              ) : (
+              "Update"
+              )}
             </Button>
           </Box>
         </StyledBox>
