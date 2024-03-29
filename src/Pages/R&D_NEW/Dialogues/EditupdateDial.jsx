@@ -119,7 +119,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
           <Box>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography>ProjectName: Saket jha</Typography>
-              <Typography>Estimates: 5000</Typography>
+              <Typography>Estimates: {data.totalCost}</Typography>
               <CancelIcon
                 sx={{ cursor: "pointer " }}
                 onClick={(event) => {

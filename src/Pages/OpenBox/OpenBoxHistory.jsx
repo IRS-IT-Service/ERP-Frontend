@@ -67,7 +67,7 @@ const infoDetail = [
 const OpenBoxHistory = () => {
 
   const description =
-    "This is the Product Status you can check product details";
+    "This is Opened Box History you Can See All History of Opened Box";
   /// rtk query
   const { data, isLoading, refetch } = useGetAllBoxOpenHistoryQuery();
 

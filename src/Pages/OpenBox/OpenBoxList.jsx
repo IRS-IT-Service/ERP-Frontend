@@ -19,31 +19,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: "Sort By Brand",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
-  },
-  {
-    name: "Sort By Category",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
-  },
-  {
-    name: "Search-Product",
+    name: "Barcode",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
@@ -52,25 +28,37 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click the search product, you can search for any product or brand here",
+      "If you click the Barcode  to filter trough",
   },
   {
-    name: "Search-SKU",
+    name: "View Items",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
         height={"60%"}
         width={"90%"}
       />
     ),
     instruction:
-      "If you click search SKU, you can search for any product or brand by SKU number here ",
+      "Here You Can see List of Items in Box",
+  },
+  {
+    name: "Close Box",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here you Can see all items in Closed Box",
   },
 ];
 
 const OpenBoxList = () => {
   const description =
-    "This is the Product Status you can check product details  ";
+    "This is the OpenBox List, We Can See Lsit of Open Box for Individual Item";
   /// rtk query
   const { data, isLoading, refetch } = useGetAllOpenedBoxQuery(null, {
     refetchOnMountOrArgChange: true,
