@@ -68,6 +68,9 @@ const EditUpdateDial = ({ data, open, setOpen, refetch ,close }) => {
   };
 
   const handleQuantityChange = (item, newQuantity) => {
+    if(data.status === "Closed"){
+      return
+    }
     const originalQuantity = data?.projectItem.find(
       (docs) => docs.SKU === item.SKU
     );
@@ -279,7 +282,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch ,close }) => {
           >
             {" "}
             <Button
-              disabled={isLoading}
+              disabled={isLoading || data.status === "Closed"}
               variant="contained"
               onClick={() => {
                 handleSubmit();

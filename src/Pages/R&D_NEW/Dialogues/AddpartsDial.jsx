@@ -84,6 +84,9 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
   };
 
   const handleDelete = (id) => {
+    if(data.status === "Closed"){
+      return
+    }
     const newSelectedItems = selectedItems.filter((row) => row !== id);
     const updatedQuantity = { ...quantity };
 
@@ -95,7 +98,9 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
   };
 
   const handleQty = (item, value) => {
-    console.log(value);
+    if(data.status === "Closed"){
+      return
+    }
     if (value >= 0 && value <= item.RandDStock) {
       setQuantity({
         ...quantity,
@@ -103,7 +108,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
       });
     }
   };
-  console.log(quantity);
+  console.log(data);
   const handleFilterChange = (field, operator, value) => {
     apiRef.current.setFilterModel({
       items: [{ field: field, operator: operator, value: value }],
@@ -297,7 +302,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
                 rowHeight={40}
                 apiRef={apiRef}
                 Height={"50vh"}
-                checkboxSelection
+                checkboxSelection ={data.status === "Closed" ? false : true}
                 disableRowSelectionOnClick
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
@@ -454,7 +459,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={handleSubmit} disabled={isLoading}>
+        <Button variant="contained" onClick={handleSubmit}   disabled={isLoading || data.status === "Closed"}>
           {isLoading ? (
             <CircularProgress sx={{ color: "#fff" }} size={30} />
           ) : (
