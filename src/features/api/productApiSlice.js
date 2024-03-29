@@ -144,6 +144,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+  
     addBrand: builder.mutation({
       query: (data) => {
         return {
@@ -244,7 +245,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${PRODUCT_URL}/deleteProduct/${params.id}`,
           method: "DELETE",
-          body:params
+          body: params,
         };
       },
     }),
@@ -344,7 +345,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
       query: (data) => {
         return {
           url: `${PRODUCT_URL}/deleteProductOtp`,
-          method:"Post",
+          method: "Post",
           body: data,
         };
       },
@@ -353,11 +354,19 @@ export const productApiSlice = apiSlice.injectEndpoints({
       query: (data) => {
         return {
           url: `${PRODUCT_URL}/findProductAvailabiltyEcwid`,
-          method:"Post",
+          method: "Post",
           body: data,
         };
       },
     }),
+    getAllProductWithRandD: builder.query({
+      query:(filter) =>{
+        return {
+          url: `${PRODUCT_URL}/randdProducts?${filter}`,
+          method:"GET"
+        }
+      }
+    })
   }),
 });
 
@@ -402,5 +411,6 @@ export const {
   useAddBulkSellerPriceMutation,
   useDeleteCompetitorMutation,
   useSendOtpForDeleteProductMutation,
-  useProductAvailinEcwidMutation
+  useProductAvailinEcwidMutation,
+  useGetAllProductWithRandDQuery
 } = productApiSlice;

@@ -9,14 +9,56 @@ import { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import { toast } from "react-toastify";
 import Header from "../../components/Common/Header";
-import { setHeader } from "../../features/slice/uiSlice";
-import { useDispatch } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
+const infoDetail = [
+  {
+    name: "Barcode",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click the Barcode  to filter trough",
+  },
+  {
+    name: "View Items",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here You Can see List of Items in Box",
+  },
+  {
+    name: "Close Box",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here you Can see all items in Closed Box",
+  },
+];
+
 const OpenBoxList = () => {
+  const description =
+    "This is the OpenBox List, We Can See Lsit of Open Box for Individual Item";
   /// rtk query
   const { data, isLoading, refetch } = useGetAllOpenedBoxQuery(null, {
     refetchOnMountOrArgChange: true,
@@ -140,10 +182,10 @@ const OpenBoxList = () => {
 
   const dispatch = useDispatch();
 
-  // const { isInfoOpen } = useSelector((state) => state.ui);
-  // const handleClose = () => {
-  //   dispatch(setInfo(false));
-  // };
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
 
   useEffect(() => {
     dispatch(setHeader(`Opened Boxes`));
@@ -446,7 +488,14 @@ const OpenBoxList = () => {
             Close
           </Button>
         </Box>
+        
       </Dialog>
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={isInfoOpen}
+        close={handleClose}
+      />
     </Box>
   );
 };

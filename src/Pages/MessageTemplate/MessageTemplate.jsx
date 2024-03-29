@@ -12,7 +12,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 //infoDialog box data
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: "Register Wholesale",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
@@ -21,10 +21,10 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+      "If you click 'Register Wholesale' Section You Can add Message Template for Wholesale Registration",
   },
   {
-    name: "Sort By Category",
+    name: "Login Wholesale",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
@@ -33,10 +33,10 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
+      "If you click 'Login Wholesale' Section You Can add Message Template for Wholesale Login",
   },
   {
-    name: "Search",
+    name: "OTP Wholesale",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
@@ -45,62 +45,14 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click the search box, you can search for any product or brand here",
-  },
-  {
-    name: "Check",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/right_productStatus.png?updatedAt=1703142361021"
-        height={"40%"}
-        width={"40%"}
-      />
-    ),
-    instruction:
-      "If the checkbox is check like this , It  indicates that there is a value in this particular list",
-  },
-  {
-    name: "Uncheck",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/cross_productStatus.png?updatedAt=1703142361005"
-        height={"40%"}
-        width={"40%"}
-      />
-    ),
-    instruction:
-      "If the checkbox is unchecked like this, it indicates that there is no value in this particular list",
-  },
-  {
-    name: "Download With Valuer",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/value_productStatus.png?updatedAt=1703142731023"
-        height={"100%"}
-        width={"100%"}
-      />
-    ),
-    instruction:
-      "If you have selected a particular list and want to download the values in Excel format, you can click this button",
-  },
-  {
-    name: "Download With True/False",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/True-false_ProductStatus.png?updatedAt=1703142731003"
-        height={"100%"}
-        width={"100%"}
-      />
-    ),
-    instruction:
-      "If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button",
+      "If you click 'OTP Wholesale' Section You Can add Message Template for Wholesale OTP",
   },
 ];
 
 const MessageTemplate = () => {
   // infodialog state
   const description =
-    "This is the Product Status you can check product details  ";
+    "This is Whatsapp Message Template Section";
     const dispatch = useDispatch();
 
     const { isInfoOpen } = useSelector((state) => state.ui);
