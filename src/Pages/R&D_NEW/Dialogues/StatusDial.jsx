@@ -1,17 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  MenuItem,
+  Button,
+} from "@mui/material";
 
-const StatusDial = () => {
+const StatusDial = ({ open, setStatusOpen, projectId, setProjectId }) => {
+  const [selectOptions, setSelectOptions] = useState([
+    {
+      value: "Started",
+      label: "Started",
+    },
+    {
+      value: "Processing",
+      label: "Processing",
+    },
+    {
+      value: "Closed",
+      label: "Closed",
+    },
+  ]);
+  const [selectedStatus, setSelectedStatus] = useState("Started");
+
+  const handleStatusUpdate = () => {
+    const info = {
+      id: projectId,
+      status: selectedStatus,
+    };
+    console.log(selectedStatus);
+    setStatusOpen(false);
+  };
   return (
     <div>
       <Dialog
-        open={statusOpen}
+        open={open}
         onClose={() => {
           setStatusOpen(false);
-          setSelectedData(null);
           setSelectedStatus("");
+          setProjectId("");
         }}
       >
-        <DialogTitle>Select Status</DialogTitle>
+        <DialogTitle sx={{ textAlign: "center" }}>Select Status</DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <TextField
             id="outlined-select-currency"
@@ -22,7 +55,7 @@ const StatusDial = () => {
               setSelectedStatus(e.target.value);
             }}
             defaultValue="EUR"
-            helperText="Please select Repair query status"
+            helperText="Please select to change the status of your project"
             sx={{
               margin: "5px",
             }}
@@ -33,24 +66,12 @@ const StatusDial = () => {
               </MenuItem>
             ))}
           </TextField>
-          {selectedStatus === "rejected" ? (
-            <TextField
-              placeholder="The Reason For Rejection"
-              value={rejectRemark}
-              onChange={(e) => {
-                setRejectRemark(e.target.value);
-              }}
-            />
-          ) : (
-            ""
-          )}
         </DialogContent>
         <DialogActions>
           <Button
             variant="contained"
             onClick={() => {
               setStatusOpen(false);
-              setSelectedData(null);
               setSelectedStatus("");
             }}
           >
@@ -58,14 +79,9 @@ const StatusDial = () => {
           </Button>
           <Button
             variant="contained"
-            // onClick={() => {
-            //   const params = {
-            //     status: selectedStatus,
-            //     rejectRemark: rejectRemark,
-            //     token: selectedData.Token,
-            //   };
-            //   updateStausHandler(params);
-            // }}
+            onClick={() => {
+              handleStatusUpdate();
+            }}
           >
             Update
           </Button>
