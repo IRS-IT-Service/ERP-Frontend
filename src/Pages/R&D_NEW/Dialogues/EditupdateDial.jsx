@@ -48,7 +48,7 @@ const StyledCell = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
-const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
+const EditUpdateDial = ({ data, open, setOpen, refetch ,close }) => {
   const { userInfo } = useSelector((state) => state.auth);
   const [projectItems, setProjectItems] = useState(data?.projectItem);
   /// local state
@@ -94,7 +94,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
 
   // handling send query
   const handleSubmit = async () => {
-    console.log(updatedData);
+   
     if (updatedData.length <= 0) {
       return toast.error("Please Select a Quantity to Chang");
     }
@@ -106,8 +106,8 @@ const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
       };
       const result = await addProjectItems(info).unwrap();
       toast.success("Quantity updated successfully");
-      addRefetch();
       refetch();
+      close();
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }

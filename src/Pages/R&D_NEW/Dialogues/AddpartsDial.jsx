@@ -95,7 +95,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
   };
 
   const handleQty = (item, value) => {
-    console.log(value)
+    console.log(value);
     if (value >= 0 && value <= item.RandDStock) {
       setQuantity({
         ...quantity,
@@ -103,7 +103,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
       });
     }
   };
-console.log(quantity)
+  console.log(quantity);
   const handleFilterChange = (field, operator, value) => {
     apiRef.current.setFilterModel({
       items: [{ field: field, operator: operator, value: value }],
@@ -123,7 +123,11 @@ console.log(quantity)
       const filterData = requestData.filter((item) => item.Quantity === 0);
       if (filterData.length > 0) return toast.error("Missing Require Quantiy");
       const result = await addProjectItems(info).unwrap();
+      toast.success("Request Query Sent Successfully");
+      setQuantity({});
       RandDRefetch();
+      refetch();
+      close();
     } catch (e) {
       toast.error(e);
     }
@@ -419,7 +423,7 @@ console.log(quantity)
                             }}
                             type="number"
                             value={quantity[data?.SKU]}
-                            onChange={(e) => handleQty(data, +(e.target.value))}
+                            onChange={(e) => handleQty(data, +e.target.value)}
                           />
                           <AddCircleOutlineIcon
                             sx={{

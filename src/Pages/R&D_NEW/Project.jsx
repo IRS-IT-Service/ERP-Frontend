@@ -157,6 +157,7 @@ const Project = () => {
     setAddpartsDialopen(false);
     setprojectDetails({});
     setSelected({});
+    setOpenEdit(false)
   };
 
   const handleSubmitQuery = async (status) => {
@@ -442,6 +443,7 @@ const Project = () => {
           setOpen={setOpenEdit}
           data={projectDetails}
           refetch={refetch}
+          close={handleClose}
         />
       )}
       {statusOpen && (
