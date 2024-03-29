@@ -93,7 +93,9 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
     }
     handleSelectionChange(newSelectedItems);
   };
+
   const handleQty = (item, value) => {
+    console.log(value)
     if (value >= 0 && value <= item.RandDStock) {
       setQuantity({
         ...quantity,
@@ -101,6 +103,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
       });
     }
   };
+console.log(quantity)
   const handleFilterChange = (field, operator, value) => {
     apiRef.current.setFilterModel({
       items: [{ field: field, operator: operator, value: value }],
@@ -120,8 +123,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
       const filterData = requestData.filter((item) => item.Quantity === 0);
       if (filterData.length > 0) return toast.error("Missing Require Quantiy");
       const result = await addProjectItems(info).unwrap();
-      RandDRefetch()
-    
+      RandDRefetch();
     } catch (e) {
       toast.error(e);
     }
@@ -287,7 +289,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
               <DataGrid
                 columns={columns}
                 rows={rows}
-                loading= {RandDLoading}
+                loading={RandDLoading}
                 rowHeight={40}
                 apiRef={apiRef}
                 Height={"50vh"}
@@ -417,7 +419,7 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
                             }}
                             type="number"
                             value={quantity[data?.SKU]}
-                            onChange={(e) => handleQty(data, e.target.value)}
+                            onChange={(e) => handleQty(data, +(e.target.value))}
                           />
                           <AddCircleOutlineIcon
                             sx={{

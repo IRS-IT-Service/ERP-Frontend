@@ -40,6 +40,7 @@ import AddpartsDial from "./Dialogues/AddpartsDial";
 import { Add } from "@mui/icons-material";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import EditUpdateDial from "./Dialogues/EditupdateDial";
+import StatusDial from "./Dialogues/StatusDial";
 
 /// styles
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -127,8 +128,23 @@ const Project = () => {
   const [AddpartsDialopen, setAddpartsDialopen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [projectDetails, setprojectDetails] = useState(false);
-  const [dialData, setDialdata] = useState({});
-
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectOptions, setSelectOptions] = useState([
+    {
+      value: "Started",
+      label: "Started",
+    },
+    {
+      value: "Processing",
+      label: "Processing",
+    },
+    {
+      value: "Closed",
+      label: "Closed",
+    },
+  ]);
   /// rtk query
   const { data, isLoading, refetch, isFetching } = useGetAllProjectDataQuery();
 
@@ -212,7 +228,7 @@ const Project = () => {
     {
       field: "projectId",
       headerName: "Project ID",
-      minWidth: 50,
+      minWidth: 100,
       maxWidth: 80,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
@@ -223,8 +239,19 @@ const Project = () => {
       field: "Name",
       flex: 0.3,
       headerName: "Project Name",
-      minWidth: 300,
+      minWidth: 350,
       maxWidth: 800,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "date",
+      flex: 0.3,
+      headerName: "Created At",
+      minWidth: 150,
+      maxWidth: 150,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
@@ -233,9 +260,8 @@ const Project = () => {
     {
       field: "status",
       headerName: "Status",
-      minWidth: 150,
-      maxWidth: 200,
-
+      minWidth: 250,
+      maxWidth: 250,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
@@ -253,7 +279,7 @@ const Project = () => {
               color: color,
             }}
           >
-            <p>{params.row.status}</p>
+            <Button sx={{ color: `${color}` }}>{params.row.status}</Button>
           </div>
         );
       },
@@ -262,8 +288,8 @@ const Project = () => {
       field: "action",
       flex: 0.3,
       headerName: "Add Parts",
-      minWidth: 150,
-      maxWidth: 200,
+      minWidth: 200,
+      maxWidth: 250,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
@@ -285,9 +311,9 @@ const Project = () => {
     {
       field: "Edit",
       flex: 0.3,
-      headerName: "Edit & Update Project",
+      headerName: "Update & View Projects",
       minWidth: 150,
-      maxWidth: 200,
+      maxWidth: 250,
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerAlign: "center",
@@ -302,33 +328,6 @@ const Project = () => {
               setprojectDetails(paramsData);
             }}
           />
-        );
-      },
-    },
-    {
-      field: "details",
-      flex: 0.3,
-      headerName: "Project Details",
-      minWidth: 150,
-      maxWidth: 200,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      headerAlign: "center",
-      align: "center",
-      renderCell: (params) => {
-        return (
-          <Button
-            onClick={() => {
-              setOpen(true);
-              rows.forEach((item) => {
-                if (item.id === params.row.id) {
-                  setSelected(item);
-                }
-              });
-            }}
-          >
-            View
-          </Button>
         );
       },
     },
@@ -448,6 +447,7 @@ const Project = () => {
           refetch={refetch}
         />
       )}
+      {statusOpen && <StatusDial />}
     </Box>
   );
 };

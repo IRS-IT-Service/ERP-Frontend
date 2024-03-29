@@ -13,13 +13,14 @@ import {
   Typography,
   CircularProgress,
   styled,
+  DialogTitle,
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAddProjectItemMutation } from "../../../features/api/RnDSlice";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 
 const columns = [
   { field: "Sno", headerName: "S.No" },
@@ -40,14 +41,13 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
-
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
   textAlign: "center",
 }));
 
-const EditUpdateDial = ({ data, open, setOpen,refetch }) => {
+const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
   const { userInfo } = useSelector((state) => state.auth);
   const [projectItems, setProjectItems] = useState(data?.projectItem);
   /// local state
@@ -91,24 +91,22 @@ const EditUpdateDial = ({ data, open, setOpen,refetch }) => {
     }
   };
 
-
   // handling send query
   const handleSubmit = async () => {
-    console.log(updatedData)
-    if(updatedData.length <= 0 ) {
-      return toast.error("Please Select a Quantity to Chang")
+    console.log(updatedData);
+    if (updatedData.length <= 0) {
+      return toast.error("Please Select a Quantity to Chang");
     }
     try {
       const info = {
-        id:data?.projectId,
-        action:"update",
-        items:updatedData
-      }
-      const result = await addProjectItems(info).unwrap()
-      toast.success("Quantity updated successfully")
-      addRefetch()
-      refetch()
-     
+        id: data?.projectId,
+        action: "update",
+        items: updatedData,
+      };
+      const result = await addProjectItems(info).unwrap();
+      toast.success("Quantity updated successfully");
+      addRefetch();
+      refetch();
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }
@@ -117,38 +115,24 @@ const EditUpdateDial = ({ data, open, setOpen,refetch }) => {
   return (
     <div>
       <Dialog open={open} maxWidth="xl" onClose={handleCloseDialog}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "end",
-              paddingTop: ".5rem",
-              paddingX: ".7rem",
-            }}
-          >
-            <Typography
-              sx={{
-                flex: "1",
-                textAlign: "center",
-                fontWeight: "bold",
-                fontSize: "1.3rem",
-              }}
-            >
-              Update Project Details
-            </Typography>
-            <CancelIcon
-              onClick={(event) => {
-                setOpen(false);
-              }}
-            />
-          </Box>
-        </Box>
+        <DialogTitle sx={{ background: "gray", position: "relative" }}>
+          <Box>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography>ProjectName: Saket jha</Typography>
+              <Typography>Estimates: 5000</Typography>
+              <CancelIcon
+                sx={{ cursor: "pointer " }}
+                onClick={(event) => {
+                  setOpen(false);
+                }}
+              />
+            </Box>
 
+            <Box sx={{ textAlign: "center", mt: "" }}>
+              <Typography>Saket jha</Typography>
+            </Box>
+          </Box>
+        </DialogTitle>
         <DialogContent>
           <TableContainer sx={{ maxHeight: "60vh" }}>
             <Table stickyHeader aria-label="sticky table">
@@ -162,83 +146,83 @@ const EditUpdateDial = ({ data, open, setOpen,refetch }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {projectItems &&
-                  projectItems.map((item, index) => {
-                    return (
-                      <TableRow key={index}>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
-                          {index + 1}
-                        </StyleTable>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
-                          {item.SKU}
-                        </StyleTable>
+                {!projectItems
+                  ? "No Data Available"
+                  : projectItems.map((item, index) => {
+                      return (
+                        <TableRow key={index}>
+                          <StyleTable sx={{ fontSize: ".8rem" }}>
+                            {index + 1}
+                          </StyleTable>
+                          <StyleTable sx={{ fontSize: ".8rem" }}>
+                            {item.SKU}
+                          </StyleTable>
 
-                        <StyleTable
-                          sx={{ fontSize: ".8rem", minWidth: "150px" }}
-                        >
-                          {item.Name}
-                        </StyleTable>
-
-                        <StyleTable
-                          sx={{ fontSize: ".8rem", minWidth: "80px" }}
-                        >
-                          {item.GST}
-                        </StyleTable>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
-                          <Box
-                            width="7rem"
-                            sx={{
-                              display: "flex",
-                              gap: 1,
-                            }}
+                          <StyleTable
+                            sx={{ fontSize: ".8rem", minWidth: "150px" }}
                           >
-                            <RemoveCircleOutlineIcon
-                              sx={{
-                                "&:hover": { color: "green" },
-                                cursor: "pointer",
-                              }}
-                              onClick={() =>
-                                handleQuantityChange(item, item.Quantity - 1)
-                              }
-                            />
+                            {item.Name}
+                          </StyleTable>
 
-                            <input
-                              style={{
-                                width: "100%",
-                                borderRadius: "0.5rem",
-                                textAlign: "center",
-                                padding: 4,
-                              }}
-                              readOnly
-                              type="number"
-                              value={item.Quantity}
-                              //   onChange={(e) =>
-                              //     handleQuantityChange(
-                              //       item,
-                              //       parseInt(e.target.value)
-                              //     )
-                              //   }
-                            />
-                            <AddCircleOutlineIcon
+                          <StyleTable
+                            sx={{ fontSize: ".8rem", minWidth: "80px" }}
+                          >
+                            {item.GST}
+                          </StyleTable>
+                          <StyleTable sx={{ fontSize: ".8rem" }}>
+                            <Box
+                              width="7rem"
                               sx={{
-                                "&:hover": { color: "green" },
-                                cursor: "pointer",
+                                display: "flex",
+                                gap: 1,
                               }}
-                              onClick={() =>
-                                handleQuantityChange(item, item.Quantity + 1)
-                              }
-                            />
-                          </Box>
-                        </StyleTable>
-                      </TableRow>
-                    );
-                  })}
+                            >
+                              <RemoveCircleOutlineIcon
+                                sx={{
+                                  "&:hover": { color: "green" },
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  handleQuantityChange(item, item.Quantity - 1)
+                                }
+                              />
+
+                              <input
+                                style={{
+                                  width: "100%",
+                                  borderRadius: "0.5rem",
+                                  textAlign: "center",
+                                  padding: 4,
+                                }}
+                                readOnly
+                                type="number"
+                                value={item.Quantity}
+                                //   onChange={(e) =>
+                                //     handleQuantityChange(
+                                //       item,
+                                //       parseInt(e.target.value)
+                                //     )
+                                //   }
+                              />
+                              <AddCircleOutlineIcon
+                                sx={{
+                                  "&:hover": { color: "green" },
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  handleQuantityChange(item, item.Quantity + 1)
+                                }
+                              />
+                            </Box>
+                          </StyleTable>
+                        </TableRow>
+                      );
+                    })}
               </TableBody>
             </Table>
           </TableContainer>
         </DialogContent>
         <StyledBox>
-          {/* another section */}
           <Box
             sx={{
               display: "flex",
@@ -251,17 +235,16 @@ const EditUpdateDial = ({ data, open, setOpen,refetch }) => {
           >
             {" "}
             <Button
-              //   disabled={isLoading}
+              disabled={isLoading}
               variant="contained"
               onClick={() => {
                 handleSubmit();
               }}
-              
             >
               {isLoading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-              "Update"
+                "Update"
               )}
             </Button>
           </Box>
