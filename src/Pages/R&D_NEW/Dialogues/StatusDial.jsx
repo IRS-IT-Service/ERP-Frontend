@@ -8,8 +8,17 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
+import { useChangeStatusMutation } from "../../../features/api/RnDSlice";
+import { toast } from "react-toastify";
 
-const StatusDial = ({ open, setStatusOpen, projectId, setProjectId }) => {
+const StatusDial = ({
+  open,
+  setStatusOpen,
+  projectId,
+  setProjectId,
+  refetch,
+}) => {
+  const [updateStatus, { isLoading, refetch:updateRefetch }] = useChangeStatusMutation();
   const [selectOptions, setSelectOptions] = useState([
     {
       value: "Started",
@@ -24,16 +33,24 @@ const StatusDial = ({ open, setStatusOpen, projectId, setProjectId }) => {
       label: "Closed",
     },
   ]);
-  const [selectedStatus, setSelectedStatus] = useState("Started");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
-  const handleStatusUpdate = () => {
-    const info = {
-      id: projectId,
-      status: selectedStatus,
-    };
-    console.log(selectedStatus);
-    setStatusOpen(false);
+  const handleStatusUpdate = async () => {
+    try {
+      const info = {
+        projectId: projectId,
+        status: selectedStatus,
+      };
+      const result = await updateStatus(info).unwrap();
+      toast.success("Status updated successfully");
+      setProjectId("");
+      refetch()
+      setStatusOpen(false);
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   return (
     <div>
       <Dialog
@@ -44,7 +61,7 @@ const StatusDial = ({ open, setStatusOpen, projectId, setProjectId }) => {
           setProjectId("");
         }}
       >
-        <DialogTitle sx={{ textAlign: "center" }}>Select Status</DialogTitle>
+        <DialogTitle sx={{ textAlign: "center" }}>Select Status For {projectId}</DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <TextField
             id="outlined-select-currency"

@@ -450,6 +450,7 @@ const Project = () => {
           projectId={projectId}
           setStatusOpen={setStatusOpen}
           open={statusOpen}
+          refetch={refetch}
         />
       )}
     </Box>
