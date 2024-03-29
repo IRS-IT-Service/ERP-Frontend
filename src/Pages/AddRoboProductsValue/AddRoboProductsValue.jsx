@@ -13,7 +13,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: "Select Value",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
@@ -22,10 +22,10 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+      "If you click 'Select Value' and select a particular Value, you can add Data listings for that specific value",
   },
   {
-    name: "Sort By Category",
+    name: "Add Value",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
@@ -34,10 +34,10 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
+      "If you Put Any Value in 'Add Value' Field and Click Add Button Value set for particular Selected Category",
   },
   {
-    name: "Search",
+    name: "TextArea",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
@@ -46,10 +46,10 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click the search box, you can search for any product or brand here",
+      "Here you Can see All Value and Click on Save Button for Bulk Save in Database",
   },
   {
-    name: "Check",
+    name: "Search Field",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/right_productStatus.png?updatedAt=1703142361021"
@@ -58,10 +58,10 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If the checkbox is check like this , It  indicates that there is a value in this particular list",
+      "Here you can Enter Keyword for What you want to Search in Specific Section",
   },
   {
-    name: "Uncheck",
+    name: "Delete",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/cross_productStatus.png?updatedAt=1703142361005"
@@ -69,11 +69,10 @@ const infoDetail = [
         width={"40%"}
       />
     ),
-    instruction:
-      "If the checkbox is unchecked like this, it indicates that there is no value in this particular list",
+    instruction: "If Click Delete Icon You Can Delete Specific Data",
   },
   {
-    name: "Download With Valuer",
+    name: "Upload",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/value_productStatus.png?updatedAt=1703142731023"
@@ -81,20 +80,7 @@ const infoDetail = [
         width={"100%"}
       />
     ),
-    instruction:
-      "If you have selected a particular list and want to download the values in Excel format, you can click this button",
-  },
-  {
-    name: "Download With True/False",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/True-false_ProductStatus.png?updatedAt=1703142731003"
-        height={"100%"}
-        width={"100%"}
-      />
-    ),
-    instruction:
-      "If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button",
+    instruction: "Upload Logo for Related Brand",
   },
 ];
 const AddRoboProductsValue = () => {

@@ -31,14 +31,68 @@ import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../CustomProvider/useWebSocket";
 import PdfDownloadDial from "./Components/PdfDownloadDial";
 import WebStatusDial from "./Components/WebStatusDial";
-import { setHeader } from "../../features/slice/uiSlice";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
+const infoDetail = [
+  {
+    name: "Status",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click Generated, Here you can Update Status of Repairing",
+  },
+  {
+    name: "WebStatus",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click View, Here you can Update Status of Repairing for Customer",
+  },
+  {
+    name: "View",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click the Details, you can see Repairing Form Details",
+  },
+  {
+    name: "Signature",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here You Can Put Your Signature",
+  },
+];
+
 const useStyles = makeStyles((theme) => ({
   selected: {
+    backgroundColor: "rgb(4,4,61) !important",
+    color: "white !important",
     backgroundColor: "rgb(4,4,61) !important",
     color: "white !important",
   },
@@ -57,7 +111,7 @@ const DSCFormList = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-  const [rejectRemark, setRejectRemark] = useState("");
+  const [rejectRemark, setRejectRemark] = useState('');
   const [selectOptions, setSelectOptions] = useState([
     {
       value: "Completed",
@@ -160,10 +214,14 @@ const DSCFormList = () => {
     setOpenDial(!openDial);
   };
 
-  // const { isInfoOpen } = useSelector((state) => state.ui);
-  // const handleClose = () => {
-  //   dispatch(setInfo(false));
-  // };
+  const description =
+    "This is the Product Status you can check product details  ";
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClosed = () => {
+    dispatch(setInfo(false));
+  };
+
 
   useEffect(() => {
     dispatch(setHeader(`DSC Form View`));
@@ -539,6 +597,13 @@ const DSCFormList = () => {
           data={dscData}
         />
       )}
+
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={isInfoOpen}
+        close={handleClosed}
+      />
     </Box>
   );
 };
