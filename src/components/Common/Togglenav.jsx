@@ -24,8 +24,9 @@ import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
 import { setTheme } from "../../features/slice/uiSlice";
 import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
+import {useGetRequestCountQuery} from "../../features/api/barcodeApiSlice"
 import { logout as dispatchLogout } from "../../features/slice/authSlice";
-import logo2 from "../../assets/IRS2.png";
+import logo2 from "../../assets/IRSLOGOR.png";
 import { useLogoutMutation } from "../../features/api/usersApiSlice";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { useNavigate } from "react-router-dom";
@@ -140,6 +141,13 @@ const ToggleNav = () => {
     isError,
     refetch,
   } = useGetUnApprovedCountQuery(null, {
+    pollingInterval: 1000 * 300,
+  });
+
+  const {
+    data: unRequestcount,
+    isLoading: isLoadingReq,
+  } = useGetRequestCountQuery(null, {
     pollingInterval: 1000 * 300,
   });
 
@@ -339,8 +347,8 @@ const ToggleNav = () => {
 
             <Box
               sx={{
-                marginLeft: "1.5rem",
-                width: "2.5rem",
+                marginLeft: "1rem",
+                width: "6.5rem",
                 cursor: "pointer",
               }}
             >
@@ -349,7 +357,7 @@ const ToggleNav = () => {
                 src={logo2}
                 alt="Arrow"
                 style={{
-                  objectFit: "contain",
+                  objectFit: "cover",
                   objectPosition: "center",
                   width: "100%",
                 }}

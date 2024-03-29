@@ -21,6 +21,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAddProjectItemMutation } from "../../../features/api/RnDSlice";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { formatDate } from "../../../commonFunctions/commonFunctions";
 
 const columns = [
   { field: "Sno", headerName: "S.No" },
@@ -37,7 +38,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 const StyleTable = styled(TableCell)(({ theme }) => ({
   fontSize: ".777rem",
-  padding: "5px !important",
+  padding: "5px",
   textAlign: "center",
 }));
 
@@ -115,11 +116,47 @@ const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
   return (
     <div>
       <Dialog open={open} maxWidth="xl" onClose={handleCloseDialog}>
-        <DialogTitle sx={{ background: "gray", position: "relative" }}>
+        <DialogTitle sx={{ background: "#eee", position: "relative" }}>
           <Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography>ProjectName: Saket jha</Typography>
-              <Typography>Estimates: 5000</Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between"}}>
+              <Box sx={{ display: "flex",justifyContent: "space-between" ,width:"100%" }}>
+                <Box sx={{ display: "flex", flexDirection: "column"  }}>
+                <Typography variant="span" fontWeight="bold" fontSize={13}>
+                  Project Name :{" "}
+                  <Typography variant="span" fontWeight="lighter" fontSize={13}>
+                    {data?.Name}
+                  </Typography>
+                </Typography>
+                <Typography fontWeight="bold" fontSize={13}>
+                  Project Desc :{" "}
+                  <Typography variant="span" fontWeight="lighter" fontSize={13}>
+                    {data?.Description}
+                  </Typography>
+                </Typography>
+                </Box>
+                <Box sx={{ display: "flex", flexDirection: "column", paddingRight:5 }}>
+                <Typography variant="span" fontWeight="bold" fontSize={13}>
+                  Status :{" "}
+                  <Typography variant="span" fontWeight="lighter" fontSize={13}>
+                    {data?.status}
+                  </Typography>
+                </Typography>
+                <Typography fontWeight="bold" fontSize={13}>
+                  Start Date :{" "}
+                  <Typography variant="span" fontWeight="lighter" fontSize={13}>
+                    {data?.date}
+                  </Typography>
+                  
+                </Typography>
+                <Typography fontWeight="bold" fontSize={13}>
+                  Complete Date :{" "}
+                  <Typography variant="span" fontWeight="lighter" fontSize={13}>
+                    {data?.endDate ? formatDate(data?.endDate) : "in Progress"}
+                  </Typography>
+                  
+                </Typography>
+                </Box>
+              </Box>
               <CancelIcon
                 sx={{ cursor: "pointer " }}
                 onClick={(event) => {
@@ -127,14 +164,11 @@ const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
                 }}
               />
             </Box>
-
-            <Box sx={{ textAlign: "center", mt: "" }}>
-              <Typography>Saket jha</Typography>
-            </Box>
+          
           </Box>
         </DialogTitle>
         <DialogContent>
-          <TableContainer sx={{ maxHeight: "60vh" }}>
+          <TableContainer sx={{ maxHeight: "60vh", width: "50vw" }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -146,8 +180,16 @@ const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {!projectItems
-                  ? "No Data Available"
+                {!projectItems.length > 0
+                  ? 
+                  <TableRow sx={{textAlign:"center"}}>
+                         <StyleTable colSpan={5} sx={{ fontSize: ".8rem" }}>
+                         No Data Available !
+                          </StyleTable>
+              
+                      
+                  </TableRow>
+                
                   : projectItems.map((item, index) => {
                       return (
                         <TableRow key={index}>
@@ -158,18 +200,20 @@ const EditUpdateDial = ({ data, open, setOpen, refetch }) => {
                             {item.SKU}
                           </StyleTable>
 
-                          <StyleTable
-                            sx={{ fontSize: ".8rem", minWidth: "150px" }}
-                          >
+                          <StyleTable sx={{ fontSize: ".8rem" }}>
                             {item.Name}
                           </StyleTable>
 
-                          <StyleTable
-                            sx={{ fontSize: ".8rem", minWidth: "80px" }}
-                          >
+                          <StyleTable sx={{ fontSize: ".8rem" }}>
                             {item.GST}
                           </StyleTable>
-                          <StyleTable sx={{ fontSize: ".8rem" }}>
+                          <StyleTable
+                            sx={{
+                              fontSize: ".8rem",
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
                             <Box
                               width="7rem"
                               sx={{

@@ -64,6 +64,11 @@ const ToogleMenu = ({ title, icon, childrens }) => {
     (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
   );
 
+  const Requestcount =  useSelector(
+    (state) => state.api.queries["getRequestCount(null)"]?.data?.data
+  );
+  const dataEmbeded ={...data , ...Requestcount}
+ 
   /// local state
   const [toggleSubmenu, setToggleSubmenu] = useState(false);
 
@@ -192,7 +197,7 @@ const ToogleMenu = ({ title, icon, childrens }) => {
                 >
                   {childItems.notification ? (
                     <Badge
-                      badgeContent={data?.[childItems.name]}
+                      badgeContent={dataEmbeded?.[childItems.name]}
                       color="secondary"
                     >
                       <i

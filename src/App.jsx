@@ -121,7 +121,7 @@ import UpdateProductMain from "./Pages/UpdateProduct/UpdateProductMain";
 import MessageTemplate from "./Pages/MessageTemplate/MessageTemplate";
 import SetDiscountPrice from "./Pages/AllSellers/AllSellerComponent/SetDiscountPrice";
 import Studentinfo from "./Pages/Other/Studentinfo";
-import ItemsApproval from "./Pages/R&D_NEW/ItemsApproval";
+import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
 
 function App() {
   /// initialize

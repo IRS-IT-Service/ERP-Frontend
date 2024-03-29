@@ -27,7 +27,7 @@ import { logout as dispatchLogout } from "../../features/slice/authSlice";
 import { useLogoutMutation } from "../../features/api/usersApiSlice";
 import { useAutoCompleteProductMutation } from "../../features/api/productApiSlice";
 import { setSearchTerm } from "../../features/slice/productSlice";
-import logo2 from "../../assets/IRS2.png";
+import logo2 from "../../assets/IRSLOGO.png";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",

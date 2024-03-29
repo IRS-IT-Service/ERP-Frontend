@@ -144,6 +144,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+  
     addBrand: builder.mutation({
       query: (data) => {
         return {

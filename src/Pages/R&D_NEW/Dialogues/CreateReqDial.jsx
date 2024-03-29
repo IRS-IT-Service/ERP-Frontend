@@ -106,6 +106,17 @@ const CreateReqDial = ({
       const filterData = requestData.filter((item) => item.ReqQty === 0);
       if (filterData.length > 0) return toast.error("Missing Require Quantiy");
       const result = await createQueryApi({ datas: requestData }).unwrap();
+      const resultMessage = requestData.map((item) => {
+        const Name = item.Name;
+        const Req = item.ReqQty;
+        return ` ${Name} of ${Req} pcs`;
+      });
+
+      const liveStatusData = {
+        message: `${userInfo.name} has created requirement for ${resultMessage.join(", ")}`,
+        time: new Date(),
+      };
+      socket.emit("liveStatusServer", liveStatusData);
       toast.success("Request Query Sent Successfully");
       dispatch(removeSelectedCreateQuery());
       dispatch(removeSelectedSkuQuery());

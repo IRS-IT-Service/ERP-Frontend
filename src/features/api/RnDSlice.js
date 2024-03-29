@@ -26,6 +26,7 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
           body: data,
         }),
       }),
+  
       getAllRDInventory: builder.query({
         query: () => ({
           url: `${BARCODE_URL}/getAllRDInventory`,

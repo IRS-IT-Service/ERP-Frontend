@@ -221,6 +221,20 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
         method: `GET`,
       }),
     }),
+    getPendingRequest: builder.query({
+      query: () => ({
+        url: `${BARCODE_URL}/getPendingRequest`,
+        method: `GET`,
+      }),
+    }),
+    getRequestCount: builder.query({
+      query: () => {
+        return {
+          url: `${BARCODE_URL}/productRequestCount`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -256,5 +270,7 @@ export const {
   useUpdateAssignedStatusMutation,
   useUpdateDamagedStatusMutation,
   useGetAllBarcodesQuery,
-  useCreateRandDInventryMutation,useGetAllRandDInventryQuery
+  useCreateRandDInventryMutation,useGetAllRandDInventryQuery ,
+  useGetPendingRequestQuery,
+  useGetRequestCountQuery,
 } = BarcodeSlice;
