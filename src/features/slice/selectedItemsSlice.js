@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   createQueryItems: [],
-  createQuerySku:[]
+  createQuerySku: [],
 };
 
 const selectedItemsSlice = createSlice({
@@ -24,8 +24,9 @@ const selectedItemsSlice = createSlice({
   },
 });
 export const {
-    setSelectedCreateQuery,
-    removeSelectedCreateQuery,
-    setSelectedSkuQuery,removeSelectedSkuQuery
+  setSelectedCreateQuery,
+  removeSelectedCreateQuery,
+  setSelectedSkuQuery,
+  removeSelectedSkuQuery,
 } = selectedItemsSlice.actions;
 export default selectedItemsSlice.reducer;

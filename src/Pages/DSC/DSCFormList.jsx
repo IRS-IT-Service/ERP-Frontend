@@ -93,6 +93,8 @@ const useStyles = makeStyles((theme) => ({
   selected: {
     backgroundColor: "rgb(4,4,61) !important",
     color: "white !important",
+    backgroundColor: "rgb(4,4,61) !important",
+    color: "white !important",
   },
 }));
 
@@ -109,7 +111,7 @@ const DSCFormList = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-  const [rejectRemark, setRejectRemark] = useState("");
+  const [rejectRemark, setRejectRemark] = useState('');
   const [selectOptions, setSelectOptions] = useState([
     {
       value: "Completed",
