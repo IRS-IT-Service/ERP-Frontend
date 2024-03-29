@@ -129,22 +129,8 @@ const Project = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [projectDetails, setprojectDetails] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-  const [selectedData, setSelectedData] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectOptions, setSelectOptions] = useState([
-    {
-      value: "Started",
-      label: "Started",
-    },
-    {
-      value: "Processing",
-      label: "Processing",
-    },
-    {
-      value: "Closed",
-      label: "Closed",
-    },
-  ]);
+  const [projectId, setProjectId] = useState("");
+
   /// rtk query
   const { data, isLoading, refetch, isFetching } = useGetAllProjectDataQuery();
 
@@ -159,6 +145,11 @@ const Project = () => {
 
   const handleChange = (event, newQuery) => {
     setQueryParams(newQuery);
+  };
+
+  const handleStatusOpen = (id) => {
+    setStatusOpen(true), 
+    setProjectId(id);
   };
 
   const handleClose = () => {
@@ -267,6 +258,7 @@ const Project = () => {
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
+        const id = params.row.projectId;
         const color =
           params.row.status === "Started"
             ? "green"
@@ -279,7 +271,12 @@ const Project = () => {
               color: color,
             }}
           >
-            <Button sx={{ color: `${color}` }}>{params.row.status}</Button>
+            <Button
+              sx={{ color: `${color}` }}
+              onClick={() => handleStatusOpen(id)}
+            >
+              {params.row.status}
+            </Button>
           </div>
         );
       },
@@ -447,7 +444,15 @@ const Project = () => {
           refetch={refetch}
         />
       )}
-      {statusOpen && <StatusDial />}
+      {statusOpen && (
+        <StatusDial
+          setProjectId={setProjectId}
+          projectId={projectId}
+          setStatusOpen={setStatusOpen}
+          open={statusOpen}
+          refetch={refetch}
+        />
+      )}
     </Box>
   );
 };
