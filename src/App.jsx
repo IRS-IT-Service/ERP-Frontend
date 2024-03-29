@@ -109,8 +109,10 @@ import AddRoboProductsValue from "./Pages/AddRoboProductsValue/AddRoboProductsVa
 import BulkAddProduct from "./Pages/AddProduct/BulkAddProduct";
 import RemovedProduct from "./Pages/ProductDelete/RemovedProducts";
 import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorComparsion";
-import AllInventoryData from "./Pages/R&D/AllInventoryData";
-import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
+import CreateReq from "./Pages/R&D_NEW/CreareReq";
+import RnDInventory from "./Pages/R&D_NEW/RnDInventory";
+import Project from "./Pages/R&D_NEW/Project";
+import ResearchNewProject from "./Pages/R&D_old/ResearchNewProject";
 import BulkMessage from "./Pages/BulkMessage/BulkMessage";
 import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
 import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
@@ -119,6 +121,7 @@ import UpdateProductMain from "./Pages/UpdateProduct/UpdateProductMain";
 import MessageTemplate from "./Pages/MessageTemplate/MessageTemplate";
 import SetDiscountPrice from "./Pages/AllSellers/AllSellerComponent/SetDiscountPrice";
 import Studentinfo from "./Pages/Other/Studentinfo";
+import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
 
 function App() {
   /// initialize
@@ -691,12 +694,20 @@ function App() {
 
                 {/* R&D */}
                 <Route
-                  path="/AllInventoryData"
-                  element={<AllInventoryData />}
+                  path="/CreateReq"
+                  element={<CreateReq />}
                 />
                 <Route
-                  path="/ResearchNewProject"
-                  element={<ResearchNewProject />}
+                  path="/Project"
+                  element={<Project />}
+                />
+                   <Route
+                  path="/RnDInventory"
+                  element={<RnDInventory />}
+                />
+                    <Route
+                  path="/ItemsAprroval"
+                  element={<ItemsApproval />}
                 />
 
                 {/* Marketing tools */}

@@ -220,7 +220,7 @@ const CompetitorTable = () => {
             (allProductData.data.currentPage - 1) * allProductData.data.limit,
           SKU: item.SKU,
           Product: item.Name,
-          GST: item.GST.toFixed(2),
+          GST: item.GST,
           Brand: item.Brand,
           Quantity: item.ActualQuantity,
           SalesPrice: item.SalesPrice,

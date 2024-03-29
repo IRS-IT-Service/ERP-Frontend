@@ -26,6 +26,7 @@ import {
 } from "../../features/slice/authSlice";
 import droneWallpaoer from "../../assets/drone-wall-2.jpg";
 import irsLogo from "../../assets/irs.png";
+import logo2 from "../../assets/IRSLOGO.png";
 import { toast } from "react-toastify";
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
@@ -326,17 +327,12 @@ export default function Login({ registrationToken }) {
                   "rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px",
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: "transparent" }}>
-                <img
-                  src={irsLogo}
-                  alt=""
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain",
-                  }}
-                />
-              </Avatar>
+                          <Avatar
+              variant="square"
+  alt="IRS"
+  src={logo2}
+  sx={{ width: 100, height: 60 }}
+/>
               <Typography component="h1" variant="h5" fontWeight="bold">
                 Enter OTP to Login
               </Typography>
@@ -390,17 +386,23 @@ export default function Login({ registrationToken }) {
                   "rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px",
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: "transparent" }}>
+              <Avatar
+              variant="square"
+  alt="IRS"
+  src={logo2}
+  sx={{ width: 100, height: 60 }}
+/>
+              {/* <Avatar sx={{ m: 1, bgcolor: "transparent" }}>
                 <img
-                  src={irsLogo}
+                  src={logo2}
                   alt=""
                   style={{
                     width: "100%",
                     height: "100%",
-                    objectFit: "contain",
+                    objectFit: "cover",
                   }}
                 />
-              </Avatar>
+              </Avatar> */}
               <Typography component="h1" variant="h5" fontWeight="bold">
                 Sign in
               </Typography>

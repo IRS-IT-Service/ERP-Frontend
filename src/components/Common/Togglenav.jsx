@@ -18,21 +18,21 @@ import {
   Menu,
   MenuItem,
   Badge,
-  Link 
+  Link,
 } from "@mui/material";
 import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
-import { setTheme} from "../../features/slice/uiSlice";
+import { setTheme } from "../../features/slice/uiSlice";
 import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
+import {useGetRequestCountQuery} from "../../features/api/barcodeApiSlice"
 import { logout as dispatchLogout } from "../../features/slice/authSlice";
-import logo2 from "../../assets/IRS2.png";
+import logo2 from "../../assets/IRSLOGOR.png";
 import { useLogoutMutation } from "../../features/api/usersApiSlice";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { useNavigate } from "react-router-dom";
 import themeColors from "../../constants/ThemeColor";
 import Header from "./Header";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
-
 
 const drawerWidth = 220;
 
@@ -144,13 +144,19 @@ const ToggleNav = () => {
     pollingInterval: 1000 * 300,
   });
 
+  const {
+    data: unRequestcount,
+    isLoading: isLoadingReq,
+  } = useGetRequestCountQuery(null, {
+    pollingInterval: 1000 * 300,
+  });
+
   const [logout] = useLogoutMutation();
 
   /// handler
   const handleDrawer = () => {
     dispatch(toggleShowNav());
   };
-
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -275,7 +281,7 @@ const ToggleNav = () => {
               key={key}
               onClick={() => {
                 handleClose();
- 
+
                 if (key === "New Product Approval") {
                   navigate("/NewProductApproval");
                 } else if (key === "Product Changes Approval") {
@@ -323,7 +329,6 @@ const ToggleNav = () => {
           }}
         >
           <Box>
-            
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -339,35 +344,28 @@ const ToggleNav = () => {
             >
               <MenuIcon />
             </IconButton>
-        
+
             <Box
               sx={{
-                marginLeft: "1.5rem",
-                width: "2.5rem",
-                height: "1rem",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-evenly",
-                cursor:"pointer",
+                marginLeft: "1rem",
+                width: "6.5rem",
+                cursor: "pointer",
               }}
-          onClick={() =>navigate("/") }
             >
-              
               {" "}
               <img
                 src={logo2}
                 alt="Arrow"
                 style={{
-                  objectFit: "contain",
+                  objectFit: "cover",
                   objectPosition: "center",
                   width: "100%",
                 }}
+                onClick={() => navigate("/")}
               />
-               
             </Box>
-       
           </Box>
-         {HeaderName && <Header Name={HeaderName} info={true}  /> }
+          {HeaderName && <Header Name={HeaderName} info={true} />}
           <Box
             sx={{
               display: "flex",

@@ -424,6 +424,13 @@ const userRolesData = [
         icon: "fa-solid fa-cart-flatbed",
         notification: true,
       },
+      {
+        id: 73,
+        name: "Parts Requirement",
+        path: "/ItemsAprroval",
+        icon: "fa-solid fa-check-double",
+        notification: true,
+      },
     ],
   },
   {
@@ -460,24 +467,34 @@ const userRolesData = [
       },
     ],
   },
+
   {
     title: "R&D",
-    icon: "fa fa-wrench",
+    icon: "fa-brands fa-r-project",
     childrens: [
       {
         id: 54,
-        name: "All Inventory Data",
-        path: "/AllInventoryData",
-        icon: "fa fa-wrench",
+        name: "Create parts req",
+        path: "/CreateReq",
+        icon:"fa-solid fa-cart-plus",
+     
         notification: true,
       },
       {
         id: 68,
         name: "R&D Projects",
-        path: "/ResearchNewProject",
-        icon: "fa fa-wrench",
+        path: "/Project",
+        icon: "fa-brands fa-researchgate",
         notification: true,
       },
+      {
+        id: 72,
+        name: "R&D Inventory",
+        path: "/RnDInventory",
+        icon: "fa-solid fa-warehouse",
+        notification: true,
+      },
+   
     ],
   },
   {
@@ -519,6 +536,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 71
+// last routes is 73
 
 export default userRolesData;
