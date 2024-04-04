@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   RAndForm: {},
+  Addparts:[]
 };
 
 const RAndDFormSlice = createSlice({
@@ -11,7 +12,11 @@ const RAndDFormSlice = createSlice({
     setRAndForm: (state, action) => {
       state.RAndForm = action.payload;
     },
+    setAddparts: (state, action) => {
+      state.Addparts = action.payload;
+    },
   },
 });
-export const { setRAndForm,} = RAndDFormSlice.actions;
+export const { setRAndForm,setAddparts} = RAndDFormSlice.actions;
+
 export default RAndDFormSlice.reducer;

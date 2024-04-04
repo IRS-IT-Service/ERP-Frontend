@@ -70,7 +70,7 @@ const store = configureStore({
     ui: uiReducer,
     sellerDetailsAndAddress: SellerDetailsAndAddressReducer,
     dscForm:DscFormSlice,
-    randdform:RAndDFormSlice,
+    RAndDForm:RAndDFormSlice,
     liveCalc: LiveCalcReducer,
     seletedItems:selectedItemsSlice,
     [apiSlice.reducerPath]: apiSlice.reducer,

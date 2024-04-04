@@ -1,4 +1,4 @@
-import { React, useEffect, useState, useRef  } from "react";
+import { React, useEffect, useState, useRef } from "react";
 import {
   DataGrid,
   useGridApiRef,
@@ -92,63 +92,13 @@ const Inventory = () => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const debouncing = useRef();
-  const { id } = useParams()
+  const { id } = useParams();
 
-const newValue = id.split("&")
-const idValue = newValue[0]
-const name = newValue[1]
+  const newValue = id.split("&");
+  const idValue = newValue[0];
+  const name = newValue[1];
 
-const dummyData = [
-  {
-    SKU: "SKU001",
-    Name: "Product 1",
-    Brand: "Brand A",
-    Category: "Category X",
-    GST: 18,
-    Newqty: 10,
-    Oldqty: 5
-  },
-  {
-    SKU: "SKU002",
-    Name: "Product 2",
-    Brand: "Brand B",
-    Category: "Category Y",
-    GST: 12,
-    Newqty: 5,
-    Oldqty: 0
-  },
-  {
-    SKU: "SKU003",
-    Name: "Product 3",
-    Brand: "Brand C",
-    Category: "Category Z",
-    GST: 5,
-    Newqty: 0,
-    Oldqty: 2
-  },
-  // Additional entries:
-  {
-    SKU: "SKU004",
-    Name: "Product 4",
-    Brand: "Brand D",
-    Category: "Category W",
-    GST: 10,
-    Newqty: 10,
-    Oldqty: 5
-  },
-  {
-    SKU: "SKU005",
-    Name: "Product 5",
-    Brand: "Brand E",
-    Category: "Category V",
-    GST: 8,
-    Quantity: 20,
- 
-  },
-  // Add more entries as needed
-];
   // Parse the query string
-
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
@@ -158,8 +108,6 @@ const dummyData = [
   useEffect(() => {
     dispatch(setHeader(`Add Parts For ${name}`));
   }, []);
-
-
 
   /// global state
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
@@ -187,9 +135,7 @@ const dummyData = [
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductWithRandDQuery(filterString, {
-    pollingInterval: 1000 * 300,
-  });
+  } = useGetAllProductWithRandDQuery(filterString);
 
   /// handlers
 
@@ -238,44 +184,30 @@ const dummyData = [
     setOpen(true);
   };
 
-  
+
   /// useEffect
-  // useEffect(() => {
-  //   if (allProductData?.success) {
-  //     const data = allProductData?.data?.products?.map((item, index) => {
-  //       return {
-  //         id: item.SKU,
-  //         Sno: index + 1,
-  //         SKU: item.SKU,
-  //         Name: item.Name,
-  //         GST: item.GST,
-  //         MRP: item.MRP,
-  //         Quantity: item.Quantity,
-  //         RandDQuantity: item.RAndDQuantity,
-  //         Brand: item.Brand,
-  //         Category: item.Category,
-  //       };
-  //     });
-
-  //     dispatch(setAllProductsV2(allProductData.data));
-  //     setRows(data);
-
-  //     setRowPerPage(allProductData.data.limit);
-  //     setTotalProductCount(allProductData.data.totalProductCount);
-  //     setPage(allProductData.data.currentPage);
-  //   }
-  // }, [allProductData]);
   useEffect(() => {
-    const data = dummyData.map((item, index) => {
-      return {
-        ...item,
-        id: item.SKU,
-        Sno: index + 1,
-      };
-    });
+    if (allProductData?.success) {
+      const data = allProductData?.data?.products?.map((item, index) => {
+        return {
+          ...item,
+          id: item.SKU,
+          Sno:
+            index +
+            1 +
+            (allProductData.data.currentPage - 1) * allProductData.data.limit,
+          GST: item.GST || 0,
+        };
+      });
 
-    setRows(data);
-  }, []);
+      dispatch(setAllProductsV2(allProductData.data));
+      setRows(data);
+
+      setRowPerPage(allProductData.data.limit);
+      setTotalProductCount(allProductData.data.totalProductCount);
+      setPage(allProductData.data.currentPage);
+    }
+  }, [allProductData]);
 
   useEffect(() => {
     let newFilterString = "";
@@ -385,8 +317,8 @@ const dummyData = [
     },
     {
       field: "Newqty",
-      minWidth:150,
-      maxWidth:300,
+      minWidth: 150,
+      maxWidth: 300,
       headerName: "New Qty in R&D",
       align: "center",
       headerAlign: "center",
@@ -395,15 +327,14 @@ const dummyData = [
     },
     {
       field: "Oldqty",
-      minWidth:150,
-      maxWidth:300,
+      minWidth: 150,
+      maxWidth: 300,
       headerName: "Old Qty in R&D",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-
   ];
 
   function CustomFooter(props) {
@@ -455,14 +386,16 @@ const dummyData = [
       <CreateReqDial
         data={realData}
         apiRef={apiRef}
-        removeSelectedItems={setSelectedItems}
+        removeSelectedItems={removeSelectedItems}
         open={open}
         setOpen={setOpen}
         dispatch={dispatch}
-        id= {idValue}
-        name ={name}
+        id={idValue}
+        name={name}
         removeSelectedCreateQuery={removeSelectedCreateQuery}
         removeSelectedSkuQuery={removeSelectedSkuQuery}
+        setSelectedItemsData={setSelectedItemsData}
+        selectedItemsData ={selectedItemsData}
       />
       <InfoDialogBox
         infoDetails={infoDetail}
@@ -509,7 +442,6 @@ const dummyData = [
                 checkboxSelection
                 disableRowSelectionOnClick
                 onRowSelectionModelChange={handleSelectionChange}
-                // isRowSelectable={(params) => params.row.SalesPrice > 0}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected
                 components={{

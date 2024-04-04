@@ -20,6 +20,8 @@ import {
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { setAddparts } from "../../../features/slice/R&DSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 const columns = [
@@ -50,14 +52,13 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
-import { useSelector } from "react-redux";
 import { TabOutlined } from "@mui/icons-material";
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
   textAlign: "center",
 }));
-
+import { useAddProjectItemMutation } from "../../../features/api/RnDSlice";
 const CreateReqDial = ({
   data,
   removeSelectedItems,
@@ -66,51 +67,73 @@ const CreateReqDial = ({
   handleOpenDialog,
   removeSelectedCreateQuery,
   removeSelectedSkuQuery,
-  dispatch,
-  id ,
-  name
+  setSelectedItemsData,
+  selectedItemsData,
+  id,
+  name,
 }) => {
   /// initialize
   const socket = useSocket();
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
+  const { Addparts } = useSelector((state) => state.RAndDForm);
 
   /// local state
 
   const [Requireqty, setRequireqty] = useState([]);
-  const [preOrder , setPreorder] = useState(null);
-  const[Error , setError] = useState({})
+  const [preOrder, setPreorder] = useState(null);
+  const [Newqty, setNewqty] = useState({});
+  const [Oldqty, setOldqty] = useState({});
+  const [FinalPreorder, setFinalPreorder] = useState({});
 
   /// rtk query
 
   const [createQueryApi, { isLoading }] = useCreateRandDInventryMutation();
-
+  const dispatch = useDispatch();
   // handlers
-
+  const [
+    addProjectItems,
+    { isLoading: addProjectLoading, refetch: addRefetch },
+  ] = useAddProjectItemMutation();
   const handleCloseDialog = () => {
     setOpen(false);
   };
   useEffect(() => {
-let newData = []
+    let newData = [];
+    newData = data.map((data) => {
+      return {
+        SKU: data.SKU,
+      };
+    });
+    setRequireqty(newData);
+  }, [setOpen, open]);
 
-newData = data.map(data => {
-  return {
-    SKU: data.SKU,
+  useEffect(() => {
+    dispatch(setAddparts(Requireqty));
+  }, [setNewqty, Newqty, setOldqty, Oldqty]);
 
-  }
-})
+  //Reset value after delete elements
+  useEffect(() => {
+    const matchingArray = [];
+    selectedItemsData.forEach((item) => {
+      const match = Addparts.find((items) => item.SKU === items.SKU);
+      if (match) {
+        matchingArray.push(match);
+      }
+    });
 
-  
-setRequireqty(newData)
-    
-  }, [data]);
-
+    if (matchingArray.length > 0) {
+      setRequireqty(matchingArray);
+    }
+  }, [selectedItemsData, setSelectedItemsData]);
 
   const handleQuantityChange = (event, item) => {
     const { value, name } = event.target;
-
-    const result = Requireqty.map(doc => {
+    if (name === "reqQTY") {
+      setNewqty({ [item.SKU]: value });
+    }
+    const result = Requireqty.map((doc) => {
       if (doc.SKU === item.SKU) {
         if (item.Quantity !== undefined) {
           if (item.Quantity < value) {
@@ -119,86 +142,79 @@ setRequireqty(newData)
               ...doc,
               Quantity: +item.Quantity,
               OldQty: 0,
-              PreOrder: preOrder
+              PreOrder: preOrder,
             };
           } else if (item.Quantity >= value) {
             return {
               ...doc,
               Quantity: +value,
               OldQty: 0,
-              PreOrder: 0
+              PreOrder: 0,
             };
           }
         } else if (item.Newqty !== undefined) {
           if (item.Newqty >= value && name === "reqQTY") {
-           
             return {
               ...doc,
               Quantity: +value,
               OldQty: 0,
-              PreOrder: 0
+              PreOrder: 0,
             };
-          } else if (item.Newqty < value && name === "reqQTY" ) {
+          } else if (item.Newqty < value && name === "reqQTY") {
             let preOrder = value - +item.Newqty;
-            setPreorder(preOrder)
+            setPreorder(preOrder);
             return {
               ...doc,
               Quantity: item.Newqty,
               OldQty: 0,
-              PreOrder: preOrder
+              PreOrder: preOrder,
             };
-          }else if (item.Oldqty !== undefined && name === "Oldparts") {
-         
-            let error = +value > item.Oldqty ? +value : 0
-            if (item.Oldqty > 0 ) {
-            let isPreorder = preOrder && preOrder >= +value ? preOrder - +value : preOrder;
-       
-        
-            return {
-              ...doc,
-              Quantity: item.Newqty,
-              OldQty: +value > item.Newqty ? 0 : +value,
-              PreOrder: isPreorder || 0 ,
-              error: error
-              
-            };
+          } else if (item.Oldqty !== undefined && name === "Oldparts") {
+            setOldqty({ [item.SKU]: value });
+            let error = +value > item.Oldqty ? +value : 0;
+            if (item.Oldqty > 0) {
+              let isPreorder =
+                preOrder && preOrder >= +value ? preOrder - +value : preOrder;
+
+              return {
+                ...doc,
+                Quantity: item.Newqty,
+                OldQty: +value > item.Newqty ? 0 : +value,
+                PreOrder: isPreorder || 0,
+                error: error,
+              };
+            }
           }
-        
         }
-        }
-    }
+      }
       return doc;
     });
-  
+
     setRequireqty(result);
   };
-  
 
   // handling send query
   const handleSubmit = async () => {
     try {
-      const requestData = data.map((item) => ({
-        ...item,
-        ReqQty: Number(Requireqty[item.SKU]) || 0,
-      }));
-      const filterData = requestData.filter((item) => item.ReqQty === 0);
-      if (filterData.length > 0) return toast.error("Missing Require Quantiy");
-      const result = await createQueryApi({ datas: requestData }).unwrap();
-      const resultMessage = requestData.map((item) => {
-        const Name = item.Name;
-        const Req = item.ReqQty;
-        return ` ${Name} of ${Req} pcs`;
-      });
-
-      const liveStatusData = {
-        message: `${userInfo.name} has created requirement for ${resultMessage.join(", ")}`,
-        time: new Date(),
+      const requestData = Requireqty.filter((item) => 
+       item.Quantity 
+      );
+    
+      let info = {
+        id: id,
+        items: requestData,
       };
-      socket.emit("liveStatusServer", liveStatusData);
-      toast.success("Request Query Sent Successfully");
+      const filterData = requestData.filter((item) => item.error > 0);
+      if (filterData.length > 0) return toast.error("Missing Require Quantiy");
+      const result = await addProjectItems(info).unwrap();
+    
+     toast.success("Parts add successfully");
       dispatch(removeSelectedCreateQuery());
       dispatch(removeSelectedSkuQuery());
       removeSelectedItems([]);
+      setNewqty({})
+      setOldqty({})
+      setPreorder()
       handleCloseDialog();
     } catch (e) {
       console.log("error at Discount Query create ", e);
@@ -233,7 +249,7 @@ setRequireqty(newData)
               ADD PARTS
             </Typography>
             <CancelIcon
-            sx={{cursor:"pointer" ,"&:hover":{color:"red"}}}
+              sx={{ cursor: "pointer", "&:hover": { color: "red" } }}
               onClick={(event) => {
                 setOpen(false);
               }}
@@ -242,11 +258,21 @@ setRequireqty(newData)
         </Box>
 
         <DialogContent>
-          <Box sx={{display:"flex" ,justifyContent:"space-between"}}>
-          <Typography variant="span" fontWeight="bold" fontSize={"12px"}>Project Id : <Typography variant="span" fontWeight="lighter" fontSize={"12px"}>{id}</Typography></Typography>
-          <Typography variant="span" fontWeight="bold" fontSize={"12px"}>Project Name : <Typography variant="span" fontWeight="lighter" fontSize={"12px"}>{name}</Typography></Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
+              Project Id :{" "}
+              <Typography variant="span" fontWeight="lighter" fontSize={"12px"}>
+                {id}
+              </Typography>
+            </Typography>
+            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
+              Project Name :{" "}
+              <Typography variant="span" fontWeight="lighter" fontSize={"12px"}>
+                {name}
+              </Typography>
+            </Typography>
           </Box>
-          <TableContainer sx={{ maxHeight: "60vh" ,marginTop:"0.3rem" }}>
+          <TableContainer sx={{ maxHeight: "60vh", marginTop: "0.3rem" }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -296,7 +322,7 @@ setRequireqty(newData)
                             },
                           }}
                           name="reqQTY"
-                          // value={Requireqty[index].Quantity}
+                          value={Newqty[item.SKU]}
                           type="number"
                           onChange={(event) => {
                             handleQuantityChange(event, item);
@@ -314,13 +340,21 @@ setRequireqty(newData)
                           }}
                           name="Oldparts"
                           disabled={item.Oldqty === 0 || !item.Oldqty}
-                          value={Requireqty[item.SKU]}
+                          value={Oldqty[item.SKU]}
                           type="number"
                           onChange={(event) => {
                             handleQuantityChange(event, item);
                           }}
-                          error ={Requireqty[index]?.error > 0}
-                          helperText ={Requireqty[index]?.error > 0 ? <spna style={{fontSize:"9px"}}>Enter valid Qty!</spna> : ""}
+                          error={Requireqty[index]?.error > 0}
+                          helperText={
+                            Requireqty[index]?.error > 0 ? (
+                              <spna style={{ fontSize: "9px" }}>
+                                Enter valid Qty!
+                              </spna>
+                            ) : (
+                              ""
+                            )
+                          }
                         />
                       </StyleTable>
                       <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
