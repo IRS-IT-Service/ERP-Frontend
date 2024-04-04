@@ -235,6 +235,13 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    addProductInRnDInventory: builder.mutation({
+      query: (data) => ({
+        url: `${BARCODE_URL}/addProductInR&DInventory`,
+        method: `Post`,
+        body:data
+      }),
+    }),
   }),
 });
 
@@ -273,4 +280,5 @@ export const {
   useCreateRandDInventryMutation,useGetAllRandDInventryQuery ,
   useGetPendingRequestQuery,
   useGetPendingRequestCountQuery,
+  useAddProductInRnDInventoryMutation
 } = BarcodeSlice;

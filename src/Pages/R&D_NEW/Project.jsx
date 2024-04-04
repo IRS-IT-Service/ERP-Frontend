@@ -42,6 +42,7 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import EditUpdateDial from "./Dialogues/EditupdateDial";
 import StatusDial from "./Dialogues/StatusDial";
 import { useNavigate } from "react-router-dom";
+import AddTaskIcon from '@mui/icons-material/AddTask';
 /// styles
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -122,7 +123,7 @@ const Project = () => {
   const { search } = useLocation();
 
   /// local state
-  const [queryParams, setQueryParams] = useState("Started");
+  const [queryParams, setQueryParams] = useState("NotFullFilled");
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState({});
   const [openAddProject, setOpenAddProject] = useState(false);
@@ -297,14 +298,24 @@ const Project = () => {
       renderCell: (params) => {
         const id = params.row.projectId;
         const name = params.row.Name;
-
-        return (
+        const item = params.row.projectItem;
+      
+        return item?.length > 0 ? (
+          <AddTaskIcon
+          onClick={() => {
+            Navigate(`/CreateReq/${id}&${name}`);
+          }}
+          sx={{ "&:hover": { color: "red" }, cursor: "pointer" ,color:"green" } }
+          
+          />
+        ) : (
+       
           <Add
-            onClick={() => {
-          Navigate(`/CreateReq/${id}&${name}`)
-            }}
-            sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
-          ></Add>
+          onClick={() => {
+            Navigate(`/CreateReq/${id}&${name}`);
+          }}
+          sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
+        />
         );
       },
     },
@@ -359,7 +370,7 @@ const Project = () => {
         >
           <ToggleButton
             classes={{ selected: classes.selected }}
-            value="Started"
+            value="NotFullFilled"
           >
             Start Project
           </ToggleButton>

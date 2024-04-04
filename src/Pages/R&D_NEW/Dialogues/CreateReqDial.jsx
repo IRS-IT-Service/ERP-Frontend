@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
+
 import { setAddparts } from "../../../features/slice/R&DSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -59,6 +60,7 @@ const StyledCell = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 import { useAddProjectItemMutation } from "../../../features/api/RnDSlice";
+import { useNavigate } from "react-router-dom";
 const CreateReqDial = ({
   data,
   removeSelectedItems,
@@ -74,6 +76,7 @@ const CreateReqDial = ({
 }) => {
   /// initialize
   const socket = useSocket();
+  const navigate = useNavigate()
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
@@ -216,6 +219,7 @@ const CreateReqDial = ({
       setOldqty({})
       setPreorder()
       handleCloseDialog();
+      navigate("/Project")
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }
