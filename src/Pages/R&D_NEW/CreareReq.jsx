@@ -1,4 +1,4 @@
-import { React, useEffect, useState, useRef } from "react";
+import { React, useEffect, useState, useRef  } from "react";
 import {
   DataGrid,
   useGridApiRef,
@@ -24,6 +24,7 @@ import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import { useNavigate } from "react-router-dom";
 import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
 import CachedIcon from "@mui/icons-material/Cached";
+import { useParams } from "react-router-dom";
 import { useGetAllProductWithRandDQuery } from "../../features/api/productApiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -31,7 +32,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: "Create parts request",
+    name: "Add Parts",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
@@ -91,6 +92,63 @@ const Inventory = () => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const debouncing = useRef();
+  const { id } = useParams()
+
+const newValue = id.split("&")
+const idValue = newValue[0]
+const name = newValue[1]
+
+const dummyData = [
+  {
+    SKU: "SKU001",
+    Name: "Product 1",
+    Brand: "Brand A",
+    Category: "Category X",
+    GST: 18,
+    Newqty: 10,
+    Oldqty: 5
+  },
+  {
+    SKU: "SKU002",
+    Name: "Product 2",
+    Brand: "Brand B",
+    Category: "Category Y",
+    GST: 12,
+    Newqty: 5,
+    Oldqty: 0
+  },
+  {
+    SKU: "SKU003",
+    Name: "Product 3",
+    Brand: "Brand C",
+    Category: "Category Z",
+    GST: 5,
+    Newqty: 0,
+    Oldqty: 2
+  },
+  // Additional entries:
+  {
+    SKU: "SKU004",
+    Name: "Product 4",
+    Brand: "Brand D",
+    Category: "Category W",
+    GST: 10,
+    Newqty: 10,
+    Oldqty: 5
+  },
+  {
+    SKU: "SKU005",
+    Name: "Product 5",
+    Brand: "Brand E",
+    Category: "Category V",
+    GST: 8,
+    Quantity: 20,
+ 
+  },
+  // Add more entries as needed
+];
+  // Parse the query string
+
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
@@ -98,8 +156,10 @@ const Inventory = () => {
   };
 
   useEffect(() => {
-    dispatch(setHeader(`Create parts request`));
+    dispatch(setHeader(`Add Parts For ${name}`));
   }, []);
+
+
 
   /// global state
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
@@ -177,32 +237,45 @@ const Inventory = () => {
   const handleOpenDialog = () => {
     setOpen(true);
   };
+
+  
   /// useEffect
+  // useEffect(() => {
+  //   if (allProductData?.success) {
+  //     const data = allProductData?.data?.products?.map((item, index) => {
+  //       return {
+  //         id: item.SKU,
+  //         Sno: index + 1,
+  //         SKU: item.SKU,
+  //         Name: item.Name,
+  //         GST: item.GST,
+  //         MRP: item.MRP,
+  //         Quantity: item.Quantity,
+  //         RandDQuantity: item.RAndDQuantity,
+  //         Brand: item.Brand,
+  //         Category: item.Category,
+  //       };
+  //     });
+
+  //     dispatch(setAllProductsV2(allProductData.data));
+  //     setRows(data);
+
+  //     setRowPerPage(allProductData.data.limit);
+  //     setTotalProductCount(allProductData.data.totalProductCount);
+  //     setPage(allProductData.data.currentPage);
+  //   }
+  // }, [allProductData]);
   useEffect(() => {
-    if (allProductData?.success) {
-      const data = allProductData?.data?.products?.map((item, index) => {
-        return {
-          id: item.SKU,
-          Sno: index + 1,
-          SKU: item.SKU,
-          Name: item.Name,
-          GST: item.GST,
-          MRP: item.MRP,
-          Quantity: item.Quantity,
-          RandDQuantity: item.RAndDQuantity,
-          Brand: item.Brand,
-          Category: item.Category,
-        };
-      });
+    const data = dummyData.map((item, index) => {
+      return {
+        ...item,
+        id: item.SKU,
+        Sno: index + 1,
+      };
+    });
 
-      dispatch(setAllProductsV2(allProductData.data));
-      setRows(data);
-
-      setRowPerPage(allProductData.data.limit);
-      setTotalProductCount(allProductData.data.totalProductCount);
-      setPage(allProductData.data.currentPage);
-    }
-  }, [allProductData]);
+    setRows(data);
+  }, []);
 
   useEffect(() => {
     let newFilterString = "";
@@ -311,13 +384,26 @@ const Inventory = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "RandDQuantity",
-      headerName: "In R&D Stock",
+      field: "Newqty",
+      minWidth:150,
+      maxWidth:300,
+      headerName: "New Qty in R&D",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
+    {
+      field: "Oldqty",
+      minWidth:150,
+      maxWidth:300,
+      headerName: "Old Qty in R&D",
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+
   ];
 
   function CustomFooter(props) {
@@ -363,7 +449,7 @@ const Inventory = () => {
       <DrawerHeader />
       <FilterBarV2
         apiRef={apiRef}
-        customButton={selectedItems.length ? "Create Requirement" : ""}
+        customButton={selectedItems.length ? "Add Parts" : ""}
         customOnClick={handleOpenDialog}
       />
       <CreateReqDial
@@ -373,6 +459,8 @@ const Inventory = () => {
         open={open}
         setOpen={setOpen}
         dispatch={dispatch}
+        id= {idValue}
+        name ={name}
         removeSelectedCreateQuery={removeSelectedCreateQuery}
         removeSelectedSkuQuery={removeSelectedSkuQuery}
       />

@@ -24,7 +24,7 @@ import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
 import { setTheme } from "../../features/slice/uiSlice";
 import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
-import {useGetRequestCountQuery} from "../../features/api/barcodeApiSlice"
+import {useGetPendingRequestCountQuery} from "../../features/api/barcodeApiSlice"
 import { logout as dispatchLogout } from "../../features/slice/authSlice";
 import logo2 from "../../assets/IRSLOGOR.png";
 import { useLogoutMutation } from "../../features/api/usersApiSlice";
@@ -147,7 +147,7 @@ const ToggleNav = () => {
   const {
     data: unRequestcount,
     isLoading: isLoadingReq,
-  } = useGetRequestCountQuery(null, {
+  } = useGetPendingRequestCountQuery(null, {
     pollingInterval: 1000 * 300,
   });
 

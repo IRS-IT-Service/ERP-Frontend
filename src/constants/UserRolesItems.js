@@ -474,9 +474,9 @@ const userRolesData = [
     childrens: [
       {
         id: 54,
-        name: "Create parts req",
-        path: "/CreateReq",
-        icon:"fa-solid fa-cart-plus",
+        name: "Parts Approval",
+        path: "/PartsApproval",
+        icon:"fa-solid fa-person-circle-check",
      
         notification: true,
       },
