@@ -238,6 +238,7 @@ const userRolesData = [
       },
     ],
   },
+ 
   {
     title: "Sales",
     icon: "fas fa-chart-line",
@@ -247,6 +248,13 @@ const userRolesData = [
         name: "Create Sales Query",
         path: "/discountquery",
         icon: "fa-solid fa-tag",
+      },
+      {
+        id: 74,
+        name: "Pre Order",
+        path: "/PreOrder",
+        icon: "fa-solid fa-file-powerpoint",
+        notification: true,
       },
       {
         id: 23,
@@ -536,6 +544,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 73
+// last routes is 74
 
 export default userRolesData;

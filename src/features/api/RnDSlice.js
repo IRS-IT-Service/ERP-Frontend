@@ -36,7 +36,25 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: `${RnD_URL}/projectStatusUpdate`,
         method: "PUT",
-        body:data
+        body: data,
+      }),
+    }),
+    getSingleProject: builder.query({
+      query: (id) => ({
+        url: `${RnD_URL}/getSingleProject/${id}`,
+        method: "GET",
+      }),
+    }),
+    getAllPreOrder: builder.query({
+      query: (id) => ({
+        url: `${RnD_URL}/getAllPreOrder`,
+        method: "GET",
+      }),
+    }),
+    getPreOrderCount: builder.query({
+      query: (id) => ({
+        url: `${RnD_URL}/getPreOrderCount`,
+        method: "GET",
       }),
     }),
   }),
@@ -48,4 +66,8 @@ export const {
   useAddProjectItemMutation,
   useGetAllRDInventoryQuery,
   useChangeStatusMutation,
+  useGetSingleProjectQuery,
+  useGetAllPreOrderQuery,
+  useGetPreOrderCountQuery
 } = RnDApiSlice;
+ 

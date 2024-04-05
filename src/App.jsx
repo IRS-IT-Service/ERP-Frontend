@@ -123,6 +123,7 @@ import SetDiscountPrice from "./Pages/AllSellers/AllSellerComponent/SetDiscountP
 import Studentinfo from "./Pages/Other/Studentinfo";
 import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
 import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
+import PreOrder from "./Pages/DiscountQuery/PreOrder";
 
 function App() {
   /// initialize
@@ -713,6 +714,10 @@ function App() {
                       <Route
                   path="/PartsApproval"
                   element={<PartsApproval />}
+                />
+                         <Route
+                  path="/PreOrder"
+                  element={<PreOrder />}
                 />
 
                 {/* Marketing tools */}

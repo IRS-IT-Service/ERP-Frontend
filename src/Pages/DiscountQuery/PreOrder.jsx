@@ -4,31 +4,35 @@ import {
   useGridApiRef,
   GridToolbarContainer,
 } from "@mui/x-data-grid";
-// import Nodata from "../../../assets/empty-cart.png";
-// import FilterBar from "../../../components/Common/FilterBar";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import Nodata from "../../assets/error.gif";
 import {
   Grid,
   Box,
   TablePagination,
   Button,
   styled,
-  TextField,
+  Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import AddProductInventory from "./Dialogues/AddProductInventory";
+import DvrIcon from "@mui/icons-material/Dvr";
+import { useSendMessageMutation } from "../../features/api/whatsAppApiSlice";
+import { useSocket } from "../../CustomProvider/useWebSocket";
 import Loading from "../../components/Common/Loading";
-
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import { useGetAllRDInventoryQuery } from "../../features/api/RnDSlice";
-
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import { useGetAllPreOrderQuery } from "../../features/api/RnDSlice";
+import PreOrderDetailDial from "./Components/preOrderDetailDial";
+import { FlashlightOffRounded } from "@mui/icons-material";
+import { formatDate } from "../../commonFunctions/commonFunctions";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: "Create parts request",
+    name: "Pre Order",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
@@ -82,22 +86,25 @@ const infoDetail = [
   },
 ];
 
-const RnDInventory = () => {
+const PreOrder = () => {
   const description = `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`;
   /// initialize
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
-  const ref = useRef();
-const [open ,setOpen] = useState(false)
+  const debouncing = useRef();
+  const socket = useSocket();
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const [sendWhatsAppmessage] = useSendMessageMutation();
+  // Parse the query string
+
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
     dispatch(setInfo(false));
   };
-const handlecloseDial = () =>{
-  setOpen(false)
-}
+
   useEffect(() => {
-    dispatch(setHeader(`R&D inventory`));
+    dispatch(setHeader(`Pre Order`));
   }, []);
 
   /// global state
@@ -108,8 +115,14 @@ const handlecloseDial = () =>{
   );
   /// local state
 
-  const [showNoData, setShowNoData] = useState(false);
+  const [showData, setShowData] = useState([]);
   const [rows, setRows] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItemsData, setSelectedItemsData] = useState([]);
+  const [open, setOpen] = useState(false);
+
+
+
 
   /// rtk query
 
@@ -118,32 +131,37 @@ const handlecloseDial = () =>{
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllRDInventoryQuery();
-
-  const handleFilterChange = (field, operator, value) => {
-    apiRef.current.setFilterModel({
-      items: [{ field: field, operator: operator, value: value }],
-    });
-  };
+  } = useGetAllPreOrderQuery();
 
   /// handlers
+  const handleCloseDial = () => {
+    setOpen(FlashlightOffRounded);
+  };
+  
+const handleDetails = (details) =>{
+setOpen(true)
+setShowData(details)
+}
 
-  /// useEffect
+
   useEffect(() => {
-    if (allProductData?.status) {
-      const data = allProductData?.data?.map((item, index) => {
+    if (allProductData?.success) {
+      const data = allProductData?.allOrders?.map((item, index) => {
         return {
           ...item,
-          id: item.SKU,
+          id: item._id,
           Sno: index + 1,
-          LandingCost: item.LandingCost,
-        
+          ProjectId: item.id,
         };
       });
 
       setRows(data);
     }
   }, [allProductData]);
+
+  const handleSelectionChange = (selectionModel) => {
+    setSelectedItems(selectionModel);
+  };
 
   //Columns*******************
   const columns = [
@@ -158,87 +176,114 @@ const handlecloseDial = () =>{
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "SKU",
-      headerName: "SKU",
-
-      flex:0.1,
+      field: "ProjectId",
+      headerName: "Project Id",
       minWidth: 200,
       maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-    },
+    },    {
+        field: "createdAt",
+        headerName: "Pre-Order Date",
+        minWidth: 200,
+        maxWidth: 300,
+        align: "center",
+        headerAlign: "center",
+        headerClassName: "super-app-theme--header",
+        cellClassName: "super-app-theme--cell",
+        renderCell: (params) => {
+const date = params.row.createdAt
+
+       return (
+          <>
+            {formatDate(date)}
+          </>
+        );
+            
+                  
+          },
+      },
     {
       field: "Name",
-      headerName: "Product ",
-   flex:0.1,
-      minWidth: 500,
-      maxWidth: 600,
+      headerName: "Product Name",
+      flex: 0.1,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "LandingCost",
-      headerName: "Landing Cost ",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
+      field: "Details",
+      headerName: "Details",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `₹ ${params.value}`,
-    },
-    {
-      field: "Weight",
-      headerName: "Weight (gm)",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const paramsData = params.row
 
+    
+        return (
+          <Box
+            sx={{
+              color: "blue",
+              fontSize: "32px", 
+              cursor: "pointer",
+              "&:hover":{color:"green"} 
+            }}
+            onClick={() => handleDetails(paramsData)}
+          >
+          < DvrIcon />
+          </Box>
+        );
+      },
     },
 
     {
-      field: "Dimension",
-      headerName: "Dimension (cm)",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
+      field: "Accept",
+      headerName: "Accept",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-     
-
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              color: "green",
+              fontSize: "32px", // Adjust the size as needed
+              cursor: "pointer", // Show pointer cursor on hover
+            }}
+            onClick={() => handleApproveClick(params, true)}
+          >
+            <ThumbUpIcon />
+          </div>
+        );
+      },
     },
     {
-      field: "OldQty",
-      headerName: "Old Qty",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
+      field: "Reject",
+      headerName: "Reject",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-    },
-    {
-      field: "Newqty",
-      headerName: "New Qty",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              color: "red",
+              fontSize: "32px", // Adjust the size as needed
+              cursor: "pointer", // Show pointer cursor on hover
+            }}
+            onClick={() => setOpen(true)}
+          >
+            <ThumbDownIcon />
+          </div>
+        );
+      },
     },
   ];
 
@@ -248,56 +293,46 @@ const handlecloseDial = () =>{
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
+
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
         open={isInfoOpen}
         close={handleClose}
       />
-          {open && (
-        <AddProductInventory
-          open={open}
-          close={handlecloseDial}
-          refetch={refetch}
-        />
+     {open && <PreOrderDetailDial 
+      open={open}
+      setOpen={setOpen}
+      data={showData}
+      
+      /> }
+      {selectedItems.length ? (
+        <Button
+          onClick={() => {
+            handleBulkApprove(true);
+          }}
+        >
+          Accept All
+        </Button>
+      ) : (
+        ""
+      )}
+      {selectedItems.length ? (
+        <Button
+          onClick={() => {
+            handleBulkApprove(false);
+          }}
+        >
+          Reject All
+        </Button>
+      ) : (
+        ""
       )}
       <Grid container>
         {productLoading || isFetching ? (
           <Loading loading={true} />
         ) : (
           <Grid item xs={12} sx={{ mt: "5px" }}>
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-                marginLeft: "10px",
-                width: "60%",
-                paddingY: 1,
-              }}
-            >
-              <TextField
-                size="small"
-                placeholder="Search by Name"
-                sx={{ width: "40%" }}
-                onChange={(e) => {
-                  // setSkuFilter(e.target.value);
-                  // setCheckedBrands([]);
-                  // setCheckedCategory([]);
-                  handleFilterChange("Name", "contains", e.target.value);
-                }}
-              />
-              <TextField
-                size="small"
-                placeholder="Search by SKU"
-                onChange={(e) => {
-                  // setSkuFilter(e.target.value);
-                  // setCheckedBrands([]);
-                  // setCheckedCategory([]);
-                  handleFilterChange("SKU", "contains", e.target.value);
-                }}
-              />
-              <Button variant="contained" onClick={()=>setOpen(true)}>Add Product</Button>
-            </Box>
             <Box
               sx={{
                 width: "100%",
@@ -325,16 +360,47 @@ const handlecloseDial = () =>{
                 columns={columns}
                 rows={rows}
                 rowHeight={40}
-                apiRef={apiRef}
-                columnVisibilityModel={{
-                  Category: false,
-                }}
-                // checkboxSelection
+                checkboxSelection
                 disableRowSelectionOnClick
-                // onRowSelectionModelChange={handleSelectionChange}
-                // isRowSelectable={(params) => params.row.SalesPrice > 0}
-                // rowSelectionModel={selectedItems}
-                // keepNonExistentRowsSelected
+                onRowSelectionModelChange={handleSelectionChange}
+                rowSelectionModel={selectedItems}
+                components={{
+                  NoRowsOverlay: () => (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <img
+                          style={{
+                            width: "20%",
+                          }}
+                          src={Nodata}
+                        />
+
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "bold", fontSize: "1.5rem" }}
+                        >
+                          No data found !
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ),
+                }}
               />
             </Box>
           </Grid>
@@ -344,4 +410,4 @@ const handlecloseDial = () =>{
   );
 };
 
-export default RnDInventory;
+export default PreOrder;
