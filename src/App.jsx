@@ -122,6 +122,7 @@ import MessageTemplate from "./Pages/MessageTemplate/MessageTemplate";
 import SetDiscountPrice from "./Pages/AllSellers/AllSellerComponent/SetDiscountPrice";
 import Studentinfo from "./Pages/Other/Studentinfo";
 import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
+import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 
 function App() {
   /// initialize
@@ -694,7 +695,7 @@ function App() {
 
                 {/* R&D */}
                 <Route
-                  path="/CreateReq"
+                  path="/CreateReq/:id"
                   element={<CreateReq />}
                 />
                 <Route
@@ -708,6 +709,10 @@ function App() {
                     <Route
                   path="/ItemsAprroval"
                   element={<ItemsApproval />}
+                />
+                      <Route
+                  path="/PartsApproval"
+                  element={<PartsApproval />}
                 />
 
                 {/* Marketing tools */}

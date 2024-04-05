@@ -6,16 +6,21 @@ import {
 } from "@mui/x-data-grid";
 // import Nodata from "../../../assets/empty-cart.png";
 // import FilterBar from "../../../components/Common/FilterBar";
-import { Grid, Box, TablePagination, Button, styled ,TextField } from "@mui/material";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import {
+  Grid,
+  Box,
+  TablePagination,
+  Button,
+  styled,
+  TextField,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-
-
-
+import AddProductInventory from "./Dialogues/AddProductInventory";
 import Loading from "../../components/Common/Loading";
 
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import { useGetAllRDInventoryQuery } from "../../features/api/RnDSlice";
-
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -83,12 +88,14 @@ const RnDInventory = () => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const ref = useRef();
-
+const [open ,setOpen] = useState(false)
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
     dispatch(setInfo(false));
   };
-
+const handlecloseDial = () =>{
+  setOpen(false)
+}
   useEffect(() => {
     dispatch(setHeader(`R&D inventory`));
   }, []);
@@ -119,7 +126,6 @@ const RnDInventory = () => {
     });
   };
 
-
   /// handlers
 
   /// useEffect
@@ -127,14 +133,10 @@ const RnDInventory = () => {
     if (allProductData?.status) {
       const data = allProductData?.data?.map((item, index) => {
         return {
+          ...item,
           id: item.SKU,
           Sno: index + 1,
-          SKU: item.SKU,
-          Name: item.Name,
-          GST: item.GST,
-          MRP: item.MRP,
-          Brand: item.Brand,
-          RandDQty: item.Quantity,
+        
         };
       });
 
@@ -157,6 +159,8 @@ const RnDInventory = () => {
     {
       field: "SKU",
       headerName: "SKU",
+
+      flex:0.1,
       minWidth: 200,
       maxWidth: 300,
       align: "center",
@@ -167,33 +171,57 @@ const RnDInventory = () => {
     {
       field: "Name",
       headerName: "Product ",
-      flex: 0.1,
+   flex:0.1,
+      minWidth: 500,
+      maxWidth: 600,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Brand",
-      headerName: "Brand",
+      field: "Weight",
+      headerName: "Weight (gm)",
+      flex:0.1,
+      minWidth: 100,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+
     },
 
     {
-      field: "GST",
-      headerName: "GST",
+      field: "Dimension",
+      headerName: "Dimension (cm)",
+      flex:0.1,
+      minWidth: 100,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => ` ${(+params.value).toFixed(0)} %`,
+     
+
     },
     {
-      field: "RandDQty",
-      headerName: "In R&D Stock",
+      field: "OldQty",
+      headerName: "Old Qty",
+      flex:0.1,
+      minWidth: 100,
+      maxWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "Newqty",
+      headerName: "New Qty",
+      flex:0.1,
+      minWidth: 100,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -207,17 +235,37 @@ const RnDInventory = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
- 
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={isInfoOpen}
+        close={handleClose}
+      />
+          {open && (
+        <AddProductInventory
+          open={open}
+          close={handlecloseDial}
+          refetch={refetch}
+        />
+      )}
       <Grid container>
         {productLoading || isFetching ? (
           <Loading loading={true} />
         ) : (
           <Grid item xs={12} sx={{ mt: "5px" }}>
-                 <Box sx={{ display:"flex" , gap:2, marginLeft: "10px", width: "50%" ,paddingY :1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                marginLeft: "10px",
+                width: "60%",
+                paddingY: 1,
+              }}
+            >
               <TextField
                 size="small"
                 placeholder="Search by Name"
-                fullWidth
+                sx={{ width: "40%" }}
                 onChange={(e) => {
                   // setSkuFilter(e.target.value);
                   // setCheckedBrands([]);
@@ -225,10 +273,9 @@ const RnDInventory = () => {
                   handleFilterChange("Name", "contains", e.target.value);
                 }}
               />
-               <TextField
+              <TextField
                 size="small"
                 placeholder="Search by SKU"
-                fullWidth
                 onChange={(e) => {
                   // setSkuFilter(e.target.value);
                   // setCheckedBrands([]);
@@ -236,6 +283,7 @@ const RnDInventory = () => {
                   handleFilterChange("SKU", "contains", e.target.value);
                 }}
               />
+              <Button variant="contained" onClick={()=>setOpen(true)}>Add Product</Button>
             </Box>
             <Box
               sx={{

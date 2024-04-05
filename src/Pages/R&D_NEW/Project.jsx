@@ -41,7 +41,8 @@ import { Add } from "@mui/icons-material";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import EditUpdateDial from "./Dialogues/EditupdateDial";
 import StatusDial from "./Dialogues/StatusDial";
-
+import { useNavigate } from "react-router-dom";
+import AddTaskIcon from '@mui/icons-material/AddTask';
 /// styles
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -55,6 +56,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
+
+
   [`&.${tableCellClasses.head}`]: {
     background: "linear-gradient(0deg, #01127D, #04012F)",
     color: theme.palette.common.white,
@@ -105,7 +108,7 @@ const Project = () => {
   const description = `"In R&D, new projects and previous projects are developed. We add materials used in the projects and provide status updates indicating whether the project is complete or ongoing.`;
 
   const dispatch = useDispatch();
-
+  const Navigate = useNavigate()
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose1 = () => {
     dispatch(setInfo(false));
@@ -120,7 +123,7 @@ const Project = () => {
   const { search } = useLocation();
 
   /// local state
-  const [queryParams, setQueryParams] = useState("Started");
+  const [queryParams, setQueryParams] = useState("NotFullFilled");
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState({});
   const [openAddProject, setOpenAddProject] = useState(false);
@@ -293,16 +296,26 @@ const Project = () => {
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
-        const paramsData = params.row;
-
-        return (
+        const id = params.row.projectId;
+        const name = params.row.Name;
+        const item = params.row.projectItem;
+      
+        return item?.length > 0 ? (
+          <AddTaskIcon
+          onClick={() => {
+            Navigate(`/CreateReq/${id}&${name}`);
+          }}
+          sx={{ "&:hover": { color: "red" }, cursor: "pointer" ,color:"green" } }
+          
+          />
+        ) : (
+       
           <Add
-            onClick={() => {
-              setAddpartsDialopen(true);
-              setprojectDetails(paramsData);
-            }}
-            sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
-          ></Add>
+          onClick={() => {
+            Navigate(`/CreateReq/${id}&${name}`);
+          }}
+          sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
+        />
         );
       },
     },
@@ -357,7 +370,7 @@ const Project = () => {
         >
           <ToggleButton
             classes={{ selected: classes.selected }}
-            value="Started"
+            value="NotFullFilled"
           >
             Start Project
           </ToggleButton>
