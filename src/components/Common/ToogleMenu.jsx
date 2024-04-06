@@ -68,8 +68,13 @@ const ToogleMenu = ({ title, icon, childrens }) => {
     (state) => state.api.queries["getPendingRequestCount(null)"]?.data?.data
   );
 
-  const dataEmbeded ={...data , ...Requestcount}
- console.log(Requestcount)
+  const PreOrdercount =  useSelector(
+    (state) => state.api.queries["getPreOrderCount(null)"]?.data?.allOrders
+  );
+
+
+  const dataEmbeded ={...data , ...Requestcount ,...PreOrdercount}
+
   /// local state
   const [toggleSubmenu, setToggleSubmenu] = useState(false);
 

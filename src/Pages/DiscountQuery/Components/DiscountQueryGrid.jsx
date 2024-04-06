@@ -185,8 +185,8 @@ const DiscountQueryGrid = () => {
     {
       field: "Sno",
       headerName: "Sno",
-      minWidth: 30,
-      maxWidth: 40,
+      minWidth: 50,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",

@@ -42,6 +42,7 @@ const columns = [
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import { useCreateRandDInventryMutation } from "../../../features/api/barcodeApiSlice";
+
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#eee",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
@@ -59,7 +60,7 @@ const StyledCell = styled(TableCell)(({ theme }) => ({
   color: theme.palette.mode === "dark" ? "#fff" : "black",
   textAlign: "center",
 }));
-import { useAddProjectItemMutation } from "../../../features/api/RnDSlice";
+import { useAddProjectItemMutation ,useGetSingleProjectQuery } from "../../../features/api/RnDSlice";
 import { useNavigate } from "react-router-dom";
 const CreateReqDial = ({
   data,
@@ -73,6 +74,7 @@ const CreateReqDial = ({
   selectedItemsData,
   id,
   name,
+  refetch
 }) => {
   /// initialize
   const socket = useSocket();
@@ -93,6 +95,9 @@ const CreateReqDial = ({
   /// rtk query
 
   const [createQueryApi, { isLoading }] = useCreateRandDInventryMutation();
+
+
+
   const dispatch = useDispatch();
   // handlers
   const [
@@ -107,6 +112,7 @@ const CreateReqDial = ({
     newData = data.map((data) => {
       return {
         SKU: data.SKU,
+        Name:data.Name
       };
     });
     setRequireqty(newData);
@@ -218,6 +224,7 @@ const CreateReqDial = ({
       setNewqty({})
       setOldqty({})
       setPreorder()
+      refetch()
       handleCloseDialog();
       navigate("/Project")
     } catch (e) {
