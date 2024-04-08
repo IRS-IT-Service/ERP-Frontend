@@ -5,25 +5,29 @@ import {
   GridToolbarContainer,
 } from "@mui/x-data-grid";
 import Nodata from "../../assets/error.gif";
-import { Grid, Box, TablePagination, Button, styled ,Typography } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { setAllProductsV2 } from "../../features/slice/productSlice";
 import {
-  removeSelectedCreateQuery,
-  setSelectedCreateQuery,
-  setSelectedSkuQuery,
-  removeSelectedSkuQuery,
-} from "../../features/slice/selectedItemsSlice";
+  Grid,
+  Box,
+  TablePagination,
+  Button,
+  styled,
+  Typography,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 import { useSendMessageMutation } from "../../features/api/whatsAppApiSlice";
 import { useSocket } from "../../CustomProvider/useWebSocket";
 
 import Loading from "../../components/Common/Loading";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { toast } from "react-toastify";
 
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import { useGetAllProductWithRandDQuery } from "../../features/api/productApiSlice";
+import {
+  useAllDispatchRnDProductQuery,
+  useApproveRnDproductMutation,
+} from "../../features/api/RnDSlice";
+
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -105,24 +109,11 @@ const PartsApproval = () => {
     dispatch(setHeader(`Parts recieved approval`));
   }, []);
 
-  /// global state
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-    useSelector((state) => state.product);
-  const { createQueryItems, createQuerySku } = useSelector(
-    (state) => state.seletedItems
-  );
   /// local state
 
-  const [showNoData, setShowNoData] = useState(false);
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
-  const [open, setOpen] = useState(false);
-
-  const [filterString, setFilterString] = useState("page=1");
-  const [page, setPage] = useState(1);
-  const [rowPerPage, setRowPerPage] = useState(100);
-  const [totalProductCount, setTotalProductCount] = useState(0);
 
   /// rtk query
 
@@ -131,149 +122,63 @@ const PartsApproval = () => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductWithRandDQuery(filterString, {
+  } = useAllDispatchRnDProductQuery({
     pollingInterval: 1000 * 300,
   });
 
+  const [allAprovalSKU, { isLoading: aprrovalLoading }] =
+    useApproveRnDproductMutation();
+
   /// handlers
-  const handleApproveClick = async (params, bool) => {
+  const handleApproveClick = async (SKU) => {
     try {
-      setSkip(false);
       const data = {
-        SKU: params.row.SKU,
-        value: bool,
-      };
-  
-      const param = { query: query, body: { products: data } };
-      const res = await approveProductApi(param).unwrap();
-  
-      const liveStatusData = {
-        message: `${userInfo.name}   ${
-          bool ? "Approved" : "Rejected"
-        } ${query}  Update for ${params.row.Name}`,
-        time: new Date()
+        SKU: [SKU],
       };
 
-      const addProductHistory = {
-        userId: userInfo.adminId,
-        message: liveStatusData.message,
-        type: "approval",
-        by: "user",
-        reference: {
-          product: [liveStatusData.message],
-        },
-      };
-      const historyRes = await createUserHistoryApi(addProductHistory);
-      const datas = {
-        message: liveStatusData.message,
-        approvalName,
-      };
-
+      const res = await allAprovalSKU(data).unwrap();
+      toast.success("Accepted Items successfully");
+      setSelectedItems([]);
       refetch();
-      refetchUnApprovedCount().then(() => {
-        socket.emit("liveStatusServer", liveStatusData);
-      });
-      await sendWhatsAppmessage(datas).unwrap();
     } catch (error) {
-      console.error(`An error occurred ${query} Approval:`, error);
+      console.error(error);
     }
-    setSkip(true);
   };
 
   const handleBulkApprove = async (bool) => {
     try {
-      setSkip(false);
-      const products = selectedItems.map((item) => {
-        const findName = rows.find((data) => data.SKU === item);
-        return { SKU: item, value: bool, name: findName.Name };
-      });
+      const data = {
+        SKU: selectedItems,
+      };
 
-      const param = { query: query, body: { products: products } };
-      const res = await approveProductApi(param).unwrap();
-      const liveStatusData = {
-        message: `${userInfo.name}   ${
-          bool ? "Approved" : "Rejected"
-        } ${query}  Update for Products ${products
-          .map((item) => item.name)
-          .join(", ")}`,
-        time: new Date(),
-      };
-      const addProductHistory = {
-        userId: userInfo.adminId,
-        message: liveStatusData.message,
-        type: "approval",
-        by: "user",
-        reference: {
-          product: [liveStatusData.message],
-        },
-      };
-      const historyRes = await createUserHistoryApi(addProductHistory);
-
-      if (res.ecwidUpdateTrack.length) {
-        res.ecwidUpdateTrack.forEach((item) => {
-          toast.success(item, {
-            autoClose: 5000,
-          });
-        });
-      }
-      if (res.ecwidUpdateTrackFail.length) {
-        res.ecwidUpdateTrackFail.forEach((item) => {
-          toast.error(item, {
-            position: "top-right",
-            autoClose: 5000,
-          });
-        });
-      }
-      const datas = {
-        message: liveStatusData.message,
-        approvalName,
-      };
+      const res = await allAprovalSKU(data).unwrap();
+      toast.success(`Accepted Items ${selectedItems} successfully`);
+      setSelectedItems([]);
       refetch();
-      refetchUnApprovedCount().then(() => {
-        socket.emit("liveStatusServer", liveStatusData);
-      });
-      await sendWhatsAppmessage(datas).unwrap();
-
     } catch (error) {
       console.error(`An error occurred ${query} Approval:`, error);
     }
-    setSkip(true);
+
   };
-
-
 
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
-      const data = allProductData?.data?.products?.map((item, index) => {
+      const data = allProductData?.allOrders?.map((item, index) => {
         return {
+          ...item,
           id: item.SKU,
           Sno: index + 1,
-          SKU: item.SKU,
-          Name: item.Name,
-          GST: item.GST,
-          MRP: item.MRP,
-          Quantity: item.Quantity,
-          RandDQuantity: item.RAndDQuantity,
-          Brand: item.Brand,
-          Category: item.Category,
         };
       });
 
-      dispatch(setAllProductsV2(allProductData.data));
       setRows(data);
-
-      setRowPerPage(allProductData.data.limit);
-      setTotalProductCount(allProductData.data.totalProductCount);
-      setPage(allProductData.data.currentPage);
     }
   }, [allProductData]);
 
   const handleSelectionChange = (selectionModel) => {
     setSelectedItems(selectionModel);
   };
-
-  
 
   //Columns*******************
   const columns = [
@@ -335,8 +240,20 @@ const PartsApproval = () => {
       valueFormatter: (params) => ` ${(+params.value)?.toFixed(0)} %`,
     },
     {
-      field: "Quantity",
-      headerName: "Quantity",
+      field: "Sendqty",
+      minWidth: 200,
+      maxWidth: 300,
+      headerName: "Received Quantity",
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "Count",
+      minWidth: 200,
+      maxWidth: 300,
+      headerName: "Rest Quantity",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -357,31 +274,9 @@ const PartsApproval = () => {
               fontSize: "32px", // Adjust the size as needed
               cursor: "pointer", // Show pointer cursor on hover
             }}
-            onClick={() => handleApproveClick(params, true)}
+            onClick={() => handleApproveClick(params.row.SKU)}
           >
             <ThumbUpIcon />
-          </div>
-        );
-      },
-    },
-    {
-      field: "Reject",
-      headerName: "Reject",
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        return (
-          <div
-            style={{
-              color: "red",
-              fontSize: "32px", // Adjust the size as needed
-              cursor: "pointer", // Show pointer cursor on hover
-            }}
-            onClick={() => handleApproveClick(params, false)}
-          >
-            <ThumbDownIcon />
           </div>
         );
       },
@@ -401,7 +296,7 @@ const PartsApproval = () => {
         open={isInfoOpen}
         close={handleClose}
       />
-         {selectedItems.length ? (
+      {selectedItems.length ? (
         <Button
           onClick={() => {
             handleBulkApprove(true);
@@ -451,49 +346,52 @@ const PartsApproval = () => {
                 },
               }}
             >
-              <DataGrid columns={columns} rows={rows} rowHeight={40}
-                   checkboxSelection
-                   disableRowSelectionOnClick
-                   onRowSelectionModelChange={handleSelectionChange}
-                   rowSelectionModel={selectedItems}
-                 components={{
-                    NoRowsOverlay: () => (
+              <DataGrid
+                columns={columns}
+                rows={rows}
+                rowHeight={40}
+                checkboxSelection
+                disableRowSelectionOnClick
+                onRowSelectionModelChange={handleSelectionChange}
+                rowSelectionModel={selectedItems}
+                components={{
+                  NoRowsOverlay: () => (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                      }}
+                    >
                       <Box
                         sx={{
-                          width: "100%",
-                          height: "100%",
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
                           flexDirection: "column",
                         }}
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            flexDirection: "column",
+                        <img
+                          style={{
+                            width: "20%",
                           }}
+                          src={Nodata}
+                        />
+
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "bold", fontSize: "1.5rem" }}
                         >
-                          <img
-                            style={{
-                              width: "20%",
-                            }}
-                            src={Nodata}
-                          />
-  
-                          <Typography
-                            variant="body2"
-                            sx={{ fontWeight: "bold", fontSize: "1.5rem" }}
-                          >
-                            No data found !
-                          </Typography>
-                        </Box>
+                          No data found !
+                        </Typography>
                       </Box>
-                    ),
-                  }}
-               />
+                    </Box>
+                  ),
+                }}
+              />
             </Box>
           </Grid>
         )}

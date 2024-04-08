@@ -485,7 +485,6 @@ const userRolesData = [
         name: "Parts Approval",
         path: "/PartsApproval",
         icon:"fa-solid fa-person-circle-check",
-     
         notification: true,
       },
       {
