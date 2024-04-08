@@ -57,6 +57,13 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    fullFillPreOrder: builder.mutation({
+      query: (data) => ({
+        url: `${RnD_URL}/fullFillPreOrder`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -68,6 +75,7 @@ export const {
   useChangeStatusMutation,
   useGetSingleProjectQuery,
   useGetAllPreOrderQuery,
-  useGetPreOrderCountQuery
+  useGetPreOrderCountQuery,
+  useFullFillPreOrderMutation
 } = RnDApiSlice;
  

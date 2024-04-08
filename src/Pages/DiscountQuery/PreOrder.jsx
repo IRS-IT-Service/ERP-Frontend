@@ -22,10 +22,11 @@ import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import { useGetAllPreOrderQuery } from "../../features/api/RnDSlice";
+import { useGetAllPreOrderQuery ,useFullFillPreOrderMutation } from "../../features/api/RnDSlice";
 import PreOrderDetailDial from "./Components/preOrderDetailDial";
-import { FlashlightOffRounded } from "@mui/icons-material";
+import { FlashlightOffRounded, TaskOutlined } from "@mui/icons-material";
 import { formatDate } from "../../commonFunctions/commonFunctions";
+import { toast } from "react-toastify";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -108,21 +109,14 @@ const PreOrder = () => {
   }, []);
 
   /// global state
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-    useSelector((state) => state.product);
-  const { createQueryItems, createQuerySku } = useSelector(
-    (state) => state.seletedItems
-  );
+
+ 
   /// local state
 
-  const [showData, setShowData] = useState([]);
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedItemsData, setSelectedItemsData] = useState([]);
+  const [selectedSKU, setSelectedSKU] = useState([]);
   const [open, setOpen] = useState(false);
-
-
-
 
   /// rtk query
 
@@ -133,25 +127,69 @@ const PreOrder = () => {
     isFetching,
   } = useGetAllPreOrderQuery();
 
-  /// handlers
-  const handleCloseDial = () => {
-    setOpen(FlashlightOffRounded);
-  };
-  
-const handleDetails = (details) =>{
-setOpen(true)
-setShowData(details)
-}
+const [Acceptdata ,{isLoading:acceptLoading }] =useFullFillPreOrderMutation()
 
+  /// handlers
+
+  const handleApproval = async(params) =>{
+const data = params.row
+    try{
+
+      const info ={
+        items:[{
+          SKU:data.SKU,
+          id:data.Orderid,
+        }]
+      }
+      const res = await Acceptdata(info).unwrap()
+      toast.success("Accepted Items successfully")
+      setSelectedItems([])
+      setSelectedSKU([])
+      refetch()
+    }catch(e){
+      console.log("Error",e)
+          }
+  }
+
+  const handleApprovalBulk = async() =>{
+    try{
+if(!selectedSKU?.length > 0){
+  return
+}
+const info ={
+  items:selectedSKU
+}
+const res = await Acceptdata(info).unwrap()
+toast.success("Accepted Items successfully")
+setSelectedItems([])
+setSelectedSKU([])
+refetch()
+  
+    }catch(e){
+console.log("Error",e)
+    }
+  }
+
+  function checkCharacterMatch(string, char) {
+    if (string[0] === char[0] && string[1] === char[1]) {
+      return true;
+    }
+    return false;
+  }
 
   useEffect(() => {
     if (allProductData?.success) {
       const data = allProductData?.allOrders?.map((item, index) => {
+        const char = "PR";
         return {
           ...item,
-          id: item._id,
+          id: item.SKU,
           Sno: index + 1,
-          ProjectId: item.id,
+          Orderid: item.id,
+          createdAt: new Date(item.createdAt),
+          customerName: checkCharacterMatch(item.id, char)
+            ? "R&D"
+            : item.userName,
         };
       });
 
@@ -160,8 +198,21 @@ setShowData(details)
   }, [allProductData]);
 
   const handleSelectionChange = (selectionModel) => {
+    const newSelectedRowsData = rows.filter((item) =>
+    selectionModel.includes(item.id)
+  );
+
+ const finalValue = newSelectedRowsData.map((data)=>{
+    return {
+      SKU:data.SKU,
+      id:data.Orderid,
+    }
+  })
+  setSelectedSKU(finalValue)
     setSelectedItems(selectionModel);
   };
+
+
 
   //Columns*******************
   const columns = [
@@ -176,35 +227,51 @@ setShowData(details)
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "ProjectId",
-      headerName: "Project Id",
+      field: "createdAt",
+      headerName: "Pre-Order Date",
+      minWidth: 120,
+      maxWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const date = params.row.createdAt;
+
+        return <>{formatDate(date)}</>;
+      },
+    },
+    {
+      field: "SKU",
+      headerName: "SKU",
       minWidth: 200,
       maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-    },    {
-        field: "createdAt",
-        headerName: "Pre-Order Date",
-        minWidth: 200,
-        maxWidth: 300,
-        align: "center",
-        headerAlign: "center",
-        headerClassName: "super-app-theme--header",
-        cellClassName: "super-app-theme--cell",
-        renderCell: (params) => {
-const date = params.row.createdAt
+    },
+    {
+      field: "Orderid",
+      headerName: "Order Id",
+      minWidth: 200,
+      maxWidth: 300,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "customerName",
+      headerName: "Customer Name",
+      minWidth: 250,
+      maxWidth: 350,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
 
-       return (
-          <>
-            {formatDate(date)}
-          </>
-        );
-            
-                  
-          },
-      },
     {
       field: "Name",
       headerName: "Product Name",
@@ -215,30 +282,26 @@ const date = params.row.createdAt
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Details",
-      headerName: "Details",
+      field: "Quantity",
+      headerName: "Pre-Order QTY",
+      minWidth: 80,
+      maxWidth: 120,
+      flex: 0.1,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        const paramsData = params.row
-
-    
-        return (
-          <Box
-            sx={{
-              color: "blue",
-              fontSize: "32px", 
-              cursor: "pointer",
-              "&:hover":{color:"green"} 
-            }}
-            onClick={() => handleDetails(paramsData)}
-          >
-          < DvrIcon />
-          </Box>
-        );
-      },
+    },
+    {
+      field: "ActualQuantity",
+      headerName: "QTY in stock",
+      minWidth: 80,
+      maxWidth: 120,
+      flex: 0.1,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
 
     {
@@ -249,38 +312,20 @@ const date = params.row.createdAt
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        const AcutalQty = params.row.ActualQuantity;
+        const preOrderQTY = params.row.Quantity;
         return (
           <div
             style={{
-              color: "green",
+              color: `${AcutalQty > preOrderQTY ? "green" : "#eeee"}`,
               fontSize: "32px", // Adjust the size as needed
               cursor: "pointer", // Show pointer cursor on hover
             }}
-            onClick={() => handleApproveClick(params, true)}
+            onClick={() =>
+              AcutalQty > preOrderQTY && handleApproval(params)
+            }
           >
             <ThumbUpIcon />
-          </div>
-        );
-      },
-    },
-    {
-      field: "Reject",
-      headerName: "Reject",
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        return (
-          <div
-            style={{
-              color: "red",
-              fontSize: "32px", // Adjust the size as needed
-              cursor: "pointer", // Show pointer cursor on hover
-            }}
-            onClick={() => setOpen(true)}
-          >
-            <ThumbDownIcon />
           </div>
         );
       },
@@ -300,16 +345,13 @@ const date = params.row.createdAt
         open={isInfoOpen}
         close={handleClose}
       />
-     {open && <PreOrderDetailDial 
-      open={open}
-      setOpen={setOpen}
-      data={showData}
-      
-      /> }
+      {open && (
+        <PreOrderDetailDial open={open} setOpen={setOpen} data={showData} />
+      )}
       {selectedItems.length ? (
         <Button
           onClick={() => {
-            handleBulkApprove(true);
+            handleApprovalBulk();
           }}
         >
           Accept All
@@ -317,19 +359,9 @@ const date = params.row.createdAt
       ) : (
         ""
       )}
-      {selectedItems.length ? (
-        <Button
-          onClick={() => {
-            handleBulkApprove(false);
-          }}
-        >
-          Reject All
-        </Button>
-      ) : (
-        ""
-      )}
+    
       <Grid container>
-        {productLoading || isFetching ? (
+        {productLoading || isFetching || acceptLoading ? (
           <Loading loading={true} />
         ) : (
           <Grid item xs={12} sx={{ mt: "5px" }}>
@@ -361,6 +393,7 @@ const date = params.row.createdAt
                 rows={rows}
                 rowHeight={40}
                 checkboxSelection
+                isRowSelectable={(params) => (params.row.ActualQuantity > params.row.Quantity)}
                 disableRowSelectionOnClick
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
