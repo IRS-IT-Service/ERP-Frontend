@@ -190,7 +190,7 @@ const CreateReqDial = ({
 
               return {
                 ...doc,
-                Quantity: doc.Quantity,
+                Quantity: doc?.Quantity,
                 OldQty: +value > item.Newqty ? 0 : +value,
                 PreOrder: isPreorder || 0,
                 error: error,
@@ -204,7 +204,15 @@ const CreateReqDial = ({
 
     setRequireqty(result);
   };
-console.log(Requireqty)
+useEffect(()=>{
+return ()=>{
+  removeSelectedItems([]);
+  setNewqty({})
+  setOldqty({})
+  setPreorder()
+  setRequireqty([])
+}
+},[setOpen])
   // handling send query
   const handleSubmit = async () => {
     try {
@@ -234,7 +242,7 @@ console.log(Requireqty)
       console.log("error at Discount Query create ", e);
     }
   };
-
+console.log(Requireqty)
   return (
     <div>
       <Dialog open={open} maxWidth="xl" onClose={handleCloseDialog}>
@@ -328,6 +336,7 @@ console.log(Requireqty)
                       </StyleTable>
                       <StyleTable>
                         <TextField
+                             autocomplete={false}
                           size="small"
                           sx={{
                             "& input": {
@@ -345,6 +354,7 @@ console.log(Requireqty)
                       </StyleTable>
                       <StyleTable>
                         <TextField
+                        autocomplete={false}
                           size="small"
                           sx={{
                             "& input": {
