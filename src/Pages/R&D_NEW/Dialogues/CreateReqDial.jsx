@@ -145,7 +145,7 @@ const CreateReqDial = ({
     const result = Requireqty.map((doc) => {
       if (doc.SKU === item.SKU) {
         if (item.Quantity !== undefined) {
-          if (item.Quantity < value) {
+          if (item.Quantity < value ) {
             let preOrder = value - +item.Quantity;
             return {
               ...doc,
@@ -154,6 +154,7 @@ const CreateReqDial = ({
               PreOrder: preOrder,
             };
           } else if (item.Quantity >= value) {
+         
             return {
               ...doc,
               Quantity: +value,
@@ -163,6 +164,7 @@ const CreateReqDial = ({
           }
         } else if (item.Newqty !== undefined) {
           if (item.Newqty >= value && name === "reqQTY") {
+          
             return {
               ...doc,
               Quantity: +value,
@@ -170,6 +172,7 @@ const CreateReqDial = ({
               PreOrder: 0,
             };
           } else if (item.Newqty < value && name === "reqQTY") {
+            
             let preOrder = value - +item.Newqty;
             setPreorder(preOrder);
             return {
@@ -187,7 +190,7 @@ const CreateReqDial = ({
 
               return {
                 ...doc,
-                Quantity: item.Newqty,
+                Quantity: doc.Quantity,
                 OldQty: +value > item.Newqty ? 0 : +value,
                 PreOrder: isPreorder || 0,
                 error: error,
@@ -201,7 +204,7 @@ const CreateReqDial = ({
 
     setRequireqty(result);
   };
-
+console.log(Requireqty)
   // handling send query
   const handleSubmit = async () => {
     try {
