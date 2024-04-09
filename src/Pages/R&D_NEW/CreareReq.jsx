@@ -22,8 +22,10 @@ import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 import { useNavigate } from "react-router-dom";
+import {useGetSingleProjectQuery} from "../../features/api/RnDSlice"
 import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
 import CachedIcon from "@mui/icons-material/Cached";
+import { useParams } from "react-router-dom";
 import { useGetAllProductWithRandDQuery } from "../../features/api/productApiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -31,7 +33,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: "Create parts request",
+    name: "Add Parts",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
@@ -91,6 +93,24 @@ const Inventory = () => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const debouncing = useRef();
+  const { id } = useParams();
+const [SelectedSKU , setSelectedSKU] = useState()
+
+  const newValue = id.split("&");
+  const idValue = newValue[0];
+  const name = newValue[1];
+const {data:allData , isLoading:dataLoading} = useGetSingleProjectQuery (idValue)
+
+useEffect(() => {
+  let selectSKU = [];
+  if (allData?.success) {
+    selectSKU = allData.data.projectItem?.map((item) => item.SKU);
+  }
+
+  setSelectedSKU(selectSKU);
+}, [allData]);
+
+
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
@@ -98,7 +118,7 @@ const Inventory = () => {
   };
 
   useEffect(() => {
-    dispatch(setHeader(`Create parts request`));
+    dispatch(setHeader(`Add Parts For ${name}`));
   }, []);
 
   /// global state
@@ -127,9 +147,7 @@ const Inventory = () => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductWithRandDQuery(filterString, {
-    pollingInterval: 1000 * 300,
-  });
+  } = useGetAllProductWithRandDQuery(filterString);
 
   /// handlers
 
@@ -177,21 +195,20 @@ const Inventory = () => {
   const handleOpenDialog = () => {
     setOpen(true);
   };
+
+
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         return {
+          ...item,
           id: item.SKU,
-          Sno: index + 1,
-          SKU: item.SKU,
-          Name: item.Name,
-          GST: item.GST,
-          MRP: item.MRP,
-          Quantity: item.Quantity,
-          RandDQuantity: item.RAndDQuantity,
-          Brand: item.Brand,
-          Category: item.Category,
+          Sno:
+            index +
+            1 +
+            (allProductData.data.currentPage - 1) * allProductData.data.limit,
+          GST: item.GST || 0,
         };
       });
 
@@ -250,8 +267,8 @@ const Inventory = () => {
     {
       field: "Sno",
       headerName: "Sno",
-      minWidth: 30,
-      maxWidth: 40,
+      minWidth: 100,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -279,6 +296,8 @@ const Inventory = () => {
     {
       field: "Brand",
       headerName: "Brand",
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -311,8 +330,20 @@ const Inventory = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "RandDQuantity",
-      headerName: "In R&D Stock",
+      field: "Newqty",
+      minWidth: 150,
+      maxWidth: 300,
+      headerName: "New Qty in R&D",
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "Oldqty",
+      minWidth: 150,
+      maxWidth: 300,
+      headerName: "Old Qty in R&D",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -363,18 +394,23 @@ const Inventory = () => {
       <DrawerHeader />
       <FilterBarV2
         apiRef={apiRef}
-        customButton={selectedItems.length ? "Create Requirement" : ""}
+        customButton={selectedItems.length ? "Add Parts" : ""}
         customOnClick={handleOpenDialog}
       />
       <CreateReqDial
         data={realData}
         apiRef={apiRef}
-        removeSelectedItems={setSelectedItems}
+        removeSelectedItems={removeSelectedItems}
         open={open}
         setOpen={setOpen}
         dispatch={dispatch}
+        id={idValue}
+        name={name}
         removeSelectedCreateQuery={removeSelectedCreateQuery}
         removeSelectedSkuQuery={removeSelectedSkuQuery}
+        setSelectedItemsData={setSelectedItemsData}
+        selectedItemsData ={selectedItemsData}
+        refetch ={refetch}
       />
       <InfoDialogBox
         infoDetails={infoDetail}
@@ -420,8 +456,8 @@ const Inventory = () => {
                 }}
                 checkboxSelection
                 disableRowSelectionOnClick
+                isRowSelectable={(params) => !(SelectedSKU.includes(params.row.SKU))}
                 onRowSelectionModelChange={handleSelectionChange}
-                // isRowSelectable={(params) => params.row.SalesPrice > 0}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected
                 components={{

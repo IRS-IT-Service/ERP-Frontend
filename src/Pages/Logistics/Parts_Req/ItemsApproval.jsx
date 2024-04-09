@@ -504,28 +504,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           close={handleClose}
         />
 
-        {selectedItems.length ? (
-          <Button
-            onClick={() => {
-              handleBulkApprove(true);
-            }}
-          >
-            Accept All
-          </Button>
-        ) : (
-          ""
-        )}
-        {selectedItems.length ? (
-          <Button
-            onClick={() => {
-              handleBulkApprove(false);
-            }}
-          >
-            Reject All
-          </Button>
-        ) : (
-          ""
-        )}
+
         <Grid container>
           <Grid item xs={6} sx={{ mt: "5px" }}>
             <Box
@@ -706,8 +685,8 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    width: "11rem",
-                    height: "10rem",
+                    width: "9rem",
+                    height: "8rem",
                   }}
                 >
                   <img

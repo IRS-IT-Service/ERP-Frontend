@@ -21,8 +21,8 @@ const StatusDial = ({
   const [updateStatus, { isLoading, refetch:updateRefetch }] = useChangeStatusMutation();
   const [selectOptions, setSelectOptions] = useState([
     {
-      value: "Started",
-      label: "Started",
+      value: "FullFilled",
+      label: "FullFilled",
     },
     {
       value: "Processing",

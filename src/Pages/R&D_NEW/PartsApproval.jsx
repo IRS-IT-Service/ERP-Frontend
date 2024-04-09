@@ -4,25 +4,29 @@ import {
   useGridApiRef,
   GridToolbarContainer,
 } from "@mui/x-data-grid";
-// import Nodata from "../../../assets/empty-cart.png";
-// import FilterBar from "../../../components/Common/FilterBar";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import Nodata from "../../assets/error.gif";
 import {
   Grid,
   Box,
   TablePagination,
   Button,
   styled,
-  TextField,
+  Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import AddProductInventory from "./Dialogues/AddProductInventory";
-import Loading from "../../components/Common/Loading";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import EditProductDial from "./Dialogues/EditProductDial";
+import { useSendMessageMutation } from "../../features/api/whatsAppApiSlice";
+import { useSocket } from "../../CustomProvider/useWebSocket";
 
+import Loading from "../../components/Common/Loading";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import { useGetAllRDInventoryQuery } from "../../features/api/RnDSlice";
+import { toast } from "react-toastify";
+
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import {
+  useAllDispatchRnDProductQuery,
+  useApproveRnDproductMutation,
+} from "../../features/api/RnDSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -30,7 +34,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: "Create parts request",
+    name: "Add Parts",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
@@ -84,36 +88,32 @@ const infoDetail = [
   },
 ];
 
-const RnDInventory = () => {
+const PartsApproval = () => {
   const description = `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`;
   /// initialize
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
-  const ref = useRef();
-const [open ,setOpen] = useState(false)
+  const debouncing = useRef();
+  const socket = useSocket();
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const [sendWhatsAppmessage] = useSendMessageMutation();
+  // Parse the query string
+
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
     dispatch(setInfo(false));
   };
-const handlecloseDial = () =>{
-  setOpen(false)
-  setOpenedit(false)
-}
+
   useEffect(() => {
-    dispatch(setHeader(`R&D inventory`));
+    dispatch(setHeader(`Parts recieved approval`));
   }, []);
 
-  /// global state
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-    useSelector((state) => state.product);
-  const { createQueryItems, createQuerySku } = useSelector(
-    (state) => state.seletedItems
-  );
   /// local state
 
-  const [openEdit, setOpenedit] = useState(false);
-  const [editData, setEditdata] = useState([]);
   const [rows, setRows] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItemsData, setSelectedItemsData] = useState([]);
 
   /// rtk query
 
@@ -122,33 +122,63 @@ const handlecloseDial = () =>{
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllRDInventoryQuery();
+  } = useAllDispatchRnDProductQuery({
+    pollingInterval: 1000 * 300,
+  });
 
-  const handleFilterChange = (field, operator, value) => {
-    apiRef.current.setFilterModel({
-      items: [{ field: field, operator: operator, value: value }],
-    });
-  };
+  const [allAprovalSKU, { isLoading: aprrovalLoading }] =
+    useApproveRnDproductMutation();
 
   /// handlers
+  const handleApproveClick = async (SKU) => {
+    try {
+      const data = {
+        SKU: [SKU],
+      };
+
+      const res = await allAprovalSKU(data).unwrap();
+      toast.success("Accepted Items successfully");
+      setSelectedItems([]);
+      refetch();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleBulkApprove = async (bool) => {
+    try {
+      const data = {
+        SKU: selectedItems,
+      };
+
+      const res = await allAprovalSKU(data).unwrap();
+      toast.success(`Accepted Items ${selectedItems} successfully`);
+      setSelectedItems([]);
+      refetch();
+    } catch (error) {
+      console.error(`An error occurred ${query} Approval:`, error);
+    }
+
+  };
 
   /// useEffect
   useEffect(() => {
-    if (allProductData?.status) {
-      const data = allProductData?.data?.map((item, index) => {
+    if (allProductData?.success) {
+      const data = allProductData?.allOrders?.map((item, index) => {
         return {
           ...item,
           id: item.SKU,
           Sno: index + 1,
-          LandingCost: item.LandingCost,
-          
-        
         };
       });
 
       setRows(data);
     }
   }, [allProductData]);
+
+  const handleSelectionChange = (selectionModel) => {
+    setSelectedItems(selectionModel);
+  };
 
   //Columns*******************
   const columns = [
@@ -165,8 +195,6 @@ const handlecloseDial = () =>{
     {
       field: "SKU",
       headerName: "SKU",
-
-      flex:0.1,
       minWidth: 200,
       maxWidth: 300,
       align: "center",
@@ -177,94 +205,79 @@ const handlecloseDial = () =>{
     {
       field: "Name",
       headerName: "Product ",
-   flex:0.1,
-      minWidth: 500,
-      maxWidth: 600,
+      flex: 0.1,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "LandingCost",
-      headerName: "Landing Cost ",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
+      field: "Brand",
+      headerName: "Brand",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `₹ ${params.value}`,
     },
     {
-      field: "Weight",
-      headerName: "Weight (gm)",
-      flex:0.1,
-      minWidth: 100,
+      field: "Category",
+      headerName: "Category",
+      minWidth: 180,
       maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-
     },
 
     {
-      field: "Dimension",
-      headerName: "Dimension (cm)",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
+      field: "GST",
+      headerName: "GST",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-     
-
+      valueFormatter: (params) => ` ${(+params.value)?.toFixed(0)} %`,
     },
     {
-      field: "OldQty",
-      headerName: "Old Qty",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
+      field: "Sendqty",
+      minWidth: 200,
+      maxWidth: 300,
+      headerName: "Received Quantity",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Newqty",
-      headerName: "New Qty",
-      flex:0.1,
-      minWidth: 100,
-      maxWidth: 200,
+      field: "Count",
+      minWidth: 200,
+      maxWidth: 300,
+      headerName: "Rest Quantity",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Edit",
-      flex: 0.3,
-      headerName: "Update & Edit Items",
-      minWidth: 150,
-      maxWidth: 250,
+      field: "Accept",
+      headerName: "Accept",
+      align: "center",
+      headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      headerAlign: "center",
-      align: "center",
       renderCell: (params) => {
-        const paramsData = params.row;
         return (
-          <ModeEditIcon
-            sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
-            onClick={() => {
-              setOpenedit(true);
-              setEditdata(paramsData);
+          <div
+            style={{
+              color: "green",
+              fontSize: "32px", // Adjust the size as needed
+              cursor: "pointer", // Show pointer cursor on hover
             }}
-          />
+            onClick={() => handleApproveClick(params.row.SKU)}
+          >
+            <ThumbUpIcon />
+          </div>
         );
       },
     },
@@ -276,64 +289,40 @@ const handlecloseDial = () =>{
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
+
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
         open={isInfoOpen}
         close={handleClose}
       />
-          {open && (
-        <AddProductInventory
-          open={open}
-          close={handlecloseDial}
-          refetch={refetch}
-        />
+      {selectedItems.length ? (
+        <Button
+          onClick={() => {
+            handleBulkApprove(true);
+          }}
+        >
+          Accept All
+        </Button>
+      ) : (
+        ""
       )}
-             {openEdit && (
-        <EditProductDial
-        data={editData}
-          open={openEdit}
-          close={handlecloseDial}
-          refetch={refetch}
-        />
+      {selectedItems.length ? (
+        <Button
+          onClick={() => {
+            handleBulkApprove(false);
+          }}
+        >
+          Reject All
+        </Button>
+      ) : (
+        ""
       )}
       <Grid container>
         {productLoading || isFetching ? (
           <Loading loading={true} />
         ) : (
           <Grid item xs={12} sx={{ mt: "5px" }}>
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-                marginLeft: "10px",
-                width: "60%",
-                paddingY: 1,
-              }}
-            >
-              <TextField
-                size="small"
-                placeholder="Search by Name"
-                sx={{ width: "40%" }}
-                onChange={(e) => {
-                  // setSkuFilter(e.target.value);
-                  // setCheckedBrands([]);
-                  // setCheckedCategory([]);
-                  handleFilterChange("Name", "contains", e.target.value);
-                }}
-              />
-              <TextField
-                size="small"
-                placeholder="Search by SKU"
-                onChange={(e) => {
-                  // setSkuFilter(e.target.value);
-                  // setCheckedBrands([]);
-                  // setCheckedCategory([]);
-                  handleFilterChange("SKU", "contains", e.target.value);
-                }}
-              />
-              <Button variant="contained" onClick={()=>setOpen(true)}>Add Product</Button>
-            </Box>
             <Box
               sx={{
                 width: "100%",
@@ -361,16 +350,47 @@ const handlecloseDial = () =>{
                 columns={columns}
                 rows={rows}
                 rowHeight={40}
-                apiRef={apiRef}
-                columnVisibilityModel={{
-                  Category: false,
-                }}
-                // checkboxSelection
+                checkboxSelection
                 disableRowSelectionOnClick
-                // onRowSelectionModelChange={handleSelectionChange}
-                // isRowSelectable={(params) => params.row.SalesPrice > 0}
-                // rowSelectionModel={selectedItems}
-                // keepNonExistentRowsSelected
+                onRowSelectionModelChange={handleSelectionChange}
+                rowSelectionModel={selectedItems}
+                components={{
+                  NoRowsOverlay: () => (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <img
+                          style={{
+                            width: "20%",
+                          }}
+                          src={Nodata}
+                        />
+
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "bold", fontSize: "1.5rem" }}
+                        >
+                          No data found !
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ),
+                }}
               />
             </Box>
           </Grid>
@@ -380,4 +400,4 @@ const handlecloseDial = () =>{
   );
 };
 
-export default RnDInventory;
+export default PartsApproval;

@@ -24,7 +24,7 @@ import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
 import { setTheme } from "../../features/slice/uiSlice";
 import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
-import {useGetRequestCountQuery} from "../../features/api/barcodeApiSlice"
+import {useGetPendingRequestCountQuery} from "../../features/api/barcodeApiSlice"
 import { logout as dispatchLogout } from "../../features/slice/authSlice";
 import logo2 from "../../assets/IRSLOGOR.png";
 import { useLogoutMutation } from "../../features/api/usersApiSlice";
@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import themeColors from "../../constants/ThemeColor";
 import Header from "./Header";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import {useGetPreOrderCountQuery ,useAllDispatchAprovalCountQuery} from "../../features/api/RnDSlice"
 
 const drawerWidth = 220;
 
@@ -147,7 +148,21 @@ const ToggleNav = () => {
   const {
     data: unRequestcount,
     isLoading: isLoadingReq,
-  } = useGetRequestCountQuery(null, {
+  } = useGetPendingRequestCountQuery(null, {
+    pollingInterval: 1000 * 300,
+  });
+
+  const {
+    data: preOrdercount,
+    isLoading: isLoadingPreOrder,
+  } = useGetPreOrderCountQuery(null, {
+    pollingInterval: 1000 * 300,
+  });
+
+  const {
+    data: RnDaprrvalcount,
+    isLoading: isLoadingApproval,
+  } = useAllDispatchAprovalCountQuery(null, {
     pollingInterval: 1000 * 300,
   });
 
