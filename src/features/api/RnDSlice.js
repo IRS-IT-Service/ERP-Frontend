@@ -21,7 +21,7 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
     }),
     addProjectItem: builder.mutation({
       query: (data) => ({
-        url: `r-and-d/addProjectItem/${data.id}`,
+        url: `r-and-d/addProductInProject/${data.id}`,
         method: "POST",
         body: data,
       }),
@@ -36,7 +36,60 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: `${RnD_URL}/projectStatusUpdate`,
         method: "PUT",
-        body:data
+        body: data,
+      }),
+    }),
+    getSingleProject: builder.query({
+      query: (id) => ({
+        url: `${RnD_URL}/getSingleProject/${id}`,
+        method: "GET",
+      }),
+    }),
+    getAllPreOrder: builder.query({
+      query: (id) => ({
+        url: `${RnD_URL}/getAllPreOrder`,
+        method: "GET",
+      }),
+    }),
+    getPreOrderCount: builder.query({
+      query: (id) => ({
+        url: `${RnD_URL}/getPreOrderCount`,
+        method: "GET",
+      }),
+    }),
+    fullFillPreOrder: builder.mutation({
+      query: (data) => ({
+        url: `${RnD_URL}/fullFillPreOrder`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    allDispatchRnDProduct: builder.query({
+      query: (data) => ({
+        url: `${RnD_URL}/allDispatchRnDProduct`,
+        method: "Get",
+      
+      }),
+    }),
+    allDispatchAprovalCount: builder.query({
+      query: (data) => ({
+        url: `${RnD_URL}/allDispatchAprovalCount`,
+        method: "Get",
+       
+      }),
+    }),
+    ApproveRnDproduct: builder.mutation({
+      query: (data) => ({
+        url: `${RnD_URL}/ApproveRnDproduct`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    updateProject: builder.mutation({
+      query: (data) => ({
+        url: `${RnD_URL}/updateProject/${data.id}`,
+        method: "POST",
+        body: data,
       }),
     }),
   }),
@@ -48,4 +101,13 @@ export const {
   useAddProjectItemMutation,
   useGetAllRDInventoryQuery,
   useChangeStatusMutation,
+  useGetSingleProjectQuery,
+  useGetAllPreOrderQuery,
+  useGetPreOrderCountQuery,
+  useFullFillPreOrderMutation,
+  useAllDispatchRnDProductQuery,
+  useAllDispatchAprovalCountQuery,
+  useApproveRnDproductMutation,
+  useUpdateProjectMutation
 } = RnDApiSlice;
+ 

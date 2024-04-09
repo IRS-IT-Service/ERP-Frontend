@@ -105,13 +105,16 @@ const DiscountQueryGrid = () => {
   const handleOpenDialog = () => {
     setOpen(true);
   };
+ 
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         return {
           id: item.SKU,
-          Sno: index + 1,
+          Sno: index +
+          1 +
+          (allProductData.data.currentPage - 1) * allProductData.data.limit,
           SKU: item.SKU,
           Name: item.Name,
           GST: item.GST,
@@ -182,8 +185,8 @@ const DiscountQueryGrid = () => {
     {
       field: "Sno",
       headerName: "Sno",
-      minWidth: 30,
-      maxWidth: 40,
+      minWidth: 50,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",

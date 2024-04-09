@@ -41,6 +41,8 @@ const Verify = () => {
       >
         {/* <LandingComponent /> */}
         <LandingPage />
+        {/* <img  src="https://drive.google.com/thumbnail?id=115ktIpjSl4fBe0jR5mvlhK6OAjDf5etG&sz=w50" alt="Image from Google Drive" /> */}
+
       </Box>
     </Box>
   );
