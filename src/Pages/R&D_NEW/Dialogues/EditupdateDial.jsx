@@ -30,6 +30,7 @@ const columns = [
   { field: "SKU", headerName: "SKU" },
   { field: "Name", headerName: "Name" },
   { field: "InStock", headerName: "In Use" },
+  { field: "OldQty", headerName: "Old Qty" },
   { field: "Status", headerName: "Status" },
   { field: "Action", headerName: "Action" },
 ];

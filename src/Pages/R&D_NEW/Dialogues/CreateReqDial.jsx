@@ -242,7 +242,7 @@ return ()=>{
       console.log("error at Discount Query create ", e);
     }
   };
-console.log(Requireqty)
+
   return (
     <div>
       <Dialog open={open} maxWidth="xl" onClose={handleCloseDialog}>
