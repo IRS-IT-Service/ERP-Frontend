@@ -18,6 +18,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import AddProductInventory from "./Dialogues/AddProductInventory";
 import Loading from "../../components/Common/Loading";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import EditProductDial from "./Dialogues/EditProductDial";
 
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import { useGetAllRDInventoryQuery } from "../../features/api/RnDSlice";
@@ -95,6 +97,7 @@ const [open ,setOpen] = useState(false)
   };
 const handlecloseDial = () =>{
   setOpen(false)
+  setOpenedit(false)
 }
   useEffect(() => {
     dispatch(setHeader(`R&D inventory`));
@@ -108,7 +111,8 @@ const handlecloseDial = () =>{
   );
   /// local state
 
-  const [showNoData, setShowNoData] = useState(false);
+  const [openEdit, setOpenedit] = useState(false);
+  const [editData, setEditdata] = useState([]);
   const [rows, setRows] = useState([]);
 
   /// rtk query
@@ -136,6 +140,8 @@ const handlecloseDial = () =>{
           ...item,
           id: item.SKU,
           Sno: index + 1,
+          LandingCost: item.LandingCost,
+          
         
         };
       });
@@ -178,6 +184,18 @@ const handlecloseDial = () =>{
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "LandingCost",
+      headerName: "Landing Cost ",
+      flex:0.1,
+      minWidth: 100,
+      maxWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `₹ ${params.value}`,
     },
     {
       field: "Weight",
@@ -227,6 +245,29 @@ const handlecloseDial = () =>{
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
+    {
+      field: "Edit",
+      flex: 0.3,
+      headerName: "Update & Edit Items",
+      minWidth: 150,
+      maxWidth: 250,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const paramsData = params.row;
+        return (
+          <ModeEditIcon
+            sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
+            onClick={() => {
+              setOpenedit(true);
+              setEditdata(paramsData);
+            }}
+          />
+        );
+      },
+    },
   ];
 
   return (
@@ -244,6 +285,14 @@ const handlecloseDial = () =>{
           {open && (
         <AddProductInventory
           open={open}
+          close={handlecloseDial}
+          refetch={refetch}
+        />
+      )}
+             {openEdit && (
+        <EditProductDial
+        data={editData}
+          open={openEdit}
           close={handlecloseDial}
           refetch={refetch}
         />

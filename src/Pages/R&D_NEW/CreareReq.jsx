@@ -22,6 +22,7 @@ import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 import { useNavigate } from "react-router-dom";
+import {useGetSingleProjectQuery} from "../../features/api/RnDSlice"
 import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useParams } from "react-router-dom";
@@ -93,12 +94,23 @@ const Inventory = () => {
   const dispatch = useDispatch();
   const debouncing = useRef();
   const { id } = useParams();
+const [SelectedSKU , setSelectedSKU] = useState()
 
   const newValue = id.split("&");
   const idValue = newValue[0];
   const name = newValue[1];
+const {data:allData , isLoading:dataLoading} = useGetSingleProjectQuery (idValue)
 
-  // Parse the query string
+useEffect(() => {
+  let selectSKU = [];
+  if (allData?.success) {
+    selectSKU = allData.data.projectItem?.map((item) => item.SKU);
+  }
+
+  setSelectedSKU(selectSKU);
+}, [allData]);
+
+
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
@@ -255,8 +267,8 @@ const Inventory = () => {
     {
       field: "Sno",
       headerName: "Sno",
-      minWidth: 30,
-      maxWidth: 40,
+      minWidth: 100,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -284,6 +296,8 @@ const Inventory = () => {
     {
       field: "Brand",
       headerName: "Brand",
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -396,6 +410,7 @@ const Inventory = () => {
         removeSelectedSkuQuery={removeSelectedSkuQuery}
         setSelectedItemsData={setSelectedItemsData}
         selectedItemsData ={selectedItemsData}
+        refetch ={refetch}
       />
       <InfoDialogBox
         infoDetails={infoDetail}
@@ -441,6 +456,7 @@ const Inventory = () => {
                 }}
                 checkboxSelection
                 disableRowSelectionOnClick
+                isRowSelectable={(params) => !(SelectedSKU.includes(params.row.SKU))}
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected

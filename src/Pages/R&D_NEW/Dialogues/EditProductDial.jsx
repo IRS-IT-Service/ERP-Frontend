@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -15,47 +15,31 @@ import {
   Grid,
 } from "@mui/material";
 
-import { useAddProductInRnDInventoryMutation } from "../../../features/api/barcodeApiSlice";
+import { useUpdateSingleProductMutation } from "../../../features/api/barcodeApiSlice";
 import { toast } from "react-toastify";
 
-const AddProductInventory = ({ open, close, refetch }) => {
-  const [addProduct, { isLoading, refetch: addRefetch }] =
-    useAddProductInRnDInventoryMutation();
+const EditProductDial = ({ open, close, data, refetch }) => {
+  const [Editproduct, { isLoading, refetch: addRefetch }] =
+  useUpdateSingleProductMutation();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    weight: "",
-    newQuantity: "",
-    oldQuantity: "",
-    length: "",
-    width: "",
-    height: "",
-   LandingCost:"",
-  });
+  const [formData, setFormData] = useState({});
 
   const handleSubmit = async () => {
     try {
       const info = {
-        name: formData.name,
-        weight: Number(formData.weight),
-        newQuantity: Number(formData.newQuantity),
-        oldQuantity: Number(formData.oldQuantity),
-        LandingCost:Number(formData.LandingCost),
-        dimension: `${formData.length}X${formData.width}X${formData.height}`,
-      };
+        id:data.SKU,
+        Name: formData.Name,
+        Weight: formData.Weight,
+        Newqty: formData.Newqty,
+        OldQty: formData.OldQty,
+        Weight: formData.Weight,
+        LandingCost: formData.LandingCost,
+        Dimension: `${formData.length}X${formData.width}X${formData.height}`,
+    };
 
-      const res = await addProduct(info).unwrap();
+      const res = await Editproduct(info).unwrap();
       toast.success(`Product Added successfully`);
-      setFormData({
-        name: "",
-        weight: "",
-        newQuantity: "",
-        oldQuantity: "",
-        length: "",
-        width: "",
-        height: "",
-        LandingCost:"",
-      });
+      setFormData();
       close();
       refetch();
     } catch (e) {
@@ -63,11 +47,42 @@ const AddProductInventory = ({ open, close, refetch }) => {
     }
   };
 
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        Name: data.Name,
+        Weight: data.Weight,
+        Newqty: data.Newqty,
+        OldQty: data.OldQty,
+        Weight: data.Weight,
+        LandingCost: data.LandingCost,
+        length: data.Dimension.split("X")[0],
+        width: data.Dimension.split("X")[1],
+        height: data.Dimension.split("X")[2],
+      });
+    }
+  }, [data]);
+
+
   const handleChange = (event) => {
     const { name, value } = event.target;
+
+    let parsedValue;
+
+    if (
+      name === "Name" ||
+      name === "length" ||
+      name === "width" ||
+      name === "height"
+    ) {
+      parsedValue = value;
+    } else if (!isNaN(value)) {
+      parsedValue = parseInt(value);
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: parsedValue,
     }));
   };
 
@@ -91,7 +106,7 @@ const AddProductInventory = ({ open, close, refetch }) => {
             flexDirection: "column",
             gap: "1rem",
             marginTop: "1rem",
-          
+
             padding: "2rem",
           }}
         >
@@ -108,8 +123,8 @@ const AddProductInventory = ({ open, close, refetch }) => {
             <TextField
               size="small"
               fullWidth
-              name="name"
-              value={formData.name}
+              name="Name"
+              value={formData?.Name}
               onChange={handleChange}
             />
           </Box>
@@ -127,7 +142,6 @@ const AddProductInventory = ({ open, close, refetch }) => {
                   alignSelf: "center",
                   fontWeight: "bold",
                   width: "18%",
-                 
                 }}
               >
                 Weight<sup>gm</sup>
@@ -135,9 +149,9 @@ const AddProductInventory = ({ open, close, refetch }) => {
 
               <TextField
                 size="small"
-                name="weight"
+                name="Weight"
                 type="number"
-                value={formData.weight}
+                value={formData.Weight}
                 onChange={handleChange}
               />
               <Box display="flex" gap="0.5rem">
@@ -153,10 +167,10 @@ const AddProductInventory = ({ open, close, refetch }) => {
 
                 <TextField
                   size="small"
-                 placeholder="₹ Landing Cost"
-                 type="number"
+                  placeholder="₹ Landing Cost"
+                  type="number"
                   name="LandingCost"
-                  value={formData.Price}
+                  value={formData.LandingCost}
                   onChange={handleChange}
                 />
               </Box>
@@ -222,9 +236,9 @@ const AddProductInventory = ({ open, close, refetch }) => {
               <TextField
                 size="small"
                 placeholder="QTY"
-                name="newQuantity"
-                type="number"
-                value={formData.newQuantity}
+                name="Newqty"
+                type="Number"
+                value={formData.Newqty}
                 onChange={handleChange}
                 sx={{ width: "80px" }}
               />
@@ -242,9 +256,9 @@ const AddProductInventory = ({ open, close, refetch }) => {
               <TextField
                 size="small"
                 placeholder="QTY"
-                name="oldQuantity"
+                name="OldQty"
                 type="number"
-                value={formData.oldQuantity}
+                value={formData.OldQty}
                 onChange={handleChange}
                 sx={{ width: "80px" }}
               />
@@ -268,4 +282,4 @@ const AddProductInventory = ({ open, close, refetch }) => {
   );
 };
 
-export default AddProductInventory;
+export default EditProductDial;

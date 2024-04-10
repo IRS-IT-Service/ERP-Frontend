@@ -42,6 +42,7 @@ const columns = [
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import { useCreateRandDInventryMutation } from "../../../features/api/barcodeApiSlice";
+
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#eee",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
@@ -59,7 +60,7 @@ const StyledCell = styled(TableCell)(({ theme }) => ({
   color: theme.palette.mode === "dark" ? "#fff" : "black",
   textAlign: "center",
 }));
-import { useAddProjectItemMutation } from "../../../features/api/RnDSlice";
+import { useAddProjectItemMutation ,useGetSingleProjectQuery } from "../../../features/api/RnDSlice";
 import { useNavigate } from "react-router-dom";
 const CreateReqDial = ({
   data,
@@ -73,6 +74,7 @@ const CreateReqDial = ({
   selectedItemsData,
   id,
   name,
+  refetch
 }) => {
   /// initialize
   const socket = useSocket();
@@ -93,6 +95,9 @@ const CreateReqDial = ({
   /// rtk query
 
   const [createQueryApi, { isLoading }] = useCreateRandDInventryMutation();
+
+
+
   const dispatch = useDispatch();
   // handlers
   const [
@@ -107,6 +112,7 @@ const CreateReqDial = ({
     newData = data.map((data) => {
       return {
         SKU: data.SKU,
+        Name:data.Name
       };
     });
     setRequireqty(newData);
@@ -139,7 +145,7 @@ const CreateReqDial = ({
     const result = Requireqty.map((doc) => {
       if (doc.SKU === item.SKU) {
         if (item.Quantity !== undefined) {
-          if (item.Quantity < value) {
+          if (item.Quantity < value ) {
             let preOrder = value - +item.Quantity;
             return {
               ...doc,
@@ -148,6 +154,7 @@ const CreateReqDial = ({
               PreOrder: preOrder,
             };
           } else if (item.Quantity >= value) {
+         
             return {
               ...doc,
               Quantity: +value,
@@ -157,6 +164,7 @@ const CreateReqDial = ({
           }
         } else if (item.Newqty !== undefined) {
           if (item.Newqty >= value && name === "reqQTY") {
+          
             return {
               ...doc,
               Quantity: +value,
@@ -164,6 +172,7 @@ const CreateReqDial = ({
               PreOrder: 0,
             };
           } else if (item.Newqty < value && name === "reqQTY") {
+            
             let preOrder = value - +item.Newqty;
             setPreorder(preOrder);
             return {
@@ -181,7 +190,7 @@ const CreateReqDial = ({
 
               return {
                 ...doc,
-                Quantity: item.Newqty,
+                Quantity: doc?.Quantity,
                 OldQty: +value > item.Newqty ? 0 : +value,
                 PreOrder: isPreorder || 0,
                 error: error,
@@ -195,7 +204,15 @@ const CreateReqDial = ({
 
     setRequireqty(result);
   };
-
+useEffect(()=>{
+return ()=>{
+  removeSelectedItems([]);
+  setNewqty({})
+  setOldqty({})
+  setPreorder()
+  setRequireqty([])
+}
+},[setOpen])
   // handling send query
   const handleSubmit = async () => {
     try {
@@ -218,6 +235,7 @@ const CreateReqDial = ({
       setNewqty({})
       setOldqty({})
       setPreorder()
+      refetch()
       handleCloseDialog();
       navigate("/Project")
     } catch (e) {
@@ -318,6 +336,7 @@ const CreateReqDial = ({
                       </StyleTable>
                       <StyleTable>
                         <TextField
+                             autocomplete={false}
                           size="small"
                           sx={{
                             "& input": {
@@ -335,6 +354,7 @@ const CreateReqDial = ({
                       </StyleTable>
                       <StyleTable>
                         <TextField
+                        autocomplete={false}
                           size="small"
                           sx={{
                             "& input": {

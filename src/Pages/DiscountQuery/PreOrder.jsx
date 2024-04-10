@@ -14,27 +14,25 @@ import {
   Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import DvrIcon from "@mui/icons-material/Dvr";
 import { useSendMessageMutation } from "../../features/api/whatsAppApiSlice";
 import { useSocket } from "../../CustomProvider/useWebSocket";
-
 import Loading from "../../components/Common/Loading";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import { toast } from "react-toastify";
-
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import {
-  useAllDispatchRnDProductQuery,
-  useApproveRnDproductMutation,
-} from "../../features/api/RnDSlice";
-
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import { useGetAllPreOrderQuery ,useFullFillPreOrderMutation } from "../../features/api/RnDSlice";
+import { FlashlightOffRounded, TaskOutlined } from "@mui/icons-material";
+import { formatDate } from "../../commonFunctions/commonFunctions";
+import { toast } from "react-toastify";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: "Add Parts",
+    name: "Pre Order",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
@@ -88,7 +86,7 @@ const infoDetail = [
   },
 ];
 
-const PartsApproval = () => {
+const PreOrder = () => {
   const description = `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`;
   /// initialize
   const apiRef = useGridApiRef();
@@ -106,14 +104,18 @@ const PartsApproval = () => {
   };
 
   useEffect(() => {
-    dispatch(setHeader(`Parts recieved approval`));
+    dispatch(setHeader(`Pre Order`));
   }, []);
 
+  /// global state
+
+ 
   /// local state
 
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedItemsData, setSelectedItemsData] = useState([]);
+  const [selectedSKU, setSelectedSKU] = useState([]);
+  const [open, setOpen] = useState(false);
 
   /// rtk query
 
@@ -122,53 +124,71 @@ const PartsApproval = () => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useAllDispatchRnDProductQuery({
-    pollingInterval: 1000 * 300,
-  });
+  } = useGetAllPreOrderQuery();
 
-  const [allAprovalSKU, { isLoading: aprrovalLoading }] =
-    useApproveRnDproductMutation();
+const [Acceptdata ,{isLoading:acceptLoading }] =useFullFillPreOrderMutation()
 
   /// handlers
-  const handleApproveClick = async (SKU) => {
-    try {
-      const data = {
-        SKU: [SKU],
-      };
 
-      const res = await allAprovalSKU(data).unwrap();
-      toast.success("Accepted Items successfully");
-      setSelectedItems([]);
-      refetch();
-    } catch (error) {
-      console.error(error);
+  const handleApproval = async(params) =>{
+const data = params.row
+    try{
+
+      const info ={
+        items:[{
+          SKU:data.SKU,
+          id:data.Orderid,
+        }]
+      }
+      const res = await Acceptdata(info).unwrap()
+      toast.success("Accepted Items successfully")
+      setSelectedItems([])
+      setSelectedSKU([])
+      refetch()
+    }catch(e){
+      console.log("Error",e)
+          }
+  }
+
+  const handleApprovalBulk = async() =>{
+    try{
+if(!selectedSKU?.length > 0){
+  return
+}
+const info ={
+  items:selectedSKU
+}
+const res = await Acceptdata(info).unwrap()
+toast.success("Accepted Items successfully")
+setSelectedItems([])
+setSelectedSKU([])
+refetch()
+  
+    }catch(e){
+console.log("Error",e)
     }
-  };
+  }
 
-  const handleBulkApprove = async (bool) => {
-    try {
-      const data = {
-        SKU: selectedItems,
-      };
-
-      const res = await allAprovalSKU(data).unwrap();
-      toast.success(`Accepted Items ${selectedItems} successfully`);
-      setSelectedItems([]);
-      refetch();
-    } catch (error) {
-      console.error(`An error occurred ${query} Approval:`, error);
+  function checkCharacterMatch(string, char) {
+    if (string[0] === char[0] && string[1] === char[1]) {
+      return true;
     }
+    return false;
+  }
 
-  };
-
-  /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
       const data = allProductData?.allOrders?.map((item, index) => {
+        const char = "PR";
         return {
           ...item,
           id: item.SKU,
           Sno: index + 1,
+          Orderid: item.id,
+          createdAt: new Date(item.createdAt),
+          customerName: checkCharacterMatch(item.id, char)
+            ? "R&D"
+            : item.userName,
         };
       });
 
@@ -177,8 +197,21 @@ const PartsApproval = () => {
   }, [allProductData]);
 
   const handleSelectionChange = (selectionModel) => {
+    const newSelectedRowsData = rows.filter((item) =>
+    selectionModel.includes(item.id)
+  );
+
+ const finalValue = newSelectedRowsData.map((data)=>{
+    return {
+      SKU:data.SKU,
+      id:data.Orderid,
+    }
+  })
+  setSelectedSKU(finalValue)
     setSelectedItems(selectionModel);
   };
+
+
 
   //Columns*******************
   const columns = [
@@ -193,6 +226,21 @@ const PartsApproval = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
+      field: "createdAt",
+      headerName: "Pre-Order Date",
+      minWidth: 120,
+      maxWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const date = params.row.createdAt;
+
+        return <>{formatDate(date)}</>;
+      },
+    },
+    {
       field: "SKU",
       headerName: "SKU",
       minWidth: 200,
@@ -203,27 +251,20 @@ const PartsApproval = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Name",
-      headerName: "Product ",
-      flex: 0.1,
+      field: "Orderid",
+      headerName: "Order Id",
+      minWidth: 200,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Brand",
-      headerName: "Brand",
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
-    {
-      field: "Category",
-      headerName: "Category",
-      minWidth: 180,
-      maxWidth: 200,
+      field: "customerName",
+      headerName: "Customer Name",
+      minWidth: 250,
+      maxWidth: 350,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -231,34 +272,37 @@ const PartsApproval = () => {
     },
 
     {
-      field: "GST",
-      headerName: "GST",
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => ` ${(+params.value)?.toFixed(0)} %`,
-    },
-    {
-      field: "Sendqty",
-      minWidth: 200,
-      maxWidth: 300,
-      headerName: "Received Quantity",
+      field: "Name",
+      headerName: "Product Name",
+      flex: 0.1,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Count",
-      minWidth: 200,
-      maxWidth: 300,
-      headerName: "Rest Quantity",
+      field: "Quantity",
+      headerName: "Pre-Order QTY",
+      minWidth: 80,
+      maxWidth: 120,
+      flex: 0.1,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
+    {
+      field: "ActualQuantity",
+      headerName: "QTY in stock",
+      minWidth: 80,
+      maxWidth: 120,
+      flex: 0.1,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+
     {
       field: "Accept",
       headerName: "Accept",
@@ -267,14 +311,18 @@ const PartsApproval = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        const AcutalQty = params.row.ActualQuantity;
+        const preOrderQTY = params.row.Quantity;
         return (
           <div
             style={{
-              color: "green",
+              color: `${AcutalQty > preOrderQTY ? "green" : "#eeee"}`,
               fontSize: "32px", // Adjust the size as needed
               cursor: "pointer", // Show pointer cursor on hover
             }}
-            onClick={() => handleApproveClick(params.row.SKU)}
+            onClick={() =>
+              AcutalQty > preOrderQTY && handleApproval(params)
+            }
           >
             <ThumbUpIcon />
           </div>
@@ -296,10 +344,11 @@ const PartsApproval = () => {
         open={isInfoOpen}
         close={handleClose}
       />
+  
       {selectedItems.length ? (
         <Button
           onClick={() => {
-            handleBulkApprove(true);
+            handleApprovalBulk();
           }}
         >
           Accept All
@@ -307,19 +356,9 @@ const PartsApproval = () => {
       ) : (
         ""
       )}
-      {selectedItems.length ? (
-        <Button
-          onClick={() => {
-            handleBulkApprove(false);
-          }}
-        >
-          Reject All
-        </Button>
-      ) : (
-        ""
-      )}
+    
       <Grid container>
-        {productLoading || isFetching ? (
+        {productLoading || isFetching || acceptLoading ? (
           <Loading loading={true} />
         ) : (
           <Grid item xs={12} sx={{ mt: "5px" }}>
@@ -351,6 +390,7 @@ const PartsApproval = () => {
                 rows={rows}
                 rowHeight={40}
                 checkboxSelection
+                isRowSelectable={(params) => (params.row.ActualQuantity > params.row.Quantity)}
                 disableRowSelectionOnClick
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
@@ -400,4 +440,4 @@ const PartsApproval = () => {
   );
 };
 
-export default PartsApproval;
+export default PreOrder;
