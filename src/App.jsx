@@ -703,10 +703,7 @@ function App() {
                   path="/Project"
                   element={<Project />}
                 />
-                   <Route
-                  path="/RnDInventory"
-                  element={<RnDInventory />}
-                />
+              
                     <Route
                   path="/ItemsAprroval"
                   element={<ItemsApproval />}
