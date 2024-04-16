@@ -64,6 +64,42 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    allDispatchRnDProduct: builder.query({
+      query: (data) => ({
+        url: `${RnD_URL}/allDispatchRnDProduct`,
+        method: "Get",
+      
+      }),
+    }),
+    allDispatchAprovalCount: builder.query({
+      query: (data) => ({
+        url: `${RnD_URL}/allDispatchAprovalCount`,
+        method: "Get",
+       
+      }),
+    }),
+    ApproveRnDproduct: builder.mutation({
+      query: (data) => ({
+        url: `${RnD_URL}/ApproveRnDproduct`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    updateProject: builder.mutation({
+      query: (data) => ({
+        url: `${RnD_URL}/updateProject/${data.id}`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    addImage: builder.mutation({
+      query: (data) => ({
+       
+        url: `${RnD_URL}/addImage/${data.id}`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -76,6 +112,11 @@ export const {
   useGetSingleProjectQuery,
   useGetAllPreOrderQuery,
   useGetPreOrderCountQuery,
-  useFullFillPreOrderMutation
+  useFullFillPreOrderMutation,
+  useAllDispatchRnDProductQuery,
+  useAllDispatchAprovalCountQuery,
+  useApproveRnDproductMutation,
+  useUpdateProjectMutation,
+  useAddImageMutation
 } = RnDApiSlice;
  

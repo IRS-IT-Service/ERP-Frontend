@@ -263,12 +263,18 @@ const Project = () => {
       align: "center",
       renderCell: (params) => {
         const id = params.row.projectId;
+      
         const color =
-          params.row.status === "Started"
+          params.row.status === "NotFullFilled"
+            ? "red"
+            : params.row.status === "FullFilled" 
             ? "green"
             : params.row.status === "Processing"
             ? "orange"
-            : "red";
+            : "blue";
+
+            
+          
         return (
           <div
             style={{
@@ -368,11 +374,18 @@ const Project = () => {
           onChange={handleChange}
           aria-label="Platform"
         >
+        
           <ToggleButton
             classes={{ selected: classes.selected }}
             value="NotFullFilled"
           >
             Start Project
+          </ToggleButton>
+          <ToggleButton
+            classes={{ selected: classes.selected }}
+            value="FullFilled"
+          >
+            FullFilled
           </ToggleButton>
           <ToggleButton
             classes={{ selected: classes.selected }}

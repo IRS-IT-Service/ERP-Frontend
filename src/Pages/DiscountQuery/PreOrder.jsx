@@ -23,7 +23,6 @@ import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { useGetAllPreOrderQuery ,useFullFillPreOrderMutation } from "../../features/api/RnDSlice";
-import PreOrderDetailDial from "./Components/preOrderDetailDial";
 import { FlashlightOffRounded, TaskOutlined } from "@mui/icons-material";
 import { formatDate } from "../../commonFunctions/commonFunctions";
 import { toast } from "react-toastify";
@@ -345,9 +344,7 @@ console.log("Error",e)
         open={isInfoOpen}
         close={handleClose}
       />
-      {open && (
-        <PreOrderDetailDial open={open} setOpen={setOpen} data={showData} />
-      )}
+  
       {selectedItems.length ? (
         <Button
           onClick={() => {

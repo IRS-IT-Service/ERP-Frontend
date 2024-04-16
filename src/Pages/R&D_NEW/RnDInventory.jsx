@@ -18,9 +18,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import AddProductInventory from "./Dialogues/AddProductInventory";
 import Loading from "../../components/Common/Loading";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import EditProductDial from "./Dialogues/EditProductDial";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import { useGetAllRDInventoryQuery } from "../../features/api/RnDSlice";
+import ImageUploadDial from "./Dialogues/ImageUploadDial";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -95,6 +99,8 @@ const [open ,setOpen] = useState(false)
   };
 const handlecloseDial = () =>{
   setOpen(false)
+  setOpenedit(false)
+  setOpenimageupload(false)
 }
   useEffect(() => {
     dispatch(setHeader(`R&D inventory`));
@@ -108,7 +114,9 @@ const handlecloseDial = () =>{
   );
   /// local state
 
-  const [showNoData, setShowNoData] = useState(false);
+  const [openEdit, setOpenedit] = useState(false);
+  const [openImageupload, setOpenimageupload] = useState(false);
+  const [editData, setEditdata] = useState([]);
   const [rows, setRows] = useState([]);
 
   /// rtk query
@@ -126,6 +134,11 @@ const handlecloseDial = () =>{
     });
   };
 
+  const handleOpenImage = (params) =>{
+    setOpenimageupload(true)
+    setEditdata(params.row)
+  }
+
   /// handlers
 
   /// useEffect
@@ -137,6 +150,7 @@ const handlecloseDial = () =>{
           id: item.SKU,
           Sno: index + 1,
           LandingCost: item.LandingCost,
+          
         
         };
       });
@@ -240,6 +254,49 @@ const handlecloseDial = () =>{
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
+    {
+      field: "Edit",
+      flex: 0.3,
+      headerName: "Update & Edit Items",
+      minWidth: 150,
+      maxWidth: 250,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const paramsData = params.row;
+        return (
+          <ModeEditIcon
+            sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
+            onClick={() => {
+              setOpenedit(true);
+              setEditdata(paramsData);
+            }}
+          />
+        );
+      },
+    },
+    {
+      field: "uploadImg",
+      headerName: "Upload",
+      minWidth: 50,
+      maxWidth: 100,
+       align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => (
+        <Box>
+       
+          <AddPhotoAlternateIcon sx={{
+            color: "grey",
+            cursor: "pointer",
+            "&:hover": { color: "red" },
+          }} onClick={()=>handleOpenImage(params)}/>
+        </Box>
+      ),
+    },
   ];
 
   return (
@@ -261,6 +318,24 @@ const handlecloseDial = () =>{
           refetch={refetch}
         />
       )}
+
+      {(
+        openImageupload && <ImageUploadDial
+        open ={openImageupload}
+        close={handlecloseDial}
+        data = {editData}
+        
+        />
+      )}
+             {openEdit && (
+        <EditProductDial
+        data={editData}
+          open={openEdit}
+          close={handlecloseDial}
+          refetch={refetch}
+        />
+      )}
+    
       <Grid container>
         {productLoading || isFetching ? (
           <Loading loading={true} />

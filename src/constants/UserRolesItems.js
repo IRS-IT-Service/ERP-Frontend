@@ -238,7 +238,7 @@ const userRolesData = [
       },
     ],
   },
- 
+
   {
     title: "Sales",
     icon: "fas fa-chart-line",
@@ -484,8 +484,7 @@ const userRolesData = [
         id: 54,
         name: "Parts Approval",
         path: "/PartsApproval",
-        icon:"fa-solid fa-person-circle-check",
-     
+        icon: "fa-solid fa-person-circle-check",
         notification: true,
       },
       {
@@ -498,11 +497,10 @@ const userRolesData = [
       {
         id: 72,
         name: "R&D Inventory",
-        path: "/RnDInventory",
+        path: "/CreateReq/R&D",
         icon: "fa-solid fa-warehouse",
         notification: true,
       },
-   
     ],
   },
   {
@@ -523,7 +521,6 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
-
     ],
   },
 
@@ -538,8 +535,6 @@ const userRolesData = [
         icon: "fa-solid fa-circle-info",
         notification: true,
       },
-  
-
     ],
   },
 ];

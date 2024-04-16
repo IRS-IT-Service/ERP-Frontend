@@ -31,18 +31,14 @@ const columns = [
   { field: "Name", headerName: "Name" },
   { field: "Brand", headerName: "Brand" },
   { field: "GST", headerName: "GST (%)" },
-  { field: "InStock", headerName: "In Store" },
-  { field: "R&DStock", headerName: "New Parts" },
-  { field: "Old", headerName: "Old Parts" },
-  { field: "Require QTY", headerName: "Require QTY" },
-  { field: "UseOld", headerName: "Use Old Parts" },
-  { field: "RequireQTYToStore", headerName: "Order to Store" },
-  { field: "Pre Order QTY", headerName: "Pre Order QTY" },
+  { field: "InStock", headerName: "Store Qty" },
+  { field: "NewQty", headerName: "R&D Qty" },
+  { field: "OldQty", headerName: "Old Qty" },
 
   { field: "Delete", headerName: "Remove" },
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
-import { useCreateRandDInventryMutation } from "../../../features/api/barcodeApiSlice";
+import { useQuantityUpdateRnDMutation } from "../../../features/api/productApiSlice";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#eee",
@@ -66,8 +62,7 @@ import {
   useGetSingleProjectQuery,
 } from "../../../features/api/RnDSlice";
 import { useNavigate } from "react-router-dom";
-import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
-const CreateReqDial = ({
+const AddRnDQtyDial = ({
   data,
   removeSelectedItems,
   open,
@@ -77,9 +72,13 @@ const CreateReqDial = ({
   removeSelectedSkuQuery,
   setSelectedItemsData,
   selectedItemsData,
+  selectedItems,
   id,
   name,
+  setSelectedItems,
   refetch,
+  updateValue ,
+  setUpdateValue
 }) => {
   /// initialize
   const socket = useSocket();
@@ -91,40 +90,69 @@ const CreateReqDial = ({
 
   /// local state
 
-  const [Requireqty, setRequireqty] = useState([]);
-  const [preOrder, setPreorder] = useState(null);
-  const [Newqty, setNewqty] = useState({});
-  const [Oldqty, setOldqty] = useState({});
-  const [FinalPreorder, setFinalPreorder] = useState({});
+  const [NewQty, setNewQty] = useState({});
+  const [OldQty, setOldQty] = useState({});
+  
 
   /// rtk query
 
-  const [createQueryApi, { isLoading }] = useCreateRandDInventryMutation();
+  const [updateQty, { isLoading }] = useQuantityUpdateRnDMutation();
+
+  useEffect(() => {
+    if (open) {
+      return;
+    }
+    return () => {
+      setSelectedItems([]);
+      setSelectedItemsData([]);
+    };
+  }, []);
 
   const dispatch = useDispatch();
   // handlers
-  const [
-    addProjectItems,
-    { isLoading: addProjectLoading, refetch: addRefetch },
-  ] = useAddProjectItemMutation();
-  const handleCloseDialog = () => {
-    setOpen(false);
-  };
+  // const [
+  //   addProjectItems,
+  //   { isLoading: addProjectLoading, refetch: addRefetch },
+  // ] = useAddProjectItemMutation();
+  // const handleCloseDialog = () => {
+  //   setOpen(false);
+  // };
+
   useEffect(() => {
     let newData = [];
-    newData = data.map((data) => {
+    newData = data?.map((data) => {
+  
       return {
         SKU: data.SKU,
-        Name: data.Name,
+        NewQty: data.NewQty,
+        OldQty: data.OldQty,
       };
+      
     });
-    setRequireqty(newData);
-  }, [setOpen, open]);
+    setUpdateValue(newData);
+  }, [setOpen,open]);
+
+  // useEffect (()=>{
+  // for(const products of data){
+  //   setNewQty({
+  //     SKU: products.SKU,
+  //     NewQty: products.NewQty,
+ 
+  //   });
+  //   setOldQty({
+  //     SKU: products.SKU,
+  //     OldQty: products.OldQty,
+ 
+  //   });
+  // }
+
+  // },[data])
+
+ 
 
   useEffect(() => {
-    dispatch(setAddparts(Requireqty));
-  }, [setNewqty, Newqty, setOldqty, Oldqty]);
-
+    dispatch(setAddparts(updateValue));
+  }, [setSelectedItems, selectedItems]);
   //Reset value after delete elements
   useEffect(() => {
     const matchingArray = [];
@@ -136,151 +164,64 @@ const CreateReqDial = ({
     });
 
     if (matchingArray.length > 0) {
-      setRequireqty(matchingArray);
+      setUpdateValue(matchingArray);
     }
-  }, [selectedItemsData, setSelectedItemsData]);
+  }, [setUpdateValue]);
+
+  console.log(updateValue);
 
   const handleQuantityChange = (event, item) => {
     const { value, name } = event.target;
-    if (name === "reqQTY") {
-      setNewqty({ ...Newqty, [item.SKU]: value });
-    }
 
-    const result = Requireqty.map((doc) => {
-      if (doc.SKU === item.SKU) {
-        if (
-          item.NewQty >= item.Quantity &&
-          item.NewQty >= +value &&
-          name === "reqQTY"
-
-        ) {
-          console.log("1");
-          return {
-            ...doc,
-            Quantity: 0,
-            NewQty: +value,
-            PreOrder: 0,
-          };
-        } else if (
-          item.NewQty < item.Quantity &&
-          item.NewQty < +value &&
-          item.Quantity !== +value &&
-          name === "reqQTY"
-        ) {
-          console.log("2");
-          let OrderToLowest =
-            +value - item.NewQty === item.NewQty
-              ? +value - item.NewQty
-              : item.Quantity;
-          let OrderToStore = +value - item.NewQty;
-          let CheckforPreOrder =
-            item.Quantity < OrderToStore ? OrderToStore - item.Quantity : 0;
-          setPreorder(CheckforPreOrder);
-
-          return {
-            ...doc,
-            Quantity: OrderToLowest,
-            NewQty: item.NewQty,
-            PreOrder: CheckforPreOrder,
-          };
-        } else if (item.Quantity === +value && name === "reqQTY") {
-          console.log("6");
-          let OrderToStore = +value - item.NewQty;
-          let CheckforPreOrder =
-            item.Quantity < OrderToStore ? OrderToStore - item.Quantity : 0;
-          setPreorder(CheckforPreOrder);
-
-          return {
-            ...doc,
-            Quantity: OrderToStore,
-            NewQty: item.NewQty,
-            PreOrder: CheckforPreOrder,
-          };
-        } else if (item.NewQty >= +value && name === "reqQTY") {
-          let OrderToStore = value ? +value - item.NewQty : 0;
-          console.log("3");
-          return {
-            ...doc,
-            Quantity: OrderToStore,
-            NewQty: +value,
-            OldQty: 0,
-            PreOrder: 0,
-          };
-        } else if (item.NewQty < +value && name === "reqQTY") {
-          console.log("4");
-          let preOrder = +value - item.NewQty;
-
-          return {
-            ...doc,
-            Quantity: item.NewQty,
-            OldQty: doc.OldQty,
-            PreOrder: preOrder,
-          };
-        } else if (name === "Oldparts") {
-          console.log("5");
-  
-          setOldqty({ ...Oldqty, [item.SKU]: value });
-          let error = +value > item.OldQty ? +value : 0;
-          if (item.OldQty > 0) {
-            let NewQuantity =
-              item.Quantity >= +value ? item.Quantity - +value : 0;
-            let remainValue = +value - item.Quantity;
-
-            let isPreorder =
-              preOrder >= +value && doc.Quantity - item.Quantity === 0
-                ? preOrder - remainValue
-                : preOrder;
-
+    setUpdateValue((prev) => {
+      return prev.map((data) => {
+        if (data.SKU === item.SKU) {
+          if (name === "NewQty") {
+            setNewQty((prevOldQty) => ({
+              ...prevOldQty,
+              [item.SKU]: +value,
+            }));
             return {
-              ...doc,
-              Quantity: NewQuantity,
+              ...data,
+              NewQty: +value,
+            };
+          } else {
+            setOldQty((prevOldQty) => ({
+              ...prevOldQty,
+              [item.SKU]: +value,
+            }));
+            return {
+              ...data,
               OldQty: +value,
-              PreOrder: isPreorder,
-              error: error,
             };
           }
+        } else {
+          return data;
         }
-      }
-      return doc;
+      });
     });
-
-    setRequireqty(result);
   };
-
-  useEffect(() => {
-    return () => {
-      removeSelectedItems([]);
-      setNewqty({});
-      setOldqty({});
-      setPreorder();
-      setRequireqty([]);
-    };
-  }, [setOpen]);
-  console.log(Requireqty);
 
   // handling send query
   const handleSubmit = async () => {
     try {
-      const requestData = Requireqty.filter((item) => item.Quantity);
-
       let info = {
-        id: id,
-        items: requestData,
+        items: updateValue,
       };
-      const filterData = requestData.filter((item) => item.error > 0);
-      if (filterData.length > 0) return toast.error("Missing Require Quantiy");
-      const result = await addProjectItems(info).unwrap();
 
-      toast.success("Parts add successfully");
+      const result = await updateQty(info).unwrap();
+
+      toast.success("Quantity add successfully");
       dispatch(removeSelectedCreateQuery());
       dispatch(removeSelectedSkuQuery());
       removeSelectedItems([]);
-      setNewqty({});
-      setOldqty({});
-      setPreorder();
+      setNewQty({});
+      setOldQty({});
+      setUpdateValue([]);
+      setSelectedItems([]);
+      setSelectedItemsData([]);
       refetch();
-      handleCloseDialog();
-      navigate("/Project");
+      setOpen(false);
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }
@@ -288,7 +229,7 @@ const CreateReqDial = ({
 
   return (
     <div>
-      <Dialog open={open} maxWidth="xl" onClose={handleCloseDialog}>
+      <Dialog open={open} maxWidth="xl" onClose={() => setOpen(false)}>
         <Box
           sx={{
             display: "flex",
@@ -311,7 +252,7 @@ const CreateReqDial = ({
                 fontSize: "1.3rem",
               }}
             >
-              ADD PARTS
+              Add Parts Quantity
             </Typography>
             <CancelIcon
               sx={{ cursor: "pointer", "&:hover": { color: "red" } }}
@@ -323,33 +264,19 @@ const CreateReqDial = ({
         </Box>
 
         <DialogContent>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
-              Project Id :{" "}
-              <Typography variant="span" fontWeight="lighter" fontSize={"12px"}>
-                {id}
-              </Typography>
-            </Typography>
-            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
-              Project Name :{" "}
-              <Typography variant="span" fontWeight="lighter" fontSize={"12px"}>
-                {name}
-              </Typography>
-            </Typography>
-          </Box>
           <TableContainer sx={{ maxHeight: "60vh", marginTop: "0.3rem" }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
-                    <StyledCell sx={{ fontSize: ".7rem" }} key={column.field}>
+                    <StyledCell sx={{ fontSize: ".8rem" }} key={column.field}>
                       {column.headerName}
                     </StyledCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.map((item, index) => {
+                {data?.map((item, index) => {
                   return (
                     <TableRow key={index}>
                       <StyleTable sx={{ fontSize: ".8rem" }}>
@@ -368,18 +295,10 @@ const CreateReqDial = ({
                       <StyleTable sx={{ fontSize: ".8rem", minWidth: "80px" }}>
                         {item.GST} %
                       </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem" }}>
-                        {item.Quantity}
-                      </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {item.NewQty}
-                      </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {item.OldQty}
-                      </StyleTable>
+
+                      <StyleTable>{item.Quantity}</StyleTable>
                       <StyleTable>
                         <TextField
-                          autocomplete={false}
                           size="small"
                           sx={{
                             "& input": {
@@ -387,8 +306,9 @@ const CreateReqDial = ({
                               maxWidth: "30px",
                             },
                           }}
-                          name="reqQTY"
-                          value={Newqty[item.SKU]}
+                          name="NewQty"
+                          value={updateValue[index]?.NewQty}
+                     
                           type="number"
                           onChange={(event) => {
                             handleQuantityChange(event, item);
@@ -397,7 +317,6 @@ const CreateReqDial = ({
                       </StyleTable>
                       <StyleTable>
                         <TextField
-                          autocomplete={false}
                           size="small"
                           sx={{
                             "& input": {
@@ -405,29 +324,14 @@ const CreateReqDial = ({
                               maxWidth: "30px",
                             },
                           }}
-                          name="Oldparts"
-                          value={Oldqty[item.SKU]}
+                          name="OldQty"
+                          value={updateValue[index]?.OldQty}
+                   
                           type="number"
                           onChange={(event) => {
                             handleQuantityChange(event, item);
                           }}
-                          error={Requireqty[index]?.error > 0}
-                          helperText={
-                            Requireqty[index]?.error > 0 ? (
-                              <spna style={{ fontSize: "9px" }}>
-                                Enter valid Qty!
-                              </spna>
-                            ) : (
-                              ""
-                            )
-                          }
                         />
-                      </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {Requireqty[index]?.Quantity}
-                      </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {Requireqty[index]?.PreOrder}
                       </StyleTable>
                       <StyleTable>
                         <DeleteIcon
@@ -477,7 +381,7 @@ const CreateReqDial = ({
               {isLoading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                "Add Parts"
+                "update"
               )}
             </Button>
           </Box>
@@ -487,4 +391,4 @@ const CreateReqDial = ({
   );
 };
 
-export default CreateReqDial;
+export default AddRnDQtyDial;

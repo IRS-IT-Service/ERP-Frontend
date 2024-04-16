@@ -366,7 +366,16 @@ export const productApiSlice = apiSlice.injectEndpoints({
           method:"GET"
         }
       }
-    })
+    }),
+    quantityUpdateRnD: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/quantityUpdate`,
+          method: "Post",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -412,5 +421,6 @@ export const {
   useDeleteCompetitorMutation,
   useSendOtpForDeleteProductMutation,
   useProductAvailinEcwidMutation,
-  useGetAllProductWithRandDQuery
+  useGetAllProductWithRandDQuery,
+  useQuantityUpdateRnDMutation,
 } = productApiSlice;

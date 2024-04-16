@@ -22,11 +22,12 @@ import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 import { useNavigate } from "react-router-dom";
-import {useGetSingleProjectQuery} from "../../features/api/RnDSlice"
+import { useGetSingleProjectQuery } from "../../features/api/RnDSlice";
 import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useParams } from "react-router-dom";
 import { useGetAllProductWithRandDQuery } from "../../features/api/productApiSlice";
+import AddRnDQtyDial from "./Dialogues/AddRnDQtyDial";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -88,38 +89,41 @@ const infoDetail = [
 ];
 
 const Inventory = () => {
-  const description = `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`;
   /// initialize
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const debouncing = useRef();
+  const [skip, setSkip] = useState(true)
   const { id } = useParams();
-const [SelectedSKU , setSelectedSKU] = useState()
+  const [SelectedSKU, setSelectedSKU] = useState();
+  const [updateValue, setUpdateValue] = useState([]);
 
-  const newValue = id.split("&");
-  const idValue = newValue[0];
-  const name = newValue[1];
-const {data:allData , isLoading:dataLoading} = useGetSingleProjectQuery (idValue)
+  const newValue = id !== "R&D" && id.split("&");
+  const idValue = id !== "R&D" && newValue[0];
+  const name = id !== "R&D" && newValue[1];
+  const { data: allData, isLoading: dataLoading } =
+    useGetSingleProjectQuery(idValue ,{
+      skip
+    });
 
-useEffect(() => {
-  let selectSKU = [];
-  if (allData?.success) {
-    selectSKU = allData.data.projectItem?.map((item) => item.SKU);
-  }
+  useEffect(() => {
+    let selectSKU = [];
+    if (allData?.success) {
+      selectSKU = allData.data.projectItem?.map((item) => item.SKU);
+    }
 
-  setSelectedSKU(selectSKU);
-}, [allData]);
-
-
+    setSelectedSKU(selectSKU);
+  }, [allData]);
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
     dispatch(setInfo(false));
   };
 
-  useEffect(() => {
-    dispatch(setHeader(`Add Parts For ${name}`));
-  }, []);
+  let description =
+    id === "R&D"
+      ? `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`
+      : `Add Parts For ${name}`;
 
   /// global state
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
@@ -129,7 +133,7 @@ useEffect(() => {
   );
   /// local state
 
-  const [showNoData, setShowNoData] = useState(false);
+  const [openAdditem, setOpenAdditem] = useState(false);
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
@@ -141,13 +145,21 @@ useEffect(() => {
   const [totalProductCount, setTotalProductCount] = useState(0);
 
   /// rtk query
+  useEffect(() => {
+    const Header = id === "R&D" ? "R&D Inventory " : `Add Parts For ${name}`;
+    const skipped = id === "R&D" ? true : false;
+    setSkip(skipped)
+    dispatch(setHeader(Header));
+  }, [id]);
 
   const {
     data: allProductData,
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductWithRandDQuery(filterString);
+  } = useGetAllProductV2Query(filterString, {
+    pollingInterval: 1000 * 300,
+  });
 
   /// handlers
 
@@ -159,6 +171,11 @@ useEffect(() => {
     setSelectedItemsData(newSelectedRowsData);
     dispatch(setSelectedSkuQuery(selectionModel));
   };
+  
+const handleSetAddItem = () =>{
+  setOpenAdditem(true);
+}
+
 
   useEffect(() => {
     return () => {
@@ -184,6 +201,8 @@ useEffect(() => {
     const newSelectedRowsData = selectedItemsData.filter(
       (item) => item.SKU !== id
     );
+    const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id)
+    setUpdateValue(NewUpdatedValue)
     setSelectedItemsData(newSelectedRowsData);
     setSelectedItems(newSelectedItems);
   };
@@ -196,6 +215,7 @@ useEffect(() => {
     setOpen(true);
   };
 
+  
 
   /// useEffect
   useEffect(() => {
@@ -209,6 +229,8 @@ useEffect(() => {
             1 +
             (allProductData.data.currentPage - 1) * allProductData.data.limit,
           GST: item.GST || 0,
+          NewQty: item.NewQty || "",
+          OldQty: item.OldQty || "",
         };
       });
 
@@ -323,14 +345,14 @@ useEffect(() => {
     },
     {
       field: "Quantity",
-      headerName: "In Stock",
+      headerName: "In Store",
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Newqty",
+      field: "NewQty",
       minWidth: 150,
       maxWidth: 300,
       headerName: "New Qty in R&D",
@@ -340,7 +362,7 @@ useEffect(() => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Oldqty",
+      field: "OldQty",
       minWidth: 150,
       maxWidth: 300,
       headerName: "Old Qty in R&D",
@@ -394,10 +416,10 @@ useEffect(() => {
       <DrawerHeader />
       <FilterBarV2
         apiRef={apiRef}
-        customButton={selectedItems.length ? "Add Parts" : ""}
-        customOnClick={handleOpenDialog}
+        customButton={selectedItems.length > 0 && (id ==="R&D" ? "Add items" : "Add Parts")}
+        customOnClick={id ==="R&D" ? handleSetAddItem : handleOpenDialog}
       />
-      <CreateReqDial
+     {open && <CreateReqDial
         data={realData}
         apiRef={apiRef}
         removeSelectedItems={removeSelectedItems}
@@ -409,9 +431,35 @@ useEffect(() => {
         removeSelectedCreateQuery={removeSelectedCreateQuery}
         removeSelectedSkuQuery={removeSelectedSkuQuery}
         setSelectedItemsData={setSelectedItemsData}
-        selectedItemsData ={selectedItemsData}
-        refetch ={refetch}
+        selectedItemsData={selectedItemsData}
+        refetch={refetch}
+     
       />
+     }
+
+     {openAdditem && <AddRnDQtyDial 
+     
+     data={realData}
+     apiRef={apiRef}
+     removeSelectedItems={removeSelectedItems}
+     open={openAdditem}
+     setOpen={setOpenAdditem}
+     dispatch={dispatch}
+     id={idValue}
+     name={name}
+     removeSelectedCreateQuery={removeSelectedCreateQuery}
+     removeSelectedSkuQuery={removeSelectedSkuQuery}
+     setSelectedItemsData={setSelectedItemsData}
+     selectedItemsData={selectedItemsData}
+     refetch={refetch}
+     setSelectedItems = {setSelectedItems}
+     selectedItems= {selectedItems}
+     updateValue ={updateValue }
+     setUpdateValue = {setUpdateValue}
+     
+     />
+     }
+
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
@@ -456,7 +504,9 @@ useEffect(() => {
                 }}
                 checkboxSelection
                 disableRowSelectionOnClick
-                isRowSelectable={(params) => !(SelectedSKU.includes(params.row.SKU))}
+                isRowSelectable={(params) =>
+                  !SelectedSKU.includes(params.row.SKU)
+                }
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected

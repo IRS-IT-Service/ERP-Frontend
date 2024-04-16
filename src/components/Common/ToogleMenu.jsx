@@ -73,7 +73,11 @@ const ToogleMenu = ({ title, icon, childrens }) => {
   );
 
 
-  const dataEmbeded ={...data , ...Requestcount ,...PreOrdercount}
+  const RnDapprovalcount =  useSelector(
+    (state) => state.api.queries["allDispatchAprovalCount(null)"]?.data?.total
+  );
+
+  const dataEmbeded ={...data , ...Requestcount ,...PreOrdercount ,...RnDapprovalcount}
 
   /// local state
   const [toggleSubmenu, setToggleSubmenu] = useState(false);

@@ -33,7 +33,7 @@ import { useNavigate } from "react-router-dom";
 import themeColors from "../../constants/ThemeColor";
 import Header from "./Header";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import {useGetPreOrderCountQuery} from "../../features/api/RnDSlice"
+import {useGetPreOrderCountQuery ,useAllDispatchAprovalCountQuery} from "../../features/api/RnDSlice"
 
 const drawerWidth = 220;
 
@@ -156,6 +156,13 @@ const ToggleNav = () => {
     data: preOrdercount,
     isLoading: isLoadingPreOrder,
   } = useGetPreOrderCountQuery(null, {
+    pollingInterval: 1000 * 300,
+  });
+
+  const {
+    data: RnDaprrvalcount,
+    isLoading: isLoadingApproval,
+  } = useAllDispatchAprovalCountQuery(null, {
     pollingInterval: 1000 * 300,
   });
 
