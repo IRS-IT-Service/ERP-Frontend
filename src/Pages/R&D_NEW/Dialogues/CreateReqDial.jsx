@@ -152,7 +152,9 @@ const CreateReqDial = ({
           item.NewQty >= item.Quantity &&
           item.NewQty >= +value &&
           name === "reqQTY"
+
         ) {
+          console.log("1");
           return {
             ...doc,
             Quantity: 0,
