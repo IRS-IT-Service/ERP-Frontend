@@ -1,6 +1,6 @@
 import "./App.css";
 import PrivateRoute from "./middleware/PrivateRoute";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { useState, useEffect, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -125,11 +125,13 @@ import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
 import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 import PreOrder from "./Pages/DiscountQuery/PreOrder";
 
+
 function App() {
   /// initialize
   const dispatch = useDispatch();
   const socket = useSocket();
   const navigate = useNavigate();
+
 
   /// global state
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
