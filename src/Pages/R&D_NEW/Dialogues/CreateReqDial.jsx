@@ -36,9 +36,6 @@ const columns = [
   { field: "Old", headerName: "Old Parts" },
   { field: "Require QTY", headerName: "Require QTY" },
   { field: "UseOld", headerName: "Use Old Parts" },
-  { field: "RequireQTYToStore", headerName: "Order to Store" },
-  { field: "Pre Order QTY", headerName: "Pre Order QTY" },
-
   { field: "Delete", headerName: "Remove" },
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -55,7 +52,7 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
-import { TabOutlined } from "@mui/icons-material";
+import { InfoRounded, TabOutlined } from "@mui/icons-material";
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
@@ -142,111 +139,147 @@ const CreateReqDial = ({
 
   const handleQuantityChange = (event, item) => {
     const { value, name } = event.target;
+    let error = ''; 
+  
     if (name === "reqQTY") {
       setNewqty({ ...Newqty, [item.SKU]: value });
+    } else if (name === "Oldparts") {
+      if (value > item.OldQty) {
+        error = 'Enter a value less than or equal to Old Qty';
+      } else {
+        setOldqty({ ...Oldqty, [item.SKU]: value });
+      }
     }
-
+  
     const result = Requireqty.map((doc) => {
       if (doc.SKU === item.SKU) {
-        if (
-          item.NewQty >= item.Quantity &&
-          item.NewQty >= +value &&
-          name === "reqQTY"
-
-        ) {
-          console.log("1");
+        if (name === "reqQTY") {
           return {
             ...doc,
-            Quantity: 0,
-            NewQty: +value,
-            PreOrder: 0,
-          };
-        } else if (
-          item.NewQty < item.Quantity &&
-          item.NewQty < +value &&
-          item.Quantity !== +value &&
-          name === "reqQTY"
-        ) {
-          console.log("2");
-          let OrderToLowest =
-            +value - item.NewQty === item.NewQty
-              ? +value - item.NewQty
-              : item.Quantity;
-          let OrderToStore = +value - item.NewQty;
-          let CheckforPreOrder =
-            item.Quantity < OrderToStore ? OrderToStore - item.Quantity : 0;
-          setPreorder(CheckforPreOrder);
-
-          return {
-            ...doc,
-            Quantity: OrderToLowest,
-            NewQty: item.NewQty,
-            PreOrder: CheckforPreOrder,
-          };
-        } else if (item.Quantity === +value && name === "reqQTY") {
-          console.log("6");
-          let OrderToStore = +value - item.NewQty;
-          let CheckforPreOrder =
-            item.Quantity < OrderToStore ? OrderToStore - item.Quantity : 0;
-          setPreorder(CheckforPreOrder);
-
-          return {
-            ...doc,
-            Quantity: OrderToStore,
-            NewQty: item.NewQty,
-            PreOrder: CheckforPreOrder,
-          };
-        } else if (item.NewQty >= +value && name === "reqQTY") {
-          let OrderToStore = value ? +value - item.NewQty : 0;
-          console.log("3");
-          return {
-            ...doc,
-            Quantity: OrderToStore,
-            NewQty: +value,
-            OldQty: 0,
-            PreOrder: 0,
-          };
-        } else if (item.NewQty < +value && name === "reqQTY") {
-          console.log("4");
-          let preOrder = +value - item.NewQty;
-
-          return {
-            ...doc,
-            Quantity: item.NewQty,
-            OldQty: doc.OldQty,
-            PreOrder: preOrder,
+            RequireQty: +value,
           };
         } else if (name === "Oldparts") {
-          console.log("5");
-  
-          setOldqty({ ...Oldqty, [item.SKU]: value });
-          let error = +value > item.OldQty ? +value : 0;
-          if (item.OldQty > 0) {
-            let NewQuantity =
-              item.Quantity >= +value ? item.Quantity - +value : 0;
-            let remainValue = +value - item.Quantity;
-
-            let isPreorder =
-              preOrder >= +value && doc.Quantity - item.Quantity === 0
-                ? preOrder - remainValue
-                : preOrder;
-
-            return {
-              ...doc,
-              Quantity: NewQuantity,
-              OldQty: +value,
-              PreOrder: isPreorder,
-              error: error,
-            };
-          }
+          return {
+            ...doc,
+            OldQty: +value,
+            error: error 
+          };
         }
       }
       return doc;
     });
-
+  
     setRequireqty(result);
   };
-
+  
+  // const handleQuantityChange = (event, item) => {
+  //   const { value, name } = event.target;
+  
+  //   if (name === "reqQTY") {
+  //     setNewqty({ ...Newqty, [item.SKU]: value });
+  //   }
+  
+  //   const result = Requireqty.map((doc) => {
+  //     if (doc.SKU === item.SKU) {
+  //       if (name === "Oldparts") {
+  //         // Convert string to number
+  //         const newValue = +value;
+  
+  //         // Calculate the difference between the new value and OldQty
+  //         const diffWithOldQty = newValue - item.OldQty;
+  
+  //         // Adjust PreOrder and NewQty based on the difference
+  //         let newPreOrder = Math.max(0, doc.PreOrder - diffWithOldQty);
+  //         let newNewQty = Math.max(0, doc.NewQty - diffWithOldQty);
+  
+  //         // Ensure PreOrder doesn't become negative
+  //         newPreOrder = Math.max(0, newPreOrder);
+  
+  //         // Update OldQty
+  //         const newOldQty = newValue;
+  
+  //         return {
+  //           ...doc,
+  //           PreOrder: newPreOrder,
+  //           NewQty: newNewQty,
+  //           OldQty: newOldQty,
+  //         };
+  //       }
+  
+  //       if (name === "reqQTY") {
+  //         let OrderToLowest;
+  //         let OrderToStore;
+  //         let CheckforPreOrder;
+  //         let newPreOrder;
+  
+  //         if (
+  //           item.NewQty >= item.ActualQuantity &&
+  //           item.NewQty >= +value
+  //         ) {
+  //           return {
+  //             ...doc,
+  //             Quantity: 0,
+  //             NewQty: +value,
+  //             PreOrder: 0,
+  //           };
+  //         } else if (
+  //           item.NewQty < item.Quantity &&
+  //           item.NewQty < +value &&
+  //           item.Quantity !== +value
+  //         ) {
+  //           OrderToLowest =
+  //             +value - item.NewQty === item.NewQty
+  //               ? +value - item.NewQty
+  //               : item.Quantity;
+  //           OrderToStore = +value - item.NewQty;
+  //           CheckforPreOrder =
+  //             item.Quantity < OrderToStore ? OrderToStore - item.Quantity : 0;
+  
+  //           return {
+  //             ...doc,
+  //             Quantity: OrderToLowest,
+  //             NewQty: item.NewQty,
+  //             PreOrder: CheckforPreOrder,
+  //           };
+  //         } else if (item.Quantity === +value) {
+  //           OrderToStore = +value - item.NewQty;
+  //           CheckforPreOrder =
+  //             item.Quantity < OrderToStore ? OrderToStore - item.Quantity : 0;
+  
+  //           return {
+  //             ...doc,
+  //             Quantity: OrderToStore,
+  //             NewQty: item.NewQty,
+  //             PreOrder: CheckforPreOrder,
+  //           };
+  //         } else if (item.NewQty >= +value) {
+  //           OrderToStore = value ? +value - item.NewQty : 0;
+  
+  //           return {
+  //             ...doc,
+  //             Quantity: OrderToStore,
+  //             NewQty: +value,
+  //             OldQty: 0,
+  //             PreOrder: 0,
+  //           };
+  //         } else if (item.NewQty < +value) {
+  //           newPreOrder = +value - item.NewQty;
+  
+  //           return {
+  //             ...doc,
+  //             Quantity: item.NewQty,
+  //             OldQty: doc.OldQty,
+  //             PreOrder: newPreOrder,
+  //           };
+  //         }
+  //       }
+  //     }
+  //     return doc;
+  //   });
+  
+  //   setRequireqty(result);
+  // };
+  
   useEffect(() => {
     return () => {
       removeSelectedItems([]);
@@ -256,17 +289,17 @@ const CreateReqDial = ({
       setRequireqty([]);
     };
   }, [setOpen]);
-  console.log(Requireqty);
 
   // handling send query
   const handleSubmit = async () => {
     try {
       const requestData = Requireqty.filter((item) => item.Quantity);
-
+       console.log(Requireqty)
       let info = {
         id: id,
-        items: requestData,
+        items: Requireqty,
       };
+      console.log(info)
       const filterData = requestData.filter((item) => item.error > 0);
       if (filterData.length > 0) return toast.error("Missing Require Quantiy");
       const result = await addProjectItems(info).unwrap();
@@ -406,6 +439,7 @@ const CreateReqDial = ({
                             },
                           }}
                           name="Oldparts"
+                          disabled = {item.OldQty == "" || item.OldQty < 0}
                           value={Oldqty[item.SKU]}
                           type="number"
                           onChange={(event) => {
@@ -423,12 +457,7 @@ const CreateReqDial = ({
                           }
                         />
                       </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {Requireqty[index]?.Quantity}
-                      </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {Requireqty[index]?.PreOrder}
-                      </StyleTable>
+               
                       <StyleTable>
                         <DeleteIcon
                           sx={{
