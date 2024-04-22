@@ -92,6 +92,14 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    addImage: builder.mutation({
+      query: (data) => ({
+       
+        url: `${RnD_URL}/addImage/${data.id}`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -108,6 +116,7 @@ export const {
   useAllDispatchRnDProductQuery,
   useAllDispatchAprovalCountQuery,
   useApproveRnDproductMutation,
-  useUpdateProjectMutation
+  useUpdateProjectMutation,
+  useAddImageMutation
 } = RnDApiSlice;
  
