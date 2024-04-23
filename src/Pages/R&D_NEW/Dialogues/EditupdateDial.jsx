@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { NearMe } from "@mui/icons-material";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#eee",
@@ -52,7 +53,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
 
   // api calling from rtk query
   const [updateProjectItems, { isLoading, refetch: addRefetch }] =
-  useUpdateProjectMutation();
+    useUpdateProjectMutation();
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -78,51 +79,48 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
     setOpen(false);
   };
 
-  const handleQuantityChange = (item, OldQty , newQuantity ) => {
+  const handleQuantityChange = (item, value, name) => {
     if (data.status === "Closed") {
       return;
     }
 
-    
-let updatedItem = {}
+    const updatedItem = {
+      ...item,
+      [name]: value < 0 ? 0 : value,
+    };
 
-if(item.Newqty !== null && item.OldQty !== null){
-  updatedItem = {
-   ...item,
-   Newqty: newQuantity,
-    OldQty: OldQty,
-  }
-}else{
-  updatedItem = { ...item, Quantity: newQuantity };
-}
-    
-
-    setProjectItems((prevData) => {
-      return prevData.map((dataItem) => {
-        if (dataItem.SKU === item.SKU) {
-          return updatedItem;
+    setProjectItems((prevItems) =>
+      prevItems.map((prevItem) =>
+        prevItem.SKU === item.SKU ? updatedItem : prevItem
+      )
+    );
+    if (updatedItem[name] !== item[name]) {
+      setUpdatedData((prevData) => {
+        const existingIndex = prevData.findIndex(
+          (dataItem) => dataItem.SKU === item.SKU
+        );
+        if (existingIndex !== -1) {
+          return prevData.map((dataItem, idx) =>
+            idx === existingIndex
+              ? { ...updatedItem, Name: item.Name }
+              : dataItem
+          );
+        } else {
+          return [
+            ...prevData,
+            { SKU: item.SKU, Name: item.Name, [name]: updatedItem[name] },
+          ];
         }
-        return dataItem;
       });
-    });
-
-    // setUpdatedData((prev) => {
-    //   const filteredData = prev.filter((dataItem) => dataItem.SKU !== item.SKU);
-    //   return [...filteredData, { ...item, Quantity: newQuantity }];
-    // });
+    }
   };
 
-  // handling send query
   const handleSubmit = async () => {
-    // if (updatedData.length <= 0) {
-    //   return toast.error("Please Select a Quantity to Chang");
-    // }
     try {
       const info = {
         id: data?.projectId,
-        items: projectItems,
+        items: updatedData,
       };
-
       const result = await updateProjectItems(info).unwrap();
       toast.success("Quantity updated successfully");
       refetch();
@@ -136,10 +134,10 @@ if(item.Newqty !== null && item.OldQty !== null){
     { field: "Sno", headerName: "S.No" },
     { field: "SKU", headerName: "SKU" },
     { field: "Name", headerName: "Name" },
-    { field: "InStock", headerName: "In Use" },
+    { field: "InStock", headerName: "New Qty" },
     { field: "OldQty", headerName: "Old Qty" },
+    { field: "OldQty", headerName: "Total Qty" },
     { field: "Status", headerName: "Received" },
-
   ];
 
   return (
@@ -281,9 +279,15 @@ if(item.Newqty !== null && item.OldQty !== null){
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                handleQuantityChange(item,item.OldQty,item.Newqty === null
-                                  ? item.Quantity - 1 
-                                  : item.Newqty - 1 )
+                                handleQuantityChange(
+                                  item,
+                                  item.RequireQty
+                                    ? item.RequireQty - 1
+                                    : (+item.Quantity || 0) +
+                                        (+item.Newqty || 0) -
+                                        1,
+                                  "RequireQty"
+                                )
                               }
                             />
 
@@ -295,15 +299,17 @@ if(item.Newqty !== null && item.OldQty !== null){
                                 padding: 4,
                               }}
                               type="number"
+                              name="RequireQty"
                               value={
-                                item.Newqty === null
-                                  ? +item.Quantity
-                                  : +item.Newqty
+                                item.RequireQty
+                                  ? item.RequireQty
+                                  : (+item.Quantity || 0) + (+item.Newqty || 0)
                               }
                               onChange={(e) =>
                                 handleQuantityChange(
-                                  item,item.OldQty ,
-                                  parseInt(e.target.value)
+                                  item,
+                                  parseInt(e.target.value),
+                                  "RequireQty"
                                 )
                               }
                             />
@@ -313,9 +319,15 @@ if(item.Newqty !== null && item.OldQty !== null){
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                handleQuantityChange(item,item.OldQty,item.Newqty === null
-                                  ? item.Quantity + 1 
-                                  : item.Newqty + 1 )
+                                handleQuantityChange(
+                                  item,
+                                  item.RequireQty
+                                    ? item.RequireQty + 1
+                                    : (+item.Quantity || 0) +
+                                        (+item.Newqty || 0) +
+                                        1,
+                                  "RequireQty"
+                                )
                               }
                             />
                           </Box>
@@ -339,7 +351,11 @@ if(item.Newqty !== null && item.OldQty !== null){
                                   cursor: "pointer",
                                 }}
                                 onClick={() =>
-                                  handleQuantityChange(item, item.OldQty - 1 ,item.Newqty)
+                                  handleQuantityChange(
+                                    item,
+                                    item.OldQty - 1,
+                                    "OldQty"
+                                  )
                                 }
                               />
 
@@ -351,11 +367,13 @@ if(item.Newqty !== null && item.OldQty !== null){
                                   padding: 4,
                                 }}
                                 type="number"
+                                name="OldQty"
                                 value={+item.OldQty}
                                 onChange={(e) =>
                                   handleQuantityChange(
                                     item,
-                                    parseInt(e.target.value) ,item.Newqty
+                                    parseInt(e.target.value),
+                                    "OldQty"
                                   )
                                 }
                               />
@@ -365,7 +383,11 @@ if(item.Newqty !== null && item.OldQty !== null){
                                   cursor: "pointer",
                                 }}
                                 onClick={() =>
-                                  handleQuantityChange(item,item.OldQty + 1,item.Newqty)
+                                  handleQuantityChange(
+                                    item,
+                                    item.OldQty + 1,
+                                    "OldQty"
+                                  )
                                 }
                               />
                             </Box>
@@ -380,13 +402,31 @@ if(item.Newqty !== null && item.OldQty !== null){
                               justifyContent: "center",
                             }}
                           >
+                            <div>
+                              {(+item.Quantity || 0) +
+                                (+item.Newqty || 0) +
+                                (+item.OldQty || 0)}
+                            </div>
+                          </Box>
+                        </StyleTable>
+                        <StyleTable sx={{ fontSize: ".8rem" }}>
+                          <Box
+                            sx={{
+                              width: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
                             <div
                               style={{
                                 width: "13px",
                                 height: "13px",
                                 borderRadius: "100%",
-                                backgroundColor: `${item.isFullFilled ? "rgba(5, 134, 15, 0.8)"
-                                : "rgba(207, 0, 0, 0.8)"}`,
+                                backgroundColor: `${
+                                  item.isFullFilled
+                                    ? "rgba(5, 134, 15, 0.8)"
+                                    : "rgba(207, 0, 0, 0.8)"
+                                }`,
                                 border: "1px solid black",
                               }}
                             ></div>
