@@ -31,13 +31,11 @@ const columns = [
   { field: "Name", headerName: "Name" },
   { field: "Brand", headerName: "Brand" },
   { field: "GST", headerName: "GST (%)" },
-  { field: "InStock", headerName: "Stock in Logistics" },
+  { field: "InStock", headerName: "In Store" },
   { field: "R&DStock", headerName: "New Parts" },
   { field: "Old", headerName: "Old Parts" },
   { field: "Require QTY", headerName: "Require QTY" },
   { field: "UseOld", headerName: "Use Old Parts" },
-  { field: "Pre Order QTY", headerName: "Pre Order QTY" },
-
   { field: "Delete", headerName: "Remove" },
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -54,14 +52,18 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
-import { TabOutlined } from "@mui/icons-material";
+import { InfoRounded, TabOutlined } from "@mui/icons-material";
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
   textAlign: "center",
 }));
-import { useAddProjectItemMutation ,useGetSingleProjectQuery } from "../../../features/api/RnDSlice";
+import {
+  useAddProjectItemMutation,
+  useGetSingleProjectQuery,
+} from "../../../features/api/RnDSlice";
 import { useNavigate } from "react-router-dom";
+import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
 const CreateReqDial = ({
   data,
   removeSelectedItems,
@@ -74,11 +76,11 @@ const CreateReqDial = ({
   selectedItemsData,
   id,
   name,
-  refetch
+  refetch,
 }) => {
   /// initialize
   const socket = useSocket();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
@@ -96,8 +98,6 @@ const CreateReqDial = ({
 
   const [createQueryApi, { isLoading }] = useCreateRandDInventryMutation();
 
-
-
   const dispatch = useDispatch();
   // handlers
   const [
@@ -112,7 +112,7 @@ const CreateReqDial = ({
     newData = data.map((data) => {
       return {
         SKU: data.SKU,
-        Name:data.Name
+        Name: data.Name,
       };
     });
     setRequireqty(newData);
@@ -139,105 +139,181 @@ const CreateReqDial = ({
 
   const handleQuantityChange = (event, item) => {
     const { value, name } = event.target;
+    let error = ''; 
+  
     if (name === "reqQTY") {
-      setNewqty({ [item.SKU]: value });
+      setNewqty({ ...Newqty, [item.SKU]: value });
+    } else if (name === "Oldparts") {
+      if (value > item.OldQty) {
+        error = 'Enter a value less than or equal to Old Qty';
+      } else {
+        setOldqty({ ...Oldqty, [item.SKU]: value });
+      }
     }
+  
     const result = Requireqty.map((doc) => {
       if (doc.SKU === item.SKU) {
-        if (item.Quantity !== undefined) {
-          if (item.Quantity < value ) {
-            let preOrder = value - +item.Quantity;
-            return {
-              ...doc,
-              Quantity: +item.Quantity,
-              OldQty: 0,
-              PreOrder: preOrder,
-            };
-          } else if (item.Quantity >= value) {
-         
-            return {
-              ...doc,
-              Quantity: +value,
-              OldQty: 0,
-              PreOrder: 0,
-            };
-          }
-        } else if (item.Newqty !== undefined) {
-          if (item.Newqty >= value && name === "reqQTY") {
-          
-            return {
-              ...doc,
-              Quantity: +value,
-              OldQty: 0,
-              PreOrder: 0,
-            };
-          } else if (item.Newqty < value && name === "reqQTY") {
-            
-            let preOrder = value - +item.Newqty;
-            setPreorder(preOrder);
-            return {
-              ...doc,
-              Quantity: item.Newqty,
-              OldQty: 0,
-              PreOrder: preOrder,
-            };
-          } else if (item.Oldqty !== undefined && name === "Oldparts") {
-            setOldqty({ [item.SKU]: value });
-            let error = +value > item.Oldqty ? +value : 0;
-            if (item.Oldqty > 0) {
-              let isPreorder =
-                preOrder && preOrder >= +value ? preOrder - +value : preOrder;
-
-              return {
-                ...doc,
-                Quantity: doc?.Quantity,
-                OldQty: +value > item.Newqty ? 0 : +value,
-                PreOrder: isPreorder || 0,
-                error: error,
-              };
-            }
-          }
+        if (name === "reqQTY") {
+          return {
+            ...doc,
+            RequireQty: +value,
+          };
+        } else if (name === "Oldparts") {
+          return {
+            ...doc,
+            OldQty: +value,
+            error: error 
+          };
         }
       }
       return doc;
     });
-
+  
     setRequireqty(result);
   };
-useEffect(()=>{
-return ()=>{
-  removeSelectedItems([]);
-  setNewqty({})
-  setOldqty({})
-  setPreorder()
-  setRequireqty([])
-}
-},[setOpen])
+  
+  // const handleQuantityChange = (event, item) => {
+  //   const { value, name } = event.target;
+  
+  //   if (name === "reqQTY") {
+  //     setNewqty({ ...Newqty, [item.SKU]: value });
+  //   }
+  
+  //   const result = Requireqty.map((doc) => {
+  //     if (doc.SKU === item.SKU) {
+  //       if (name === "Oldparts") {
+  //         // Convert string to number
+  //         const newValue = +value;
+  
+  //         // Calculate the difference between the new value and OldQty
+  //         const diffWithOldQty = newValue - item.OldQty;
+  
+  //         // Adjust PreOrder and NewQty based on the difference
+  //         let newPreOrder = Math.max(0, doc.PreOrder - diffWithOldQty);
+  //         let newNewQty = Math.max(0, doc.NewQty - diffWithOldQty);
+  
+  //         // Ensure PreOrder doesn't become negative
+  //         newPreOrder = Math.max(0, newPreOrder);
+  
+  //         // Update OldQty
+  //         const newOldQty = newValue;
+  
+  //         return {
+  //           ...doc,
+  //           PreOrder: newPreOrder,
+  //           NewQty: newNewQty,
+  //           OldQty: newOldQty,
+  //         };
+  //       }
+  
+  //       if (name === "reqQTY") {
+  //         let OrderToLowest;
+  //         let OrderToStore;
+  //         let CheckforPreOrder;
+  //         let newPreOrder;
+  
+  //         if (
+  //           item.NewQty >= item.ActualQuantity &&
+  //           item.NewQty >= +value
+  //         ) {
+  //           return {
+  //             ...doc,
+  //             Quantity: 0,
+  //             NewQty: +value,
+  //             PreOrder: 0,
+  //           };
+  //         } else if (
+  //           item.NewQty < item.Quantity &&
+  //           item.NewQty < +value &&
+  //           item.Quantity !== +value
+  //         ) {
+  //           OrderToLowest =
+  //             +value - item.NewQty === item.NewQty
+  //               ? +value - item.NewQty
+  //               : item.Quantity;
+  //           OrderToStore = +value - item.NewQty;
+  //           CheckforPreOrder =
+  //             item.Quantity < OrderToStore ? OrderToStore - item.Quantity : 0;
+  
+  //           return {
+  //             ...doc,
+  //             Quantity: OrderToLowest,
+  //             NewQty: item.NewQty,
+  //             PreOrder: CheckforPreOrder,
+  //           };
+  //         } else if (item.Quantity === +value) {
+  //           OrderToStore = +value - item.NewQty;
+  //           CheckforPreOrder =
+  //             item.Quantity < OrderToStore ? OrderToStore - item.Quantity : 0;
+  
+  //           return {
+  //             ...doc,
+  //             Quantity: OrderToStore,
+  //             NewQty: item.NewQty,
+  //             PreOrder: CheckforPreOrder,
+  //           };
+  //         } else if (item.NewQty >= +value) {
+  //           OrderToStore = value ? +value - item.NewQty : 0;
+  
+  //           return {
+  //             ...doc,
+  //             Quantity: OrderToStore,
+  //             NewQty: +value,
+  //             OldQty: 0,
+  //             PreOrder: 0,
+  //           };
+  //         } else if (item.NewQty < +value) {
+  //           newPreOrder = +value - item.NewQty;
+  
+  //           return {
+  //             ...doc,
+  //             Quantity: item.NewQty,
+  //             OldQty: doc.OldQty,
+  //             PreOrder: newPreOrder,
+  //           };
+  //         }
+  //       }
+  //     }
+  //     return doc;
+  //   });
+  
+  //   setRequireqty(result);
+  // };
+  
+  useEffect(() => {
+    return () => {
+      removeSelectedItems([]);
+      setNewqty({});
+      setOldqty({});
+      setPreorder();
+      setRequireqty([]);
+    };
+  }, [setOpen]);
+
   // handling send query
   const handleSubmit = async () => {
     try {
-      const requestData = Requireqty.filter((item) => 
-       item.Quantity 
-      );
-    
+      const requestData = Requireqty.filter((item) => item.Quantity);
+       console.log(Requireqty)
       let info = {
         id: id,
-        items: requestData,
+        items: Requireqty,
       };
+      console.log(info)
       const filterData = requestData.filter((item) => item.error > 0);
       if (filterData.length > 0) return toast.error("Missing Require Quantiy");
       const result = await addProjectItems(info).unwrap();
-    
-     toast.success("Parts add successfully");
+
+      toast.success("Parts add successfully");
       dispatch(removeSelectedCreateQuery());
       dispatch(removeSelectedSkuQuery());
       removeSelectedItems([]);
-      setNewqty({})
-      setOldqty({})
-      setPreorder()
-      refetch()
+      setNewqty({});
+      setOldqty({});
+      setPreorder();
+      refetch();
       handleCloseDialog();
-      navigate("/Project")
+      navigate("/Project");
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }
@@ -299,7 +375,7 @@ return ()=>{
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
-                    <StyledCell sx={{ fontSize: ".8rem" }} key={column.field}>
+                    <StyledCell sx={{ fontSize: ".7rem" }} key={column.field}>
                       {column.headerName}
                     </StyledCell>
                   ))}
@@ -329,14 +405,14 @@ return ()=>{
                         {item.Quantity}
                       </StyleTable>
                       <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {item.Newqty}
+                        {item.NewQty}
                       </StyleTable>
                       <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {item.Oldqty}
+                        {item.OldQty}
                       </StyleTable>
                       <StyleTable>
                         <TextField
-                             autocomplete={false}
+                          autocomplete={false}
                           size="small"
                           sx={{
                             "& input": {
@@ -354,7 +430,7 @@ return ()=>{
                       </StyleTable>
                       <StyleTable>
                         <TextField
-                        autocomplete={false}
+                          autocomplete={false}
                           size="small"
                           sx={{
                             "& input": {
@@ -363,7 +439,7 @@ return ()=>{
                             },
                           }}
                           name="Oldparts"
-                          disabled={item.Oldqty === 0 || !item.Oldqty}
+                          disabled = {item.OldQty == "" || item.OldQty < 0}
                           value={Oldqty[item.SKU]}
                           type="number"
                           onChange={(event) => {
@@ -381,11 +457,15 @@ return ()=>{
                           }
                         />
                       </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {Requireqty[index]?.PreOrder}
-                      </StyleTable>
+               
                       <StyleTable>
                         <DeleteIcon
+                          sx={{
+                            "&:hover": {
+                              color: "red",
+                            },
+                            cursor: "pointer",
+                          }}
                           onClick={() => {
                             removeSelectedItems(item.SKU);
                           }}
