@@ -134,8 +134,9 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
     { field: "Sno", headerName: "S.No" },
     { field: "SKU", headerName: "SKU" },
     { field: "Name", headerName: "Name" },
-    { field: "InStock", headerName: "In Use" },
+    { field: "InStock", headerName: "New Qty" },
     { field: "OldQty", headerName: "Old Qty" },
+    { field: "OldQty", headerName: "Total Qty" },
     { field: "Status", headerName: "Received" },
   ];
 
@@ -393,6 +394,21 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                           )}
                         </StyleTable>
 
+                        <StyleTable sx={{ fontSize: ".8rem" }}>
+                          <Box
+                            sx={{
+                              width: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <div>
+                              {(+item.Quantity || 0) +
+                                (+item.Newqty || 0) +
+                                (+item.OldQty || 0)}
+                            </div>
+                          </Box>
+                        </StyleTable>
                         <StyleTable sx={{ fontSize: ".8rem" }}>
                           <Box
                             sx={{
