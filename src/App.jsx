@@ -124,6 +124,7 @@ import Studentinfo from "./Pages/Other/Studentinfo";
 import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
 import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 import PreOrder from "./Pages/DiscountQuery/PreOrder";
+import Careers from "./Pages/Careers/Careers";
 
 
 function App() {
@@ -724,6 +725,11 @@ function App() {
                 <Route
                   path="/addCusotmerforMarketing"
                   element={<AddCustomerForMarketing />}
+                />
+                {/* Careers */}
+                <Route
+                  path="/careers"
+                  element={<Careers />}
                 />
               </Route>
             </Routes>
