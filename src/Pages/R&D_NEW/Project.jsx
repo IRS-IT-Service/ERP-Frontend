@@ -6,17 +6,7 @@ import {
   Button,
   ToggleButton,
   ToggleButtonGroup,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableBody,
   tableCellClasses,
-  CircularProgress,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import TableCell from "@mui/material/TableCell";
@@ -30,7 +20,6 @@ import { useEffect } from "react";
 import { formatDate } from "../../commonFunctions/commonFunctions";
 import Loading from "../../components/Common/Loading";
 import { toast } from "react-toastify";
-import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
@@ -56,15 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    background: "linear-gradient(0deg, #01127D, #04012F)",
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
+
 
 const infoDetail = [
   {
@@ -133,7 +114,7 @@ const Project = () => {
   const [statusOpen, setStatusOpen] = useState(false);
   const [projectId, setProjectId] = useState("");
   const [remarksPage, setRemarksPage] = useState(false);
-  const [projectName,setProjectName] = useState("")
+  const [projectName, setProjectName] = useState("");
 
   /// rtk query
   const { data, isLoading, refetch, isFetching } = useGetAllProjectDataQuery();
@@ -155,8 +136,9 @@ const Project = () => {
     setStatusOpen(true), setProjectId(id);
   };
 
-  const hanldeRemarkOpen = ({id,name}) => {
-    setRemarksPage(true), setProjectId(id);setProjectName(name)
+  const hanldeRemarkOpen = ({ id, name }) => {
+    setRemarksPage(true), setProjectId(id);
+    setProjectName(name);
   };
 
   const handleClose = () => {
@@ -165,32 +147,6 @@ const Project = () => {
     setprojectDetails({});
     setSelected({});
     setOpenEdit(false);
-  };
-
-  const handleSubmitQuery = async (status) => {
-    setSkip(false);
-    try {
-      const params = {
-        id: selected["_id"],
-        status: status,
-      };
-
-      const res = await updateApprovalApi(params);
-      toast.success(`Successfully ${status ? "Accepted" : "Rejected"}`);
-      setOpen(false);
-      if (status) {
-        setQueryParams("accepted");
-      } else {
-        setQueryParams("rejected");
-      }
-
-      refetchUnApprovedCount();
-    } catch (e) {
-      console.log("Error at Open Box Approval Status");
-      console.log(e);
-    }
-    setSkip(true);
-    setSelected({});
   };
 
   /// useEffects
@@ -205,7 +161,7 @@ const Project = () => {
           id: index + 1,
           date: formatDate(item.createdAt),
           Remarks: item.Remarks,
-          Name:item.Name
+          Name: item.Name,
         };
       });
 
@@ -308,10 +264,16 @@ const Project = () => {
         const id = params.row.projectId;
         const remarks = params.row.Remarks.map((item) => item.WorkPercent);
         const lastRemark = remarks[remarks.length - 1];
+        const status = params.row.status;
 
         return (
           <div>
-            <Button onClick={() => hanldeRemarkOpen({id:id,name:params.row.Name})}>
+            <Button
+              disabled={status !== "FullFilled" && "Processing"}
+              onClick={() =>
+                hanldeRemarkOpen({ id: id, name: params.row.Name })
+              }
+            >
               {lastRemark || "N/A"}%
             </Button>
           </div>
@@ -516,7 +478,7 @@ const Project = () => {
           setRemarksPage={setRemarksPage}
           open={remarksPage}
           refetch={refetch}
-          name = {projectName}
+          name={projectName}
         />
       )}
     </Box>
