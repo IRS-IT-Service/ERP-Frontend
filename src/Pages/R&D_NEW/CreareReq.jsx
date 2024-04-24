@@ -344,7 +344,7 @@ const handleSetAddItem = () =>{
       valueFormatter: (params) => ` ${(+params.value)?.toFixed(0)} %`,
     },
     {
-      field: "Quantity",
+      field: "ActualQuantity",
       headerName: "In Store",
       align: "center",
       headerAlign: "center",

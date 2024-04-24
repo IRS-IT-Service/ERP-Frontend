@@ -36,6 +36,7 @@ const columns = [
   { field: "Old", headerName: "Old Parts" },
   { field: "Require QTY", headerName: "Require QTY" },
   { field: "UseOld", headerName: "Use Old Parts" },
+  { field: "NewQty", headerName: "New Qty" },
   { field: "Delete", headerName: "Remove" },
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -456,6 +457,9 @@ const CreateReqDial = ({
                             )
                           }
                         />
+                      </StyleTable>
+                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
+                        {(Newqty[item.SKU] || 0) - (Oldqty[item.SKU] || 0)}
                       </StyleTable>
                
                       <StyleTable>
