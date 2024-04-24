@@ -136,7 +136,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
     { field: "Name", headerName: "Name" },
     { field: "InStock", headerName: "New Qty" },
     { field: "OldQty", headerName: "Old Qty" },
-    { field: "OldQty", headerName: "Total Qty" },
+    { field: "TotalQty", headerName: "Total Qty" },
     { field: "Status", headerName: "Received" },
   ];
 

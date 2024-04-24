@@ -6,17 +6,7 @@ import {
   Button,
   ToggleButton,
   ToggleButtonGroup,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableBody,
   tableCellClasses,
-  CircularProgress,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import TableCell from "@mui/material/TableCell";
@@ -30,7 +20,6 @@ import { useEffect } from "react";
 import { formatDate } from "../../commonFunctions/commonFunctions";
 import Loading from "../../components/Common/Loading";
 import { toast } from "react-toastify";
-import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
@@ -42,7 +31,8 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import EditUpdateDial from "./Dialogues/EditupdateDial";
 import StatusDial from "./Dialogues/StatusDial";
 import { useNavigate } from "react-router-dom";
-import AddTaskIcon from '@mui/icons-material/AddTask';
+import AddTaskIcon from "@mui/icons-material/AddTask";
+import RemarksDial from "./Dialogues/RemarksDial";
 /// styles
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -55,17 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
-
-  [`&.${tableCellClasses.head}`]: {
-    background: "linear-gradient(0deg, #01127D, #04012F)",
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
 
 const infoDetail = [
   {
@@ -108,7 +88,7 @@ const Project = () => {
   const description = `"In R&D, new projects and previous projects are developed. We add materials used in the projects and provide status updates indicating whether the project is complete or ongoing.`;
 
   const dispatch = useDispatch();
-  const Navigate = useNavigate()
+  const Navigate = useNavigate();
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose1 = () => {
     dispatch(setInfo(false));
@@ -133,6 +113,8 @@ const Project = () => {
   const [projectDetails, setprojectDetails] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [projectId, setProjectId] = useState("");
+  const [remarksPage, setRemarksPage] = useState(false);
+  const [projectName, setProjectName] = useState("");
 
   /// rtk query
   const { data, isLoading, refetch, isFetching } = useGetAllProjectDataQuery();
@@ -151,8 +133,12 @@ const Project = () => {
   };
 
   const handleStatusOpen = (id) => {
-    setStatusOpen(true), 
-    setProjectId(id);
+    setStatusOpen(true), setProjectId(id);
+  };
+
+  const hanldeRemarkOpen = ({ id, name }) => {
+    setRemarksPage(true), setProjectId(id);
+    setProjectName(name);
   };
 
   const handleClose = () => {
@@ -160,33 +146,7 @@ const Project = () => {
     setAddpartsDialopen(false);
     setprojectDetails({});
     setSelected({});
-    setOpenEdit(false)
-  };
-
-  const handleSubmitQuery = async (status) => {
-    setSkip(false);
-    try {
-      const params = {
-        id: selected["_id"],
-        status: status,
-      };
-
-      const res = await updateApprovalApi(params);
-      toast.success(`Successfully ${status ? "Accepted" : "Rejected"}`);
-      setOpen(false);
-      if (status) {
-        setQueryParams("accepted");
-      } else {
-        setQueryParams("rejected");
-      }
-
-      refetchUnApprovedCount();
-    } catch (e) {
-      console.log("Error at Open Box Approval Status");
-      console.log(e);
-    }
-    setSkip(true);
-    setSelected({});
+    setOpenEdit(false);
   };
 
   /// useEffects
@@ -200,6 +160,8 @@ const Project = () => {
           ...item,
           id: index + 1,
           date: formatDate(item.createdAt),
+          Remarks: item.Remarks,
+          Name: item.Name,
         };
       });
 
@@ -263,18 +225,16 @@ const Project = () => {
       align: "center",
       renderCell: (params) => {
         const id = params.row.projectId;
-      
+
         const color =
           params.row.status === "NotFullFilled"
             ? "red"
-            : params.row.status === "FullFilled" 
+            : params.row.status === "FullFilled"
             ? "green"
             : params.row.status === "Processing"
             ? "orange"
             : "blue";
 
-            
-          
         return (
           <div
             style={{
@@ -286,6 +246,35 @@ const Project = () => {
               onClick={() => handleStatusOpen(id)}
             >
               {params.row.status}
+            </Button>
+          </div>
+        );
+      },
+    },
+    {
+      field: "Remarks",
+      headerName: "Remarks",
+      minWidth: 250,
+      maxWidth: 250,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const id = params.row.projectId;
+        const remarks = params.row.Remarks.map((item) => item.WorkPercent);
+        const lastRemark = remarks[remarks.length - 1];
+        const status = params.row.status;
+
+        return (
+          <div>
+            <Button
+              disabled={status !== "FullFilled" && "Processing"}
+              onClick={() =>
+                hanldeRemarkOpen({ id: id, name: params.row.Name })
+              }
+            >
+              {lastRemark || "N/A"}%
             </Button>
           </div>
         );
@@ -305,23 +294,25 @@ const Project = () => {
         const id = params.row.projectId;
         const name = params.row.Name;
         const item = params.row.projectItem;
-      
+
         return item?.length > 0 ? (
           <AddTaskIcon
-          onClick={() => {
-            Navigate(`/CreateReq/${id}&${name}`);
-          }}
-          sx={{ "&:hover": { color: "red" }, cursor: "pointer" ,color:"green" } }
-          
+            onClick={() => {
+              Navigate(`/CreateReq/${id}&${name}`);
+            }}
+            sx={{
+              "&:hover": { color: "red" },
+              cursor: "pointer",
+              color: "green",
+            }}
           />
         ) : (
-       
           <Add
-          onClick={() => {
-            Navigate(`/CreateReq/${id}&${name}`);
-          }}
-          sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
-        />
+            onClick={() => {
+              Navigate(`/CreateReq/${id}&${name}`);
+            }}
+            sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
+          />
         );
       },
     },
@@ -374,7 +365,6 @@ const Project = () => {
           onChange={handleChange}
           aria-label="Platform"
         >
-        
           <ToggleButton
             classes={{ selected: classes.selected }}
             value="NotFullFilled"
@@ -479,6 +469,16 @@ const Project = () => {
           setStatusOpen={setStatusOpen}
           open={statusOpen}
           refetch={refetch}
+        />
+      )}
+      {remarksPage && (
+        <RemarksDial
+          setProjectId={setProjectId}
+          projectId={projectId}
+          setRemarksPage={setRemarksPage}
+          open={remarksPage}
+          refetch={refetch}
+          name={projectName}
         />
       )}
     </Box>

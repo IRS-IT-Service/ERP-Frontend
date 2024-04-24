@@ -9,10 +9,19 @@ export const otherApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    addCareer: builder.mutation({
+      query: (data) => ({
+        url: `/common/createCareer`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   
   }),
 });
 
 export const {
   useGetStudentinfoQuery,
+  useAddCareerMutation,
 } = otherApiSlice;
