@@ -125,6 +125,8 @@ import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
 import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 import PreOrder from "./Pages/DiscountQuery/PreOrder";
 import ChatMessage from "./Pages/Chat/ChatMessage";
+import Careers from "./Pages/Careers/Careers";
+
 
 function App() {
   /// initialize
@@ -717,6 +719,11 @@ function App() {
                   element={<AddCustomerForMarketing />}
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
+                {/* Careers */}
+                <Route
+                  path="/careers"
+                  element={<Careers />}
+                />
               </Route>
             </Routes>
           </Suspense>
