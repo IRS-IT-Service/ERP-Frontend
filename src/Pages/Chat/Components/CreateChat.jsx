@@ -132,7 +132,7 @@ const CreateChat = () => {
             fontFamily: "cursive",
             padding: "15px",
             fontWeight: "bold",
-            color: " rgb(138, 43, 226)",
+            // color: " rgb(138, 43, 226)",
           }}
         >
           IRS-Chat
@@ -157,21 +157,13 @@ const CreateChat = () => {
           </div>
         )}
       </Box>
-      {/* To show the users */}
+      {/* to show the users */}
       <Box sx={{ display: "flex" }}>
         <Box sx={{ height: "100%", width: "25%", overflowY: "auto" }}>
-          {[...allUsers?.data]
-            .sort((a, b) => {
-              // Move the object representing the current user ("You") to the beginning
-              if (a.adminId === adminId) return -1;
-              if (b.adminId === adminId) return 1;
-              return 0;
-            })
-            .map((docs, i) => {
-              // Check if the current user is the admin
+          {Array.isArray(allUsers?.data) &&
+            allUsers?.data.map((docs, i) => {
               const isAdminUser = docs.adminId === adminId;
 
-              // Render "you" instead of the user's name if it's the admin user
               const userName = isAdminUser ? "You" : docs.name;
 
               return (
