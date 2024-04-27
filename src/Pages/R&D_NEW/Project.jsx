@@ -269,7 +269,7 @@ const Project = () => {
         return (
           <div>
             <Button
-              disabled={status !== "FullFilled" && "Processing"}
+              disabled={status === "NotFullFilled"}
               onClick={() =>
                 hanldeRemarkOpen({ id: id, name: params.row.Name })
               }
