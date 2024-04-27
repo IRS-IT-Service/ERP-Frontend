@@ -47,64 +47,6 @@ const CreateCareer = () => {
     }
   };
 
-  const styles = {
-    input: {
-      padding: "7px",
-      borderRadius: "6px",
-      fontSize: "16px",
-      background: "#fbfbfb",
-      border: "2px solid transparent",
-      height: "36px",
-      boxShadow:
-        "0 0 0 1px #dddddd, 0 2px 4px 0 rgb(0 0 0 / 7%), 0 1px 1.5px 0 rgb(0 0 0 / 5%)",
-      "& input:focus": {
-        border: "2px solid #000",
-        borderRadius: "4px",
-      },
-    },
-    formContainer: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-start",
-      gap: "15px",
-      margin: "10px",
-      padding: "20px",
-      backgroundColor: "#FFECEC",
-      border: "2px solid #dddddd",
-      borderRadius: "8px",
-      "& input:focus": {
-        border: "2px solid #000",
-        borderRadius: "4px",
-      },
-    },
-    textArea: {
-      padding: "7px",
-      borderRadius: "6px",
-      fontSize: "16px",
-      background: "#fbfbfb",
-      border: "2px solid transparent",
-      boxShadow:
-        "0 0 0 1px #dddddd, 0 2px 4px 0 rgb(0 0 0 / 7%), 0 1px 1.5px 0 rgb(0 0 0 / 5%)",
-      "& input:focus": {
-        border: "2px solid #000",
-        borderRadius: "4px",
-      },
-    },
-    groupDiv: {
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      gap: "4px",
-    },
-
-    groupBox: {
-      display: "flex",
-      flexDirection: "column",
-      width: "50%",
-      gap: "4px",
-    },
-  };
-
   const handleChange = (event) => {
     const { id, value } = event.target;
     setFormData((prevData) => ({
@@ -133,14 +75,7 @@ const CreateCareer = () => {
             required
           />
         </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
+        <div style={styles.groupBoxDiv}>
           <div style={styles.groupBox}>
             <label htmlFor="skills">Skills</label>
             <input
@@ -165,14 +100,7 @@ const CreateCareer = () => {
             />
           </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
+        <div style={styles.groupBoxDiv}>
           <div style={styles.groupBox}>
             <label htmlFor="experience">Experience</label>
             <input
@@ -184,9 +112,7 @@ const CreateCareer = () => {
               required
             />
           </div>
-          <div
-            style={styles.groupBox}
-          >
+          <div style={styles.groupBox}>
             <label htmlFor="position">Position</label>
             <input
               style={styles.input}
@@ -244,3 +170,68 @@ const CreateCareer = () => {
 };
 
 export default CreateCareer;
+
+const styles = {
+  input: {
+    padding: "7px",
+    borderRadius: "6px",
+    fontSize: "16px",
+    background: "#fbfbfb",
+    border: "2px solid transparent",
+    height: "36px",
+    boxShadow:
+      "0 0 0 1px #dddddd, 0 2px 4px 0 rgb(0 0 0 / 7%), 0 1px 1.5px 0 rgb(0 0 0 / 5%)",
+    "& input:focus": {
+      border: "2px solid #000",
+      borderRadius: "4px",
+    },
+  },
+  formContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: "15px",
+    margin: "10px",
+    padding: "20px",
+    backgroundColor: "#FFECEC",
+    border: "2px solid #dddddd",
+    borderRadius: "8px",
+    "& input:focus": {
+      border: "2px solid #000",
+      borderRadius: "4px",
+    },
+  },
+  textArea: {
+    padding: "7px",
+    borderRadius: "6px",
+    fontSize: "16px",
+    background: "#fbfbfb",
+    border: "2px solid transparent",
+    boxShadow:
+      "0 0 0 1px #dddddd, 0 2px 4px 0 rgb(0 0 0 / 7%), 0 1px 1.5px 0 rgb(0 0 0 / 5%)",
+    "& input:focus": {
+      border: "2px solid #000",
+      borderRadius: "4px",
+    },
+  },
+  groupDiv: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    gap: "4px",
+  },
+
+  groupBoxDiv: {
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+    width: "100%",
+  },
+
+  groupBox: {
+    display: "flex",
+    flexDirection: "column",
+    width: "50%",
+    gap: "4px",
+  },
+};
