@@ -124,14 +124,13 @@ import Studentinfo from "./Pages/Other/Studentinfo";
 import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
 import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 import PreOrder from "./Pages/DiscountQuery/PreOrder";
-
+import ChatMessage from "./Pages/Chat/ChatMessage";
 
 function App() {
   /// initialize
   const dispatch = useDispatch();
   const socket = useSocket();
   const navigate = useNavigate();
-
 
   /// global state
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
@@ -364,7 +363,10 @@ function App() {
               <Route path="" element={<PrivateRoute />}>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="product-list" element={<Home_page />} />
-                <Route path="/setDicountpricerange" element={<SetDiscountPrice/>} />
+                <Route
+                  path="/setDicountpricerange"
+                  element={<SetDiscountPrice />}
+                />
                 <Route
                   path="/Users"
                   element={
@@ -393,7 +395,7 @@ function App() {
                   element={<AddRoboProductsValue />}
                 />
                 <Route path="/BulkMessage" element={<BulkMessage />} />
-                <Route path="/MessageTemplate" element={<MessageTemplate/>}/>
+                <Route path="/MessageTemplate" element={<MessageTemplate />} />
                 {/* Products Router */}
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
                 <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
@@ -697,27 +699,12 @@ function App() {
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
 
                 {/* R&D */}
-                <Route
-                  path="/CreateReq/:id"
-                  element={<CreateReq />}
-                />
-                <Route
-                  path="/Project"
-                  element={<Project />}
-                />
-              
-                    <Route
-                  path="/ItemsAprroval"
-                  element={<ItemsApproval />}
-                />
-                      <Route
-                  path="/PartsApproval"
-                  element={<PartsApproval />}
-                />
-                         <Route
-                  path="/PreOrder"
-                  element={<PreOrder />}
-                />
+                <Route path="/CreateReq/:id" element={<CreateReq />} />
+                <Route path="/Project" element={<Project />} />
+
+                <Route path="/ItemsAprroval" element={<ItemsApproval />} />
+                <Route path="/PartsApproval" element={<PartsApproval />} />
+                <Route path="/PreOrder" element={<PreOrder />} />
 
                 {/* Marketing tools */}
                 <Route path="/addAdvertiser" element={<CustomerDetails />} />
@@ -725,6 +712,11 @@ function App() {
                   path="/addCusotmerforMarketing"
                   element={<AddCustomerForMarketing />}
                 />
+                <Route
+                  path="/addCusotmerforMarketing"
+                  element={<AddCustomerForMarketing />}
+                />
+                <Route path="/Chat" element={<ChatMessage />} />
               </Route>
             </Routes>
           </Suspense>
