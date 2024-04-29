@@ -57,8 +57,8 @@ const CreateChat = () => {
     if (socket) {
       socket.on("newChatMessage", (message) => {
         console.log("Socket", message);
-        if (message.data.ReceiverId === singleUserData?.adminId) {
-          console.log(message.data);
+        if (message?.data.ReceiverId === singleUserData?.adminId) {
+          console.log("Recienv", message.data);
           setMessageData((prevData) => [...prevData, message.data]);
         }
       });
