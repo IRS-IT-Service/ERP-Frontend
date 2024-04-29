@@ -58,7 +58,6 @@ import {
   addLiveStatus,
   addLiveWholeSaleStatus,
   addOnlineWholeSaleUsers,
-  addChatNotificationData,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
 import { onMessage, getToken } from "firebase/messaging"; // Import necessary functions from Firebase messaging
@@ -128,6 +127,7 @@ import PreOrder from "./Pages/DiscountQuery/PreOrder";
 import ChatMessage from "./Pages/Chat/ChatMessage";
 import Careers from "./Pages/Careers/Careers";
 
+
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -136,7 +136,6 @@ function App() {
 
   /// global state
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
-  const adminid = userInfo?.adminId;
   const Mode = useSelector((state) => state.ui.Mode);
 
   /// local state
@@ -191,12 +190,6 @@ function App() {
     pushNotification("Live WholeSeller Status", data, "/UpdateSellerPrice");
   };
 
-  const handleChatNotification = (data) => {
-    if (data.data.ReceiverId === adminid) {
-      dispatch(addChatNotificationData(data.data));
-    }
-  };
-
   /// webSocket Events
 
   useEffect(() => {
@@ -235,9 +228,6 @@ function App() {
           // console.log('Received Event liveWholeSaleStatus for Admin :', data);
 
           handleLiveWholeSaleStatus(data);
-        });
-        socket.on("newChatMessage", (data) => {
-          handleChatNotification(data);
         });
       }
 
@@ -730,7 +720,10 @@ function App() {
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
                 {/* Careers */}
-                <Route path="/careers" element={<Careers />} />
+                <Route
+                  path="/careers"
+                  element={<Careers />}
+                />
               </Route>
             </Routes>
           </Suspense>
