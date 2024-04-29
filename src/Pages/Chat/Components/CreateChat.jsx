@@ -7,15 +7,32 @@ import {
 import noImage from "../../../assets/NoImage.jpg";
 import SendIcon from "@mui/icons-material/Send";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import chatLogo from "../../../../public/ChatLogo.png";
+import {
+  addChatNotificationData,
+  removeChatNotification,
+} from "../../../features/slice/authSlice";
 
 const CreateChat = () => {
   // redux data
+  const dispatch = useDispatch();
   const { adminId } = useSelector((state) => state.auth.userInfo);
   const datas = useSelector((state) => state.auth);
   const onLineUsers = datas.onlineUsers;
+  const notificationData = datas?.chatNotificationData;
+  let [messageCountsBySender, setMessageCountsBySender] = useState();
+
+  useEffect(() => {
+    const messageCountsBySender = notificationData.reduce((counts, message) => {
+      const senderId = message.SenderId;
+      counts[senderId] = (counts[senderId] || 0) + 1;
+      return counts;
+    }, {});
+
+    setMessageCountsBySender(messageCountsBySender);
+  }, [notificationData]);
 
   // local state;
   const [singleUserData, setSingleUserData] = useState(null);
@@ -59,7 +76,8 @@ const CreateChat = () => {
         console.log(message, socket)
         if (
           message.data._id &&
-          !messageData.some((msg) => msg._id === message.data._id)
+          !messageData.some((msg) => msg._id === message.data._id) &&
+          message.data.ReceiverId === singleUserData?.adminId
         ) {
           setMessageData((prevData) => [...prevData, message.data]);
         }
@@ -75,6 +93,12 @@ const CreateChat = () => {
   // functions
   const handleOnClickUser = (user) => {
     setSingleUserData(user);
+    const filterData = notificationData.filter(
+      (data) => data.SenderId !== user.adminId
+    );
+    if (filterData && filterData.length > 0) {
+      dispatch(removeChatNotification(filterData));
+    }
   };
 
   const handleSubmit = async () => {
@@ -175,6 +199,7 @@ const CreateChat = () => {
                     padding: "3px",
                     margin: "2px",
                     cursor: "pointer",
+                    position: "relative",
                     boxShadow:
                       "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
                     background: `${
@@ -202,6 +227,24 @@ const CreateChat = () => {
                     </span>
                     <span>{docs.ContactNo}</span>
                   </div>
+                  {messageCountsBySender &&
+                    messageCountsBySender[docs?.adminId] && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 3,
+                          right: 3,
+                          background: "green",
+                          height: "20px",
+                          width: "25px",
+                          borderRadius: 50,
+                          textAlign: "center",
+                          color: "white",
+                        }}
+                      >
+                        {messageCountsBySender[docs?.adminId]}
+                      </span>
+                    )}
                 </div>
               );
             })}

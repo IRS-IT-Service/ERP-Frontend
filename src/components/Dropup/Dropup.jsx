@@ -1,6 +1,9 @@
 import React from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { formatDate, formateDateAndTime } from "../../commonFunctions/commonFunctions";
+import {
+  formatDate,
+  formateDateAndTime,
+} from "../../commonFunctions/commonFunctions";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Box, Button, Typography, Switch, createTheme } from "@mui/material";
 import { useState } from "react";
@@ -18,6 +21,7 @@ import {
   toggleNotificationSound,
   clearAllLiveWholeSaleStatus,
   clearOneLiveWholeSaleStatus,
+  toggleChatNotificationSound,
 } from "../../features/slice/authSlice";
 
 /// switch color
@@ -52,6 +56,7 @@ const Dropup = () => {
     autoOpenStatus,
     initialDropUpControl,
     notificationSound,
+    chatNotificationSound,
     liveWholeSaleStatus,
     allWholeSaleUsers,
     onlineWholeSaleUsers,
@@ -180,24 +185,23 @@ const Dropup = () => {
                     key={index}
                     onClick={() => handleItemClick(items)}
                     sx={{
-                      flexBasis: '70%',
-                      backgroundColor:
-                        selectedItem === items ? 'grey' : color2,
-                      color: 'black',
-                      backdropFilter: 'blur(9px)',
-                      paddingX: '.3rem',
-                      paddingY: '.3rem',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid',
-                      borderTopLeftRadius: '.5rem',
-                      borderBottomLeftRadius: '.5rem',
+                      flexBasis: "70%",
+                      backgroundColor: selectedItem === items ? "grey" : color2,
+                      color: "black",
+                      backdropFilter: "blur(9px)",
+                      paddingX: ".3rem",
+                      paddingY: ".3rem",
+                      cursor: "pointer",
+                      borderBottom: "1px solid",
+                      borderTopLeftRadius: ".5rem",
+                      borderBottomLeftRadius: ".5rem",
                     }}
                   >
                     <Typography
                       sx={{
-                        fontWeight: 'bold',
-                        textTransform: 'uppercase',
-                        fontSize: 'smaller',
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        fontSize: "smaller",
                       }}
                     >
                       {items}
@@ -332,6 +336,8 @@ const Dropup = () => {
                       marginTop: ".3rem",
                       padding: ".2rem",
                       background: color,
+                      display: "flex",
+                      flexDirection: "column",
                     }}
                   >
                     <Box
@@ -393,6 +399,40 @@ const Dropup = () => {
                         checked={notificationSound}
                         onChange={() => {
                           dispatch(toggleNotificationSound(!notificationSound));
+                        }}
+                        style={{ color: color2 }}
+                      />
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        background: color,
+                        alignItems: "center",
+                        padding: ".3rem",
+
+                        marginTop: ".3rem",
+                      }}
+                    >
+                      <Typography
+                        variant="paragraph"
+                        sx={{
+                          fontWeight: "500",
+                          color: "white",
+                          textTransform: "capitalize",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Chat Notification Sound
+                      </Typography>
+
+                      <Switch
+                        checked={chatNotificationSound}
+                        onChange={() => {
+                          dispatch(
+                            toggleChatNotificationSound(!chatNotificationSound)
+                          );
                         }}
                         style={{ color: color2 }}
                       />
