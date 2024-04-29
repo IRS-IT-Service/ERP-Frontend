@@ -56,12 +56,12 @@ const CreateChat = () => {
   useEffect(() => {
     if (socket) {
       socket.on("newChatMessage", (message) => {
-        console.log(message, socket)
         if (
           message.data._id &&
           !messageData.some((msg) => msg._id === message.data._id) &&
           message.data.ReceiverId === singleUserData?.adminId
         ) {
+          console.log(message.data);
           setMessageData((prevData) => [...prevData, message.data]);
         }
       });
@@ -72,7 +72,7 @@ const CreateChat = () => {
       }
     };
   }, [socket, messageData]);
-
+  console.log("Message", messageData);
   // functions
   const handleOnClickUser = (user) => {
     setSingleUserData(user);
