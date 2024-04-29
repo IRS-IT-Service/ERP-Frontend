@@ -191,10 +191,9 @@ function App() {
   };
 
   const handleChatNotification = (data) => {
-    console.log(data)
-    if (data.data.ReceiverId === adminid) {
+    // if (data.data.ReceiverId === adminid) {
       dispatch(addChatNotificationData(data.data));
-    }
+    // }
   };
 
   /// webSocket Events
@@ -212,11 +211,7 @@ function App() {
         });
 
         // Listen for the 'onlineUsers' event
-        socket.on("onlineUsers", (data) => {
-          // console.log('Received Event onlineUsers for Admin :', data);
-
-          handleOnlineUsers(data);
-        });
+      
         // Listen for the 'onlineWholeSaleUsers' event
         socket.on("onlineWholeSaleUsers", (data) => {
           // console.log('Received Event onlineWholeSaleUsers for Admin :', data);
@@ -237,6 +232,15 @@ function App() {
           handleLiveWholeSaleStatus(data);
         });
       }
+      socket.on("onlineUsers", (data) => {
+        // console.log('Received Event onlineUsers for Admin :', data);
+
+        handleOnlineUsers(data);
+      });
+      socket.on("newChatMessage", (data) => {
+
+        handleChatNotification(data);
+      });
 
       /// events for all
       // Listen for the 'logout' event

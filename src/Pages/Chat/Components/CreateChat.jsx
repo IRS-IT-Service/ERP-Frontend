@@ -64,19 +64,13 @@ const CreateChat = () => {
       
 
       socket.on("newChatMessage", (message) => {
-        let getId = message?.data.ReceiverId;
-        // console.log("Admin Id",adminId)
-        // console.log("Reciver",getId)
-        // console.log("Socket", message);
-        // console.log("Socket Data", message.data);
-        // console.log("Socket Datas", message.data.data);
-
-
-        // if (message?.data.ReceiverId === singleUserData?.adminId) {
-        //   console.log("Recienv", message.data);
-        //   setMessageData((prevData) => [...prevData, message.data]);
+        // if (
+        //   message.data._id &&
+        //   !messageData.some((msg) => msg._id === message.data._id) &&
+        //   message.data.ReceiverId === singleUserData?.adminId
+        // ) {
+          setMessageData((prevData) => [...prevData, message.data]);
         // }
-        setMessageData((prevData) => [...prevData, message.data]);
       });
     }
     return () => {
@@ -89,15 +83,8 @@ const CreateChat = () => {
   // functions
   const handleOnClickUser = (user) => {
     setSingleUserData(user);
-    console.log(notificationData)
-    const filterData = notificationData.filter(
-      (data) => data.SenderId !== user.adminId
-    );
-    
-      dispatch(removeChatNotification(filterData));
-    
   };
-console.log(messageData)
+
   const handleSubmit = async () => {
     if (!message) return;
     try {
