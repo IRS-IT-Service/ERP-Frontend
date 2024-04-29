@@ -74,13 +74,13 @@ const CreateChat = () => {
   useEffect(() => {
     if (socket) {
       socket.on("newChatMessage", (message) => {
-        if (
-          message.data._id &&
-          !messageData.some((msg) => msg._id === message.data._id) &&
-          message.data.ReceiverId === singleUserData?.adminId
-        ) {
+        // if (
+        //   message.data._id &&
+        //   !messageData.some((msg) => msg._id === message.data._id) &&
+        //   message.data.ReceiverId === singleUserData?.adminId
+        // ) {
           setMessageData((prevData) => [...prevData, message.data]);
-        }
+        // }
       });
     }
     return () => {
@@ -93,7 +93,6 @@ const CreateChat = () => {
   // functions
   const handleOnClickUser = (user) => {
     setSingleUserData(user);
-    console.log(notificationData)
     const filterData = notificationData.filter(
       (data) => data.SenderId !== user.adminId
     );
@@ -101,7 +100,6 @@ const CreateChat = () => {
       dispatch(removeChatNotification(filterData));
     
   };
-console.log(messageData)
   const handleSubmit = async () => {
     if (!message) return;
     try {
