@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { NotificationSoundPlay ,ChatNotificationPlay} from "../../commonFunctions/commonFunctions";
+import { NotificationSoundPlay } from "../../commonFunctions/commonFunctions";
+import ChatNotificationSound from "../../../public/chatRingtone.mp3";
 
 const initialState = {
   userInfo: localStorage.getItem("userInfo")
@@ -140,7 +141,8 @@ const authSlice = createSlice({
     addChatNotificationData:(state,action) =>{
       state.chatNotificationData = [action.payload,...state.chatNotificationData]
       if (state.chatNotificationSound) {
-       ChatNotificationPlay();
+        const audio = new Audio(ChatNotificationSound);
+        audio.play();
      }
      },
      removeChatNotification:(state,action) =>{

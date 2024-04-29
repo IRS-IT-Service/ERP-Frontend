@@ -1,5 +1,5 @@
 import NotificationSound2 from "../assets/NotificationSound2.mp3";
-import ChatNotificationSound2 from "../../public/chatRingtone.mp3";
+import ChatNotificationSound from "../../public/chatRingtone.mp3";
 
 function formatIndianPrice(value) {
   let valueChecked = +value || 0;
@@ -25,7 +25,7 @@ const NotificationSoundPlay = () => {
   audio.play();
 };
 const ChatNotificationPlay = () => {
-  const audio = new Audio(ChatNotificationSound2);
+  const audio = new Audio(ChatNotificationSound);
   audio.play();
 };
 

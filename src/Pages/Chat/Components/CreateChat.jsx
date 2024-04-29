@@ -48,7 +48,7 @@ const CreateChat = () => {
     }, {});
 
     setMessageCountsBySender(messageCountsBySender);
-  }, [notificationData]);
+  }, [notificationData, notificationData?.length > 0]);
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -103,7 +103,8 @@ const CreateChat = () => {
 
     dispatch(removeChatNotification(filterData));
   };
-  
+  console.log(notificationData)
+console.log("Hello",messageCountsBySender)
   const handleSubmit = async () => {
     if (!message) return;
     try {

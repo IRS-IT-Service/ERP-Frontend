@@ -233,20 +233,21 @@ function App() {
 
           handleLiveWholeSaleStatus(data);
         });
+        socket.on("newChatMessage", (data) => {
+          console.log("Socket Data", socket, data)
+          // handleChatNotification(data);
+          if (data.data.ReceiverId === adminid) {
+            console.log("Admin id", data)
+          dispatch(addChatNotificationData(data.data));
+          }
+        });
       }
       socket.on("onlineUsers", (data) => {
         // console.log('Received Event onlineUsers for Admin :', data);
 
         handleOnlineUsers(data);
       });
-      socket.on("newChatMessage", (data) => {
-        console.log("Socket Data", socket, data)
-        // handleChatNotification(data);
-        if (data.data.ReceiverId === adminid) {
-          console.log("Admin id", data)
-        dispatch(addChatNotificationData(data.data));
-        }
-      });
+
 
       /// events for all
       // Listen for the 'logout' event
@@ -254,7 +255,7 @@ function App() {
         const userId = data.userId;
         const currentUserId = userInfo?.adminId;
         if (userId === currentUserId) {
-          console.log("logout");
+          
           handleLogout();
         }
       });
