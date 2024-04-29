@@ -60,10 +60,11 @@ const CreateChat = () => {
         console.log("Socket Data", message.data)
         console.log("Socket Datas", message.data.data)
 
-        if (message?.data.ReceiverId === singleUserData?.adminId) {
-          console.log("Recienv", message.data);
-          setMessageData((prevData) => [...prevData, message.data]);
-        }
+        // if (message?.data.ReceiverId === singleUserData?.adminId) {
+        //   console.log("Recienv", message.data);
+        //   setMessageData((prevData) => [...prevData, message.data]);
+        // }
+        setMessageData((prevData) => [...prevData, message.data]);
       });
     }
     return () => {
