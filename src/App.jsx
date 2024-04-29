@@ -240,7 +240,12 @@ function App() {
         handleOnlineUsers(data);
       });
       socket.on("newChatMessage", (data) => {
-        handleChatNotification(data);
+        console.log("Socket Data", socket, data)
+        // handleChatNotification(data);
+        if (data.data.ReceiverId === adminid) {
+          console.log("Admin id", data)
+        dispatch(addChatNotificationData(data.data));
+        }
       });
 
       /// events for all
@@ -259,7 +264,7 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
-        socket.off("newChatMessage");
+        // socket.off("newChatMessage");
       }
     };
   }, [socket]);
