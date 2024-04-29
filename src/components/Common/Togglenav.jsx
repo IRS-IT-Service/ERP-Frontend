@@ -220,6 +220,8 @@ const ToggleNav = () => {
     setProRoles(filteredParents);
   }, []);
 
+  const chatCount =  chatNotificationData?.length || 0;
+
   /// function
   const sumObjectValues = (obj) => {
     let total = 0;
