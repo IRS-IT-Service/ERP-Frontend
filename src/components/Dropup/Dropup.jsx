@@ -18,6 +18,7 @@ import {
   toggleNotificationSound,
   clearAllLiveWholeSaleStatus,
   clearOneLiveWholeSaleStatus,
+  toggleChatNotificationSound,
 } from "../../features/slice/authSlice";
 
 /// switch color
@@ -55,6 +56,7 @@ const Dropup = () => {
     liveWholeSaleStatus,
     allWholeSaleUsers,
     onlineWholeSaleUsers,
+    chatNotificationSound,
   } = useSelector((state) => state.auth);
 
   /// local state
@@ -393,6 +395,40 @@ const Dropup = () => {
                         checked={notificationSound}
                         onChange={() => {
                           dispatch(toggleNotificationSound(!notificationSound));
+                        }}
+                        style={{ color: color2 }}
+                      />
+
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        background: color,
+                        alignItems: "center",
+                        padding: ".3rem",
+
+                        marginTop: ".3rem",
+                      }}
+                    >
+                      <Typography
+                        variant="paragraph"
+                        sx={{
+                          fontWeight: "500",
+                          color: "white",
+                          textTransform: "capitalize",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Chat Notification Sound
+                      </Typography>
+
+                      <Switch
+                        checked={chatNotificationSound}
+                        onChange={() => {
+                          dispatch(
+                            toggleChatNotificationSound(!chatNotificationSound)
+                          );
                         }}
                         style={{ color: color2 }}
                       />

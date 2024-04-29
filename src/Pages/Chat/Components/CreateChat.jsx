@@ -7,7 +7,7 @@ import {
 import noImage from "../../../assets/NoImage.jpg";
 import SendIcon from "@mui/icons-material/Send";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import chatLogo from "../../../../public/ChatLogo.png";
 import {
@@ -17,6 +17,7 @@ import {
 import { ContentPasteOffSharp } from "@mui/icons-material";
 
 const CreateChat = () => {
+  const dispatch = useDispatch();
   // redux data
   const { adminId } = useSelector((state) => state.auth.userInfo);
   const datas = useSelector((state) => state.auth);
@@ -35,6 +36,19 @@ const CreateChat = () => {
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
   const online = onLineUsers.includes(singleUserData?.adminId);
+
+  const notificationData = datas?.chatNotificationData;
+  let [messageCountsBySender, setMessageCountsBySender] = useState();
+
+  useEffect(() => {
+    const messageCountsBySender = notificationData.reduce((counts, message) => {
+      const senderId = message.SenderId;
+      counts[senderId] = (counts[senderId] || 0) + 1;
+      return counts;
+    }, {});
+
+    setMessageCountsBySender(messageCountsBySender);
+  }, [notificationData]);
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -215,6 +229,24 @@ const CreateChat = () => {
                     </span>
                     <span>{docs.ContactNo}</span>
                   </div>
+                  {messageCountsBySender &&
+                    messageCountsBySender[docs?.adminId] && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 3,
+                          right: 3,
+                          background: "green",
+                          height: "20px",
+                          width: "25px",
+                          borderRadius: 50,
+                          textAlign: "center",
+                          color: "white",
+                        }}
+                      >
+                        {messageCountsBySender[docs?.adminId]}
+                      </span>
+                    )}
                 </div>
               );
             })}
