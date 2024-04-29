@@ -68,7 +68,7 @@ const CreateChat = () => {
         socket.off("newChatMessage");
       }
     };
-  }, [socket, messageData]);
+  }, [socket, messageData, setMessageData]);
   console.log("Message", messageData);
   // functions
   const handleOnClickUser = (user) => {
