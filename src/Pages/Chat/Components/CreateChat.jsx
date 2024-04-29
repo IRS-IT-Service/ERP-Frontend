@@ -60,13 +60,12 @@ const CreateChat = () => {
 
       socket.on("newChatMessage", (message) => {
         let getId = message?.data.ReceiverId;
-        console.log("Admin Id",adminId)
-        console.log("Reciver",getId)
-        console.log("Socket", message);
-        console.log("Socket Data", message.data);
-        console.log("Socket Datas", message.data.data);
+        // console.log("Admin Id",adminId)
+        // console.log("Reciver",getId)
+        // console.log("Socket", message);
+        // console.log("Socket Data", message.data);
+        // console.log("Socket Datas", message.data.data);
 
-        if (getId !== adminId) return;
 
         // if (message?.data.ReceiverId === singleUserData?.adminId) {
         //   console.log("Recienv", message.data);
