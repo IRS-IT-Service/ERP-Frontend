@@ -14,6 +14,7 @@ import {
   addChatNotificationData,
   removeChatNotification,
 } from "../../../features/slice/authSlice";
+import { ContentPasteOffSharp } from "@mui/icons-material";
 
 const CreateChat = () => {
   // redux data
@@ -92,14 +93,15 @@ const CreateChat = () => {
   // functions
   const handleOnClickUser = (user) => {
     setSingleUserData(user);
+    console.log(notificationData)
     const filterData = notificationData.filter(
       (data) => data.SenderId !== user.adminId
     );
-    if (filterData && filterData.length > 0) {
+    
       dispatch(removeChatNotification(filterData));
-    }
+    
   };
-
+console.log(messageData)
   const handleSubmit = async () => {
     if (!message) return;
     try {

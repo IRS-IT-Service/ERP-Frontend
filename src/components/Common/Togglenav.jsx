@@ -223,7 +223,7 @@ const ToggleNav = () => {
     setProRoles(filteredParents);
   }, []);
 
-  const chatCount = pathName !== "/chat" ? chatNotificationData?.length : 0;
+  const chatCount =  chatNotificationData?.length || 0;
 
   /// function
   const sumObjectValues = (obj) => {

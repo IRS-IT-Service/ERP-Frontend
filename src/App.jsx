@@ -192,6 +192,7 @@ function App() {
   };
 
   const handleChatNotification = (data) => {
+    console.log(data)
     if (data.data.ReceiverId === adminid) {
       dispatch(addChatNotificationData(data.data));
     }
@@ -257,6 +258,7 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
+        socket.off("newChatMessage")
       }
     };
   }, [socket]);
