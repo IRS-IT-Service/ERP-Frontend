@@ -58,6 +58,7 @@ import {
   addLiveStatus,
   addLiveWholeSaleStatus,
   addOnlineWholeSaleUsers,
+  addChatNotificationData,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
 import { onMessage, getToken } from "firebase/messaging"; // Import necessary functions from Firebase messaging
@@ -127,7 +128,6 @@ import PreOrder from "./Pages/DiscountQuery/PreOrder";
 import ChatMessage from "./Pages/Chat/ChatMessage";
 import Careers from "./Pages/Careers/Careers";
 
-
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -137,7 +137,7 @@ function App() {
   /// global state
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
-
+  const adminid = userInfo?.adminId;
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
@@ -192,7 +192,7 @@ function App() {
 
   const handleChatNotification = (data) => {
     // if (data.data.ReceiverId === adminid) {
-      dispatch(addChatNotificationData(data.data));
+    dispatch(addChatNotificationData(data.data));
     // }
   };
 
@@ -211,7 +211,7 @@ function App() {
         });
 
         // Listen for the 'onlineUsers' event
-      
+
         // Listen for the 'onlineWholeSaleUsers' event
         socket.on("onlineWholeSaleUsers", (data) => {
           // console.log('Received Event onlineWholeSaleUsers for Admin :', data);
@@ -238,7 +238,6 @@ function App() {
         handleOnlineUsers(data);
       });
       socket.on("newChatMessage", (data) => {
-
         handleChatNotification(data);
       });
 
@@ -258,7 +257,7 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
-        socket.off("newChatMessage")
+        socket.off("newChatMessage");
       }
     };
   }, [socket]);
@@ -732,10 +731,7 @@ function App() {
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
                 {/* Careers */}
-                <Route
-                  path="/careers"
-                  element={<Careers />}
-                />
+                <Route path="/careers" element={<Careers />} />
               </Route>
             </Routes>
           </Suspense>

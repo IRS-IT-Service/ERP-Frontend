@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { NotificationSoundPlay } from "../../commonFunctions/commonFunctions";
+import { NotificationSoundPlay ,ChatNotificationPlay} from "../../commonFunctions/commonFunctions";
 
 const initialState = {
   userInfo: localStorage.getItem("userInfo")
@@ -23,6 +23,7 @@ const initialState = {
   allUsers: {},
   onlineUsers: [],
   liveStatus: JSON.parse(localStorage.getItem("liveStatus") || "[]"),
+  chatNotificationData:[],
 
   /// WholeSale seller portal data
   allWholeSaleUsers: {},
@@ -37,6 +38,7 @@ const initialState = {
   notificationSound: JSON.parse(
     localStorage.getItem("notificationSound") || "true"
   ),
+  chatNotificationSound:JSON.parse(localStorage.getItem("chatNotificationSound") || "true")
 };
 
 const authSlice = createSlice({
@@ -135,6 +137,16 @@ const authSlice = createSlice({
 
       state.initialDropUpControl = true;
     },
+    addChatNotificationData:(state,action) =>{
+      state.chatNotificationData = [action.payload,...state.chatNotificationData]
+      if (state.chatNotificationSound) {
+       ChatNotificationPlay();
+     }
+     },
+     removeChatNotification:(state,action) =>{
+       state.chatNotificationData = action.payload
+     },
+
     clearOneLiveWholeSaleStatus: (state, action) => {
       const indexToRemove = action.payload;
       const oldLiveWholeSaleStatus = [...state.liveWholeSaleStatus];
@@ -162,8 +174,13 @@ const authSlice = createSlice({
       state.notificationSound = action.payload;
       localStorage.setItem("notificationSound", JSON.stringify(action.payload));
     },
+    toggleChatNotificationSound:(state,action) =>{
+      state.chatNotificationSound = action.payload;
+      localStorage.setItem("chatNotificationSound", JSON.stringify(action.payload));
+    }
   },
 });
+
 
 export const {
   setCredentials,
@@ -184,5 +201,8 @@ export const {
   addOnlineWholeSaleUsers,
   addAllWholeSaleUsers,
   setHiddemColumns,
+  toggleChatNotificationSound,
+  addChatNotificationData,
+  removeChatNotification
 } = authSlice.actions;
 export default authSlice.reducer;
