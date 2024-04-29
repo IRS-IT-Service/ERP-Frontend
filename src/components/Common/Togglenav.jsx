@@ -29,7 +29,7 @@ import { logout as dispatchLogout } from "../../features/slice/authSlice";
 import logo2 from "../../assets/IRSLOGOR.png";
 import { useLogoutMutation } from "../../features/api/usersApiSlice";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import themeColors from "../../constants/ThemeColor";
 import Header from "./Header";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
@@ -37,7 +37,7 @@ import {
   useGetPreOrderCountQuery,
   useAllDispatchAprovalCountQuery,
 } from "../../features/api/RnDSlice";
-import ChatIcon from "@mui/icons-material/Chat";
+import ChatIcon from '@mui/icons-material/Chat';
 
 const drawerWidth = 220;
 
@@ -119,16 +119,13 @@ const ToggleNav = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
-  const pathName = location.pathname;
+  // open close sidebar
   const [toggleNavData, setToggleNavData] = useState(userRolesData);
 
   /// global state
   const toggleShowNav2 = useSelector((state) => state.ui.ShowSide_nav);
   const { themeColor } = useSelector((state) => state.ui);
-  const { isAdmin, userRole, userInfo, chatNotificationData } = useSelector(
-    (state) => state.auth
-  );
+  const { isAdmin, userRole, userInfo } = useSelector((state) => state.auth);
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
   const unApprovedData = useSelector(
     (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
@@ -392,30 +389,10 @@ const ToggleNav = () => {
               alignItems: "center",
             }}
           >
-            <div
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/chat")}
-            >
-              <Badge
-                badgeContent={chatCount}
-                color={notificationCount > 0 ? "error" : "default"}
-                overlap="circular"
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                onClick={() => {
-                  navigate("/chat");
-                }}
-                className={chatCount ? "notificationBell" : ""}
-                sx={{
-                  cursor: "pointer",
-                }}
-              >
-                <ChatIcon color="#fff" />
-              </Badge>{" "}
+            <div style={{cursor:"pointer"}} onClick={()=> navigate("/chat")}>
+            <ChatIcon/>
             </div>
-
+      
             <div>
               <Badge
                 badgeContent={notificationCount}

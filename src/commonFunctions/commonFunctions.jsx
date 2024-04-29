@@ -1,5 +1,4 @@
 import NotificationSound2 from "../assets/NotificationSound2.mp3";
-import ChatNotificationSound2 from "../../public/chatRingtone.mp3";
 
 function formatIndianPrice(value) {
   let valueChecked = +value || 0;
@@ -25,30 +24,20 @@ const NotificationSoundPlay = () => {
   audio.play();
 };
 
-const ChatNotificationPlay = () => {
-  const audio = new Audio(ChatNotificationSound2);
-  audio.play();
-};
-
-const formatDate = (dateString) => {
+const  formatDate = (dateString) => {
   if (!dateString) {
     return "";
   }
-
+  
   const date = new Date(dateString);
-
-  const options = {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    timeZone: "Asia/Kolkata",
-  };
+  
+  const options = { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Kolkata" };
   const formattedDate = new Intl.DateTimeFormat("en-IN", options).format(date);
 
   return formattedDate;
 };
 
-const formateDateAndTime = (originalDate) => {
+const  formateDateAndTime =(originalDate) => {
   const date = new Date(originalDate);
   const hours = date.getHours();
   const minutes = date.getMinutes();
@@ -60,32 +49,23 @@ const formateDateAndTime = (originalDate) => {
   const day = date.getDate();
 
   const formattedTime = `${formattedHours}:${formattedMinutes} ${amOrPm}`;
-  const formattedDate = `${day < 10 ? `0${day}` : day}-${
-    month < 10 ? `0${month}` : month
-  }-${year}`;
+  const formattedDate = `${day < 10 ? `0${day}` : day}-${month < 10 ? `0${month}` : month}-${year}`;
 
   return `${formattedTime}, ${formattedDate}`;
-};
+}
 
-const formatTime = (originalDate) => {
+const  formatTime =(originalDate) => {
   const date = new Date(originalDate);
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const amOrPm = hours >= 12 ? "PM" : "AM";
-  const formattedHours = hours % 12 || 12;
+  const formattedHours = hours % 12 || 12; 
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
   const formattedTime = `${formattedHours}:${formattedMinutes} ${amOrPm}`;
 
   return `${formattedTime}`;
-};
+}
 
-export {
-  formatIndianPrice,
-  formatUSDPrice,
-  NotificationSoundPlay,
-  formatDate,
-  formateDateAndTime,
-  formatTime,
-  ChatNotificationPlay,
-};
+
+export { formatIndianPrice, formatUSDPrice, NotificationSoundPlay ,formatDate,formateDateAndTime,formatTime};

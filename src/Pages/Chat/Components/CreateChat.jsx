@@ -7,33 +7,23 @@ import {
 import noImage from "../../../assets/NoImage.jpg";
 import SendIcon from "@mui/icons-material/Send";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import chatLogo from "../../../../public/ChatLogo.png";
+<<<<<<< HEAD
 import {
   addChatNotificationData,
   removeChatNotification,
 } from "../../../features/slice/authSlice";
 import { ContentPasteOffSharp } from "@mui/icons-material";
+=======
+>>>>>>> 6fedf0c3cc066c625d1e4023d7fe08f211cb5093
 
 const CreateChat = () => {
   // redux data
-  const dispatch = useDispatch();
   const { adminId } = useSelector((state) => state.auth.userInfo);
   const datas = useSelector((state) => state.auth);
   const onLineUsers = datas.onlineUsers;
-  const notificationData = datas?.chatNotificationData;
-  let [messageCountsBySender, setMessageCountsBySender] = useState();
-
-  useEffect(() => {
-    const messageCountsBySender = notificationData.reduce((counts, message) => {
-      const senderId = message.SenderId;
-      counts[senderId] = (counts[senderId] || 0) + 1;
-      return counts;
-    }, {});
-
-    setMessageCountsBySender(messageCountsBySender);
-  }, [notificationData]);
 
   // local state;
   const [singleUserData, setSingleUserData] = useState(null);
@@ -73,7 +63,11 @@ const CreateChat = () => {
 
   useEffect(() => {
     if (socket) {
+      const adminId = singleUserData?.adminId;
+      
+
       socket.on("newChatMessage", (message) => {
+<<<<<<< HEAD
         // if (
         //   message.data._id &&
         //   !messageData.some((msg) => msg._id === message.data._id) &&
@@ -81,6 +75,21 @@ const CreateChat = () => {
         // ) {
           setMessageData((prevData) => [...prevData, message.data]);
         // }
+=======
+        let getId = message?.data.ReceiverId;
+        // console.log("Admin Id",adminId)
+        // console.log("Reciver",getId)
+        // console.log("Socket", message);
+        // console.log("Socket Data", message.data);
+        // console.log("Socket Datas", message.data.data);
+
+
+        // if (message?.data.ReceiverId === singleUserData?.adminId) {
+        //   console.log("Recienv", message.data);
+        //   setMessageData((prevData) => [...prevData, message.data]);
+        // }
+        setMessageData((prevData) => [...prevData, message.data]);
+>>>>>>> 6fedf0c3cc066c625d1e4023d7fe08f211cb5093
       });
     }
     return () => {
@@ -88,17 +97,20 @@ const CreateChat = () => {
         socket.off("newChatMessage");
       }
     };
-  }, [socket, messageData]);
-
+  }, [socket, messageData, setMessageData]);
+  console.log("Message", messageData);
   // functions
   const handleOnClickUser = (user) => {
     setSingleUserData(user);
+<<<<<<< HEAD
     const filterData = notificationData.filter(
       (data) => data.SenderId !== user.adminId
     );
     
       dispatch(removeChatNotification(filterData));
     
+=======
+>>>>>>> 6fedf0c3cc066c625d1e4023d7fe08f211cb5093
   };
   const handleSubmit = async () => {
     if (!message) return;
@@ -198,7 +210,6 @@ const CreateChat = () => {
                     padding: "3px",
                     margin: "2px",
                     cursor: "pointer",
-                    position: "relative",
                     boxShadow:
                       "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
                     background: `${
@@ -226,24 +237,6 @@ const CreateChat = () => {
                     </span>
                     <span>{docs.ContactNo}</span>
                   </div>
-                  {messageCountsBySender &&
-                    messageCountsBySender[docs?.adminId] && (
-                      <span
-                        style={{
-                          position: "absolute",
-                          top: 3,
-                          right: 3,
-                          background: "green",
-                          height: "20px",
-                          width: "25px",
-                          borderRadius: 50,
-                          textAlign: "center",
-                          color: "white",
-                        }}
-                      >
-                        {messageCountsBySender[docs?.adminId]}
-                      </span>
-                    )}
                 </div>
               );
             })}
