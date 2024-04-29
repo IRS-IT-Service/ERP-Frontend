@@ -69,7 +69,7 @@ const CreateChat = () => {
         //   !messageData.some((msg) => msg._id === message.data._id) &&
         //   message.data.ReceiverId === singleUserData?.adminId
         // ) {
-          setMessageData((prevData) => [...prevData, message.data]);
+        setMessageData((prevData) => [...prevData, message.data]);
         // }
       });
     }
@@ -79,12 +79,17 @@ const CreateChat = () => {
       }
     };
   }, [socket, messageData, setMessageData]);
-  console.log("Message", messageData);
+
   // functions
   const handleOnClickUser = (user) => {
     setSingleUserData(user);
-  };
+    const filterData = notificationData.filter(
+      (data) => data.SenderId !== user.adminId
+    );
 
+    dispatch(removeChatNotification(filterData));
+  };
+  
   const handleSubmit = async () => {
     if (!message) return;
     try {
