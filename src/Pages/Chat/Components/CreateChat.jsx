@@ -56,11 +56,8 @@ const CreateChat = () => {
   useEffect(() => {
     if (socket) {
       socket.on("newChatMessage", (message) => {
-        if (
-          message.data._id &&
-          !messageData.some((msg) => msg._id === message.data._id) &&
-          message.data.ReceiverId === singleUserData?.adminId
-        ) {
+        console.log("Socket", message);
+        if (message.data.ReceiverId === singleUserData?.adminId) {
           console.log(message.data);
           setMessageData((prevData) => [...prevData, message.data]);
         }
