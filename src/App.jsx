@@ -191,10 +191,9 @@ function App() {
   };
 
   const handleChatNotification = (data) => {
-
-    
+    // if (data.data.ReceiverId === adminid) {
       dispatch(addChatNotificationData(data.data));
-    
+    // }
   };
 
   /// webSocket Events
