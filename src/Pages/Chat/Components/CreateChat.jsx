@@ -73,6 +73,7 @@ const CreateChat = () => {
   useEffect(() => {
     if (socket) {
       socket.on("newChatMessage", (message) => {
+        console.log(message, socket)
         if (
           message.data._id &&
           !messageData.some((msg) => msg._id === message.data._id) &&
