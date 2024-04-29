@@ -190,6 +190,13 @@ function App() {
     pushNotification("Live WholeSeller Status", data, "/UpdateSellerPrice");
   };
 
+  const handleChatNotification = (data) => {
+
+    
+      dispatch(addChatNotificationData(data.data));
+    
+  };
+
   /// webSocket Events
 
   useEffect(() => {
@@ -229,6 +236,12 @@ function App() {
 
           handleLiveWholeSaleStatus(data);
         });
+
+        socket.on("newChatMessage", (data) => {
+          // console.log('Received Event liveWholeSaleStatus for Admin :', data);
+
+          handleChatNotification(data);
+        });
       }
 
       /// events for all
@@ -247,6 +260,7 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
+        socket.off("newChatMessage")
       }
     };
   }, [socket]);
