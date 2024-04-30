@@ -58,6 +58,7 @@ import {
   addLiveStatus,
   addLiveWholeSaleStatus,
   addOnlineWholeSaleUsers,
+  addChatNotificationData,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
 import { onMessage, getToken } from "firebase/messaging"; // Import necessary functions from Firebase messaging
@@ -124,8 +125,8 @@ import Studentinfo from "./Pages/Other/Studentinfo";
 import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
 import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 import PreOrder from "./Pages/DiscountQuery/PreOrder";
+import ChatMessage from "./Pages/Chat/ChatMessage";
 import Careers from "./Pages/Careers/Careers";
-
 
 function App() {
   /// initialize
@@ -133,11 +134,10 @@ function App() {
   const socket = useSocket();
   const navigate = useNavigate();
 
-
   /// global state
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
-
+  const adminid = userInfo?.adminId;
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
@@ -161,7 +161,7 @@ function App() {
 
   // OnMessage
   const handleNewMessage = (data) => {
-    console.log("Handling new message:", data);
+    // console.log("Handling new message:", data);
   };
 
   //onlineUsers
@@ -190,6 +190,14 @@ function App() {
     pushNotification("Live WholeSeller Status", data, "/UpdateSellerPrice");
   };
 
+  const handleChatNotification = (data) => {
+
+    if (data.data.ReceiverId === adminid) {
+     
+    dispatch(addChatNotificationData(data.data));
+    }
+  };
+
   /// webSocket Events
 
   useEffect(() => {
@@ -205,11 +213,7 @@ function App() {
         });
 
         // Listen for the 'onlineUsers' event
-        socket.on("onlineUsers", (data) => {
-          // console.log('Received Event onlineUsers for Admin :', data);
 
-          handleOnlineUsers(data);
-        });
         // Listen for the 'onlineWholeSaleUsers' event
         socket.on("onlineWholeSaleUsers", (data) => {
           // console.log('Received Event onlineWholeSaleUsers for Admin :', data);
@@ -229,7 +233,23 @@ function App() {
 
           handleLiveWholeSaleStatus(data);
         });
+        
       }
+      socket.on("onlineUsers", (data) => {
+        // console.log('Received Event onlineUsers for Admin :', data);
+
+        handleOnlineUsers(data);
+      });
+
+      socket.on("newChatMessage", (data) => {
+          
+        // handleChatNotification(data);
+        if (data.data.ReceiverId === adminid) {
+         
+        dispatch(addChatNotificationData(data.data));
+        }
+      });
+
 
       /// events for all
       // Listen for the 'logout' event
@@ -237,7 +257,7 @@ function App() {
         const userId = data.userId;
         const currentUserId = userInfo?.adminId;
         if (userId === currentUserId) {
-          console.log("logout");
+          
           handleLogout();
         }
       });
@@ -247,6 +267,7 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
+        // socket.off("newChatMessage");
       }
     };
   }, [socket]);
@@ -286,7 +307,7 @@ function App() {
     });
 
     onMessage(messaging, (payload) => {
-      console.log("Message received.", payload);
+      // console.log("Message received.", payload);
       // Handle the received message here
     });
   }, []);
@@ -365,7 +386,10 @@ function App() {
               <Route path="" element={<PrivateRoute />}>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="product-list" element={<Home_page />} />
-                <Route path="/setDicountpricerange" element={<SetDiscountPrice/>} />
+                <Route
+                  path="/setDicountpricerange"
+                  element={<SetDiscountPrice />}
+                />
                 <Route
                   path="/Users"
                   element={
@@ -394,7 +418,7 @@ function App() {
                   element={<AddRoboProductsValue />}
                 />
                 <Route path="/BulkMessage" element={<BulkMessage />} />
-                <Route path="/MessageTemplate" element={<MessageTemplate/>}/>
+                <Route path="/MessageTemplate" element={<MessageTemplate />} />
                 {/* Products Router */}
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
                 <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
@@ -698,27 +722,12 @@ function App() {
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
 
                 {/* R&D */}
-                <Route
-                  path="/CreateReq/:id"
-                  element={<CreateReq />}
-                />
-                <Route
-                  path="/Project"
-                  element={<Project />}
-                />
-              
-                    <Route
-                  path="/ItemsAprroval"
-                  element={<ItemsApproval />}
-                />
-                      <Route
-                  path="/PartsApproval"
-                  element={<PartsApproval />}
-                />
-                         <Route
-                  path="/PreOrder"
-                  element={<PreOrder />}
-                />
+                <Route path="/CreateReq/:id" element={<CreateReq />} />
+                <Route path="/Project" element={<Project />} />
+
+                <Route path="/ItemsAprroval" element={<ItemsApproval />} />
+                <Route path="/PartsApproval" element={<PartsApproval />} />
+                <Route path="/PreOrder" element={<PreOrder />} />
 
                 {/* Marketing tools */}
                 <Route path="/addAdvertiser" element={<CustomerDetails />} />
@@ -726,11 +735,13 @@ function App() {
                   path="/addCusotmerforMarketing"
                   element={<AddCustomerForMarketing />}
                 />
-                {/* Careers */}
                 <Route
-                  path="/careers"
-                  element={<Careers />}
+                  path="/addCusotmerforMarketing"
+                  element={<AddCustomerForMarketing />}
                 />
+                <Route path="/Chat" element={<ChatMessage />} />
+                {/* Careers */}
+                <Route path="/careers" element={<Careers />} />
               </Route>
             </Routes>
           </Suspense>

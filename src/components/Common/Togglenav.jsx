@@ -24,7 +24,7 @@ import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
 import { setTheme } from "../../features/slice/uiSlice";
 import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
-import {useGetPendingRequestCountQuery} from "../../features/api/barcodeApiSlice"
+import { useGetPendingRequestCountQuery } from "../../features/api/barcodeApiSlice";
 import { logout as dispatchLogout } from "../../features/slice/authSlice";
 import logo2 from "../../assets/IRSLOGOR.png";
 import { useLogoutMutation } from "../../features/api/usersApiSlice";
@@ -33,7 +33,11 @@ import { useNavigate } from "react-router-dom";
 import themeColors from "../../constants/ThemeColor";
 import Header from "./Header";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import {useGetPreOrderCountQuery ,useAllDispatchAprovalCountQuery} from "../../features/api/RnDSlice"
+import {
+  useGetPreOrderCountQuery,
+  useAllDispatchAprovalCountQuery,
+} from "../../features/api/RnDSlice";
+import ChatIcon from "@mui/icons-material/Chat";
 
 const drawerWidth = 220;
 
@@ -121,7 +125,9 @@ const ToggleNav = () => {
   /// global state
   const toggleShowNav2 = useSelector((state) => state.ui.ShowSide_nav);
   const { themeColor } = useSelector((state) => state.ui);
-  const { isAdmin, userRole, userInfo } = useSelector((state) => state.auth);
+  const { isAdmin, userRole, userInfo, chatNotificationData } = useSelector(
+    (state) => state.auth
+  );
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
   const unApprovedData = useSelector(
     (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
@@ -145,26 +151,20 @@ const ToggleNav = () => {
     pollingInterval: 1000 * 300,
   });
 
-  const {
-    data: unRequestcount,
-    isLoading: isLoadingReq,
-  } = useGetPendingRequestCountQuery(null, {
-    pollingInterval: 1000 * 300,
-  });
+  const { data: unRequestcount, isLoading: isLoadingReq } =
+    useGetPendingRequestCountQuery(null, {
+      pollingInterval: 1000 * 300,
+    });
 
-  const {
-    data: preOrdercount,
-    isLoading: isLoadingPreOrder,
-  } = useGetPreOrderCountQuery(null, {
-    pollingInterval: 1000 * 300,
-  });
+  const { data: preOrdercount, isLoading: isLoadingPreOrder } =
+    useGetPreOrderCountQuery(null, {
+      pollingInterval: 1000 * 300,
+    });
 
-  const {
-    data: RnDaprrvalcount,
-    isLoading: isLoadingApproval,
-  } = useAllDispatchAprovalCountQuery(null, {
-    pollingInterval: 1000 * 300,
-  });
+  const { data: RnDaprrvalcount, isLoading: isLoadingApproval } =
+    useAllDispatchAprovalCountQuery(null, {
+      pollingInterval: 1000 * 300,
+    });
 
   const [logout] = useLogoutMutation();
 
@@ -221,6 +221,8 @@ const ToggleNav = () => {
 
     setProRoles(filteredParents);
   }, []);
+
+  const chatCount = chatNotificationData?.length || 0;
 
   /// function
   const sumObjectValues = (obj) => {
@@ -389,6 +391,30 @@ const ToggleNav = () => {
               alignItems: "center",
             }}
           >
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/chat")}
+            >
+              <Badge
+                badgeContent={chatCount}
+                color={notificationCount > 0 ? "error" : "default"}
+                overlap="circular"
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                onClick={() => {
+                  navigate("/chat");
+                }}
+                className={chatCount ? "notificationBell" : ""}
+                sx={{
+                  cursor: "pointer",
+                }}
+              >
+                <ChatIcon color="#fff" />
+              </Badge>{" "}
+            </div>
+
             <div>
               <Badge
                 badgeContent={notificationCount}

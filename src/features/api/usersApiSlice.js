@@ -1,5 +1,6 @@
 import { apiSlice } from "./apiSlice";
 import { USERS_URL } from "../../constants/ApiEndpoints";
+import BASEURL from "../../constants/BaseApi";
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -126,6 +127,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
 
       }),
     }),
+    getChatMessage: builder.mutation({
+      query: (data) => ({
+        url: `${BASEURL}/chat/getChat?senderId=${data.senderId}&receiverId=${data.receiverId}`,
+        method: "GET",
+
+      }),
+    }),
   }),
 });
 
@@ -148,4 +156,5 @@ export const {
   useGetAllUserHistoryQuery,
   useCreateUserHistoryMutation,
   useUpdatePasswordMutation,
+  useGetChatMessageMutation
 } = userApiSlice;

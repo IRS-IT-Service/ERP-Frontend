@@ -1,4 +1,5 @@
 import NotificationSound2 from "../assets/NotificationSound2.mp3";
+import ChatNotificationSound from "../../public/chatRingtone.mp3";
 
 function formatIndianPrice(value) {
   let valueChecked = +value || 0;
@@ -21,6 +22,10 @@ function formatUSDPrice(value) {
 }
 const NotificationSoundPlay = () => {
   const audio = new Audio(NotificationSound2);
+  audio.play();
+};
+const ChatNotificationPlay = () => {
+  const audio = new Audio(ChatNotificationSound);
   audio.play();
 };
 
@@ -68,4 +73,4 @@ const  formatTime =(originalDate) => {
 }
 
 
-export { formatIndianPrice, formatUSDPrice, NotificationSoundPlay ,formatDate,formateDateAndTime,formatTime};
+export { formatIndianPrice, formatUSDPrice, NotificationSoundPlay ,formatDate,formateDateAndTime,formatTime, ChatNotificationPlay};
