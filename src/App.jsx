@@ -161,7 +161,7 @@ function App() {
 
   // OnMessage
   const handleNewMessage = (data) => {
-    console.log("Handling new message:", data);
+    // console.log("Handling new message:", data);
   };
 
   //onlineUsers
@@ -191,9 +191,9 @@ function App() {
   };
 
   const handleChatNotification = (data) => {
-    console.log(data)
+
     if (data.data.ReceiverId === adminid) {
-      console.log("Admin id", data)
+     
     dispatch(addChatNotificationData(data.data));
     }
   };
@@ -233,19 +233,21 @@ function App() {
 
           handleLiveWholeSaleStatus(data);
         });
-        socket.on("newChatMessage", (data) => {
-          console.log("Socket Data", socket, data)
-          // handleChatNotification(data);
-          if (data.data.ReceiverId === adminid) {
-            console.log("Admin id", data)
-          dispatch(addChatNotificationData(data.data));
-          }
-        });
+        
       }
       socket.on("onlineUsers", (data) => {
         // console.log('Received Event onlineUsers for Admin :', data);
 
         handleOnlineUsers(data);
+      });
+
+      socket.on("newChatMessage", (data) => {
+          
+        // handleChatNotification(data);
+        if (data.data.ReceiverId === adminid) {
+         
+        dispatch(addChatNotificationData(data.data));
+        }
       });
 
 
@@ -305,7 +307,7 @@ function App() {
     });
 
     onMessage(messaging, (payload) => {
-      console.log("Message received.", payload);
+      // console.log("Message received.", payload);
       // Handle the received message here
     });
   }, []);
