@@ -186,6 +186,7 @@ const ToggleNav = () => {
     setAnchorEl(event.currentTarget);
     setThemeSelector(true);
   };
+
   const handleCloseThemeSelector = () => {
     setAnchorEl(null);
     setThemeSelector(false);
@@ -204,6 +205,7 @@ const ToggleNav = () => {
   const handleThemeSelector = (data) => {
     dispatch(setTheme(data));
   };
+
   ///  userEffects
   useEffect(() => {
     const filteredParents = userRolesData.reduce((acc, parent) => {
@@ -211,7 +213,6 @@ const ToggleNav = () => {
         return userRole?.some((item) => item.id === child.id);
       });
 
-      // Check if filteredChildren is not empty, then include the parent
       if (filteredChildren.length > 0) {
         acc.push({ ...parent, childrens: filteredChildren });
       }
@@ -222,8 +223,13 @@ const ToggleNav = () => {
     setProRoles(filteredParents);
   }, []);
 
-  const chatCount = chatNotificationData?.length || 0;
+  // for chat notifications
+  let chatCount = 0;
 
+  // useEffect(() => {
+  //   chatCount = chatNotificationData?.length || 0;
+  //   console.log(chatNotificationData.length)
+  // }, [chatNotificationData, chatNotificationData.length > 0,useSelector]);
   /// function
   const sumObjectValues = (obj) => {
     let total = 0;
@@ -324,7 +330,6 @@ const ToggleNav = () => {
         }
       });
   };
-
   const newUnapprovedData = sumObjectValues(unApprovedData);
   const notificationCount = newUnapprovedData;
   /// MUI Breakpoints
@@ -396,8 +401,8 @@ const ToggleNav = () => {
               onClick={() => navigate("/chat")}
             >
               <Badge
-                badgeContent={chatCount}
-                color={notificationCount > 0 ? "error" : "default"}
+                badgeContent={chatNotificationData?.length}
+                color={chatNotificationData?.length > 0 ? "error" : "default"}
                 overlap="circular"
                 anchorOrigin={{
                   vertical: "top",
@@ -406,12 +411,12 @@ const ToggleNav = () => {
                 onClick={() => {
                   navigate("/chat");
                 }}
-                className={chatCount ? "notificationBell" : ""}
+                className={2 ? "notificationBell" : ""}
                 sx={{
                   cursor: "pointer",
                 }}
               >
-                <ChatIcon color="#fff" />
+                <ChatIcon />
               </Badge>{" "}
             </div>
 
