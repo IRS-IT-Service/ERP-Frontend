@@ -535,10 +535,17 @@ const userRolesData = [
         icon: "fa-solid fa-circle-info",
         notification: true,
       },
+      {
+        id: 75,
+        name: "Career",
+        path: "/careers",
+        icon: "fa-solid fa-circle-info",
+        notification: true,
+      },
     ],
   },
 ];
 
-// last routes is 74
+// last routes is 75
 
 export default userRolesData;
