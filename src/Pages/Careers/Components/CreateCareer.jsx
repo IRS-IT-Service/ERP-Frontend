@@ -1,10 +1,24 @@
-import { Box, Button, CircularProgress, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useState } from "react";
-import { useAddCareerMutation } from "../../../features/api/otherSlice";
+import {
+  useAddCareerMutation,
+  useGetCareersQuery,
+ 
+} from "../../../features/api/otherSlice";
 import { toast } from "react-toastify";
+import { DataGrid } from "@mui/x-data-grid";
+import { Fullscreen } from "@mui/icons-material";
 
 const CreateCareer = () => {
+  const [rows, setRows] = useState([]);
   const [addData, { isLoading }] = useAddCareerMutation();
+  const { data: getCareers,  } = useGetCareersQuery();
   const [formData, setFormData] = useState({
     title: "",
     summary: "",
@@ -15,6 +29,22 @@ const CreateCareer = () => {
     experience: "",
     position: "",
   });
+
+  const columns = [
+    { title: "Full Stack Developer 1 year Experience" },
+    {
+      title: "Backend Developer 1 year Experience",
+    },
+    {
+      title: "Frontend Developer 1 year Experience",
+    },
+    {
+      title: "Frontend Developer 1 year Experience",
+    },
+    {
+      title: "Frontend Developer 1 year Experience",
+    },
+  ];
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -56,7 +86,7 @@ const CreateCareer = () => {
   };
 
   return (
-    <div style={{ margin: "5px", width: "50%" }}>
+    <div style={{ margin: "5px", display: "flex", flexDirection: "row" }}>
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -165,6 +195,81 @@ const CreateCareer = () => {
           </Button>
         </Box>
       </Box>
+      <Box sx={styles.formContainer}>
+        <Box
+          sx={{
+            border: "1px solid gray",
+            borderRadius: "10px",
+            display: "flex",
+            width: "100%",
+            flexDirection: "column",
+            alignItems: "start",
+            position: "relative",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              borderRadius: "9px 9px 0px 0px",
+              background: "#36626A",
+              width: "100%",
+              textAlign: "center",
+              color: "white",
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+            }}
+          >
+            Careers
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "auto",
+              width: "100%",
+              margin: "1rem",
+            }}
+          >
+            {getCareers?.data.map((item, index) => (
+              <Box sx={{ display: "flex" }} key={index}>
+                {/* <Typography
+                  sx={{
+                    fontSize: "1.2rem",
+                    marginRight: "1rem",
+                  }}
+                >
+                  {index + 1}
+                </Typography> */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginRight: "1rem",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontSize: "1.2rem", color: "#1b263b" }}>
+                    {item.Title}
+                  </Typography>
+
+                  <Typography sx={{ fontSize: "1.4rem", marginRight: "1rem" }}>
+                    <i
+                      className="fa-solid fa-trash"
+                      style={{
+                        color: "blue",
+                        cursor: "pointer",
+                        fontSize: "1.2rem",
+                      }}
+                      // onClick={() => handleClickOpen(item, "Delete")}
+                    ></i>
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </Box>
     </div>
   );
 };
@@ -190,6 +295,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
+    width: "50%",
     gap: "15px",
     margin: "10px",
     padding: "20px",
