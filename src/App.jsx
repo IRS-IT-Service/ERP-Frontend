@@ -59,6 +59,7 @@ import {
   addLiveWholeSaleStatus,
   addOnlineWholeSaleUsers,
   addChatNotificationData,
+  addChatMessageData,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
 import { onMessage, getToken } from "firebase/messaging"; // Import necessary functions from Firebase messaging
@@ -127,6 +128,8 @@ import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 import PreOrder from "./Pages/DiscountQuery/PreOrder";
 import ChatMessage from "./Pages/Chat/ChatMessage";
 import Careers from "./Pages/Careers/Careers";
+import IrsConnect from "../public/chatlog.png"
+
 
 function App() {
   /// initialize
@@ -148,6 +151,20 @@ function App() {
       title: title,
       subtitle: data.time,
       message: data.message,
+      duration: 30000,
+      icon: irsLogo,
+      native: true,
+      onClick: () => {
+        navigate(navigateTo);
+      },
+    });
+  };
+  /// Push Notification for chat messages
+  const pushNotificatForChat = (title, data, navigateTo) => {
+    addNotification({
+      title: title,
+      subtitle: "now",
+      message: "IRS Connect Chat",
       duration: 30000,
       icon: irsLogo,
       native: true,
@@ -190,14 +207,6 @@ function App() {
     pushNotification("Live WholeSeller Status", data, "/UpdateSellerPrice");
   };
 
-  const handleChatNotification = (data) => {
-
-    if (data.data.ReceiverId === adminid) {
-     
-    dispatch(addChatNotificationData(data.data));
-    }
-  };
-
   /// webSocket Events
 
   useEffect(() => {
@@ -233,7 +242,6 @@ function App() {
 
           handleLiveWholeSaleStatus(data);
         });
-        
       }
       socket.on("onlineUsers", (data) => {
         // console.log('Received Event onlineUsers for Admin :', data);
@@ -241,23 +249,12 @@ function App() {
         handleOnlineUsers(data);
       });
 
-      socket.on("newChatMessage", (data) => {
-          
-        // handleChatNotification(data);
-        if (data.data.ReceiverId === adminid) {
-         
-        dispatch(addChatNotificationData(data.data));
-        }
-      });
-
-
       /// events for all
       // Listen for the 'logout' event
       socket.on("userLogout", (data) => {
         const userId = data.userId;
         const currentUserId = userInfo?.adminId;
         if (userId === currentUserId) {
-          
           handleLogout();
         }
       });
@@ -271,6 +268,23 @@ function App() {
       }
     };
   }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("newChatMessage", (data) => {
+          dispatch(addChatNotificationData({ ...data.data }));
+          dispatch(addChatMessageData(data.data))
+          pushNotificatForChat("New Chat Message Received","New Chat Message","/chat")
+        
+      });
+    }
+  
+    // return () => {
+    //   if (socket) {
+    //     socket.off("newChatMessage");
+    //   }
+    // };
+  }, [socket, adminid, dispatch]);
 
   /// rtk query
   // const { data: getAllUserApi } = useGetAllUsersQuery();

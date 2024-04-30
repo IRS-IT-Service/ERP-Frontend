@@ -11,10 +11,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import chatLogo from "../../../../public/ChatLogo.png";
 import {
-  addChatNotificationData,
   removeChatNotification,
 } from "../../../features/slice/authSlice";
-import { ContentPasteOffSharp } from "@mui/icons-material";
 
 const CreateChat = () => {
   const dispatch = useDispatch();
@@ -22,11 +20,17 @@ const CreateChat = () => {
   const { adminId } = useSelector((state) => state.auth.userInfo);
   const datas = useSelector((state) => state.auth);
   const onLineUsers = datas.onlineUsers;
-
+  const messageDatas = datas.chatMessageData;
   // local state;
   const [singleUserData, setSingleUserData] = useState(null);
   const [message, setMessage] = useState("");
   const [messageData, setMessageData] = useState([]);
+  useEffect(() => {
+
+    setMessageData(previousData => {
+      return [...previousData, messageDatas];
+    });
+  }, [messageDatas]);
 
   // rtk query calling
   const { data: allUsers } = useGetAllUsersQuery();
@@ -48,7 +52,7 @@ const CreateChat = () => {
     }, {});
 
     setMessageCountsBySender(messageCountsBySender);
-  }, [notificationData, notificationData?.length > 0]);
+  }, [notificationData, notificationData?.length > 0, allUsers]);
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -63,7 +67,7 @@ const CreateChat = () => {
       try {
         const data = { senderId: adminId, receiverId: singleUserData?.adminId };
         const result = await getMessage(data);
-        setMessageData(result.data);
+        setMessageData([...result.data]);
       } catch (error) {
         console.error("Error fetching chat messages:", error);
       }
@@ -72,27 +76,27 @@ const CreateChat = () => {
     fetchData();
   }, [singleUserData?.adminId]);
 
-  useEffect(() => {
-    if (socket) {
-      const adminId = singleUserData?.adminId;
-      
+  // useEffect(() => {
+  //   if (socket) {
+  //     const adminId = singleUserData?.adminId;
 
-      socket.on("newChatMessage", (message) => {
-        // if (
-        //   message.data._id &&
-        //   !messageData.some((msg) => msg._id === message.data._id) &&
-        //   message.data.ReceiverId === singleUserData?.adminId
-        // ) {
-        setMessageData((prevData) => [...prevData, message.data]);
-        // }
-      });
-    }
-    return () => {
-      if (socket) {
-        socket.off("newChatMessage");
-      }
-    };
-  }, [socket, messageData, setMessageData]);
+  //     socket.on("newChatMessage", (message) => {
+  //       dispatch(addChatNotificationData(message))
+  //       // if (
+  //       //   message.data._id &&
+  //       //   !messageData.some((msg) => msg._id === message.data._id) &&
+  //       //   message.data.ReceiverId === singleUserData?.adminId
+  //       // ) {
+  //       setMessageData((prevData) => [...prevData, message.data]);
+  //       // }
+  //     });
+  //   }
+  //   return () => {
+  //     if (socket) {
+  //       socket.off("newChatMessage");
+  //     }
+  //   };
+  // }, [socket, messageData, setMessageData]);
 
   // functions
   const handleOnClickUser = (user) => {
@@ -103,8 +107,7 @@ const CreateChat = () => {
 
     dispatch(removeChatNotification(filterData));
   };
-  console.log(notificationData)
-console.log("Hello",messageCountsBySender)
+  // console.log("Hello",messageCountsBySender)
   const handleSubmit = async () => {
     if (!message) return;
     try {
@@ -203,6 +206,7 @@ console.log("Hello",messageCountsBySender)
                     padding: "3px",
                     margin: "2px",
                     cursor: "pointer",
+                    position: "relative",
                     boxShadow:
                       "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
                     background: `${
@@ -245,7 +249,7 @@ console.log("Hello",messageCountsBySender)
                           color: "white",
                         }}
                       >
-                        {messageCountsBySender[docs?.adminId]}
+                        {messageCountsBySender[docs?.adminId] || 1}
                       </span>
                     )}
                 </div>
@@ -292,7 +296,7 @@ console.log("Hello",messageCountsBySender)
                       boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
                     }}
                   >
-                    {msg.Content.message}
+                    {msg?.Content?.message}
                   </div>
                 </div>
               ))}
