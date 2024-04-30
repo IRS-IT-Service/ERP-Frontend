@@ -24,7 +24,9 @@ const initialState = {
   allUsers: {},
   onlineUsers: [],
   liveStatus: JSON.parse(localStorage.getItem("liveStatus") || "[]"),
-  chatNotificationData:[],
+  chatNotificationData: [],
+  chatMessageData: {},
+  chatMessageCount: {},
 
   /// WholeSale seller portal data
   allWholeSaleUsers: {},
@@ -39,7 +41,9 @@ const initialState = {
   notificationSound: JSON.parse(
     localStorage.getItem("notificationSound") || "true"
   ),
-  chatNotificationSound:JSON.parse(localStorage.getItem("chatNotificationSound") || "true")
+  chatNotificationSound: JSON.parse(
+    localStorage.getItem("chatNotificationSound") || "true"
+  ),
 };
 
 const authSlice = createSlice({
@@ -109,6 +113,31 @@ const authSlice = createSlice({
       state.liveStatus = [];
       localStorage.removeItem("liveStatus");
     },
+    addChatNotificationData: (state, action) => {
+      state.chatNotificationData = [
+        action.payload,
+        ...state.chatNotificationData,
+      ];
+      if (state.chatNotificationSound) {
+        const audio = new Audio(ChatNotificationSound);
+        audio.play();
+      }
+    },
+    removeChatNotification: (state, action) => {
+      state.chatNotificationData = action.payload;
+    },
+    addChatMessageData: (state, action) => {
+      state.chatMessageData = action.payload
+    },
+    removeChatMessageData: (state, action) => {
+      state.chatMessageData = [];
+    },
+    addChatNotificationCount: (state, action) => {
+      state.chatMessageCount = action.payload;
+    },
+    removeChatNotificationCount: (state) => {
+      state.chatMessageCount = {};
+    },
 
     /// WholeSale seller portal data
     addAllWholeSaleUsers: (state, action) => {
@@ -138,16 +167,6 @@ const authSlice = createSlice({
 
       state.initialDropUpControl = true;
     },
-    addChatNotificationData:(state,action) =>{
-      state.chatNotificationData = [action.payload,...state.chatNotificationData]
-      if (state.chatNotificationSound) {
-        const audio = new Audio(ChatNotificationSound);
-        audio.play();
-     }
-     },
-     removeChatNotification:(state,action) =>{
-       state.chatNotificationData = action.payload
-     },
 
     clearOneLiveWholeSaleStatus: (state, action) => {
       const indexToRemove = action.payload;
@@ -176,13 +195,15 @@ const authSlice = createSlice({
       state.notificationSound = action.payload;
       localStorage.setItem("notificationSound", JSON.stringify(action.payload));
     },
-    toggleChatNotificationSound:(state,action) =>{
+    toggleChatNotificationSound: (state, action) => {
       state.chatNotificationSound = action.payload;
-      localStorage.setItem("chatNotificationSound", JSON.stringify(action.payload));
-    }
+      localStorage.setItem(
+        "chatNotificationSound",
+        JSON.stringify(action.payload)
+      );
+    },
   },
 });
-
 
 export const {
   setCredentials,
@@ -205,6 +226,9 @@ export const {
   setHiddemColumns,
   toggleChatNotificationSound,
   addChatNotificationData,
-  removeChatNotification
+  removeChatNotification,
+  addChatMessageData,
+  removeChatMessageData,
+  addChatNotificationCount,
 } = authSlice.actions;
 export default authSlice.reducer;
