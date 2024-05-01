@@ -125,9 +125,7 @@ const BulkAddProduct = () => {
 
       const liveStatusData = {
         message: `${userInfo.name} Added ${productsArray.length} new product`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       toast.success(res.message, {
         onClose: () => {

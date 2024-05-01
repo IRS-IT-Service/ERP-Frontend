@@ -32,6 +32,8 @@ import Loading from "../../components/Common/Loading";
 import { toast } from "react-toastify";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 /// styles
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -99,13 +101,16 @@ const OpenBoxApprovalStatus = () => {
 
 const description = `In the "Open Box Approval Status," you can check the approval status, whether it is pending, approved, or rejected. All three statuses have similar columns, such as "status" and "view," with a view button available to inspect the form.`;
 
-const [infoOpen, setInfoOpen1] = useState(false);
-const handleClose1 = () => {
-  setInfoOpen1(!infoOpen);
-};
-const handleOpen1 = () => {
-  setInfoOpen1(true);
-};
+const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose1 = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Open Box Approval Status`));
+  }, []);
 
 
   /// initialize
@@ -300,15 +305,15 @@ const handleOpen1 = () => {
       sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={'Open Box Approval Status'}
         info={true}
         customOnClick={handleOpen1}
-      />
+      /> */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose1}
       />
 

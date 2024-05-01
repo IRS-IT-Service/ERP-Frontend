@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Paper,
   Table,
@@ -25,7 +25,8 @@ import Loading from "../../components/Common/Loading";
 import { formateDateAndTime } from "../../commonFunctions/commonFunctions";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -192,13 +193,16 @@ const ERPHistory = () => {
   const description =
     "This is User Section helps manage user control, allowing the admin to grant or revoke access as needed";
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+    const dispatch = useDispatch();
+
+    const { isInfoOpen } = useSelector((state) => state.ui);
+    const handleClose = () => {
+      dispatch(setInfo(false));
+    };
+   
+    useEffect(() => {
+      dispatch(setHeader(`History Portal`));
+    }, []);
 
   return (
     <Box
@@ -212,7 +216,7 @@ const ERPHistory = () => {
       }}
     >
       <DrawerHeader />
-      <Header Name={"History Portal"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"History Portal"} info={true} customOnClick={handleOpen} /> */}
 
       <Loading loading={isLoading || isFetching} />
       <Box
@@ -252,7 +256,7 @@ const ERPHistory = () => {
             },
           }}
         >
-          <FormControl fullWidth>
+          <FormControl fullWidth >
             <InputLabel id="demo-simple-select-label">
               History Category
             </InputLabel>
@@ -351,7 +355,7 @@ const ERPHistory = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

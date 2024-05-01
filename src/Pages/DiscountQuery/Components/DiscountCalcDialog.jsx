@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
+
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 const columns = [
@@ -61,6 +62,9 @@ const DiscountCalcDialog = ({
   open,
   setOpen,
   handleOpenDialog,
+  removeSelectedCreateQuery,
+  removeSelectedSkuQuery,
+  dispatch,
 }) => {
   /// initialize
   const socket = useSocket();
@@ -228,9 +232,7 @@ const DiscountCalcDialog = ({
         const res = await createQueryApi(params).unwrap();
         const liveStatusData = {
           message: `${userInfo.name} Created a New DiscountQuery for Customer ${formData.customerName} `,
-          time: new Date().toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
-          }),
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         toast.success(res.message);
@@ -244,6 +246,8 @@ const DiscountCalcDialog = ({
           customerName: "",
           mobileNo: "",
         });
+        dispatch(removeSelectedCreateQuery());
+        dispatch(removeSelectedSkuQuery());
         handleCloseDialog();
       } catch (e) {
         console.log("error at Discount Query create ", e);

@@ -8,11 +8,12 @@ import Loading from "../../../components/Common/Loading";
 import Dateformat from "../../../components/Common/Dateformat";
 import Header from "../../../components/Common/Header";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const infoDetail = [
   {
-    name: "Create Query",
+    name: "Search",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
@@ -26,11 +27,11 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
+    instruction: `You Can Find Shipment History, When you enter Customer Name `,
   },
 
   {
-    name: "Discount Card",
+    name: "Date",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460"
@@ -44,7 +45,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
+    instruction: `Select From Date to To Date and Filter Shipment`,
   },
 
   {
@@ -62,20 +63,23 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+    instruction: `This is a tracking details section where we see products Name, SKU, Brand, and Barcode`,
   },
 ];
 
 const ProductShipment = () => {
   const description = `In this Shipment History Module, you can find the complete shipment history dispatched to the client. Clicking on the 'Reset Filter' button will reset the date.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose1 = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen1 = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Shipment History`));
+  }, []);
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
@@ -263,17 +267,17 @@ const ProductShipment = () => {
         mt: "66px",
       }}
     >
-      <Header
+      {/* <Header
         Name={"Shipment History"}
         info={true}
         customOnClick={handleOpen1}
-      />
+      /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
-        // infoDetails={infoDetail}
+        infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose1}
       />
 
@@ -313,7 +317,7 @@ const ProductShipment = () => {
             <input
               placeholder="Date"
               type="date"
-              sx={{
+              style={{
                 width: "10rem",
                 padding: "10px 25px",
                 margin: "2px 0",

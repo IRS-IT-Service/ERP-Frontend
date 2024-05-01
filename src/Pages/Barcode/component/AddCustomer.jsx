@@ -7,66 +7,67 @@ import {
 import { toast } from "react-toastify";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid"; // Import DataGrid
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCustomerInfo } from "../../../features/slice/productSlice";
 import Header from "../../../components/Common/Header";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
-// const infoDetail = [
-//   {
-//     name: 'Create Query',
-//     screenshot: (
-//       <img
-//         src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072'
-//         height={'100%'}
-//         width={'100%'}
-//         style={
-//           {
-//             // width: '10vw',
-//             // height: '10vh'
-//           }
-//         }
-//       />
-//     ),
-//     instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
-//   },
+const infoDetail = [
+  {
+    name: 'Create Query',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
+  },
 
-//   {
-//     name: 'Discount Card',
-//     screenshot: (
-//       <img
-//         src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460'
-//         height={'100%'}
-//         width={'100%'}
-//         style={
-//           {
-//             // width: '10vw',
-//             // height: '10vh'
-//           }
-//         }
-//       />
-//     ),
-//     instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
-//   },
+  {
+    name: 'Discount Card',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
+  },
 
-//   {
-//     name: 'Shipment Detail Tracking',
-//     screenshot: (
-//       <img
-//         src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590'
-//         height={'100%'}
-//         width={'100%'}
-//         style={
-//           {
-//             // width: '10vw',
-//             // height: '10vh'
-//           }
-//         }
-//       />
-//     ),
-//     instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
-//   },
-// ];
+  {
+    name: 'Shipment Detail Tracking',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+  },
+];
 
 
 const AddCustomer = () => {
@@ -74,13 +75,15 @@ const AddCustomer = () => {
   const description = `
 Adding customer details is the fundamental purpose of the "Add Customer Detail" feature.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Add Customer Details`));
+  }, []);
   /// initialization
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -237,17 +240,17 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
           flexDirection: 'column',
         }}
       >
-        <Header
+        {/* <Header
           Name={'Add Customer Details'}
           info={true}
           customOnClick={handleOpen}
-        />
+        /> */}
 
         {/* Dialog info Box */}
         <InfoDialogBox
-          // infoDetails={infoDetail}
+          infoDetails={infoDetail}
           description={description}
-          open={infoOpen}
+          open={isInfoOpen}
           close={handleClose}
         />
        

@@ -64,6 +64,21 @@ const ToogleMenu = ({ title, icon, childrens }) => {
     (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
   );
 
+  const Requestcount =  useSelector(
+    (state) => state.api.queries["getPendingRequestCount(null)"]?.data?.data
+  );
+
+  const PreOrdercount =  useSelector(
+    (state) => state.api.queries["getPreOrderCount(null)"]?.data?.allOrders
+  );
+
+
+  const RnDapprovalcount =  useSelector(
+    (state) => state.api.queries["allDispatchAprovalCount(null)"]?.data?.total
+  );
+
+  const dataEmbeded ={...data , ...Requestcount ,...PreOrdercount ,...RnDapprovalcount}
+
   /// local state
   const [toggleSubmenu, setToggleSubmenu] = useState(false);
 
@@ -192,7 +207,7 @@ const ToogleMenu = ({ title, icon, childrens }) => {
                 >
                   {childItems.notification ? (
                     <Badge
-                      badgeContent={data?.[childItems.name]}
+                      badgeContent={dataEmbeded?.[childItems.name]}
                       color="secondary"
                     >
                       <i

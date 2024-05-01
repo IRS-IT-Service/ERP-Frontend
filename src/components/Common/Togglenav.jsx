@@ -18,17 +18,27 @@ import {
   Menu,
   MenuItem,
   Badge,
+  Link,
 } from "@mui/material";
 import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
 import { setTheme } from "../../features/slice/uiSlice";
 import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
+import { useGetPendingRequestCountQuery } from "../../features/api/barcodeApiSlice";
 import { logout as dispatchLogout } from "../../features/slice/authSlice";
-import logo2 from "../../assets/IRS2.png";
+import logo2 from "../../assets/IRSLOGOR.png";
 import { useLogoutMutation } from "../../features/api/usersApiSlice";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { useNavigate } from "react-router-dom";
 import themeColors from "../../constants/ThemeColor";
+import Header from "./Header";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import {
+  useGetPreOrderCountQuery,
+  useAllDispatchAprovalCountQuery,
+} from "../../features/api/RnDSlice";
+import ChatIcon from "@mui/icons-material/Chat";
+
 const drawerWidth = 220;
 
 const openedMixin = (theme) => ({
@@ -115,7 +125,9 @@ const ToggleNav = () => {
   /// global state
   const toggleShowNav2 = useSelector((state) => state.ui.ShowSide_nav);
   const { themeColor } = useSelector((state) => state.ui);
-  const { isAdmin, userRole, userInfo } = useSelector((state) => state.auth);
+  const { isAdmin, userRole, userInfo, chatNotificationData } = useSelector(
+    (state) => state.auth
+  );
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
   const unApprovedData = useSelector(
     (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
@@ -127,6 +139,7 @@ const ToggleNav = () => {
   const [themeSelector, setThemeSelector] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const { HeaderName } = useSelector((state) => state.ui);
 
   /// rtk query
   const {
@@ -137,6 +150,21 @@ const ToggleNav = () => {
   } = useGetUnApprovedCountQuery(null, {
     pollingInterval: 1000 * 300,
   });
+
+  const { data: unRequestcount, isLoading: isLoadingReq } =
+    useGetPendingRequestCountQuery(null, {
+      pollingInterval: 1000 * 300,
+    });
+
+  const { data: preOrdercount, isLoading: isLoadingPreOrder } =
+    useGetPreOrderCountQuery(null, {
+      pollingInterval: 1000 * 300,
+    });
+
+  const { data: RnDaprrvalcount, isLoading: isLoadingApproval } =
+    useAllDispatchAprovalCountQuery(null, {
+      pollingInterval: 1000 * 300,
+    });
 
   const [logout] = useLogoutMutation();
 
@@ -158,6 +186,7 @@ const ToggleNav = () => {
     setAnchorEl(event.currentTarget);
     setThemeSelector(true);
   };
+
   const handleCloseThemeSelector = () => {
     setAnchorEl(null);
     setThemeSelector(false);
@@ -176,6 +205,7 @@ const ToggleNav = () => {
   const handleThemeSelector = (data) => {
     dispatch(setTheme(data));
   };
+
   ///  userEffects
   useEffect(() => {
     const filteredParents = userRolesData.reduce((acc, parent) => {
@@ -183,7 +213,6 @@ const ToggleNav = () => {
         return userRole?.some((item) => item.id === child.id);
       });
 
-      // Check if filteredChildren is not empty, then include the parent
       if (filteredChildren.length > 0) {
         acc.push({ ...parent, childrens: filteredChildren });
       }
@@ -194,6 +223,13 @@ const ToggleNav = () => {
     setProRoles(filteredParents);
   }, []);
 
+  // for chat notifications
+  let chatCount = 0;
+
+  // useEffect(() => {
+  //   chatCount = chatNotificationData?.length || 0;
+  //   console.log(chatNotificationData.length)
+  // }, [chatNotificationData, chatNotificationData.length > 0,useSelector]);
   /// function
   const sumObjectValues = (obj) => {
     let total = 0;
@@ -268,7 +304,7 @@ const ToggleNav = () => {
               key={key}
               onClick={() => {
                 handleClose();
- 
+
                 if (key === "New Product Approval") {
                   navigate("/NewProductApproval");
                 } else if (key === "Product Changes Approval") {
@@ -294,7 +330,6 @@ const ToggleNav = () => {
         }
       });
   };
-
   const newUnapprovedData = sumObjectValues(unApprovedData);
   const notificationCount = newUnapprovedData;
   /// MUI Breakpoints
@@ -331,14 +366,12 @@ const ToggleNav = () => {
             >
               <MenuIcon />
             </IconButton>
+
             <Box
               sx={{
-                marginLeft: "1.5rem",
-                width: "2.5rem",
-                height: "1rem",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-evenly",
+                marginLeft: "1rem",
+                width: "6.5rem",
+                cursor: "pointer",
               }}
             >
               {" "}
@@ -346,13 +379,15 @@ const ToggleNav = () => {
                 src={logo2}
                 alt="Arrow"
                 style={{
-                  objectFit: "contain",
+                  objectFit: "cover",
                   objectPosition: "center",
                   width: "100%",
                 }}
+                onClick={() => navigate("/")}
               />
             </Box>
           </Box>
+          {HeaderName && <Header Name={HeaderName} info={true} />}
           <Box
             sx={{
               display: "flex",
@@ -361,6 +396,30 @@ const ToggleNav = () => {
               alignItems: "center",
             }}
           >
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/chat")}
+            >
+              <Badge
+                badgeContent={chatNotificationData?.length}
+                color={chatNotificationData?.length > 0 ? "error" : "default"}
+                overlap="circular"
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                onClick={() => {
+                  navigate("/chat");
+                }}
+                className={2 ? "notificationBell" : ""}
+                sx={{
+                  cursor: "pointer",
+                }}
+              >
+                <ChatIcon />
+              </Badge>{" "}
+            </div>
+
             <div>
               <Badge
                 badgeContent={notificationCount}

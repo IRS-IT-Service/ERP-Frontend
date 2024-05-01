@@ -128,7 +128,7 @@ const userRolesData = [
     childrens: [
       {
         id: 5,
-        name: "WholeSale buyer List",
+        name: "WholeSale Buyer List",
         path: "/AllSellerList",
         icon: "fa-solid fa-list",
       },
@@ -143,6 +143,13 @@ const userRolesData = [
         name: "Wholesale Req",
         path: "/sellerVerify",
         icon: "fa-solid fa-user-plus",
+      },
+      {
+        id: 70,
+        name: "Set Discount Price Range",
+        path: "/setDicountpricerange",
+        icon: "fa-solid fa-tag",
+        notification: true,
       },
     ],
   },
@@ -231,6 +238,7 @@ const userRolesData = [
       },
     ],
   },
+
   {
     title: "Sales",
     icon: "fas fa-chart-line",
@@ -240,6 +248,13 @@ const userRolesData = [
         name: "Create Sales Query",
         path: "/discountquery",
         icon: "fa-solid fa-tag",
+      },
+      {
+        id: 74,
+        name: "Pre Order",
+        path: "/PreOrder",
+        icon: "fa-solid fa-file-powerpoint",
+        notification: true,
       },
       {
         id: 23,
@@ -417,6 +432,13 @@ const userRolesData = [
         icon: "fa-solid fa-cart-flatbed",
         notification: true,
       },
+      {
+        id: 73,
+        name: "Parts Requirement",
+        path: "/ItemsAprroval",
+        icon: "fa-solid fa-check-double",
+        notification: true,
+      },
     ],
   },
   {
@@ -453,22 +475,30 @@ const userRolesData = [
       },
     ],
   },
+
   {
     title: "R&D",
-    icon: "fa fa-wrench",
+    icon: "fa-brands fa-r-project",
     childrens: [
       {
         id: 54,
-        name: "All Inventory Data",
-        path: "/AllInventoryData",
-        icon: "fa fa-wrench",
+        name: "Parts Approval",
+        path: "/PartsApproval",
+        icon: "fa-solid fa-person-circle-check",
         notification: true,
       },
       {
-        id: 55,
+        id: 68,
         name: "R&D Projects",
-        path: "/ResearchNewProject",
-        icon: "fa fa-wrench",
+        path: "/Project",
+        icon: "fa-brands fa-researchgate",
+        notification: true,
+      },
+      {
+        id: 72,
+        name: "R&D Inventory",
+        path: "/CreateReq/R&D",
+        icon: "fa-solid fa-warehouse",
         notification: true,
       },
     ],
@@ -484,10 +514,38 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
+      {
+        id: 69,
+        name: "MessageTemplate",
+        path: "/MessageTemplate",
+        icon: "fa fa-comment",
+        notification: true,
+      },
+    ],
+  },
+
+  {
+    title: "Other",
+    icon: "fa-regular fa-comment-dots",
+    childrens: [
+      {
+        id: 71,
+        name: "Student Info",
+        path: "/studentInfo",
+        icon: "fa-solid fa-circle-info",
+        notification: true,
+      },
+      {
+        id: 75,
+        name: "Career",
+        path: "/careers",
+        icon: "fa-solid fa-circle-info",
+        notification: true,
+      },
     ],
   },
 ];
 
-// last routes is 67
+// last routes is 75
 
 export default userRolesData;

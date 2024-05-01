@@ -15,7 +15,8 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { toast } from "react-toastify";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useSendMessageMutation } from "../../features/api/whatsAppApiSlice";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -24,13 +25,16 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 const NewProductApproval = () => {
   const description = `This is an Approval Module for New Product Approval. In this module, you grant permission by selecting the products. Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`New Product Approval`));
+  }, []);
 
   const { userInfo } = useSelector((state) => state.auth);
   /// local state
@@ -81,9 +85,7 @@ const NewProductApproval = () => {
         message: `${userInfo.name}  ${
           status ? "Approved" : "Rejected"
         } ${name} `,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
 
       const datas = {
@@ -113,9 +115,7 @@ const NewProductApproval = () => {
         message: `${userInfo.name}  ${
           status ? "Approved" : "Rejected"
         } ${selectedItemsData} `,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date()
       };
 
       const datas = {
@@ -128,8 +128,6 @@ const NewProductApproval = () => {
         status: status,
         type: "newProduct",
       };
-
-     
 
       const res = await approvalApi(params).unwrap();
 
@@ -148,8 +146,8 @@ const NewProductApproval = () => {
     setSelectedItems(selectionModel);
 
     const newSelectedRowsData = rows
-    .filter((item) => selectionModel.includes(item.id))
-    .map((item) => item.Name);
+      .filter((item) => selectionModel.includes(item.id))
+      .map((item) => item.Name);
 
     setSelectedItemsData(newSelectedRowsData);
   };
@@ -351,17 +349,17 @@ const NewProductApproval = () => {
       <DrawerHeader />
       <Loading loading={isLoading || isFetching || approvalLoading} />
 
-      <Header
+      {/* <Header
         Name={"New Product Approval"}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         // infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

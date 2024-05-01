@@ -28,7 +28,7 @@ function PriceHistoryCalc({
   selectedItems,
 }) {
   /// local state
-console.log(data)
+
   const [usdCommon, setUSDcommon] = useState('');
   const [qty, setQty] = useState({});
   const [usdValue, setUSDValue] = useState({});

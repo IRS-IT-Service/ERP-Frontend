@@ -64,6 +64,7 @@ const Shipment = () => {
     "Blue Dart",
     "Ecom Express",
     "India Post",
+    "Self Pickup" ,
     "Others",
   ];
   const handleCourierNameChange = (event) => {

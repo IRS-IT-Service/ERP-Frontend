@@ -13,3 +13,5 @@ export const LOGISTICS_URL = '/logistics'
 export const DSC_URL = '/dsc'
 export const Assets_URL = '/assets'
 export const WhatsApp_URL = "/whatsapp"
+export const Expo = "/expo"
+export const RnD_URL = "/r-and-d"

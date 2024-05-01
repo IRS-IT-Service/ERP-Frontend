@@ -77,6 +77,7 @@ export const whatsAppApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    
     getCustomerNumber: builder.query({
       query: () => {
         return {

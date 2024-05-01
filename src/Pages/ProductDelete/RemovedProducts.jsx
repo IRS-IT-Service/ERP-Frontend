@@ -12,15 +12,88 @@ import Loading from "../../components/Common/Loading";
 import CachedIcon from "@mui/icons-material/Cached";
 import Header from "../../components/Common/Header";
 import { useSocket } from "../../CustomProvider/useWebSocket";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 // for refresh data
 
+const infoDetail = [
+  {
+    name: "SKU",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/9ekdebyn7d/Information%20Screenshot/Removed%20Products/image(1).png?updatedAt=1710225175364"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction: "Here you Can view Deleted Product SKU",
+  },
+  {
+    name: "Product",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/9ekdebyn7d/Information%20Screenshot/Removed%20Products/image(2).png?updatedAt=1710225168282"
+        height={"100%"}
+        width={"100%"}
+      />
+    ),
+    instruction: "Here you Can view Deleted Product Name",
+  },
+  {
+    name: "Brand",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/9ekdebyn7d/Information%20Screenshot/Removed%20Products/image(3).png?updatedAt=1710225171747"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction: "Here you Can view Deleted Product Brand",
+  },
+  {
+    name: "Category",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/9ekdebyn7d/Information%20Screenshot/Removed%20Products/image(4).png?updatedAt=1710225183449"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction: "Here you Can view Deleted Product Category",
+  },
+  {
+    name: "GST",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/9ekdebyn7d/Information%20Screenshot/Removed%20Products/image(5).png?updatedAt=1710225164247"
+        height={"40%"}
+        width={"40%"}
+      />
+    ),
+    instruction: "Here you Can view Deleted Product GST",
+  },
+  {
+    name: "Quantity",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/9ekdebyn7d/Information%20Screenshot/Removed%20Products/image(6).png?updatedAt=1710225179355"
+        height={"40%"}
+        width={"40%"}
+      />
+    ),
+    instruction: "Here you Can view Deleted Product Quantity",
+  },
+];
+
 const RemovedProduct = () => {
+  const description =
+    "This is Removed Products where you can view the Deleted Products";
+
   /// initialization
-  const dispatch = useDispatch();
   const apiRef = useGridApiRef();
   const socket = useSocket();
 
@@ -65,6 +138,17 @@ const RemovedProduct = () => {
       setItemCount(data?.itemsPerPage);
     }
   }, [data]);
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Removed Product`));
+  }, []);
 
   /// Columns
   const columns = [
@@ -175,7 +259,6 @@ const RemovedProduct = () => {
     <Box sx={{ width: "100%", height: "100%" }}>
       <DrawerHeader />
       <Loading loading={isLoading || isFetching} />
-      <Header Name="Removed Product" />
 
       <Grid container>
         <Grid item xs={12} sx={{ mt: "5px" }}>
@@ -216,7 +299,13 @@ const RemovedProduct = () => {
               apiRef={apiRef}
             />
           </Box>
-        </Grid>
+        </Grid>{" "}
+        <InfoDialogBox
+          infoDetails={infoDetail}
+          description={description}
+          open={isInfoOpen}
+          close={handleClose}
+        />
       </Grid>
     </Box>
   );

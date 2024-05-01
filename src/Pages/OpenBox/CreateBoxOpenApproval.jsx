@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import CreateBoxApprovalDialog from "./Components/CreateBoxApprovalDialog";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -61,13 +62,16 @@ const CreateBoxOpenApproval = () => {
 In the "Create Box Open Approval" you provide specific approval for the selected product components. When you click the create button, a dialog box will appear, holding the approval form.
 `;
 
- const [infoOpen, setInfoOpen] = useState(false);
- const handleClose = () => {
-   setInfoOpen(!infoOpen);
- };
- const handleOpen = () => {
-   setInfoOpen(true);
- };
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Create Box Open Approval`));
+  }, []);
+
   /// initialize
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -269,16 +273,16 @@ In the "Create Box Open Approval" you provide specific approval for the selected
       sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={'Create Box Open Approval'}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

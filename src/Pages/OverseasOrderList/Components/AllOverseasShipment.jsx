@@ -20,6 +20,9 @@ import { formatDate } from "../../../commonFunctions/commonFunctions";
 import { useGetAllOverseasShipmentQuery } from "../../../features/api/RestockOrderApiSlice";
 
 import Header from "../../../components/Common/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -33,6 +36,34 @@ const useStyles = makeStyles((theme) => ({
     color: "white !important",
   },
 }));
+
+
+//Todo
+const infoDetail = [
+  {
+    name: "Status",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065319338"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here You Can See Status of Your all Overseas Shipment",
+  },
+  {
+    name: "Details",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065319338"
+        height={"100%"}
+        width={"100%"}
+      />
+    ),
+    instruction: "If you click to View Button Under Details so you can see One overseas Shipment with all the Shipment Details",
+  },
+];
 
 const AllOverseasShipment = () => {
   /// initialize
@@ -185,27 +216,31 @@ const AllOverseasShipment = () => {
     },
   ];
   // infodialog state
+  //Todo
   const description =
     "This is Employee Task where you can view the employee's daily tasks";
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Incoming Shipment`));
+  }, []);
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={"Incoming Shipment"}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
 
       <StyledBox>
         <Loading loading={overseasShipmentLoading} />
@@ -361,6 +396,13 @@ const AllOverseasShipment = () => {
             Height={"85vh"}
           />
         </Box>
+
+        <InfoDialogBox
+          infoDetails={infoDetail}
+          description={description}
+          open={isInfoOpen}
+          close={handleClose}
+        />
       </StyledBox>
     </Box>
   );

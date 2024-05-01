@@ -1,16 +1,73 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, styled, Button, Dialog } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useGetAllBoxOpenHistoryQuery } from "../../features/api/barcodeApiSlice";
 import { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import Header from "../../components/Common/Header";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
+const infoDetail = [
+  {
+    name: "Sort By Brand",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+  },
+  {
+    name: "Sort By Category",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
+  },
+  {
+    name: "Search-Product",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click the search product, you can search for any product or brand here",
+  },
+  {
+    name: "Search-SKU",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "If you click search SKU, you can search for any product or brand by SKU number here ",
+  },
+];
+
 const OpenBoxHistory = () => {
+
+  const description =
+    "This is Opened Box History you Can See All History of Opened Box";
   /// rtk query
   const { data, isLoading, refetch } = useGetAllBoxOpenHistoryQuery();
 
@@ -96,6 +153,17 @@ const OpenBoxHistory = () => {
     },
   ];
 
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Opened Box History`));
+  }, []);
+
   /// Function
 
   return (
@@ -104,7 +172,7 @@ const OpenBoxHistory = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header Name={"Opened Box History"}/>
+      {/* <Header Name={"Opened Box History"}/> */}
       <Box>
 
 
@@ -196,6 +264,12 @@ const OpenBoxHistory = () => {
           </Button>
         </Box>
       </Dialog>
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={isInfoOpen}
+        close={handleClose}
+      />
     </Box>
   );
 };

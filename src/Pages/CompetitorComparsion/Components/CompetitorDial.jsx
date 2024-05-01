@@ -16,6 +16,7 @@ import {
   CircularProgress,
   Typography,
   selectClasses,
+  Checkbox,
 } from "@mui/material";
 import { useAddCompetitorPriceMutation } from "../../../features/api/productApiSlice";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -24,6 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import HttpIcon from "@mui/icons-material/Http";
+
 const CompetitorDial = ({
   openCompetitor,
   handleCloseCompetitor,
@@ -42,12 +44,12 @@ const CompetitorDial = ({
     CompName: "",
     url: "",
     Price: "",
+    inStock: false,
   });
-  console.log(paramsData);
 
   const handleSubmit = async () => {
     const finalValue = compairePrice.filter(
-      (item) => item.competitor?.length > 0
+      (item) => item.competitor?.length > 0 && item.competitor[0].Name !== ""
     );
     let info = finalValue.map((item) => {
       return {
@@ -62,10 +64,11 @@ const CompetitorDial = ({
     try {
       const res = await addCompair(main).unwrap();
       toast.success("Competitor price added successfully");
-      handleCloseCompetitor();
-      setCompairePrice([{}]);
       productrefetch();
       refetch();
+      handleCloseCompetitor();
+      setCompairePrice([])
+      window.location.reload();
     } catch (err) {
       console.log(err);
     }
@@ -78,16 +81,38 @@ const CompetitorDial = ({
         ...item,
       };
     });
-
     setCompairePrice(newLocalData);
   }, [paramsData]);
 
-  const handleCompetitor = (SKU, CompName, e) => {
-    const { value, name } = e.target;
+  const handleCompetitor = (SKU, CompName, e, oldValue, oldValue2) => {
+    const { value, name, checked } = e.target;
     if (name === "url") {
-      setPrice({ ...price, SKU: SKU, CompName: CompName, url: value });
+      setPrice({
+        ...price,
+        SKU: SKU,
+        CompName: CompName,
+        url: value,
+        Price: oldValue || price.Price,
+        inStock: oldValue2 || price.inStock,
+      });
+    } else if (name === "Price") {
+      setPrice({
+        ...price,
+        SKU: SKU,
+        CompName: CompName,
+        Price: value,
+        url: oldValue || price.url,
+        inStock: oldValue2 || price.inStock,
+      });
     } else {
-      setPrice({ ...price, SKU: SKU, CompName: CompName, Price: value });
+      setPrice({
+        ...price,
+        SKU: SKU,
+        CompName: CompName,
+        Price: oldValue || price.Price,
+        url: oldValue2 || price.url,
+        inStock: checked,
+      });
     }
   };
 
@@ -96,6 +121,7 @@ const CompetitorDial = ({
       Name: price.CompName,
       Price: +price.Price,
       URL: price.url,
+      inStock: price.inStock,
     };
 
     const existingSKUIndex = compairePrice.findIndex(
@@ -169,11 +195,11 @@ const CompetitorDial = ({
           }}
         />
       </Box>
-      <DialogContent sx={{ overflow: "hidden" }}>
+      <DialogContent>
         <TableContainer sx={{ maxHeight: 450 }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
-              <TableRow>
+              <TableRow colSpan={3}>
                 <TableCell
                   sx={{
                     textAlign: "center",
@@ -183,6 +209,7 @@ const CompetitorDial = ({
                     top: 0,
                     left: 0,
                     zIndex: 200,
+                    width: 0,
                   }}
                 >
                   Remove
@@ -193,16 +220,19 @@ const CompetitorDial = ({
                       textAlign: "center",
                       background: "linear-gradient(0deg, #01127D, #04012F)",
                       color: "#fff",
+                      width: 0,
                       position: [
                         "SKU",
                         "Sno",
                         "Product",
                         "Brand",
                         "Category",
+                        "SalesPrice",
                         "GST",
                       ].includes(item)
                         ? "sticky"
                         : "sticky",
+
                       left: `${
                         [
                           "SKU",
@@ -210,6 +240,7 @@ const CompetitorDial = ({
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(item)
                           ? item === "Sno"
@@ -222,11 +253,13 @@ const CompetitorDial = ({
                             ? 22.25
                             : item === "Category"
                             ? 26.6
+                            : item === "SalesPrice"
+                            ? 32
                             : item === "GST"
-                            ? 32.2
+                            ? 38
                             : 0
                           : ""
-                      }rem`, // Adjust the values as needed
+                      }rem`,
                       zIndex: `${
                         [
                           "SKU",
@@ -234,6 +267,7 @@ const CompetitorDial = ({
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(item)
                           ? 300
@@ -257,6 +291,8 @@ const CompetitorDial = ({
                       position: "sticky",
                       background: "#fff",
                       left: 0,
+                      width: 0,
+
                       zIndex: 100,
                       "&:hover": { color: "red" },
                     }}
@@ -269,7 +305,7 @@ const CompetitorDial = ({
                     key={index}
                     sx={{
                       position: "sticky",
-                      left: 80,
+                      left: 75,
                       zIndex: 200,
                       background: "#fff",
                       textAlign: "center",
@@ -288,6 +324,7 @@ const CompetitorDial = ({
                           "Product",
                           "Brand",
                           "Category",
+                          "SalesPrice",
                           "GST",
                         ].includes(column)
                           ? "sticky"
@@ -296,21 +333,25 @@ const CompetitorDial = ({
                           column === "Sno"
                             ? 0
                             : column === "SKU"
-                            ? 8
+                            ? 10
                             : column === "Product"
-                            ? 16
+                            ? 18
                             : column === "Brand"
                             ? 23
                             : column === "Category"
                             ? 27.45
+                            : column === "SalesPrice"
+                            ? 33.1
                             : column === "GST"
-                            ? 32.45
+                            ? 38.8
                             : 60
-                        }rem`, // Adjust the values as needed
-                        zIndex: 100,
-                        background: "#fff",
+                        }rem`,
 
-                        // rowGap:`${column === "Product" ? "1rem" : ""}`
+                        background: "#fff",
+                        zIndex: 100,
+
+                        // background: `${column === "Product" ? "red" : "#fff"}`,
+                        // paddingX:`${column === "Product" ? "15rem" : "#fff"}`,
                       }}
                     >
                       {[
@@ -319,10 +360,13 @@ const CompetitorDial = ({
                         "Product",
                         "Brand",
                         "Category",
+                        "SalesPrice",
                         "GST",
                       ].includes(column) ? (
                         column === "GST" ? (
                           `${parseFloat(item[column]).toFixed(0)} %`
+                        ) : column === "SalesPrice" ? (
+                          ` ₹ ${item[column].toFixed(0)}`
                         ) : (
                           item[column]
                         )
@@ -354,13 +398,20 @@ const CompetitorDial = ({
                             </span>
                             <input
                               defaultValue={item[column]?.Price}
+                              name="Price"
                               style={{
                                 textIndent: "0.8rem",
                                 width: "6rem",
                                 padding: 4,
                               }} // Adjust the value according to your preference
                               onChange={(e) =>
-                                handleCompetitor(item.SKU, column, e)
+                                handleCompetitor(
+                                  item.SKU,
+                                  column,
+                                  e,
+                                  item[column]?.URL,
+                                  item[column]?.inStock
+                                )
                               }
                             />
                           </Box>
@@ -385,14 +436,43 @@ const CompetitorDial = ({
                               defaultValue={item[column]?.URL}
                               name="url"
                               style={{
-                                textIndent: "0.8rem",
+                                textIndent: "1.5rem",
                                 width: "6rem",
                                 padding: 4,
                               }} // Adjust the value according to your preference
                               onChange={(e) =>
-                                handleCompetitor(item.SKU, column, e)
+                                handleCompetitor(
+                                  item.SKU,
+                                  column,
+                                  e,
+                                  item[column]?.Price,
+                                  item[column]?.inStock
+                                )
                               }
                             />
+                          </Box>
+                          <Box>
+                            <span
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              Stock:
+                              <Checkbox
+                                defaultChecked={item[column]?.inStock}
+                                onChange={(e) =>
+                                  handleCompetitor(
+                                    item.SKU,
+                                    column,
+                                    e,
+                                    item[column]?.Price,
+                                    item[column]?.URL
+                                  )
+                                }
+                              ></Checkbox>
+                            </span>
                           </Box>
                         </Box>
                       )}

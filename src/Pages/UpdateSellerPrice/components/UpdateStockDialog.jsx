@@ -76,9 +76,7 @@ const UpdateStockDialog = ({
       const res = await updateProductsApi(params).unwrap();
       const liveStatusData = {
         message: `${userInfo.name} updated Quantity of ${oneProductData?.data?.Name} by ${stock} `,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       socket.emit("liveStatusServer", liveStatusData);
       const addProductHistory = {

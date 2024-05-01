@@ -1,5 +1,5 @@
 import { Box, Grid } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useCreateFormDynamicDataMutation,
@@ -8,7 +8,23 @@ import {
 import { toast } from "react-toastify";
 import Header from "../../../components/Common/Header";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+
+const infoDetail = [
+  {
+    name: "Drone Brand",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "You can Enter Drone Model and Save in Database",
+  },
+];
 
 const DsCModelInput = () => {
   /// global state
@@ -21,13 +37,16 @@ const DsCModelInput = () => {
           barcode, click on "Download." If you wish to view the barcode, you can
           do so by clicking on "View."`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Add Drone Model`));
+  }, []);
 
   const navigate = useNavigate();
   /// local state
@@ -59,15 +78,15 @@ const DsCModelInput = () => {
 
   return (
     <>
-      <Header Name={"Add Drone Model"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Add Drone Model"} info={true} customOnClick={handleOpen} /> */}
 
       {/* Dialog info Box */}
-      {/* <InfoDialogBox
+      <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
-      /> */}
+      />
 
       <Box
         sx={{

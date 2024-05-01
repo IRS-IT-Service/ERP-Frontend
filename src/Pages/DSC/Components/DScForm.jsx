@@ -39,6 +39,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const infoDetail = [
   {
@@ -99,20 +100,20 @@ const infoDetail = [
 const DScForm = () => {
   const description = `The Entry Form for Repairs Module is for the drone service center. Here, we enter customer details for drone services. After clicking the submit button, the data will be submitted.`;
 
+
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Entry Form For Repairing`));
+  }, []);
   /// global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
 
-
-
-
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
   /// initialize
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -367,9 +368,7 @@ const DScForm = () => {
 
       const liveStatusData = {
         message: `${userInfo.name} Created DSC Form With Token Id : ${res?.data?.Token}`,
-        time: new Date().toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        time: new Date(),
       };
       socket.emit("liveStatusServer", liveStatusData);
       dispatch(removeDscformDetails());
@@ -488,17 +487,17 @@ const DScForm = () => {
     <>
       <Box sx={{ textAlign: "center", padding: "4px", background: "grey" }}>
         <Loading loading={isLoading || saveFormLoading} />
-        <Header
+        {/* <Header
           Name={`Entry Form For Repairing`}
           info={true}
           customOnClick={handleOpen}
-        />
+        /> */}
 
         {/* Dialog info Box */}
         <InfoDialogBox
           infoDetails={infoDetail}
           description={description}
-          open={infoOpen}
+          open={isInfoOpen}
           close={handleClose}
         />
       </Box>

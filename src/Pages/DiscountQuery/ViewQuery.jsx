@@ -18,7 +18,8 @@ import Nodata from "../../../src/assets/error.gif";
 import { formatDate } from "../../commonFunctions/commonFunctions";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -96,6 +97,7 @@ const ViewQuery = () => {
       setShowNoData(true);
     }, 10000);
   }, []);
+
   // local state
   const classes = useStyles();
   const [rows, setRows] = useState([]);
@@ -104,6 +106,8 @@ const ViewQuery = () => {
   const [rowData, setRowData] = useState();
   const [showNewData, setShowNewData] = useState(true);
   const [showOldData, setShowOldData] = useState(false);
+
+
 
   const CustomToolbar = () => {
     /// global state
@@ -440,30 +444,30 @@ const ViewQuery = () => {
   // Merge columns based on isAdminRoute
   const finalColumns = isOnAdminRoute ? adminColumns : userColumns;
 
-  const description = `The Barcode Generation function is  designed to create barcodes for
-          products. This is accomplished by selecting the product, clicking on
-          the "Generate" button, which will yield a new barcode. To obtain the
-          barcode, click on "Download." If you wish to view the barcode, you can
-          do so by clicking on "View."`;
+  const description = `View Query`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose1 = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen1 = () => {
-    setInfoOpen(true);
-  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`View Query`));
+  }, []);
 
   return (
     <Box sx={{ width: "100%", minHeight: "93vh", overflowY: "hidden" }}>
       <DrawerHeader />
-      <Header Name={"Barcode Stick"} info={true} customOnClick={handleOpen1} />
+      {/* <Header Name={"Barcode Stick"} info={true} customOnClick={handleOpen1} /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose1}
       />
 

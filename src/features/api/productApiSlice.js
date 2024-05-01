@@ -144,6 +144,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+  
     addBrand: builder.mutation({
       query: (data) => {
         return {
@@ -240,10 +241,11 @@ export const productApiSlice = apiSlice.injectEndpoints({
       },
     }),
     deleteProduct: builder.mutation({
-      query: (id) => {
+      query: (params) => {
         return {
-          url: `${PRODUCT_URL}/deleteProduct/${id}`,
+          url: `${PRODUCT_URL}/deleteProduct/${params.id}`,
           method: "DELETE",
+          body: params,
         };
       },
     }),
@@ -308,7 +310,69 @@ export const productApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${PRODUCT_URL}/bulkUpdateProducts`,
           method: "PUT",
-          body:data
+          body: data,
+        };
+      },
+    }),
+    addBrandLogo: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/addBrandLogo`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    addBulkSellerPrice: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/addBulksellerPrice`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    deleteCompetitor: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/deleteCompetitor`,
+          method: "DELETE",
+          body: data,
+        };
+      },
+    }),
+    sendOtpForDeleteProduct: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/deleteProductOtp`,
+          method: "Post",
+          body: data,
+        };
+      },
+    }),
+    productAvailinEcwid: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/findProductAvailabiltyEcwid`,
+          method: "Post",
+          body: data,
+        };
+      },
+    }),
+    getAllProductWithRandD: builder.query({
+      query:(filter) =>{
+        return {
+          url: `${PRODUCT_URL}/randdProducts?${filter}`,
+          method:"GET"
+        }
+      }
+    }),
+    quantityUpdateRnD: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/quantityUpdate`,
+          method: "Post",
+          body: data,
         };
       },
     }),
@@ -352,4 +416,11 @@ export const {
   useAddCompetitorPriceMutation,
   useUpdateBulkProductMutation,
   useDeleteDyanmicValueMutation,
+  useAddBrandLogoMutation,
+  useAddBulkSellerPriceMutation,
+  useDeleteCompetitorMutation,
+  useSendOtpForDeleteProductMutation,
+  useProductAvailinEcwidMutation,
+  useGetAllProductWithRandDQuery,
+  useQuantityUpdateRnDMutation,
 } = productApiSlice;

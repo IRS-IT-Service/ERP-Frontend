@@ -163,9 +163,7 @@ setIsLoading(true)
             message: `${userInfo.name} updated SalesPrice of ${updatedSalesPrice
               .map((product) => `${product.name} to ${product.value}`)
               .join(", ")} `,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
+            time: new Date(),
           };
           const whatsappMessage = {
             message: liveStatusData.message,
@@ -198,9 +196,7 @@ setIsLoading(true)
             message: `${userInfo.name} updated SalesTax of ${updatedSalesTax
               .map((product) => `${product.name} to ${product.value}`)
               .join(", ")} `,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
+            time: new Date(),
           };
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SalesTax updated successfully");
@@ -262,9 +258,7 @@ setIsLoading(true)
             } updated SellerPrice of ${updatedSellerPrice
               .map((product) => `${product.name} to ${product.value}`)
               .join(", ")} `,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
+            time: new Date()
           };
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SellerPrice updated successfully");
@@ -297,9 +291,7 @@ setIsLoading(true)
             message: `${userInfo.name} updated SalesTax of ${updatedSellerTax
               .map((product) => `${product.name} to ${product.value}`)
               .join(", ")} `,
-            time: new Date().toLocaleTimeString("en-IN", {
-              timeZone: "Asia/Kolkata",
-            }),
+            time: new Date(),
           };
           socket.emit("liveStatusServer", liveStatusData);
           toast.success("SellerTax updated successfully");
@@ -588,11 +580,11 @@ setIsLoading(true)
           headerName: "Remove",
           className: "violet-bg",
         },
-        {
-          field: "Compaire",
-          headerName: "Comapire",
-          className: "violet-bg",
-        },
+        // {
+        //   field: "Compaire",
+        //   headerName: "Comapire",
+        //   className: "violet-bg",
+        // },
       ];
     } else if (type === "Seller") {
       visibleColumns = [
@@ -667,11 +659,11 @@ setIsLoading(true)
           headerName: "Remove",
           className: "violet-bg",
         },
-        {
-          field: "Compaire",
-          headerName: "Compaire",
-          className: "violet-bg",
-        },
+        // {
+        //   field: "Compaire",
+        //   headerName: "Compaire",
+        //   className: "violet-bg",
+        // },
       ];
     }
 
@@ -723,7 +715,7 @@ setIsLoading(true)
             <TableBody>
               {localData.map((item, index) => (
                 <>
-                  <TableRow key={index}>
+                  <TableRow key={item.SKU}>
                     <TableCell sx={{ fontSize: ".8rem", textAlign: "center" }}>
                       {index + 1}
                     </TableCell>
@@ -804,28 +796,28 @@ setIsLoading(true)
                             <Delete />
                           </TableCell>
                         );
-                      } else if (column.field === "Compaire") {
-                        return (
-                          <TableCell>
-                            <Tooltip
-                              title="Click for more details"
-                              placement="top"
-                            >
-                              <KeyboardArrowDownIcon
+                      // } else if (column.field === "Compaire") {
+                      //   return (
+                      //     <TableCell>
+                      //       <Tooltip
+                      //         title="Click for more details"
+                      //         placement="top"
+                      //       >
+                      //         <KeyboardArrowDownIcon
                           
-                          sx={{
-                            cursor: "pointer",
-                            fontSize: "20px",
-                            marginLeft: "10px",
-                            "&:hover": { color: "blue" },
-                            transition: "transform 0.5s ease-out",
-                            transform: openStates[index] ? "rotate(180deg)" : "rotate(0deg)",
-                          }}
-                                onClick={() => handleRowClick(index)}
-                              />
-                            </Tooltip>
-                          </TableCell>
-                        );
+                      //     sx={{
+                      //       cursor: "pointer",
+                      //       fontSize: "20px",
+                      //       marginLeft: "10px",
+                      //       "&:hover": { color: "blue" },
+                      //       transition: "transform 0.5s ease-out",
+                      //       transform: openStates[index] ? "rotate(180deg)" : "rotate(0deg)",
+                      //     }}
+                      //           onClick={() => handleRowClick(index)}
+                      //         />
+                      //       </Tooltip>
+                      //     </TableCell>
+                      //   );
                       }
                       return (
                         <TableCell
@@ -886,7 +878,7 @@ setIsLoading(true)
                                    title={`${items.URL}`}
                                    placement="top"
                                    key={index}
-                                 ><InfoIcon sx={{width:"15px" ,marginTop:0.5 ,color:"black"}}  /></Tooltip> </a> </span> } </Box>
+                                 ><InfoIcon sx={{width:"15px" ,marginTop:0.5 ,color:items.inStock ? "green" : "red"}}  /></Tooltip> </a> </span> } </Box>
                                   </TableCell>
                                 );
                               })}

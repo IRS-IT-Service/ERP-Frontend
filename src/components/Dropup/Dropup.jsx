@@ -1,6 +1,6 @@
 import React from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { formatDate } from "../../commonFunctions/commonFunctions";
+import { formatDate, formateDateAndTime } from "../../commonFunctions/commonFunctions";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Box, Button, Typography, Switch, createTheme } from "@mui/material";
 import { useState } from "react";
@@ -18,6 +18,7 @@ import {
   toggleNotificationSound,
   clearAllLiveWholeSaleStatus,
   clearOneLiveWholeSaleStatus,
+  toggleChatNotificationSound,
 } from "../../features/slice/authSlice";
 
 /// switch color
@@ -55,6 +56,7 @@ const Dropup = () => {
     liveWholeSaleStatus,
     allWholeSaleUsers,
     onlineWholeSaleUsers,
+    chatNotificationSound,
   } = useSelector((state) => state.auth);
 
   /// local state
@@ -73,7 +75,6 @@ const Dropup = () => {
   const handleItemClick = (item) => {
     setSelectedItem(item === selectedItem ? null : item);
     setValue(item);
-    console.log(item);
   };
 
   /// rtk query
@@ -303,7 +304,7 @@ const Dropup = () => {
                               fontSize=".9rem"
                               color=" #666666"
                             >
-                              {item.time}
+                              {formateDateAndTime(item.time)}
                             </Typography>
                             <CloseIcon
                               onClick={() => {
@@ -394,6 +395,40 @@ const Dropup = () => {
                         checked={notificationSound}
                         onChange={() => {
                           dispatch(toggleNotificationSound(!notificationSound));
+                        }}
+                        style={{ color: color2 }}
+                      />
+
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        background: color,
+                        alignItems: "center",
+                        padding: ".3rem",
+
+                        marginTop: ".3rem",
+                      }}
+                    >
+                      <Typography
+                        variant="paragraph"
+                        sx={{
+                          fontWeight: "500",
+                          color: "white",
+                          textTransform: "capitalize",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Chat Notification Sound
+                      </Typography>
+
+                      <Switch
+                        checked={chatNotificationSound}
+                        onChange={() => {
+                          dispatch(
+                            toggleChatNotificationSound(!chatNotificationSound)
+                          );
                         }}
                         style={{ color: color2 }}
                       />

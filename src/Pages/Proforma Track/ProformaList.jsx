@@ -1,8 +1,10 @@
 import { Box, styled, Button } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../../components/Common/Header";
 import { DataGrid } from "@mui/x-data-grid";
 import { formatDate } from "../../commonFunctions/commonFunctions";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -66,13 +68,25 @@ const ProformaList = () => {
     },
   ];
 
+
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+  
+  useEffect(() => {
+    dispatch(setHeader(`Proforma List`));
+  }, []);
+
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Proforma List"} />
+      {/* <Header Name={"Proforma List"} /> */}
 
       {/* Add the DataGrid */}
       <Box sx={{ height: "88vh", width: "100%" }}>

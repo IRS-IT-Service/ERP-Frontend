@@ -5,7 +5,7 @@ import { makeStyles } from "@mui/styles";
 import noDataFound from "../../../assets/error.gif";
 import noImage from "../../../assets/NoImage.jpg";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../../components/Common/Loading";
 import {
   Box,
@@ -29,6 +29,7 @@ import {
 import { useGetSingleAssetsMutation } from "../../../features/api/assetsSlice";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const useStyles = makeStyles({
   tableContainer: {
@@ -96,14 +97,7 @@ const ScanAssetsCode = () => {
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
-
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen1 = () => {
-    setInfoOpen(true);
-  };
+  
   const classes = useStyles();
   const socket = useSocket();
 
@@ -130,6 +124,17 @@ const ScanAssetsCode = () => {
     setOpen(!open);
   };
 
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+ 
+  useEffect(() => {
+    dispatch(setHeader(`Asset Scan`));
+  }, []);
+
   // api calling
   useEffect(() => {
     const fetchData = async () => {
@@ -139,9 +144,7 @@ const ScanAssetsCode = () => {
           if (response?.data?.status === "success") {
             const liveStatusData = {
               message: `${userInfo.name} Scanned Assets of Code ${input} `,
-              time: new Date().toLocaleTimeString("en-IN", {
-                timeZone: "Asia/Kolkata",
-              }),
+              time: new Date(),
             };
             socket.emit("liveStatusServer", liveStatusData);
 
@@ -195,7 +198,7 @@ const ScanAssetsCode = () => {
         marginTop: "70px",
       }}
     >
-      <Header Name={"Asset Scan"} info={true} customOnClick={handleOpen1} />
+      {/* <Header Name={"Asset Scan"} info={true} customOnClick={handleOpen1} /> */}
       <Box
         sx={{
           display: "flex",
@@ -391,7 +394,7 @@ const ScanAssetsCode = () => {
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
     </Box>

@@ -3,231 +3,252 @@ import { BARCODE_URL } from "../../constants/ApiEndpoints";
 
 export const BarcodeSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    reducerPath: 'BarcodeApi',
+    reducerPath: "BarcodeApi",
     generateBarcode: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/generate`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
     getBarcode: builder.mutation({
       query: (id) => ({
         url: `${BARCODE_URL}/getSerialNumber/${id}`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     verifyBarcodeForDispatch: builder.mutation({
       query: (params) => ({
         url: `${BARCODE_URL}/verifyBarcodeForDispatch`,
-        method: 'POST',
+        method: "POST",
         body: params,
       }),
     }),
     verifyBarcodeForReturn: builder.mutation({
       query: (params) => ({
         url: `${BARCODE_URL}/verifyBarcodeForReturn`,
-        method: 'POST',
+        method: "POST",
         body: params,
       }),
     }),
     barcodeForRejection: builder.mutation({
       query: (params) => ({
         url: `${BARCODE_URL}/barcodeForRejection`,
-        method: 'POST',
+        method: "POST",
         body: params,
       }),
     }),
     dispatchBarcodeInBulk: builder.mutation({
       query: (params) => ({
         url: `${BARCODE_URL}/dispatchBarcodeInBulk`,
-        method: 'POST',
+        method: "POST",
         body: params,
       }),
     }),
     returnBarcodeInBulk: builder.mutation({
       query: (params) => ({
         url: `${BARCODE_URL}/returnProduct`,
-        method: 'POST',
+        method: "POST",
         body: params,
       }),
     }),
     getAllBarcodesSkus: builder.query({
       query: () => ({
         url: `${BARCODE_URL}/getAllBarcodes`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     scanBarcodeForVerify: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/searchVerifySticky`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
     getBarcodesReturnHistory: builder.query({
       query: () => ({
         url: `${BARCODE_URL}/getreturnHistory`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     getBarcodesDispatchHistory: builder.query({
       query: () => ({
         url: `${BARCODE_URL}/getBarcodeHistory`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     addSubCategory: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/addSubCategory`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
     getAllProductBySku: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/getProducts`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
     getAllSalesHistory: builder.query({
       query: (params) => ({
         url: `${BARCODE_URL}/salesHistory${params}`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     getSingleSalesHistory: builder.mutation({
       query: (id) => ({
         url: `${BARCODE_URL}/salesHistory/${id}`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     addCustomer: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/addCustomer`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
     getCustomer: builder.query({
       query: () => ({
         url: `${BARCODE_URL}/getAllCustomer`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     getSingleCustomer: builder.query({
       query: (id) => ({
         url: `${BARCODE_URL}/getSingleCustomer/${id}`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     createBoxOpen: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/createBoxOpen`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
     getAllOpenedBox: builder.query({
       query: (data) => ({
         url: `${BARCODE_URL}/getAllOpenedBox`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     getAllBoxOpenHistory: builder.query({
       query: (data) => ({
         url: `${BARCODE_URL}/getAllBoxOpenHistory`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     createBoxOpenApproval: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/createBoxOpenApproval`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
     updateBoxOpenApproval: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/updateBoxOpenApproval`,
-        method: 'PUT',
+        method: "PUT",
         body: data,
       }),
     }),
     getBoxOpenApproval: builder.query({
       query: (id) => ({
         url: `${BARCODE_URL}/getBoxOpenApproval/${id}`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     createShipment: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/createShipment`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
     getSingleShipment: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/getSingleShipment/${data}`,
-        method: 'Get',
+        method: "Get",
       }),
     }),
     getAllShipment: builder.query({
       query: (params) => ({
         url: `${BARCODE_URL}/getAllShipment${params}`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     getShipmentBarcode: builder.mutation({
       query: (data) => ({
         url: `${BARCODE_URL}/getProductDetailsByBarcode`,
-        method: 'POST',
+        method: "POST",
         body: data,
       }),
     }),
 
-    getAllRDInventory: builder.query({
+    updateAssignedStatus: builder.mutation({
+      query: (data) => ({
+        url: `${BARCODE_URL}/updateAssignedStatus`,
+        method: `POST`,
+        body: data,
+      }),
+    }),
+    updateDamagedStatus: builder.mutation({
+      query: (data) => ({
+        url: `${BARCODE_URL}/updateDamagedStatus`,
+        method: `POST`,
+        body: data,
+      }),
+    }),
+    getAllBarcodes: builder.query({
+      query: (filter) => ({
+        url: `${BARCODE_URL}/getAllBarcodesV2?${filter}`,
+        method: `GET`,
+      }),
+    }),
+    createRandDInventry: builder.mutation({
+      query: (data) => ({
+        url: `${BARCODE_URL}/createReqRandD`,
+        method: `Post`,
+        body:data
+      }),
+    }),
+    getAllRandDInventry: builder.query({
       query: () => ({
         url: `${BARCODE_URL}/getAllRDInventory`,
-        method: 'GET',
+        method: `GET`,
       }),
     }),
-    getAllProjectData: builder.query({
+    getPendingRequest: builder.query({
       query: () => ({
-        url: `r-and-d/getAllProjects`,
-        method: 'GET',
+        url: `${BARCODE_URL}/getPendingRequest`,
+        method: `GET`,
       }),
     }),
-    addProjectName: builder.mutation({
+    getPendingRequestCount: builder.query({
+      query: () => {
+        return {
+          url: `${BARCODE_URL}/getPendingRequestCount`,
+          method: "GET",
+        };
+      },
+    }),
+    addProductInRnDInventory: builder.mutation({
       query: (data) => ({
-        url: `r-and-d/createProject`,
-        method: 'POST',
-        body: data,
+        url: `${BARCODE_URL}/addProductInR&DInventory`,
+        method: `POST`,
+        body:data
       }),
     }),
-    addProjectItem: builder.mutation({
+    updateSingleProduct: builder.mutation({
       query: (data) => ({
-        url: `r-and-d/addProjectItem`,
-        method: 'POST',
-        body: data,
+        url: `${BARCODE_URL}/updateSingleProduct/${data.id}`,
+        method: `PUT`,
+        body:data
       }),
     }),
-      updateAssignedStatus: builder.mutation({
-        query: (data) => ({
-          url: `${BARCODE_URL}/updateAssignedStatus`,
-          method: `POST`,
-          body: data,
-        }),
-      }),
-      updateDamagedStatus: builder.mutation({
-        query: (data) => ({
-          url: `${BARCODE_URL}/updateDamagedStatus`,
-          method: `POST`,
-          body: data,
-        }),
-      }),
   }),
 });
 
@@ -260,10 +281,12 @@ export const {
   useGetSingleShipmentMutation,
   useGetAllShipmentQuery,
   useGetShipmentBarcodeMutation,
-  useGetAllProjectDataQuery,
-  useGetAllRDInventoryQuery,
-  useAddProjectNameMutation,
-  useAddProjectItemMutation,
   useUpdateAssignedStatusMutation,
   useUpdateDamagedStatusMutation,
+  useGetAllBarcodesQuery,
+  useCreateRandDInventryMutation,useGetAllRandDInventryQuery ,
+  useGetPendingRequestQuery,
+  useGetPendingRequestCountQuery,
+  useAddProductInRnDInventoryMutation,
+  useUpdateSingleProductMutation
 } = BarcodeSlice;

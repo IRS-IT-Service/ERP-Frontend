@@ -21,6 +21,7 @@ import { useSetPersonalDetailsQuery } from "../../../features/api/SellerDetailsA
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ViewbankDetails } from "../../../components/Common/DialogBox";
+import RejectDial from "./RejectDial";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "grey" : "#fff",
@@ -64,13 +65,15 @@ const MyAccountDetails = () => {
   const status = useLocation().search.substring(1);
   const navigate = useNavigate();
   const [openbankDetails, setopenbankDetails] = useState(false);
+  const [openRejectDial, setOpenRejectDial] = useState(false);
+  const [name, setName] = useState("");
 
   const classes = useStyles();
   const [openView, setOpenview] = useState(false);
   const [FileType, setFileType] = useState("");
 
   const { refetch, data: personalDetails } = useSetPersonalDetailsQuery(id);
-  const [verifySeller] = useVerifySellerMutation();
+  const [verifySeller, { isLoading }] = useVerifySellerMutation();
 
   /// handler
 
@@ -84,11 +87,13 @@ const MyAccountDetails = () => {
       };
       const res = await verifySeller(data).unwrap();
       toast.success(`Seller Verifcation Complete`);
+      refetch()
       navigate("/sellerVerify");
     } catch (error) {
       console.error("An error occurred during login:", error);
     }
   };
+
   const handleDialog = (e) => {
     if (e === "bankDetails") {
       setopenbankDetails(!openbankDetails);
@@ -98,6 +103,10 @@ const MyAccountDetails = () => {
     if (e) {
       setFileType(e);
     }
+  };
+
+  const handleOpenRejectDial = () => {
+    setOpenRejectDial(!openRejectDial);
   };
   // console.log("personalDetails", personalDetails);
   return (
@@ -210,7 +219,7 @@ const MyAccountDetails = () => {
               <TableRow>
                 <TableCell className={classes.tableCell}>GST Number</TableCell>
                 <TableCell>{personalDetails?.details.gst} </TableCell>
-                <TableCell className={classes.tableCell}>
+                {/* <TableCell className={classes.tableCell}>
                   GST Certificate
                 </TableCell>
                 <TableCell>
@@ -230,39 +239,16 @@ const MyAccountDetails = () => {
                       FileType={FileType}
                     />
                   )}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className={classes.tableCell}>MSME Number</TableCell>
+                </TableCell> */}
+                 <TableCell className={classes.tableCell}>MSME Number</TableCell>
                 <TableCell>
                   {personalDetails?.details.msme
                     ? personalDetails?.details.msme
                     : "Not available"}
                 </TableCell>
-                <TableCell className={classes.tableCell}>
-                  MSME Certificate
-                </TableCell>
-                <TableCell>
-                  <Button
-                    disabled={
-                      personalDetails?.details.files.msmeFile ? false : true
-                    }
-                    onClick={() => handleDialog("MSME")}
-                  >
-                    View
-                  </Button>
-                  {openView && FileType === "MSME" && (
-                    <ViewCertificate
-                      open={openView}
-                      handleDialog={handleDialog}
-                      personalDetails={personalDetails}
-                      FileType={FileType}
-                    />
-                  )}
-                </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className={classes.tableCell}>
+              <TableCell className={classes.tableCell}>
                   Bank details
                 </TableCell>
                 <TableCell>
@@ -284,7 +270,31 @@ const MyAccountDetails = () => {
                     />
                   )}
                 </TableCell>
+       
                 <TableCell className={classes.tableCell}>
+                  MSME Certificate
+                </TableCell>
+                <TableCell>
+                  <Button
+                    disabled={
+                      personalDetails?.details.files.msmeFile ? false : true
+                    }
+                    onClick={() => handleDialog("MSME")}
+                  >
+                    View
+                  </Button>
+                  {openView && FileType === "MSME" && (
+                    <ViewCertificate
+                      open={openView}
+                      handleDialog={handleDialog}
+                      personalDetails={personalDetails}
+                      FileType={FileType}
+                    />
+                  )}
+                </TableCell>
+               
+                
+                {/* <TableCell className={classes.tableCell}>
                   Cancel Cheque
                 </TableCell>
                 <TableCell>
@@ -304,7 +314,7 @@ const MyAccountDetails = () => {
                       FileType={FileType}
                     />
                   )}
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             </TableBody>
           </Table>
@@ -321,7 +331,7 @@ const MyAccountDetails = () => {
                 variant="contained"
                 color="success"
                 onClick={() => {
-                  handleVerify("verify");
+                  handleVerify({ action: "verify" });
                 }}
               >
                 Accept
@@ -331,7 +341,8 @@ const MyAccountDetails = () => {
                 color="error"
                 sx={{ background: "red" }}
                 onClick={() => {
-                  handleVerify("reject");
+                  handleOpenRejectDial();
+                  setName(personalDetails?.details.concernPerson);
                 }}
               >
                 Reject
@@ -342,6 +353,15 @@ const MyAccountDetails = () => {
           )}
         </TableContainer>
       </StyledPaper>
+      {openRejectDial && (
+        <RejectDial
+          open={openRejectDial}
+          setDial={setOpenRejectDial}
+          handleVerify={handleVerify}
+          isLoading={isLoading}
+          name={name}
+        />
+      )}
     </Box>
   );
 };

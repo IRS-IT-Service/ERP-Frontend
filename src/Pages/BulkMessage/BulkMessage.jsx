@@ -1,8 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Box, styled, Button } from "@mui/material";
 import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import BulkMessageTable from "./Components/BulkMessageTable";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -10,7 +12,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: "Add Customer",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
@@ -19,10 +21,10 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+      "If you click 'ADD CUSTOMER' then You Can Upload Bulk Customer Details with Excel File and Download Sample File",
   },
   {
-    name: "Sort By Category",
+    name: "Send Text Message with Media",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
@@ -31,10 +33,10 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
+      "Here You can send Text Message with Media to Customer",
   },
   {
-    name: "Search",
+    name: "Cusormer Details",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
@@ -43,85 +45,41 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you click the search box, you can search for any product or brand here",
-  },
-  {
-    name: "Check",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/right_productStatus.png?updatedAt=1703142361021"
-        height={"40%"}
-        width={"40%"}
-      />
-    ),
-    instruction:
-      "If the checkbox is check like this , It  indicates that there is a value in this particular list",
-  },
-  {
-    name: "Uncheck",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/cross_productStatus.png?updatedAt=1703142361005"
-        height={"40%"}
-        width={"40%"}
-      />
-    ),
-    instruction:
-      "If the checkbox is unchecked like this, it indicates that there is no value in this particular list",
-  },
-  {
-    name: "Download With Valuer",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/value_productStatus.png?updatedAt=1703142731023"
-        height={"100%"}
-        width={"100%"}
-      />
-    ),
-    instruction:
-      "If you have selected a particular list and want to download the values in Excel format, you can click this button",
-  },
-  {
-    name: "Download With True/False",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/True-false_ProductStatus.png?updatedAt=1703142731003"
-        height={"100%"}
-        width={"100%"}
-      />
-    ),
-    instruction:
-      "If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button",
+      "Here You can See Customer Details with Customer Name, Company Name, Mobile No., Address",
   },
 ];
 const BulkMessage = () => {
   // infodialog state
   const description =
-    "This is the Product Status you can check product details  ";
+    "This is the Customer Details & Bulk Message Section ";
 
-  const [infoOpen, setInfoOpen] = useState(false);
-  const handleClose = () => {
-    setInfoOpen(!infoOpen);
-  };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+    const dispatch = useDispatch();
+
+    const { isInfoOpen } = useSelector((state) => state.ui);
+    const handleClose = () => {
+      dispatch(setInfo(false));
+    };
+  
+    useEffect(() => {
+      dispatch(setHeader(`Bulk Message`));
+    }, []);
+
   return (
     <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
     >
       <DrawerHeader />
-      <Header Name={"Bulk Message"} info={true} customOnClick={handleOpen} />
+      {/* <Header Name={"Bulk Message"} info={true} customOnClick={handleOpen} /> */}
 
       {/* infoDialog table */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
-      <BulkMessageTable/>
+      <BulkMessageTable />
     </Box>
   );
 };

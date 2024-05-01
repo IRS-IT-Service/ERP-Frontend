@@ -1,6 +1,6 @@
 import "./App.css";
 import PrivateRoute from "./middleware/PrivateRoute";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { useState, useEffect, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -58,6 +58,8 @@ import {
   addLiveStatus,
   addLiveWholeSaleStatus,
   addOnlineWholeSaleUsers,
+  addChatNotificationData,
+  addChatMessageData,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
 import { onMessage, getToken } from "firebase/messaging"; // Import necessary functions from Firebase messaging
@@ -109,13 +111,25 @@ import AddRoboProductsValue from "./Pages/AddRoboProductsValue/AddRoboProductsVa
 import BulkAddProduct from "./Pages/AddProduct/BulkAddProduct";
 import RemovedProduct from "./Pages/ProductDelete/RemovedProducts";
 import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorComparsion";
-import AllInventoryData from "./Pages/R&D/AllInventoryData";
-import ResearchNewProject from "./Pages/R&D/ResearchNewProject";
+import CreateReq from "./Pages/R&D_NEW/CreareReq";
+import RnDInventory from "./Pages/R&D_NEW/RnDInventory";
+import Project from "./Pages/R&D_NEW/Project";
+import ResearchNewProject from "./Pages/R&D_old/ResearchNewProject";
 import BulkMessage from "./Pages/BulkMessage/BulkMessage";
 import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
 import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
 import UpdateProductBulk from "./Pages/UpdateProduct/components/UpdateProductBulk";
 import UpdateProductMain from "./Pages/UpdateProduct/UpdateProductMain";
+import MessageTemplate from "./Pages/MessageTemplate/MessageTemplate";
+import SetDiscountPrice from "./Pages/AllSellers/AllSellerComponent/SetDiscountPrice";
+import Studentinfo from "./Pages/Other/Studentinfo";
+import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
+import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
+import PreOrder from "./Pages/DiscountQuery/PreOrder";
+import ChatMessage from "./Pages/Chat/ChatMessage";
+import Careers from "./Pages/Careers/Careers";
+import IrsConnect from "../public/chatlog.png"
+
 
 function App() {
   /// initialize
@@ -126,7 +140,7 @@ function App() {
   /// global state
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
-
+  const adminid = userInfo?.adminId;
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
@@ -145,12 +159,26 @@ function App() {
       },
     });
   };
+  /// Push Notification for chat messages
+  const pushNotificatForChat = (title, data, navigateTo) => {
+    addNotification({
+      title: title,
+      subtitle: "now",
+      message: "IRS Connect Chat",
+      duration: 30000,
+      icon: irsLogo,
+      native: true,
+      onClick: () => {
+        navigate(navigateTo);
+      },
+    });
+  };
 
   /// webSocket Event Handlers
 
   // OnMessage
   const handleNewMessage = (data) => {
-    console.log("Handling new message:", data);
+    // console.log("Handling new message:", data);
   };
 
   //onlineUsers
@@ -194,11 +222,7 @@ function App() {
         });
 
         // Listen for the 'onlineUsers' event
-        socket.on("onlineUsers", (data) => {
-          // console.log('Received Event onlineUsers for Admin :', data);
 
-          handleOnlineUsers(data);
-        });
         // Listen for the 'onlineWholeSaleUsers' event
         socket.on("onlineWholeSaleUsers", (data) => {
           // console.log('Received Event onlineWholeSaleUsers for Admin :', data);
@@ -219,6 +243,11 @@ function App() {
           handleLiveWholeSaleStatus(data);
         });
       }
+      socket.on("onlineUsers", (data) => {
+        // console.log('Received Event onlineUsers for Admin :', data);
+
+        handleOnlineUsers(data);
+      });
 
       /// events for all
       // Listen for the 'logout' event
@@ -226,7 +255,6 @@ function App() {
         const userId = data.userId;
         const currentUserId = userInfo?.adminId;
         if (userId === currentUserId) {
-          console.log("logout");
           handleLogout();
         }
       });
@@ -236,9 +264,27 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
+        // socket.off("newChatMessage");
       }
     };
   }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("newChatMessage", (data) => {
+          dispatch(addChatNotificationData({ ...data.data }));
+          dispatch(addChatMessageData(data.data))
+          pushNotificatForChat("New Chat Message Received","New Chat Message","/chat")
+        
+      });
+    }
+  
+    // return () => {
+    //   if (socket) {
+    //     socket.off("newChatMessage");
+    //   }
+    // };
+  }, [socket, adminid, dispatch]);
 
   /// rtk query
   // const { data: getAllUserApi } = useGetAllUsersQuery();
@@ -275,7 +321,7 @@ function App() {
     });
 
     onMessage(messaging, (payload) => {
-      console.log("Message received.", payload);
+      // console.log("Message received.", payload);
       // Handle the received message here
     });
   }, []);
@@ -355,6 +401,10 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="product-list" element={<Home_page />} />
                 <Route
+                  path="/setDicountpricerange"
+                  element={<SetDiscountPrice />}
+                />
+                <Route
                   path="/Users"
                   element={
                     <UserRole name={"Users"}>
@@ -382,10 +432,12 @@ function App() {
                   element={<AddRoboProductsValue />}
                 />
                 <Route path="/BulkMessage" element={<BulkMessage />} />
+                <Route path="/MessageTemplate" element={<MessageTemplate />} />
                 {/* Products Router */}
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
                 <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
                 <Route path="/addBrand" element={<AddBrand />} />
+                <Route path="/studentInfo" element={<Studentinfo />} />
                 {/* <Route
                   path="/UpdateSellerPrice"
                   element={
@@ -684,14 +736,12 @@ function App() {
                 <Route path="/ProformaDetails" element={<ProformaDetails />} />
 
                 {/* R&D */}
-                <Route
-                  path="/AllInventoryData"
-                  element={<AllInventoryData />}
-                />
-                <Route
-                  path="/ResearchNewProject"
-                  element={<ResearchNewProject />}
-                />
+                <Route path="/CreateReq/:id" element={<CreateReq />} />
+                <Route path="/Project" element={<Project />} />
+
+                <Route path="/ItemsAprroval" element={<ItemsApproval />} />
+                <Route path="/PartsApproval" element={<PartsApproval />} />
+                <Route path="/PreOrder" element={<PreOrder />} />
 
                 {/* Marketing tools */}
                 <Route path="/addAdvertiser" element={<CustomerDetails />} />
@@ -699,6 +749,13 @@ function App() {
                   path="/addCusotmerforMarketing"
                   element={<AddCustomerForMarketing />}
                 />
+                <Route
+                  path="/addCusotmerforMarketing"
+                  element={<AddCustomerForMarketing />}
+                />
+                <Route path="/Chat" element={<ChatMessage />} />
+                {/* Careers */}
+                <Route path="/careers" element={<Careers />} />
               </Route>
             </Routes>
           </Suspense>

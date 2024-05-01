@@ -10,6 +10,8 @@ import Loading from "../../../components/Common/Loading";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import Header from "../../../components/Common/Header";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 const infoDetail = [
   {
@@ -52,13 +54,16 @@ const infoDetail = [
 const LogisticsList = () => {
   const description = `In this Logistics Box Module, all details of the shipments are visible. To enter box details, click on the 'Details' button. This will open a (GUI) where you can input all the box data. After entering the data, click on the 'Submit' button to save the box details.`;
 
-  const [infoOpen, setInfoOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
-    setInfoOpen(!infoOpen);
+    dispatch(setInfo(false));
   };
-  const handleOpen = () => {
-    setInfoOpen(true);
-  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Logistics Box Entry`));
+  }, []);
   /// initialize
   const navigate = useNavigate();
 
@@ -228,17 +233,17 @@ const LogisticsList = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-      <Header
+      {/* <Header
         Name={"Logistics Box Entry"}
         info={true}
         customOnClick={handleOpen}
-      />
+      /> */}
 
       {/* Dialog info Box */}
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
-        open={infoOpen}
+        open={isInfoOpen}
         close={handleClose}
       />
 

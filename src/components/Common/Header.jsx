@@ -1,36 +1,35 @@
 import React from "react";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { setInfo } from "../../features/slice/uiSlice";
+import { useDispatch } from "react-redux";
 
-const Header = ({ Name, info, customOnClick }) => {
+const Header = ({ Name, info}) => {
+const dispatch = useDispatch()
+
+  const handleOpen = () => {
+    dispatch(setInfo(true))
+  };
+
   return (
     <Box
-      sx={{
-        backgroundColor: "#fff",
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      margin:"5px",
+    }}
+  >
+    <div
+      style={{
         display: "flex",
-        justifyContent: "center",
-        padding: "0.3rem",
-        border: "solid 1px #fff",
-        boxShadow: "4px 4px 8px 0 rgba(111, 107, 107, 0.25);",
-         marginBottom: "0.1rem",
+        alignItems: "center",
+        fontFamily: "Inter",
+        fontSize: "15px",
+  
+        // color: "#767171",
+        lineHeight: "normal",
       }}
     >
-      <div
-        style={{
-          width: "80vw",
-          display: "flex",
-          justifyContent: "end",
-          alignItems: "center",
-          gap: "50%",
-          fontFamily: "Inter",
-          letterSpacing: "-0.48px",
-          color: "#767171",
-          lineHeight: "normal",
-          letterSpacing: "-0.48px",
-          marginLeft: "4.5rem",
-          marginBottom: "0.4rem",
-        }}
-      >
         <h2 className=" ">
           {Name}
           {"  "}
@@ -38,7 +37,7 @@ const Header = ({ Name, info, customOnClick }) => {
 
         <h2
           style={{
-            marginLeft: "2rem",
+            marginLeft: "1rem",
           }}
         >
           {info ? (
@@ -46,14 +45,14 @@ const Header = ({ Name, info, customOnClick }) => {
               <IconButton
                 sx={{
                   borderRadius: "1rem",
-                  color: "black",
+                  color: "#c2c2c2",
                   fontWeight: "bold",
                   transition: "transform 0.3s ease-in-out",
                   "&:hover": {
                     transform: "scale(1.2)",
                   },
                 }}
-                onClick={customOnClick}
+                onClick={handleOpen}
               >
                 <InfoOutlinedIcon />
               </IconButton>
