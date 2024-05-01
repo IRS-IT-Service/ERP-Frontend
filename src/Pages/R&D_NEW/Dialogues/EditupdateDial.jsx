@@ -19,12 +19,13 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { useUpdateProjectMutation } from "../../../features/api/RnDSlice";
+import { useDeleteRandDProductMutation, useUpdateProjectMutation } from "../../../features/api/RnDSlice";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { NearMe } from "@mui/icons-material";
+import { connectStorageEmulator } from "firebase/storage";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#eee",
@@ -54,13 +55,19 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
   // api calling from rtk query
   const [updateProjectItems, { isLoading, refetch: addRefetch }] =
     useUpdateProjectMutation();
+   const [deleteProduct,{isLoading:deleteLoading}] = useDeleteRandDProductMutation() 
 
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleClick = (event, item) => {
-    console.log(item);
-    setDeleteInfo(item);
-    setAnchorEl(event.currentTarget);
+  const handleClick = async(event, item) => {
+    try{
+      const info = { id: data?.projectId,SKU:item.SKU}
+      const result = await deleteProduct(info).unwrap();
+      toast.success("Product deleted successfully")
+      refetch()
+      close()
+    }catch(error){
+    }
   };
 
   const handleClose = () => {
@@ -138,6 +145,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
     { field: "OldQty", headerName: "Old Qty" },
     { field: "TotalQty", headerName: "Total Qty" },
     { field: "Status", headerName: "Received" },
+    { field: "Delete", headerName: "Delete" },
   ];
 
   return (
@@ -433,7 +441,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                           </Box>
                         </StyleTable>
 
-                        {/* <StyleTable sx={{ fontSize: ".8rem" }}>
+                        <StyleTable sx={{ fontSize: ".8rem" }}>
                           <DeleteIcon
                             sx={{
                               "&:hover": {
@@ -443,7 +451,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                             }}
                             onClick={(e) => handleClick(e, item)}
                           />
-                        </StyleTable> */}
+                        </StyleTable>
                       </TableRow>
                     );
                   })

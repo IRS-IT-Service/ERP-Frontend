@@ -21,10 +21,10 @@ import Loading from "../../components/Common/Loading";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import EditProductDial from "./Dialogues/EditProductDial";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import { useGetAllRDInventoryQuery } from "../../features/api/RnDSlice";
 import ImageUploadDial from "./Dialogues/ImageUploadDial";
+import CachedIcon from "@mui/icons-material/Cached";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -92,16 +92,16 @@ const RnDInventory = () => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const ref = useRef();
-const [open ,setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
     dispatch(setInfo(false));
   };
-const handlecloseDial = () =>{
-  setOpen(false)
-  setOpenedit(false)
-  setOpenimageupload(false)
-}
+  const handlecloseDial = () => {
+    setOpen(false);
+    setOpenedit(false);
+    setOpenimageupload(false);
+  };
   useEffect(() => {
     dispatch(setHeader(`R&D inventory`));
   }, []);
@@ -118,6 +118,8 @@ const handlecloseDial = () =>{
   const [openImageupload, setOpenimageupload] = useState(false);
   const [editData, setEditdata] = useState([]);
   const [rows, setRows] = useState([]);
+  const [buttonBlink, setButtonBlink] = useState("");
+
 
   /// rtk query
 
@@ -134,10 +136,10 @@ const handlecloseDial = () =>{
     });
   };
 
-  const handleOpenImage = (params) =>{
-    setOpenimageupload(true)
-    setEditdata(params.row)
-  }
+  const handleOpenImage = (params) => {
+    setOpenimageupload(true);
+    setEditdata(params.row);
+  };
 
   /// handlers
 
@@ -150,8 +152,6 @@ const handlecloseDial = () =>{
           id: item.SKU,
           Sno: index + 1,
           LandingCost: item.LandingCost,
-          
-        
         };
       });
 
@@ -175,7 +175,7 @@ const handlecloseDial = () =>{
       field: "SKU",
       headerName: "SKU",
 
-      flex:0.1,
+      flex: 0.1,
       minWidth: 200,
       maxWidth: 300,
       align: "center",
@@ -186,7 +186,7 @@ const handlecloseDial = () =>{
     {
       field: "Name",
       headerName: "Product ",
-   flex:0.1,
+      flex: 0.1,
       minWidth: 500,
       maxWidth: 600,
       align: "center",
@@ -197,7 +197,7 @@ const handlecloseDial = () =>{
     {
       field: "LandingCost",
       headerName: "Landing Cost ",
-      flex:0.1,
+      flex: 0.1,
       minWidth: 100,
       maxWidth: 200,
       align: "center",
@@ -209,33 +209,30 @@ const handlecloseDial = () =>{
     {
       field: "Weight",
       headerName: "Weight (gm)",
-      flex:0.1,
+      flex: 0.1,
       minWidth: 100,
       maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-
     },
 
     {
       field: "Dimension",
       headerName: "Dimension (cm)",
-      flex:0.1,
+      flex: 0.1,
       minWidth: 100,
       maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-     
-
     },
     {
       field: "OldQty",
       headerName: "Old Qty",
-      flex:0.1,
+      flex: 0.1,
       minWidth: 100,
       maxWidth: 200,
       align: "center",
@@ -246,7 +243,7 @@ const handlecloseDial = () =>{
     {
       field: "Newqty",
       headerName: "New Qty",
-      flex:0.1,
+      flex: 0.1,
       minWidth: 100,
       maxWidth: 200,
       align: "center",
@@ -282,22 +279,83 @@ const handlecloseDial = () =>{
       headerName: "Upload",
       minWidth: 50,
       maxWidth: 100,
-       align: "center",
+      align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => (
         <Box>
-       
-          <AddPhotoAlternateIcon sx={{
-            color: "grey",
-            cursor: "pointer",
-            "&:hover": { color: "red" },
-          }} onClick={()=>handleOpenImage(params)}/>
+          <AddPhotoAlternateIcon
+            sx={{
+              color: "grey",
+              cursor: "pointer",
+              "&:hover": { color: "red" },
+            }}
+            onClick={() => handleOpenImage(params)}
+          />
         </Box>
       ),
     },
   ];
+
+  function CustomFooter(props) {
+    const { status } = props;
+    return (
+      <GridToolbarContainer>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+        >
+          {/* <Button size="small" onClick={() => status()}>
+            <CachedIcon />
+          </Button> */}
+
+          <Box display="flex" gap="20px">
+            <Box display="flex" alignItems="center" gap="10px">
+              <span style={{ fontWeight: "bold" }}>Less Than 50% Sticked</span>
+              <Button
+                sx={{
+                  border: "0.5px solid black",
+                  width: "25px",
+                  height: "20px",
+                  borderRadius: "10px",
+                  backgroundColor: `${buttonBlink === "red" ? "white" : "red"}`,
+                }}
+                onClick={() => fetchDataWithQuery("red")}
+              ></Button>
+            </Box>
+          </Box>
+
+          <TablePagination
+            component="div"
+            count={totalProductCount}
+            page={page - 1}
+            onPageChange={(event, newPage) => {
+              setPage(newPage + 1);
+
+              let paramString = filterString;
+
+              let param = new URLSearchParams(paramString);
+
+              param.set("page", newPage + 1);
+
+              let newFilterString = param.toString();
+
+              setFilterString(newFilterString);
+
+              // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+            }}
+            rowsPerPage={rowPerPage}
+            onRowsPerPageChange={(event) => {
+              setRowPerPage(event.target.value);
+            }}
+          />
+        </Box>
+      </GridToolbarContainer>
+    );
+  }
 
   return (
     <Box
@@ -311,7 +369,7 @@ const handlecloseDial = () =>{
         open={isInfoOpen}
         close={handleClose}
       />
-          {open && (
+      {open && (
         <AddProductInventory
           open={open}
           close={handlecloseDial}
@@ -319,23 +377,22 @@ const handlecloseDial = () =>{
         />
       )}
 
-      {(
-        openImageupload && <ImageUploadDial
-        open ={openImageupload}
-        close={handlecloseDial}
-        data = {editData}
-        
+      {openImageupload && (
+        <ImageUploadDial
+          open={openImageupload}
+          close={handlecloseDial}
+          data={editData}
         />
       )}
-             {openEdit && (
+      {openEdit && (
         <EditProductDial
-        data={editData}
+          data={editData}
           open={openEdit}
           close={handlecloseDial}
           refetch={refetch}
         />
       )}
-    
+
       <Grid container>
         {productLoading || isFetching ? (
           <Loading loading={true} />
@@ -371,7 +428,9 @@ const handlecloseDial = () =>{
                   handleFilterChange("SKU", "contains", e.target.value);
                 }}
               />
-              <Button variant="contained" onClick={()=>setOpen(true)}>Add Product</Button>
+              <Button variant="contained" onClick={() => setOpen(true)}>
+                Add Product
+              </Button>
             </Box>
             <Box
               sx={{
@@ -410,6 +469,44 @@ const handlecloseDial = () =>{
                 // isRowSelectable={(params) => params.row.SalesPrice > 0}
                 // rowSelectionModel={selectedItems}
                 // keepNonExistentRowsSelected
+                components={{
+                  NoRowsOverlay: () => (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <img
+                          style={{
+                            width: "20%",
+                          }}
+                          src={Nodata}
+                        />
+
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "bold", fontSize: "1.5rem" }}
+                        >
+                          No data found !
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ),
+                  Footer: CustomFooter,
+                }}
               />
             </Box>
           </Grid>
