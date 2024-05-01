@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   styled,
   Button,
@@ -11,31 +11,31 @@ import {
   Typography,
   TextareaAutosize,
   CircularProgress,
-} from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { DataGrid } from "@mui/x-data-grid";
-import { toast } from "react-toastify";
+} from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { DataGrid } from '@mui/x-data-grid';
+import { toast } from 'react-toastify';
 import {
   useAddCustomerNumberMutation,
   useGetCustomerNumberQuery,
   useSendBulkMessagesWithPicMutation,
-} from "../../../features/api/whatsAppApiSlice";
-import Loading from "../../../components/Common/Loading";
-import CustomMsgDialogbox from "./CustomMsgDialogbox";
-import TemplateMessage from "./TemplateMessage";
+} from '../../../features/api/whatsAppApiSlice';
+import Loading from '../../../components/Common/Loading';
+import CustomMsgDialogbox from './CustomMsgDialogbox';
+import TemplateMessage from './TemplateMessage';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 //File upload
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
   height: 1,
-  overflow: "hidden",
-  position: "absolute",
+  overflow: 'hidden',
+  position: 'absolute',
   bottom: 0,
   left: 0,
-  whiteSpace: "nowrap",
+  whiteSpace: 'nowrap',
   width: 1,
 });
 
@@ -43,14 +43,14 @@ const BulkMessageTable = () => {
   const [open, setOpen] = useState(false);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [customerNumber, setCustomerNumber] = useState([]);
-  const [message, setMessage] = useState("");
-  const [file, setFile] = useState("");
-  const [input, setInput] = useState({ CustomerName: "", CustomerNumber: "" });
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState('');
+  const [input, setInput] = useState({ CustomerName: '', CustomerNumber: '' });
   const [rows, setRows] = useState([]);
   const [msgDialogbox, setMsgDialogbox] = useState(false);
-  const [sendingType, setSendingType] = useState("");
+  const [sendingType, setSendingType] = useState('');
   const [tempopen, setTempopen] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
   const navigate = useNavigate();
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
@@ -75,7 +75,7 @@ const BulkMessageTable = () => {
   };
 
   const handleClickOpen = () => {
-       navigate('/addCusotmerforMarketing');
+    navigate('/addCusotmerforMarketing');
   };
 
   const handleClose = () => {
@@ -100,7 +100,7 @@ const BulkMessageTable = () => {
     setTempopen(false);
   };
   useEffect(() => {
-    if (getAllCustomers?.message === "Customer Successfully fetched") {
+    if (getAllCustomers?.message === 'Customer Successfully fetched') {
       const row = getAllCustomers?.data.map((item, index) => {
         return {
           ...item,
@@ -118,19 +118,19 @@ const BulkMessageTable = () => {
     try {
       const customerNumberRegex = /^\d{10}$/;
       if (!input.CustomerName || !input.CustomerNumber) {
-        toast.error("Please fill Customer Name or Customer Number ");
+        toast.error('Please fill Customer Name or Customer Number ');
       } else if (!customerNumberRegex.test(input.CustomerNumber)) {
-        toast.error("Please Enter Correct Customer Number");
+        toast.error('Please Enter Correct Customer Number');
       } else {
         const info = {
           name: input.CustomerName,
           number: input.CustomerNumber,
         };
         const res = await addCustomer(info).unwrap();
-        if (res.message !== "Customer Successfully Added") {
+        if (res.message !== 'Customer Successfully Added') {
           return;
         }
-        toast.success("Customer Successfully Added");
+        toast.success('Customer Successfully Added');
         setInput([]);
         handleClose();
         refetch();
@@ -224,15 +224,16 @@ const BulkMessageTable = () => {
           <Box
             sx={{
               marginTop: '1rem',
-              border: '2px solid black',
+              // border: '2px solid black',
               borderRadius: '2px',
               display: 'flex',
+              width: '26.5vw',
             }}
           >
             <Button
               variant='outlined'
               sx={{
-                margin: '0.6rem',
+                // margin: '0.6rem',
                 backgroundColor: color,
                 color: 'white',
                 '&:hover': {
@@ -248,7 +249,7 @@ const BulkMessageTable = () => {
             <Button
               variant='outlined'
               sx={{
-                margin: '0.6rem',
+                marginX: '0.2rem',
                 backgroundColor: color,
                 color: 'white',
                 '&:hover': {
@@ -264,7 +265,7 @@ const BulkMessageTable = () => {
             <Button
               variant='outlined'
               sx={{
-                margin: '0.6rem',
+                marginX: '0.3rem',
                 backgroundColor: color,
                 color: 'white',
                 '&:hover': {
@@ -278,7 +279,7 @@ const BulkMessageTable = () => {
             <Button
               variant='outlined'
               sx={{
-                margin: '0.6rem',
+                // margin: '0.6rem',
                 backgroundColor: color,
                 color: 'white',
                 '&:hover': {
