@@ -1,6 +1,5 @@
 import { React, useEffect } from "react";
 import { Box, styled, Button } from "@mui/material";
-import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import AddProductBoxesDetails from "./component/AddProductBoxesDetails";
 import { useNavigate } from "react-router-dom";
@@ -107,10 +106,24 @@ const AddRoboProducts = () => {
             },
           }}
           onClick={() => {
-            navigate("/bulkAddProduct");
+            navigate("/bulkAddProduct/addProduct");
           }}
         >
           Bulk Upload Product
+        </Button>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: themeColor.sideBarColor1,
+            "&hover": {
+              backgroundColor: "black",
+            },
+          }}
+          onClick={() => {
+            navigate("/bulkAddProduct/addName");
+          }}
+        >
+          Add Alternate Name
         </Button>
         <Button
           sx={{

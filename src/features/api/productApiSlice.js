@@ -376,6 +376,15 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    addAlternateName: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${PRODUCT_URL}/addAlternateName`,
+          method: "PUT",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -423,4 +432,5 @@ export const {
   useProductAvailinEcwidMutation,
   useGetAllProductWithRandDQuery,
   useQuantityUpdateRnDMutation,
+  useAddAlternateNameMutation,
 } = productApiSlice;

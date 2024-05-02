@@ -49,7 +49,6 @@ const ChangeProductApproval = () => {
   const { refetch: refetchUnApprovedCount } = useGetUnApprovedCountQuery(null, {
     skip: skip,
   });
-
   /// handlers
 
   const handleSubmit = async (SKU, status) => {
@@ -124,8 +123,6 @@ const ChangeProductApproval = () => {
 
     // Compare the sorted arrays
     return JSON.stringify(sortedArray1) === JSON.stringify(sortedArray2);
-
-    
   }
 
   const dispatch = useDispatch();
@@ -175,9 +172,9 @@ const ChangeProductApproval = () => {
               }}
             >
               <TableRow>
-                <TableCell></TableCell>
                 <TableCell>SKU</TableCell>
                 <TableCell>Name</TableCell>
+                <TableCell>AltName</TableCell>
                 <TableCell>Weight (gm)</TableCell>
                 <TableCell>Dimension (L x W x H) (cm) </TableCell>
                 <TableCell>Brand</TableCell>
@@ -192,15 +189,9 @@ const ChangeProductApproval = () => {
                 return (
                   <React.Fragment key={index}>
                     <TableRow>
-                      <TableCell
-                        sx={{
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {/* <Button variant="contained"> Current</Button> */}
-                      </TableCell>
                       <TableCell>{item?.SKU}</TableCell>
                       <TableCell>{item?.Name}</TableCell>
+                      <TableCell>{item?.AlternativeName}</TableCell>
                       <TableCell>{item?.Weight}</TableCell>
                       <TableCell>
                         {dimensionToString(item?.Dimensions)}
@@ -252,6 +243,11 @@ const ChangeProductApproval = () => {
                       <TableCell sx={{ color: "#AA0000" }}>
                         {checkChange(item?.Name, item?.changedValues?.Name)
                           ? item?.changedValues?.Name
+                          : ""}
+                      </TableCell>
+                      <TableCell sx={{ color: "#AA0000" }}>
+                        {checkChange(item?.AlternativeName, item?.changedValues?.AlternativeName)
+                          ? item?.changedValues?.AlternativeName
                           : ""}
                       </TableCell>
                       <TableCell sx={{ color: "#AA0000" }}>
