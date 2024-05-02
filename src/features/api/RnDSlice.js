@@ -112,6 +112,13 @@ export const RnDApiSlice = apiSlice.injectEndpoints({
         method: "Get",
       }),
     }),
+    deleteRandDProduct: builder.mutation({
+      query: (data) => ({
+        url: `${RnD_URL}/deleteProduct/${data.id}`,
+        method: "DELETE",
+        body:data
+      }),
+    }),
   }),
 });
 
@@ -131,6 +138,7 @@ export const {
   useUpdateProjectMutation,
   useAddImageMutation,
   useAddRemarksMutation,
-  useGetAllRemarksQuery
+  useGetAllRemarksQuery,
+  useDeleteRandDProductMutation,
 } = RnDApiSlice;
  

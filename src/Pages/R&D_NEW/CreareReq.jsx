@@ -20,13 +20,10 @@ import { useGetAllProductV2Query } from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
-
-import { useNavigate } from "react-router-dom";
 import { useGetSingleProjectQuery } from "../../features/api/RnDSlice";
 import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useParams } from "react-router-dom";
-import { useGetAllProductWithRandDQuery } from "../../features/api/productApiSlice";
 import AddRnDQtyDial from "./Dialogues/AddRnDQtyDial";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -93,18 +90,21 @@ const Inventory = () => {
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const debouncing = useRef();
-  const [skip, setSkip] = useState(true)
+  const [skip, setSkip] = useState(true);
   const { id } = useParams();
   const [SelectedSKU, setSelectedSKU] = useState();
   const [updateValue, setUpdateValue] = useState([]);
+  const [buttonBlink, setButtonBlink] = useState("");
 
   const newValue = id !== "R&D" && id.split("&");
   const idValue = id !== "R&D" && newValue[0];
   const name = id !== "R&D" && newValue[1];
-  const { data: allData, isLoading: dataLoading } =
-    useGetSingleProjectQuery(idValue ,{
-      skip
-    });
+  const { data: allData, isLoading: dataLoading } = useGetSingleProjectQuery(
+    idValue,
+    {
+      skip,
+    }
+  );
 
   useEffect(() => {
     let selectSKU = [];
@@ -148,7 +148,7 @@ const Inventory = () => {
   useEffect(() => {
     const Header = id === "R&D" ? "R&D Inventory " : `Add Parts For ${name}`;
     const skipped = id === "R&D" ? true : false;
-    setSkip(skipped)
+    setSkip(skipped);
     dispatch(setHeader(Header));
   }, [id]);
 
@@ -171,11 +171,10 @@ const Inventory = () => {
     setSelectedItemsData(newSelectedRowsData);
     dispatch(setSelectedSkuQuery(selectionModel));
   };
-  
-const handleSetAddItem = () =>{
-  setOpenAdditem(true);
-}
 
+  const handleSetAddItem = () => {
+    setOpenAdditem(true);
+  };
 
   useEffect(() => {
     return () => {
@@ -201,8 +200,8 @@ const handleSetAddItem = () =>{
     const newSelectedRowsData = selectedItemsData.filter(
       (item) => item.SKU !== id
     );
-    const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id)
-    setUpdateValue(NewUpdatedValue)
+    const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id);
+    setUpdateValue(NewUpdatedValue);
     setSelectedItemsData(newSelectedRowsData);
     setSelectedItems(newSelectedItems);
   };
@@ -214,8 +213,6 @@ const handleSetAddItem = () =>{
   const handleOpenDialog = () => {
     setOpen(true);
   };
-
-  
 
   /// useEffect
   useEffect(() => {
@@ -283,6 +280,23 @@ const handleSetAddItem = () =>{
       }, 1000);
     }
   }, [deepSearch]);
+
+  // function for fetch data on latest query
+  const fetchDataWithQuery = (query) => {
+    if (!buttonBlink) {
+      setFilterString(
+        `${
+          filterString === "page=1"
+            ? `type=${query}&page=1`
+            : filterString + `type=${query}&page=1`
+        }`
+      );
+      setButtonBlink(query);
+    } else {
+      setFilterString("page=1");
+      setButtonBlink();
+    }
+  };
 
   //Columns*******************
   const columns = [
@@ -382,6 +396,11 @@ const handleSetAddItem = () =>{
           <Button size="small" onClick={() => status()}>
             <CachedIcon />
           </Button>
+          <Box>
+            <Button variant="outlined" sx={{color :`${buttonBlink ? "green":"blue"} `}} onClick={() => fetchDataWithQuery("RandDProducts")}>
+              Fetch R&D
+            </Button>
+          </Box>
           <TablePagination
             component="div"
             count={totalProductCount}
@@ -416,49 +435,50 @@ const handleSetAddItem = () =>{
       <DrawerHeader />
       <FilterBarV2
         apiRef={apiRef}
-        customButton={selectedItems.length > 0 && (id ==="R&D" ? "Add items" : "Add Parts")}
-        customOnClick={id ==="R&D" ? handleSetAddItem : handleOpenDialog}
+        customButton={
+          selectedItems.length > 0 && (id === "R&D" ? "Add items" : "Add Parts")
+        }
+        customOnClick={id === "R&D" ? handleSetAddItem : handleOpenDialog}
       />
-     {open && <CreateReqDial
-        data={realData}
-        apiRef={apiRef}
-        removeSelectedItems={removeSelectedItems}
-        open={open}
-        setOpen={setOpen}
-        dispatch={dispatch}
-        id={idValue}
-        name={name}
-        removeSelectedCreateQuery={removeSelectedCreateQuery}
-        removeSelectedSkuQuery={removeSelectedSkuQuery}
-        setSelectedItemsData={setSelectedItemsData}
-        selectedItemsData={selectedItemsData}
-        refetch={refetch}
-     
-      />
-     }
+      {open && (
+        <CreateReqDial
+          data={realData}
+          apiRef={apiRef}
+          removeSelectedItems={removeSelectedItems}
+          open={open}
+          setOpen={setOpen}
+          dispatch={dispatch}
+          id={idValue}
+          name={name}
+          removeSelectedCreateQuery={removeSelectedCreateQuery}
+          removeSelectedSkuQuery={removeSelectedSkuQuery}
+          setSelectedItemsData={setSelectedItemsData}
+          selectedItemsData={selectedItemsData}
+          refetch={refetch}
+        />
+      )}
 
-     {openAdditem && <AddRnDQtyDial 
-     
-     data={realData}
-     apiRef={apiRef}
-     removeSelectedItems={removeSelectedItems}
-     open={openAdditem}
-     setOpen={setOpenAdditem}
-     dispatch={dispatch}
-     id={idValue}
-     name={name}
-     removeSelectedCreateQuery={removeSelectedCreateQuery}
-     removeSelectedSkuQuery={removeSelectedSkuQuery}
-     setSelectedItemsData={setSelectedItemsData}
-     selectedItemsData={selectedItemsData}
-     refetch={refetch}
-     setSelectedItems = {setSelectedItems}
-     selectedItems= {selectedItems}
-     updateValue ={updateValue }
-     setUpdateValue = {setUpdateValue}
-     
-     />
-     }
+      {openAdditem && (
+        <AddRnDQtyDial
+          data={realData}
+          apiRef={apiRef}
+          removeSelectedItems={removeSelectedItems}
+          open={openAdditem}
+          setOpen={setOpenAdditem}
+          dispatch={dispatch}
+          id={idValue}
+          name={name}
+          removeSelectedCreateQuery={removeSelectedCreateQuery}
+          removeSelectedSkuQuery={removeSelectedSkuQuery}
+          setSelectedItemsData={setSelectedItemsData}
+          selectedItemsData={selectedItemsData}
+          refetch={refetch}
+          setSelectedItems={setSelectedItems}
+          selectedItems={selectedItems}
+          updateValue={updateValue}
+          setUpdateValue={setUpdateValue}
+        />
+      )}
 
       <InfoDialogBox
         infoDetails={infoDetail}

@@ -435,7 +435,7 @@ function App() {
                 <Route path="/MessageTemplate" element={<MessageTemplate />} />
                 {/* Products Router */}
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
-                <Route path="/bulkAddProduct" element={<BulkAddProduct />} />
+                <Route path="/bulkAddProduct/:id" element={<BulkAddProduct />} />
                 <Route path="/addBrand" element={<AddBrand />} />
                 <Route path="/studentInfo" element={<Studentinfo />} />
                 {/* <Route

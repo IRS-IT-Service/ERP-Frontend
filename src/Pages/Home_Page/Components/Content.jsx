@@ -11,6 +11,7 @@ import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import { setAllProductsV2 } from "../../../features/slice/productSlice";
 import CachedIcon from "@mui/icons-material/Cached";
+import { Tooltip } from '@mui/material';
 
 // for refresh data
 
@@ -60,6 +61,7 @@ const Content = ({ autoHeight, text }) => {
             (allProductData.data.currentPage - 1) * allProductData.data.limit,
           SKU: item.SKU,
           Name: item.Name,
+          AltName : item.AlternativeName,
           LandingCost: item.LandingCost.toFixed(2),
           SalesPrice: item.SalesPrice.toFixed(2),
           MRP: item.MRP.toFixed(2),
@@ -190,13 +192,27 @@ const Content = ({ autoHeight, text }) => {
     {
       field: "Name",
       headerName: "Product",
-      flex: 0.3,
+      flex: 0.4,
       minWidth: 200,
-
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "AltName",
+      headerName: "Alternate Name",
+      flex: 0.1,
+      minWidth: 10,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => (
+        <Tooltip title={params.value}>
+          {params.value}
+        </Tooltip>
+      ),
     },
     {
       field: "Brand",
