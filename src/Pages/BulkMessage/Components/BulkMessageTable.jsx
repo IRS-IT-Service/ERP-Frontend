@@ -23,8 +23,8 @@ import {
 import Loading from "../../../components/Common/Loading";
 import CustomMsgDialogbox from "./CustomMsgDialogbox";
 import TemplateMessage from "./TemplateMessage";
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 //File upload
 const VisuallyHiddenInput = styled("input")({
@@ -74,7 +74,7 @@ const BulkMessageTable = () => {
   // };
 
   const handleClickOpen = () => {
-       navigate('/addCusotmerforMarketing');
+    navigate("/addCusotmerforMarketing");
   };
 
   const handleClose = () => {
@@ -163,128 +163,128 @@ const BulkMessageTable = () => {
 
   //This is data grid data
   const columns = [
-    { field: 'sn', headerName: 'ID', width: 90 },
+    { field: "sn", headerName: "ID", width: 90 },
     {
-      field: 'CustomerName',
-      headerName: 'Customer Name',
+      field: "CustomerName",
+      headerName: "Customer Name",
       width: 180,
       editable: true,
     },
     {
-      field: 'CompanyName',
-      headerName: 'Company Name',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      field: "CompanyName",
+      headerName: "Company Name",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       flex: 0.3,
       width: 210,
     },
     {
-      field: 'CustomerNumber',
-      headerName: 'Mobile No',
+      field: "CustomerNumber",
+      headerName: "Mobile No",
       width: 150,
       editable: true,
     },
     {
-      field: 'Address',
-      headerClassName: 'super-app-theme--header',
-      cellClassName: 'super-app-theme--cell',
+      field: "Address",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       flex: 0.3,
-      headerName: 'Address',
+      headerName: "Address",
       width: 250,
     },
   ];
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <Box
         sx={{
-          display: 'flex',
-          width: '100%',
-          justifyContent: 'space-around',
+          display: "flex",
+          width: "100%",
+          justifyContent: "space-around",
         }}
       >
         <Box
           sx={{
-            width: '30%',
-            marginTop: '2rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyItems: 'center',
-            overflow: 'hidden',
+            width: "30%",
+            marginTop: "2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyItems: "center",
+            overflow: "hidden",
           }}
         >
           <Button
-            variant='contained'
+            variant="contained"
             onClick={handleClickOpen}
-            sx={{ margin: '6px 0px 6px 0px ', background: color }}
+            sx={{ margin: "6px 0px 6px 0px ", background: color }}
           >
             Add Customer
           </Button>
           <Box
             sx={{
-              marginTop: '1rem',
-              border: '2px solid black',
-              borderRadius: '2px',
-              display: 'flex',
+              marginTop: "1rem",
+              border: "2px solid black",
+              borderRadius: "2px",
+              display: "flex",
             }}
           >
             <Button
-              variant='outlined'
+              variant="outlined"
               sx={{
-                margin: '0.6rem',
+                margin: "0.6rem",
                 backgroundColor: color,
-                color: 'white',
-                '&:hover': {
-                  color: 'black',
+                color: "white",
+                "&:hover": {
+                  color: "black",
                 },
               }}
               onClick={() =>
-                handleOpenMsgDialogbox('File', 'Send Text Message With Media')
+                handleOpenMsgDialogbox("File", "Send Text Message With Media")
               }
             >
               Send Text Message With Media
             </Button>
             <Button
-              variant='outlined'
+              variant="outlined"
               disabled
               sx={{
-                margin: '0.6rem',
+                margin: "0.6rem",
                 backgroundColor: color,
-                color: 'white',
-                '&:hover': {
-                  color: 'black',
+                color: "white",
+                "&:hover": {
+                  color: "black",
                 },
               }}
               onClick={() =>
-                handleOpenMsgDialogbox('Text', 'Send Text Message')
+                handleOpenMsgDialogbox("Text", "Send Text Message")
               }
             >
               Send Text Message
             </Button>
             <Button
-              variant='outlined'
+              variant="outlined"
               disabled
               sx={{
-                margin: '0.6rem',
+                margin: "0.6rem",
                 backgroundColor: color,
-                color: 'white',
-                '&:hover': {
-                  color: 'black',
+                color: "white",
+                "&:hover": {
+                  color: "black",
                 },
               }}
-              onClick={() => handleOpenMsgDialogbox('Link', 'Send Link')}
+              onClick={() => handleOpenMsgDialogbox("Link", "Send Link")}
             >
               Send Link
             </Button>
             <Button
-              variant='outlined'
+              variant="outlined"
               disabled
               sx={{
-                margin: '0.6rem',
+                margin: "0.6rem",
                 backgroundColor: color,
-                color: 'white',
-                '&:hover': {
-                  color: 'black',
+                color: "white",
+                "&:hover": {
+                  color: "black",
                 },
               }}
               onClick={() => handleTempopen()}
@@ -295,15 +295,15 @@ const BulkMessageTable = () => {
 
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              margin: '10px',
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+              margin: "10px",
             }}
           ></Box>
         </Box>
-        <Box sx={{ width: '60%', marginTop: '2rem' }}>
-          <Box sx={{ height: '72vh', width: '100%' }}>
+        <Box sx={{ width: "60%", marginTop: "2rem" }}>
+          <Box sx={{ height: "72vh", width: "100%" }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -339,7 +339,7 @@ const BulkMessageTable = () => {
         <TemplateMessage
           tempopen={tempopen}
           handleTempclose={handleTempclose}
-          title='Send Message Template'
+          title="Send Message Template"
         />
       )}
     </Box>

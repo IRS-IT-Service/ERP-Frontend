@@ -37,6 +37,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
     subCategory: "",
     gst: "",
     weight: "",
+    AlternativeName: "",
     productDimension: { width: "", height: "", length: "" },
     subItems: [""],
     packageDimensions: [{ width: "", height: "", length: "", weight: "" }],
@@ -97,6 +98,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
   };
   // const handle option value change
   const handleSelectedChange = (value, field) => {
+    setIsEdited(true);
     setForm({
       ...form,
       [field]: value,
@@ -135,6 +137,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
         productName,
         brand,
         category,
+        AlternativeName,
         subCategory,
         subItems,
         weight,
@@ -195,6 +198,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
           dimensions: form.productDimension,
           subItems: processedSubItems,
           packageDimensions: processedPackageDimensions,
+          AlternativeName:form.AlternativeName
         },
       };
 
@@ -216,6 +220,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
     if (data?.status === "success") {
       const newForm = {
         productName: data?.data?.Name,
+        AlternativeName:data?.data?.AlternativeName,
         brand: data?.data?.Brand,
         category: data?.data?.Category,
         subCategory: data?.data?.SubCategory,
@@ -261,7 +266,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
           color: "white",
         }}
       >
-        <Box>SKU: IRS852345532</Box>
+        <Box>SKU: {SKU}</Box>
         <CancelIcon
           onClick={onClose}
           sx={{
@@ -282,156 +287,119 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
             height: "100%",
             boxShadow: 0,
             borderRadius: "8px",
-            display: "flex",
-            flexDirection: "column",
           }}
         >
           <Box
             sx={{
-              width: "100%",
-              height: "8.8vh",
               boxShadow: 3,
               borderRadius: "8px",
               display: "flex",
-              justifyContent: "space-around",
-              alignContent: "center",
-              padding: "0.5% 0%",
+              marginTop: "6px",
+              flexDirection: "column",
+              gap: "4px",
             }}
           >
-            <TextField
-              id="outlined-basic"
-              label="Product Name"
-              variant="outlined"
-              value={form?.productName}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "productName");
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "2px",
               }}
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "24vw",
-                },
-              }}
-            />
-            <Autocomplete
-              style={{
-                width: "20%",
-                backgroundColor: "rgba(255, 255, 255)",
-              }}
-              options={getDynaicValue?.data?.[0]?.Brand || []}
-              getOptionLabel={(option) => String(option)}
-              value={form.brand || ""}
-              onChange={(event, value) => handleSelectedChange(value, "brand")}
-              renderInput={(params) => (
-                <TextField {...params} label="Brand Name" />
-              )}
-            />
+            >
+              <TextField
+                id="outlined-basic"
+                label="Product Name"
+                variant="outlined"
+                value={form?.productName}
+                onChange={(e) => {
+                  handleChange("normal", e.target.value, null, "productName");
+                }}
+                inputProps={{
+                  style: {
+                    height: "2.3vh",
+                    width: "24vw",
+                  },
+                }}
+              />
 
-            <Autocomplete
-              style={{
-                width: "20%",
-                backgroundColor: "rgba(255, 255, 255)",
-              }}
-              options={getDynaicValue?.data?.[0]?.Category || []}
-              getOptionLabel={(option) => String(option)}
-              value={form.category || ""}
-              onChange={(event, value) =>
-                handleSelectedChange(value, "category")
-              }
-              renderInput={(params) => (
-                <TextField {...params} label="Select Category" />
-              )}
-            />
+              <Autocomplete
+                style={{
+                  width: "20%",
+                  backgroundColor: "rgba(255, 255, 255)",
+                }}
+                options={getDynaicValue?.data?.[0]?.Brand || []}
+                getOptionLabel={(option) => String(option)}
+                value={form.brand || ""}
+                onChange={(event, value) =>
+                  handleSelectedChange(value, "brand")
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label="Brand Name" />
+                )}
+              />
 
-            <Autocomplete
-              style={{
-                width: "20%",
-                backgroundColor: "rgba(255, 255, 255)",
-              }}
-              options={getDynaicValue?.data?.[0]?.SubCategory || []}
-              getOptionLabel={(option) => String(option)}
-              value={form.subCategory || ""}
-              onChange={(event, value) =>
-                handleSelectedChange(value, "subCategory")
-              }
-              renderInput={(params) => (
-                <TextField {...params} label="Select Sub Category" />
-              )}
-            />
+              <Autocomplete
+                style={{
+                  width: "20%",
+                  backgroundColor: "rgba(255, 255, 255)",
+                }}
+                options={getDynaicValue?.data?.[0]?.Category || []}
+                getOptionLabel={(option) => String(option)}
+                value={form.category || ""}
+                onChange={(event, value) =>
+                  handleSelectedChange(value, "category")
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label="Select Category" />
+                )}
+              />
 
-            <Autocomplete
-              style={{
-                width: "8%",
-                backgroundColor: "rgba(255, 255, 255)",
-              }}
-              options={getDynaicValue?.data?.[0]?.GST || []}
-              getOptionLabel={(option) => String(option)}
-              value={form.gst || ""}
-              onChange={(event, value) => handleSelectedChange(value, "gst")}
-              renderInput={(params) => <TextField {...params} label="Gst" />}
-            />
+              <Autocomplete
+                style={{
+                  width: "20%",
+                  backgroundColor: "rgba(255, 255, 255)",
+                }}
+                options={getDynaicValue?.data?.[0]?.SubCategory || []}
+                getOptionLabel={(option) => String(option)}
+                value={form.subCategory || ""}
+                onChange={(event, value) =>
+                  handleSelectedChange(value, "subCategory")
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label="Select Sub Category" />
+                )}
+              />
 
-            {/* <TextField
-              id="outlined-basic"
-              label="Brand Name"
-              variant="outlined"
-              value={form?.brand}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "brand");
-              }}
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "18vw",
-                },
-              }}
-            /> */}
-            {/* <TextField
-              id="outlined-basic"
-              label="Category"
-              value={form?.category}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "category");
-              }}
-              variant="outlined"
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "12vw",
-                },
-              }}
-            /> */}
-            {/* <TextField
-              id="outlined-basic"
-              label="SubCategory"
-              value={form?.subCategory}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "subCategory");
-              }}
-              variant="outlined"
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "12vw",
-                },
-              }}
-            /> */}
-            {/* <TextField
-              id="outlined-basic"
-              label="GST(%)"
-              variant="outlined"
-              type="number"
-              value={form?.gst}
-              onChange={(e) => {
-                handleChange("normal", e.target.value, null, "gst");
-              }}
-              inputProps={{
-                style: {
-                  height: "1.8vh",
-                  width: "2.7vw",
-                },
-              }}
-            />  */}
+              <Autocomplete
+                style={{
+                  width: "8%",
+                  backgroundColor: "rgba(255, 255, 255)",
+                }}
+                options={getDynaicValue?.data?.[0]?.GST || []}
+                getOptionLabel={(option) => String(option)}
+                value={form.gst || ""}
+                onChange={(event, value) => handleSelectedChange(value, "gst")}
+                renderInput={(params) => <TextField {...params} label="Gst" />}
+              />
+            </Box>
+            <Box sx={{}}>
+              <TextField
+                id="outlined-basic"
+                label="Alternate Name"
+                variant="outlined"
+                value={form?.AlternativeName}
+                onChange={(e) => {
+                  handleChange("normal", e.target.value, null, "AlternativeName");
+                }}
+                inputProps={{
+                  style: {
+                    height: "1.8vh",
+                    width: "40vw",
+                  },
+                }}
+              />
+            </Box>
           </Box>
 
           <Box
@@ -834,7 +802,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                         paddingX: "8%",
                       }}
                       disabled={!isEdited}
-                      onClick={handleSubmit}
+                      onClick={() => handleSubmit()}
                     >
                       Save Changes
                     </Button>

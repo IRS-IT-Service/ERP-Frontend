@@ -3,13 +3,17 @@ import { Box, styled, Button, CircularProgress } from "@mui/material";
 import Header from "../../components/Common/Header";
 import axios from "axios";
 import * as XLSX from "xlsx";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, jaJP } from "@mui/x-data-grid";
 import BASEURL from "../../constants/BaseApi";
 import { useSelector } from "react-redux";
-import { useAddProductMutation } from "../../features/api/productApiSlice";
+import {
+  useAddAlternateNameMutation,
+  useAddProductMutation,
+} from "../../features/api/productApiSlice";
 import { useCreateUserHistoryMutation } from "../../features/api/usersApiSlice";
 import { useSocket } from "../../CustomProvider/useWebSocket";
 import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -17,7 +21,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 const BulkAddProduct = () => {
   /// initialize
   const socket = useSocket();
-
+  const params = useParams();
+  const names = params.id;
   /// global state
   const { themeColor } = useSelector((state) => state.ui);
   const { userInfo } = useSelector((state) => state.auth);
@@ -29,20 +34,33 @@ const BulkAddProduct = () => {
   /// RTK query
   const [addProductsApi, { isLoading }] = useAddProductMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
+  const [addAlterNateName, { isLoading: alternatLoading }] =
+    useAddAlternateNameMutation();
 
   /// Handlers
   const donwnloadExcelSample = async () => {
+    console.log("hii");
     try {
       setLoading(true);
-      const response = await axios.get(`${BASEURL}/Sample/RoboProduct.xlsx`, {
-        responseType: "blob",
-      });
+      let response;
+      if (names === "addName") {
+        response = await axios.get(`${BASEURL}/Sample/AlternateName.xlsx`, {
+          responseType: "blob",
+        });
+      } else {
+        response = await axios.get(`${BASEURL}/Sample/RoboProduct.xlsx`, {
+          responseType: "blob",
+        });
+      }
 
       // Create a temporary link element to trigger the download
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "RoboProduct.xlsx");
+      let atribute =
+        names === "addName" ? "AlternateName.xlsx" : "RoboProduct.xlsx";
+
+      link.setAttribute("download", atribute);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -150,6 +168,35 @@ const BulkAddProduct = () => {
     }
   };
 
+  const handleAddNameSubmit = async (e) => {
+    const transformedExcelData = excelData.map((item) => ({
+      SKU: item.SKU,
+      AltName: item.AltName,
+    }));
+
+    // Create an array of product objects
+    const productsArray = [...transformedExcelData];
+
+    if (!productsArray.length) {
+      return;
+    }
+
+    const payload = {
+      products: productsArray,
+    };
+
+    try {
+      const res = await addAlterNateName(payload).unwrap();
+
+      toast.success(res.message);
+
+      setExcelData([]);
+    } catch (error) {
+      console.log("Error occurred while adding products", error.message);
+      console.log(error);
+    }
+  };
+
   /// columns
   const columns = [
     {
@@ -222,6 +269,32 @@ const BulkAddProduct = () => {
       width: 50,
     },
   ];
+  const altColumns = [
+    {
+      field: "Sno",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      flex: 0.1,
+      headerName: "Sno",
+      width: 50,
+    },
+    {
+      field: "SKU",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      flex: 0.1,
+      headerName: "SKU",
+      width: 100,
+    },
+    {
+      field: "AltName",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      flex: 0.3,
+      headerName: "Alternate Name",
+      width: 500,
+    },
+  ];
   return (
     <Box
       component="main"
@@ -261,26 +334,52 @@ const BulkAddProduct = () => {
             </Button>
           </label>
         </Box>
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: themeColor.sideBarColor1,
-            "&:hover": {
-              backgroundColor: "black",
-            },
-          }}
-          onClick={handleSubmit}
-        >
-          {isLoading ? (
-            <CircularProgress
-              sx={{
-                color: "white",
-              }}
-            />
-          ) : (
-            "Submit"
-          )}
-        </Button>
+        {}
+
+        {names === "addName" ? (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: themeColor.sideBarColor1,
+              "&:hover": {
+                backgroundColor: "black",
+              },
+            }}
+            onClick={() => handleAddNameSubmit()}
+          >
+            {alternatLoading ? (
+              <CircularProgress
+                sx={{
+                  color: "white",
+                }}
+              />
+            ) : (
+              "Submit"
+            )}
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: themeColor.sideBarColor1,
+              "&:hover": {
+                backgroundColor: "black",
+              },
+            }}
+            onClick={() => handleSubmit()}
+          >
+            {isLoading ? (
+              <CircularProgress
+                sx={{
+                  color: "white",
+                }}
+              />
+            ) : (
+              "Submit"
+            )}
+          </Button>
+        )}
+
         <Button
           variant="contained"
           sx={{
@@ -322,7 +421,10 @@ const BulkAddProduct = () => {
           },
         }}
       >
-        <DataGrid rows={excelData} columns={columns} />
+        <DataGrid
+          rows={excelData}
+          columns={params.id === "addName" ? altColumns : columns}
+        />
       </Box>
     </Box>
   );

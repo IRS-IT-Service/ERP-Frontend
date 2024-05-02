@@ -17,6 +17,13 @@ export const otherApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+
+    getCareers: builder.query({
+      query: (data) => ({
+        url: `/common/getERPCareers`,
+        method: "GET",
+      }),
+    }),
   
   }),
 });
@@ -24,4 +31,5 @@ export const otherApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetStudentinfoQuery,
   useAddCareerMutation,
+  useGetCareersQuery,
 } = otherApiSlice;
