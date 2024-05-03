@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   useGetAllUsersQuery,
   useGetChatMessageMutation,
@@ -11,6 +11,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import chatLogo from "../../../../public/ChatLogo.png";
 import { removeChatNotification } from "../../../features/slice/authSlice";
+import { usePeerContext } from "../../../CustomProvider/useWebRtc";
+
 
 const CreateChat = () => {
   // using react hooks
@@ -18,6 +20,9 @@ const CreateChat = () => {
   const socket = useSocket();
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  // gettting data from usePeer context
+  const {peerConnection,createCallOffer,createAnswer,setRemoteAnswer} = usePeerContext()
 
   // redux data
   const { adminId } = useSelector((state) => state.auth.userInfo);
@@ -127,6 +132,38 @@ const CreateChat = () => {
       console.log(error);
     }
   };
+  const handleIncommingCall = useCallback(async (data) => {
+    const {from ,offer} = data;
+    const answer = await createAnswer(offer)
+    console.log("incomming call",from ,offer)
+    socket.emit("callAccepted",{from ,answer})
+  },[])
+
+  const handleCallAccepted = useCallback(async (data) => {
+    const {answer} = data;
+    console.log("call go accepted")
+   await  setRemoteAnswer(answer)
+   
+  },[])
+
+
+
+
+  useEffect(() =>{
+    if(socket){
+      socket.on("incommingCall",handleIncommingCall)
+      socket.on("callAccepted",handleCallAccepted)
+
+      return () => {
+        socket.off("incommingCall",handleIncommingCall)
+        socket.off("callAccepted",handleCallAccepted)
+      }
+    }
+   
+  
+  },[handleIncommingCall,socket,handleCallAccepted])
+
+  
 
   return (
     <Box
