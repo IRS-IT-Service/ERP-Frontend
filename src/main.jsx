@@ -6,6 +6,7 @@ import "./index.css";
 import store from "./store.js";
 import { Provider } from "react-redux";
 import { WebSocketProvider } from "./CustomProvider/useWebSocket.jsx";
+import { WebRtcProvider } from "./CustomProvider/useWebRtc.jsx";
 // if ("serviceWorker" in navigator) {
 //   navigator.serviceWorker.register("/firebase-messaging-sw.js")
 //     .then((registration) => {
@@ -21,7 +22,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       <BrowserRouter>
         <WebSocketProvider>
-          <App />
+          <WebRtcProvider>
+            <App />
+          </WebRtcProvider>
         </WebSocketProvider>
       </BrowserRouter>
     </React.StrictMode>
