@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   useGetAllUsersQuery,
   useGetChatMessageMutation,
@@ -10,24 +10,34 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useSelector, useDispatch } from "react-redux";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import chatLogo from "../../../../public/ChatLogo.png";
-import {
-  removeChatNotification,
-} from "../../../features/slice/authSlice";
+import { removeChatNotification } from "../../../features/slice/authSlice";
+import { usePeerContext } from "../../../CustomProvider/useWebRtc";
+
 
 const CreateChat = () => {
+  // using react hooks
   const dispatch = useDispatch();
+  const socket = useSocket();
+  const inputRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  // gettting data from usePeer context
+  const {peerConnection,createCallOffer,createAnswer,setRemoteAnswer} = usePeerContext()
+
   // redux data
   const { adminId } = useSelector((state) => state.auth.userInfo);
   const datas = useSelector((state) => state.auth);
   const onLineUsers = datas.onlineUsers;
   const messageDatas = datas.chatMessageData;
+
   // local state;
   const [singleUserData, setSingleUserData] = useState(null);
   const [message, setMessage] = useState("");
   const [messageData, setMessageData] = useState([]);
-  useEffect(() => {
 
-    setMessageData(previousData => {
+  // setting redux message which is live text data to locat state
+  useEffect(() => {
+    setMessageData((previousData) => {
       return [...previousData, messageDatas];
     });
   }, [messageDatas]);
@@ -36,11 +46,10 @@ const CreateChat = () => {
   const { data: allUsers } = useGetAllUsersQuery();
   const [getMessage] = useGetChatMessageMutation();
 
-  const socket = useSocket();
-  const inputRef = useRef(null);
-  const messagesEndRef = useRef(null);
+  // getting online user from redux and showing whether they are online or offline
   const online = onLineUsers.includes(singleUserData?.adminId);
 
+  // for showing notification on all the users data div
   const notificationData = datas?.chatNotificationData;
   let [messageCountsBySender, setMessageCountsBySender] = useState();
 
@@ -54,14 +63,17 @@ const CreateChat = () => {
     setMessageCountsBySender(messageCountsBySender);
   }, [notificationData, notificationData?.length > 0, allUsers]);
 
+  // for curor on input box 
   useEffect(() => {
     inputRef?.current?.focus();
   }, [singleUserData?.adminId]);
 
+  // for like when user comes to chat then the div scroll down to bottom 
   useEffect(() => {
     messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
   }, [singleUserData?.adminId]);
 
+  // calling message like all the messages which is end to end from data base
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -76,29 +88,9 @@ const CreateChat = () => {
     fetchData();
   }, [singleUserData?.adminId]);
 
-  // useEffect(() => {
-  //   if (socket) {
-  //     const adminId = singleUserData?.adminId;
 
-  //     socket.on("newChatMessage", (message) => {
-  //       dispatch(addChatNotificationData(message))
-  //       // if (
-  //       //   message.data._id &&
-  //       //   !messageData.some((msg) => msg._id === message.data._id) &&
-  //       //   message.data.ReceiverId === singleUserData?.adminId
-  //       // ) {
-  //       setMessageData((prevData) => [...prevData, message.data]);
-  //       // }
-  //     });
-  //   }
-  //   return () => {
-  //     if (socket) {
-  //       socket.off("newChatMessage");
-  //     }
-  //   };
-  // }, [socket, messageData, setMessageData]);
 
-  // functions
+  // this functio is for removing notification icon from user div
   const handleOnClickUser = (user) => {
     setSingleUserData(user);
     const filterData = notificationData.filter(
@@ -107,7 +99,8 @@ const CreateChat = () => {
 
     dispatch(removeChatNotification(filterData));
   };
-  // console.log("Hello",messageCountsBySender)
+
+  // functio for sending message
   const handleSubmit = async () => {
     if (!message) return;
     try {
@@ -139,6 +132,39 @@ const CreateChat = () => {
       console.log(error);
     }
   };
+  const handleIncommingCall = useCallback(async (data) => {
+    const {from ,offer} = data;
+    const answer = await createAnswer(offer)
+    console.log("incomming call",from ,offer)
+    socket.emit("callAccepted",{from ,answer})
+  },[])
+
+  const handleCallAccepted = useCallback(async (data) => {
+    const {answer} = data;
+    console.log("call go accepted")
+   await  setRemoteAnswer(answer)
+   
+  },[])
+
+
+
+
+  useEffect(() =>{
+    if(socket){
+      socket.on("incommingCall",handleIncommingCall)
+      socket.on("callAccepted",handleCallAccepted)
+
+      return () => {
+        socket.off("incommingCall",handleIncommingCall)
+        socket.off("callAccepted",handleCallAccepted)
+      }
+    }
+   
+  
+  },[handleIncommingCall,socket,handleCallAccepted])
+
+  
+
   return (
     <Box
       sx={{
