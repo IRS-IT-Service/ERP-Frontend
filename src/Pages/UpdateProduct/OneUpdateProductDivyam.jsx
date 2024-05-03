@@ -9,6 +9,7 @@ import {
   Typography,
   TextField,
   Autocomplete,
+  CircularProgress,
 } from "@mui/material";
 
 import React, { useState, useEffect } from "react";
@@ -23,7 +24,10 @@ import {
 } from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
 import { toast } from "react-toastify";
-import { useGetDynamicValueQuery } from "../../features/api/productApiSlice";
+import {
+  useGetDynamicValueQuery,
+  useAddProductMutation,
+} from "../../features/api/productApiSlice";
 
 const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
   /// global state
@@ -44,14 +48,14 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
   });
 
   const [isEdited, setIsEdited] = useState(false);
-
   /// RTK query
   const { data, isLoading, refetch, isFetching } = useGetOneProductQuery(SKU, {
     skip: !open,
     refetchOnMountOrArgChange: true,
   });
-
   const { data: getDynaicValue } = useGetDynamicValueQuery();
+  const [addProduct, { isLoading: addProductLoading }] =
+    useAddProductMutation();
 
   const [updateProductApi, { isLoading: updateLoading }] =
     useUpdateOneProductMutation();
@@ -198,7 +202,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
           dimensions: form.productDimension,
           subItems: processedSubItems,
           packageDimensions: processedPackageDimensions,
-          AlternativeName:form.AlternativeName
+          AlternativeName: form.AlternativeName,
         },
       };
 
@@ -220,7 +224,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
     if (data?.status === "success") {
       const newForm = {
         productName: data?.data?.Name,
-        AlternativeName:data?.data?.AlternativeName,
+        AlternativeName: data?.data?.AlternativeName,
         brand: data?.data?.Brand,
         category: data?.data?.Category,
         subCategory: data?.data?.SubCategory,
@@ -248,6 +252,35 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
       setForm(newForm);
     }
   }, [data]);
+
+  const handleCreateNewProduct = async (gst) => {
+    try {
+      const info = {
+        products: [
+          {
+            name: data?.data?.Name,
+            brand: data?.data?.Brand,
+            category: data?.data?.Category,
+            subCategory: data?.data?.SubCategory,
+            weight: data?.data?.Weight,
+            dimensions: {
+              length: data?.data?.Dimensions?.length,
+              width: data?.data?.Dimensions?.width,
+              height: data?.data?.Dimensions?.height,
+            },
+            subItems: data?.data?.subItems,
+            gst: gst,
+            packageDimensions: data?.data?.packageDimensions,
+          },
+        ],
+      };
+      const result = await addProduct(info).unwrap();
+      toast.success(`Product With Gst: ${gst}% added successfully`);
+      onClose();
+    } catch (e) {
+      console.log(e);
+    }
+  };
   return (
     <Dialog
       maxWidth="xl"
@@ -383,14 +416,25 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                 renderInput={(params) => <TextField {...params} label="Gst" />}
               />
             </Box>
-            <Box sx={{}}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <TextField
                 id="outlined-basic"
                 label="Alternate Name"
                 variant="outlined"
                 value={form?.AlternativeName}
                 onChange={(e) => {
-                  handleChange("normal", e.target.value, null, "AlternativeName");
+                  handleChange(
+                    "normal",
+                    e.target.value,
+                    null,
+                    "AlternativeName"
+                  );
                 }}
                 inputProps={{
                   style: {
@@ -399,6 +443,28 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                   },
                 }}
               />
+              <Button
+                variant="outlined"
+                disabled={data?.data?.GST === 5}
+                onClick={() => handleCreateNewProduct(5)}
+              >
+                {addProductLoading ? (
+                  <CircularProgress />
+                ) : (
+                  "Duplicate With 5 % Gst"
+                )}
+              </Button>
+              <Button
+                variant="outlined"
+                disabled={data?.data?.GST === 18}
+                onClick={() => handleCreateNewProduct(18)}
+              >
+                {addProductLoading ? (
+                  <CircularProgress />
+                ) : (
+                  "Duplicate With 18 % Gst"
+                )}{" "}
+              </Button>
             </Box>
           </Box>
 
