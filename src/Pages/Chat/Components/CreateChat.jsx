@@ -12,7 +12,8 @@ import { useSocket } from "../../../CustomProvider/useWebSocket";
 import chatLogo from "../../../../public/ChatLogo.png";
 import { removeChatNotification } from "../../../features/slice/authSlice";
 import { usePeerContext } from "../../../CustomProvider/useWebRtc";
-
+import CallIcon from "@mui/icons-material/Call";
+import CallingDial from "./callingDial";
 
 const CreateChat = () => {
   // using react hooks
@@ -22,8 +23,14 @@ const CreateChat = () => {
   const messagesEndRef = useRef(null);
 
   // gettting data from usePeer context
-  const {peerConnection,createCallOffer,createAnswer,setRemoteAnswer} = usePeerContext()
-
+  const {
+    peerConection,
+    createCallOffer,
+    createAnswer,
+    setremoteAnswer,
+    sendStream,
+    remoteStream,
+  } = usePeerContext();
   // redux data
   const { adminId } = useSelector((state) => state.auth.userInfo);
   const datas = useSelector((state) => state.auth);
@@ -34,6 +41,12 @@ const CreateChat = () => {
   const [singleUserData, setSingleUserData] = useState(null);
   const [message, setMessage] = useState("");
   const [messageData, setMessageData] = useState([]);
+  const [incomingCallData, setIncomingCallData] = useState(null);
+  const [callDial, setCallDial] = useState(false);
+  const [myStream, setMyStream] = useState(null);
+  const [calling, setCalling] = useState(false);
+  const [acceptCall, setAcceptCall] = useState(false);
+  const [connectedTo, setConnectedTo] = useState(null);
 
   // setting redux message which is live text data to locat state
   useEffect(() => {
@@ -63,12 +76,12 @@ const CreateChat = () => {
     setMessageCountsBySender(messageCountsBySender);
   }, [notificationData, notificationData?.length > 0, allUsers]);
 
-  // for curor on input box 
+  // for curor on input box
   useEffect(() => {
     inputRef?.current?.focus();
   }, [singleUserData?.adminId]);
 
-  // for like when user comes to chat then the div scroll down to bottom 
+  // for like when user comes to chat then the div scroll down to bottom
   useEffect(() => {
     messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
   }, [singleUserData?.adminId]);
@@ -87,8 +100,6 @@ const CreateChat = () => {
 
     fetchData();
   }, [singleUserData?.adminId]);
-
-
 
   // this functio is for removing notification icon from user div
   const handleOnClickUser = (user) => {
@@ -132,38 +143,131 @@ const CreateChat = () => {
       console.log(error);
     }
   };
-  const handleIncommingCall = useCallback(async (data) => {
-    const {from ,offer} = data;
-    const answer = await createAnswer(offer)
-    console.log("incomming call",from ,offer)
-    socket.emit("callAccepted",{from ,answer})
-  },[])
 
-  const handleCallAccepted = useCallback(async (data) => {
-    const {answer} = data;
-    console.log("call go accepted")
-   await  setRemoteAnswer(answer)
-   
-  },[])
+  // call dialog box open
+  // const handleOpenCallDial = (data) => {
+  //   console.log(data);
+  //   setCallDial(true);
+  // };
 
+  // Saket initiates the call
+  const handleCallRequest = async (data) => {
+    console.log(data);
+    try {
 
+      const offer = await createCallOffer();
+      socket.emit("callUser", { data, offer });
+      setConnectedTo(data.receiverId);
+      setCallDial(true)
+    } catch (error) {
+      console.error("Error initiating call:", error);
+    }
+  };
 
+  // Akash receives the call and decides to accept or reject
+  const handleIncomingCall = async (datas) => {
+    console.log("incoming call:", datas);
+    try {
+      const { data, offer } = datas;
+      setCallDial(true)
+      setCalling(true);
+      setIncomingCallData(datas);
+      setConnectedTo(data.senderId);
+      // }
+    } catch (error) {
+      console.error("Error handling incoming call:", error);
+    }
+  };
+  // accept call
+  const handleAcceptCall = async () => {
+    try {
+      const { data, offer } = incomingCallData;
+      console.log("offer", offer);
+      const answer = await createAnswer(offer);
+      socket.emit("callAccepted", { data, answer });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  useEffect(() =>{
+  
+
+  const handleCallAccepted = async (datas) => {
+    try {
+      const { answer } = datas;
+ 
+      await setremoteAnswer(answer);
+      sendStream(myStream);
+    
+    } catch (error) {
+      console.error("Error accepting call:", error);
+    }
+  };
+  // Saket handles call rejection
+  const handleCallRejected = () => {
+  
+    console.log(`${adminId} rejected the call.`);
     if(socket){
-      socket.on("incommingCall",handleIncommingCall)
-      socket.on("callAccepted",handleCallAccepted)
+      socket.emit("callRejected",{senderId:adminId})
+    }
+    setCallDial(false);
+
+    // Handle call rejection notification or UI update
+  };
+console.log(singleUserData?.adminId)
+  // Socket event listeners
+  useEffect(() => {
+    if (socket) {
+      socket.on("incomingCall", handleIncomingCall);
+      socket.on("callAccepted", handleCallAccepted);
+      // socket.on("callRejected", handleCallRejected);
 
       return () => {
-        socket.off("incommingCall",handleIncommingCall)
-        socket.off("callAccepted",handleCallAccepted)
-      }
+        socket.off("incomingCall", handleIncomingCall);
+        socket.off("callAccepted", handleCallAccepted);
+        socket.off("callRejected", handleCallRejected);
+      };
     }
-   
-  
-  },[handleIncommingCall,socket,handleCallAccepted])
+  }, [socket, handleIncomingCall, handleCallAccepted, ]);
 
-  
+  const handleNegotiationNeeded = useCallback(() => {
+    const localOffer = peerConection.localDescription;
+    let data = { senderId: adminId, receiverId: singleUserData?.adminId };
+    console.log(data);
+    console.log("socket: " + socket);
+    if (socket) {
+      socket.emit("callUser", { data, offer: localOffer });
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("negotiation needed")
+    peerConection.addEventListener(
+      "negotiationneeded",
+      handleNegotiationNeeded
+    );
+    return () => {
+      peerConection.removeEventListener(
+        "negotiationneeded",
+        handleNegotiationNeeded
+      );
+    };
+  }, []);
+
+  const getUserMediaStream = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMyStream(stream);
+    } catch (error) {
+      console.error("Error getting user media stream:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserMediaStream();
+  }, []);
+
+  useEffect(() => {}, [remoteStream]);
 
   return (
     <Box
@@ -195,22 +299,51 @@ const CreateChat = () => {
         >
           IRS-Chat
         </span>
+
+        {/* {myStream && <audio controls autoPlay srcObject={myStream}></audio>} */}
         {singleUserData && (
-          <div style={{ display: "flex", gap: "5px" }}>
-            <img
-              src={noImage}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div
               style={{
-                height: "40px",
-                width: "40px",
-                borderRadius: "20px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
-              alt=""
-            ></img>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <span>{singleUserData?.name}</span>
-              <span style={{ color: `${online ? "blue" : "red"}` }}>
-                {online ? "online" : "offline"}
-              </span>
+            >
+              <div style={{ display: "flex" }}>
+                <img
+                  src={noImage}
+                  style={{
+                    height: "40px",
+                    width: "40px",
+                    borderRadius: "20px",
+                  }}
+                  alt=""
+                ></img>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span>{singleUserData?.name}</span>
+                  <span style={{ color: `${online ? "blue" : "red"}` }}>
+                    {online ? "online" : "offline"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div
+              style={{ marginLeft: "300px", cursor: "pointer" }}
+              onClick={() =>
+                handleCallRequest({
+                  senderId: adminId,
+                  receiverId: singleUserData?.adminId,
+                })
+              }
+            >
+              <CallIcon />
             </div>
           </div>
         )}
@@ -281,6 +414,7 @@ const CreateChat = () => {
                 </div>
               );
             })}
+      
         </Box>
 
         {/* For message field */}
@@ -386,6 +520,17 @@ const CreateChat = () => {
           </Box>
         )}
       </Box>
+      {callDial && (
+        <CallingDial
+          open={callDial}
+          setOpen={setCallDial}
+          name={singleUserData?.name}
+          handleAcceptCall={handleAcceptCall}
+          handleRejectCall={handleCallRejected}
+          incomingCallData={incomingCallData}
+          remoteStream={remoteStream}
+        />
+      )}
     </Box>
   );
 };
