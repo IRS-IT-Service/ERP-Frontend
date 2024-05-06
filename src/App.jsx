@@ -279,11 +279,11 @@ function App() {
       });
     }
   
-    // return () => {
-    //   if (socket) {
-    //     socket.off("newChatMessage");
-    //   }
-    // };
+    return () => {
+      if (socket) {
+        socket.off("newChatMessage");
+      }
+    };
   }, [socket, adminid, dispatch]);
 
   /// rtk query
