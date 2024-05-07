@@ -33,6 +33,7 @@ import PdfDownloadDial from "./Components/PdfDownloadDial";
 import WebStatusDial from "./Components/WebStatusDial";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { DataGrid } from "@mui/x-data-grid";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -502,12 +503,12 @@ const DSCFormList = () => {
         data={selectedData}
         refetch={refetch}
       />
-      <Box sx={{ height: "90vh", width: "100%" }}>
-        <CartGrid
+      <Box sx={{ height: "87vh", width: "100%" }}>
+        <DataGrid
           columns={columns}
           rows={rows}
           rowHeight={40}
-          Height={"89vh"}
+      
           pagination={pagination}
           filterString={filterString}
           setFilterString={setFilterString}
