@@ -436,7 +436,7 @@ const UploadImageGrid = () => {
       headerName: "Upload",
       flex: 0.2,
       minWidth: 50,
-  
+
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -561,12 +561,15 @@ const UploadImageGrid = () => {
         width: "100%",
       }}
     >
-      <OneUpdateProductDivyam
-        open={open}
-        onClose={onClose}
-        SKU={SKUinfo}
-        refetchAllProduct={refetch}
-      />
+      {open && (
+        <OneUpdateProductDivyam
+          open={open}
+          onClose={onClose}
+          SKU={SKUinfo}
+          refetchAllProduct={refetch}
+        />
+      )}
+
       <FilterBarV2 apiRef={apiRef} customButton1={addProductCustomButton} />
       <Loading
         loading={
