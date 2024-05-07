@@ -128,8 +128,7 @@ import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 import PreOrder from "./Pages/DiscountQuery/PreOrder";
 import ChatMessage from "./Pages/Chat/ChatMessage";
 import Careers from "./Pages/Careers/Careers";
-import IrsConnect from "../public/chatlog.png"
-
+import IrsConnect from "../public/chatlog.png";
 
 function App() {
   /// initialize
@@ -272,18 +271,21 @@ function App() {
   useEffect(() => {
     if (socket) {
       socket.on("newChatMessage", (data) => {
-          dispatch(addChatNotificationData({ ...data.data }));
-          dispatch(addChatMessageData(data.data))
-          pushNotificatForChat("New Chat Message Received","New Chat Message","/chat")
-        
+        dispatch(addChatNotificationData({ ...data.data }));
+        dispatch(addChatMessageData(data.data));
+        pushNotificatForChat(
+          "New Chat Message Received",
+          "New Chat Message",
+          "/chat"
+        );
       });
     }
-  
-    // return () => {
-    //   if (socket) {
-    //     socket.off("newChatMessage");
-    //   }
-    // };
+
+    return () => {
+      if (socket) {
+        socket.off("newChatMessage");
+      }
+    };
   }, [socket, adminid, dispatch]);
 
   /// rtk query
@@ -435,7 +437,10 @@ function App() {
                 <Route path="/MessageTemplate" element={<MessageTemplate />} />
                 {/* Products Router */}
                 <Route path="/addRoboProduct" element={<AddRoboProducts />} />
-                <Route path="/bulkAddProduct/:id" element={<BulkAddProduct />} />
+                <Route
+                  path="/bulkAddProduct/:id"
+                  element={<BulkAddProduct />}
+                />
                 <Route path="/addBrand" element={<AddBrand />} />
                 <Route path="/studentInfo" element={<Studentinfo />} />
                 {/* <Route

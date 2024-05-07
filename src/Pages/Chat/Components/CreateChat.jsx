@@ -1,8 +1,9 @@
-import { Box, Button } from "@mui/material";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Box, CircularProgress } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
 import {
   useGetAllUsersQuery,
   useGetChatMessageMutation,
+  useUploadFileOnImageKitMutation,
 } from "../../../features/api/usersApiSlice";
 import noImage from "../../../assets/NoImage.jpg";
 import SendIcon from "@mui/icons-material/Send";
@@ -12,7 +13,10 @@ import { useSocket } from "../../../CustomProvider/useWebSocket";
 import chatLogo from "../../../../public/ChatLogo.png";
 import { removeChatNotification } from "../../../features/slice/authSlice";
 import { usePeerContext } from "../../../CustomProvider/useWebRtc";
-
+import CallIcon from "@mui/icons-material/Call";
+import CallingDial from "./callingDial";
+import Toolbar from "@mui/material/Toolbar";
+// import ToolbarItem from '@mui/material/ToolbarItem';
 
 const CreateChat = () => {
   // using react hooks
@@ -22,8 +26,14 @@ const CreateChat = () => {
   const messagesEndRef = useRef(null);
 
   // gettting data from usePeer context
-  const {peerConnection,createCallOffer,createAnswer,setRemoteAnswer} = usePeerContext()
-
+  // const {
+  //   peerConnection,
+  //   createCallOffer,
+  //   createAnswer,
+  //   setRemoteAnswer,
+  //   sendStream,
+  //   remoteStream,
+  // } = usePeerContext();
   // redux data
   const { adminId } = useSelector((state) => state.auth.userInfo);
   const datas = useSelector((state) => state.auth);
@@ -34,6 +44,14 @@ const CreateChat = () => {
   const [singleUserData, setSingleUserData] = useState(null);
   const [message, setMessage] = useState("");
   const [messageData, setMessageData] = useState([]);
+  const [incomingCallData, setIncomingCallData] = useState(null);
+  const [callDial, setCallDial] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [myStream, setMyStream] = useState(null);
+  const [calling, setCalling] = useState(false);
+  const [acceptCall, setAcceptCall] = useState(false);
+  const [connectedTo, setConnectedTo] = useState(null);
 
   // setting redux message which is live text data to locat state
   useEffect(() => {
@@ -45,6 +63,7 @@ const CreateChat = () => {
   // rtk query calling
   const { data: allUsers } = useGetAllUsersQuery();
   const [getMessage] = useGetChatMessageMutation();
+  const [uploadFile, { isLoading }] = useUploadFileOnImageKitMutation();
 
   // getting online user from redux and showing whether they are online or offline
   const online = onLineUsers.includes(singleUserData?.adminId);
@@ -63,12 +82,12 @@ const CreateChat = () => {
     setMessageCountsBySender(messageCountsBySender);
   }, [notificationData, notificationData?.length > 0, allUsers]);
 
-  // for curor on input box 
+  // for curor on input box
   useEffect(() => {
     inputRef?.current?.focus();
   }, [singleUserData?.adminId]);
 
-  // for like when user comes to chat then the div scroll down to bottom 
+  // for like when user comes to chat then the div scroll down to bottom
   useEffect(() => {
     messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
   }, [singleUserData?.adminId]);
@@ -87,8 +106,6 @@ const CreateChat = () => {
 
     fetchData();
   }, [singleUserData?.adminId]);
-
-
 
   // this functio is for removing notification icon from user div
   const handleOnClickUser = (user) => {
@@ -132,38 +149,167 @@ const CreateChat = () => {
       console.log(error);
     }
   };
-  const handleIncommingCall = useCallback(async (data) => {
-    const {from ,offer} = data;
-    const answer = await createAnswer(offer)
-    console.log("incomming call",from ,offer)
-    socket.emit("callAccepted",{from ,answer})
-  },[])
 
-  const handleCallAccepted = useCallback(async (data) => {
-    const {answer} = data;
-    console.log("call go accepted")
-   await  setRemoteAnswer(answer)
-   
-  },[])
-
-
-
-
-  useEffect(() =>{
-    if(socket){
-      socket.on("incommingCall",handleIncommingCall)
-      socket.on("callAccepted",handleCallAccepted)
-
-      return () => {
-        socket.off("incommingCall",handleIncommingCall)
-        socket.off("callAccepted",handleCallAccepted)
-      }
+  // function for file
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
     }
-   
-  
-  },[handleIncommingCall,socket,handleCallAccepted])
+  };
 
-  
+  //function for submitting file
+  const handleFileSend = async () => {
+    if (!selectedImage) return;
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedImage);
+      const uploadfiles = await uploadFile(formData).unwrap();
+      if (!uploadfiles) return;
+      const messageData = {
+        _id: Math.random().toString(36).substring(2),
+        senderId: adminId,
+        receiverId: singleUserData?.adminId,
+        file: uploadfiles?.file,
+        type: "media",
+      };
+      setMessageData((prevData) => [
+        ...prevData,
+        {
+          _id: Math.random().toString(36).substring(2),
+          SenderId: adminId,
+          ReceiverId: singleUserData?.adminId,
+          Content: { url: uploadfiles?.file?.url },
+          Type: "media",
+        },
+      ]);
+      socket.emit("newChatMessage", messageData);
+      setSelectedImage(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // this are the webrtc methods and functions for calls which is getting shutdown because of microphone problems
+  // call dialog box open
+  // const handleOpenCallDial = (data) => {
+  //   console.log(data);
+  //   setCallDial(true);
+  // };
+
+  // Saket initiates the call
+  // const handleCallRequest = async (data) => {
+  //   console.log(data);
+  //   try {
+
+  //     const offer = await createCallOffer();
+  //     socket.emit("callUser", { data, offer });
+  //     setConnectedTo(data.receiverId);
+  //     setCallDial(true)
+  //   } catch (error) {
+  //     console.error("Error initiating call:", error);
+  //   }
+  // };
+
+  // Akash receives the call and decides to accept or reject
+  // const handleIncomingCall = async (datas) => {
+  //   console.log("incoming call:", datas);
+  //   try {
+  //     const { data, offer } = datas;
+  //     setCallDial(true)
+  //     setCalling(true);
+  //     setIncomingCallData(datas);
+  //     setConnectedTo(data.senderId);
+  //     // }
+  //   } catch (error) {
+  //     console.error("Error handling incoming call:", error);
+  //   }
+  // };
+  // accept call
+  // const handleAcceptCall = async () => {
+  //   try {
+  //     const { data, offer } = incomingCallData;
+  //     console.log("offer", offer);
+  //     const answer = await createAnswer(offer);
+  //     socket.emit("callAccepted", { data, answer });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const handleCallAccepted = async (datas) => {
+  //   try {
+  //     const { answer } = datas;
+
+  //     await setRemoteAnswer(answer);
+  //     sendStream(myStream);
+
+  //   } catch (error) {
+  //     console.error("Error accepting call:", error);
+  //   }
+  // };
+  // const handleCallRejected = () => {
+
+  //   console.log(`${adminId} rejected the call.`);
+  //   if(socket){
+  //     socket.emit("callRejected",{senderId:adminId})
+  //   }
+  //   setCallDial(false);
+
+  // };
+  // Socket event listeners
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on("incomingCall", handleIncomingCall);
+  //     socket.on("callAccepted", handleCallAccepted);
+  //     // socket.on("callRejected", handleCallRejected);
+
+  //     return () => {
+  //       socket.off("incomingCall", handleIncomingCall);
+  //       socket.off("callAccepted", handleCallAccepted);
+  //       socket.off("callRejected", handleCallRejected);
+  //     };
+  //   }
+  // }, [socket, handleIncomingCall, handleCallAccepted, ]);
+
+  // const handleNegotiationNeeded = useCallback(() => {
+  //   const localOffer = peerConnection.localDescription;
+  //   let data = { senderId: adminId, receiverId: "AID3317" };
+  //   console.log(data);
+  //   console.log("socket: " + socket);
+  //   if (socket) {
+  //     socket.emit("callUser", { data, offer: localOffer });
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log("negotiation needed")
+  //   peerConnection.addEventListener(
+  //     "negotiationneeded",
+  //     handleNegotiationNeeded
+  //   );
+  //   return () => {
+  //     peerConnection.removeEventListener(
+  //       "negotiationneeded",
+  //       handleNegotiationNeeded
+  //     );
+  //   };
+  // }, []);
+
+  // const getUserMediaStream = async () => {
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     setMyStream(stream);
+  //   } catch (error) {
+  //     console.error("Error getting user media stream:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getUserMediaStream();
+  // }, []);
+
+  // useEffect(() => {}, [remoteStream]);
 
   return (
     <Box
@@ -195,23 +341,62 @@ const CreateChat = () => {
         >
           IRS-Chat
         </span>
-        {singleUserData && (
-          <div style={{ display: "flex", gap: "5px" }}>
-            <img
-              src={noImage}
-              style={{
-                height: "40px",
-                width: "40px",
-                borderRadius: "20px",
+        {/* {remoteStream && (
+            
+            <audio
+              autoPlay
+              ref={(audio) => {
+                if (audio) {
+                  audio.srcObject = remoteStream;
+                }
               }}
-              alt=""
-            ></img>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <span>{singleUserData?.name}</span>
-              <span style={{ color: `${online ? "blue" : "red"}` }}>
-                {online ? "online" : "offline"}
-              </span>
+            />
+          )} */}
+        {/* {myStream && <audio controls autoPlay srcObject={myStream}></audio>} */}
+        {singleUserData && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ display: "flex" }}>
+                <img
+                  src={noImage}
+                  style={{
+                    height: "40px",
+                    width: "40px",
+                    borderRadius: "20px",
+                  }}
+                  alt=""
+                ></img>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span>{singleUserData?.name}</span>
+                  <span style={{ color: `${online ? "blue" : "red"}` }}>
+                    {online ? "online" : "offline"}
+                  </span>
+                </div>
+              </div>
             </div>
+            {/* <div
+              style={{ marginLeft: "300px", cursor: "pointer" }}
+              onClick={() =>
+                handleCallRequest({
+                  senderId: adminId,
+                  receiverId: singleUserData?.adminId,
+                })
+              }
+            >
+              <CallIcon />
+            </div> */}
           </div>
         )}
       </Box>
@@ -322,7 +507,19 @@ const CreateChat = () => {
                       boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
                     }}
                   >
-                    {msg?.Content?.message}
+                    {msg.Type === "text" ? (
+                      <span>{msg.Content.message}</span>
+                    ) : msg.Type === "media" ? (
+                      <img
+                        src={msg?.Content?.url}
+                        alt="Media"
+                        style={{
+                          maxWidth: "250px",
+                          height: "auto",
+                          display: "block",
+                        }}
+                      />
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -338,7 +535,61 @@ const CreateChat = () => {
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-around" }}>
-                <AttachFileIcon sx={{ cursor: "pointer", marginTop: "5px" }} />
+                <div style={{ position: "relative" }}>
+                  {selectedImage && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: "-300px",
+                        zIndex: 1,
+                        height: "290px",
+                        width: "400px",
+                        background: "#eceff1",
+                        borderRadius: "10px",
+                        boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          gap: "15px",
+                        }}
+                      >
+                        <span style={{ fontFamily: "cursive" }}>
+                          Preview Image
+                        </span>
+                        <img
+                          src={URL.createObjectURL(selectedImage)}
+                          alt="test"
+                          style={{ height: "200px", width: "200px" }}
+                        ></img>
+                        {isLoading ? (
+                          <CircularProgress sx={{ color: "green" }} size={20} />
+                        ) : (
+                          <SendIcon
+                            sx={{ cursor: "pointer", color: "green" }}
+                            onClick={() => handleFileSend()}
+                          />
+                        )}
+                      </div>
+                    </Box>
+                  )}{" "}
+                  <label htmlFor="fileInput">
+                    <AttachFileIcon
+                      sx={{ cursor: "pointer", marginTop: "5px" }}
+                    />{" "}
+                    <input
+                      type="file"
+                      id="fileInput"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => handleFileChange(e)}
+                    />
+                  </label>
+                </div>
                 <input
                   placeholder="Enter Message Here"
                   style={{
@@ -386,6 +637,17 @@ const CreateChat = () => {
           </Box>
         )}
       </Box>
+      {callDial && (
+        <CallingDial
+          open={callDial}
+          setOpen={setCallDial}
+          name={singleUserData?.name}
+          handleAcceptCall={handleAcceptCall}
+          handleRejectCall={handleCallRejected}
+          incomingCallData={incomingCallData}
+          remoteStream={remoteStream}
+        />
+      )}
     </Box>
   );
 };
