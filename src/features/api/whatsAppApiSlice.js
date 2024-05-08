@@ -100,5 +100,5 @@ export const {
   useSendBulkMessagesWithPicMutation,
   useAddCustomerNumberMutation,
   useGetCustomerNumberQuery
-
+  
 } = whatsAppApiSlice;

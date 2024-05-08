@@ -123,15 +123,20 @@ export const userApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: `${USERS_URL}/clicktologoutadmin`,
         method: "POST",
-        body:data
-
+        body: data,
       }),
     }),
     getChatMessage: builder.mutation({
       query: (data) => ({
         url: `${BASEURL}/chat/getChat?senderId=${data.senderId}&receiverId=${data.receiverId}`,
         method: "GET",
-
+      }),
+    }),
+    uploadFileOnImageKit: builder.mutation({
+      query: (data) => ({
+        url: `${BASEURL}/chat/uploadFile`,
+        method: "POST",
+        body:data
       }),
     }),
   }),
@@ -156,5 +161,6 @@ export const {
   useGetAllUserHistoryQuery,
   useCreateUserHistoryMutation,
   useUpdatePasswordMutation,
-  useGetChatMessageMutation
+  useGetChatMessageMutation,
+  useUploadFileOnImageKitMutation
 } = userApiSlice;

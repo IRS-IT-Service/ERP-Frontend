@@ -12,7 +12,8 @@ const CallingDial = ({
   incomingCallData,
   remoteStream,
 }) => {
-    console.log(remoteStream,"dialogbox")
+    
+
   return (
     <Dialog open={open}>
       <DialogTitle
@@ -59,17 +60,7 @@ const CallingDial = ({
             ></img>
             <span style={{ fontWeight: "bold" }}>{name}</span>
           </div>
-          {remoteStream && (
-            
-            <audio
-              autoPlay
-              ref={(audio) => {
-                if (audio) {
-                  audio.srcObject = remoteStream;
-                }
-              }}
-            />
-          )}
+          
 
           <span>calling</span>
           <div style={{ marginTop: "10px", display: "flex", gap: "15px" }}>
