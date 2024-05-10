@@ -129,6 +129,7 @@ import PreOrder from "./Pages/DiscountQuery/PreOrder";
 import ChatMessage from "./Pages/Chat/ChatMessage";
 import Careers from "./Pages/Careers/Careers";
 import IrsConnect from "../public/chatlog.png";
+import Drive from "./Pages/G_Drive/Drive";
 
 function App() {
   /// initialize
@@ -443,6 +444,7 @@ function App() {
                 />
                 <Route path="/addBrand" element={<AddBrand />} />
                 <Route path="/studentInfo" element={<Studentinfo />} />
+                <Route path="/googleDrive" element={<Drive/>} />
                 {/* <Route
                   path="/UpdateSellerPrice"
                   element={
@@ -761,6 +763,7 @@ function App() {
                 <Route path="/Chat" element={<ChatMessage />} />
                 {/* Careers */}
                 <Route path="/careers" element={<Careers />} />
+              
               </Route>
             </Routes>
           </Suspense>
