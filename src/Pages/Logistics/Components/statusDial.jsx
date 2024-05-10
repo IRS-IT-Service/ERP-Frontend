@@ -9,7 +9,7 @@ import {
   Button,
   Typography,
   Box,
-
+CircularProgress
 } from "@mui/material";
 
 import { useChangeStatusMutation } from "../../../features/api/RnDSlice";
@@ -21,7 +21,7 @@ const StatusDial = ({
   open,
   setStatusOpen,
   refetch,
-  Tracking
+  data
 }) => {
     const [updateStatus, { isLoading, refetch:updateRefetch }] = useUpdateShipmentStatusMutation();
   const [selectOptions, setSelectOptions] = useState([
@@ -36,7 +36,7 @@ const StatusDial = ({
   const [reason, setReason] = useState("")
   const [reasonFile,setReasonFile] = useState("")
 
-
+console.log(data)
 
 
   const handleStatusUpdate = async () => {
@@ -46,8 +46,9 @@ const StatusDial = ({
 
       formDatas.append("status", selectedStatus);
       formDatas.append("file", reasonFile);
-      formDatas.append("TrackingId", Tracking);
+      formDatas.append("TrackingId", data?.Tracking);
       formDatas.append("remark", reason);
+      formDatas.append("customerMobile", data?.CustomerMobile);
 
 
       const result = await updateStatus(formDatas).unwrap();
@@ -142,6 +143,7 @@ const StatusDial = ({
             setStatusOpen(false);
             setSelectedStatus("");
             }}
+            disabled={isLoading}
           >
             Close
           </Button>
@@ -151,7 +153,7 @@ const StatusDial = ({
               handleStatusUpdate();
             }}
           >
-            Update
+          {isLoading ? <CircularProgress size={30} sx={{color:"#fff"}}/> : "Update"}  
           </Button>
         </DialogActions>
       </Dialog>

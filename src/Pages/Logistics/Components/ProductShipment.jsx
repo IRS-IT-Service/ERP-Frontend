@@ -95,7 +95,7 @@ const ProductShipment = () => {
   const [openDial, setOpenDial] = useState(false);
   const [barcodes, setBarcodes] = useState([]);
   const [search, setSearch] = useState("");
-  const [Value, setValue] = useState("");
+  const [Value, setValue] = useState({});
   const [statusOpen, setStatusOpen] = useState(false);
   const [date, setDate] = useState({
     From: "",
@@ -111,7 +111,7 @@ const ProductShipment = () => {
     resultDate.setDate(baseDate.getDate() - daysToSubtract);
     return resultDate;
   };
-  console.log(statusOpen);
+
   // rtk query call
   const {
     data: getAllShipment,
@@ -125,10 +125,10 @@ const ProductShipment = () => {
     }
   );
 
-  const handleOpenStatus = (id, mark) => {
+  const handleOpenStatus = (data, mark) => {
     console.log(mark);
     if (mark !== "Delivered") {
-      setStatusOpen(true), setValue(id);
+      setStatusOpen(true), setValue(data);
     }
   };
 
@@ -270,7 +270,7 @@ const ProductShipment = () => {
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
-        const id = params.row.Tracking;
+        const data = params.row;
 
         const color = params.row.Status === "InTransit" ? "red" : "green";
 
@@ -282,7 +282,7 @@ const ProductShipment = () => {
           >
             <Button
               sx={{ color: `${color}` }}
-              onClick={() => handleOpenStatus(id, params.row.Status)}
+              onClick={() => handleOpenStatus(data, params.row.Status)}
             >
               {params.row.Status}
             </Button>
@@ -485,7 +485,7 @@ const ProductShipment = () => {
       {statusOpen && (
         <StatusDial
           open={statusOpen}
-          Tracking={Value}
+          data={Value}
           setStatusOpen={setStatusOpen}
           refetch={refetch}
         />
