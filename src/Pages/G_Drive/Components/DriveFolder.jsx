@@ -8,7 +8,7 @@ import {
   useGetAllFolderQuery,
   useUploadFileMutation,
 } from "../../../features/api/driveApiSlice";
-import DriveDial from "./driveDial";
+import DriveDial from "./DriveDial";
 import { toast } from "react-toastify";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
