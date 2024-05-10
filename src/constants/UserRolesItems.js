@@ -50,7 +50,7 @@ const userRolesData = [
         id: 76,
         name: "Google Drive",
         path: "/googleDrive",
-        icon: "fa fa-comment",
+        icon: "fab fa-google-drive",
         notification: true,
       },
     ],
