@@ -46,6 +46,13 @@ const userRolesData = [
         icon: "fa fa-comment",
         notification: true,
       },
+      {
+        id: 76,
+        name: "Google Drive",
+        path: "/googleDrive",
+        icon: "fa fa-comment",
+        notification: true,
+      },
     ],
   },
   {
@@ -546,6 +553,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 75
+// last routes is 76
 
 export default userRolesData;
