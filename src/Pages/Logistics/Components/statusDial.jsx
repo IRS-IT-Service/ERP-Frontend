@@ -143,12 +143,13 @@ console.log(data)
             setStatusOpen(false);
             setSelectedStatus("");
             }}
-            disabled={isLoading}
+        
           >
             Close
           </Button>
           <Button
             variant="contained"
+            disabled={isLoading}
             onClick={() => {
               handleStatusUpdate();
             }}
