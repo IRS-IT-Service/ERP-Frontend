@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import {
   useCreateFolderMutation,
@@ -236,7 +236,6 @@ const DriveFolder = () => {
             </Button>
           </div>
         )}
-
         <div
           style={{
             display: "flex",
@@ -245,61 +244,68 @@ const DriveFolder = () => {
             alignItems: "center",
           }}
         >
-          {allFiles ? (
-            allFiles.map((file) => (
-              <div
-                key={file?.id}
-                style={{
-                  height: "150px",
-                  width: "150px",
-                  objectFit: "cover",
-                  marginTop: "20px",
-                  border: "0.5px solid gray",
-                  position: "relative",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onMouseEnter={() => setHovered(file.id)}
-                onMouseLeave={() => setHovered(null)}
-              >
-                <img
-                  src={`https://drive.google.com/thumbnail?id=${file.id}`}
-                  alt="Image from Google Drive"
-                  style={{ height: "100%", width: "100%" }}
-                ></img>
-                {hovered === file.id && (
+          {allFiles && allFiles.length > 0 ? (
+            <>
+              {getAllFilesLoading ? (
+                <CircularProgress />
+              ) : (
+                allFiles.map((file) => (
                   <div
+                    key={file?.id}
                     style={{
-                      position: "absolute",
+                      height: "150px",
+                      width: "150px",
+                      objectFit: "cover",
+                      marginTop: "20px",
+                      border: "0.5px solid gray",
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
+                    onMouseEnter={() => setHovered(file.id)}
+                    onMouseLeave={() => setHovered(null)}
                   >
-                    <DeleteIcon
-                      sx={{
-                        marginRight: "25px",
-                        color: `${deleteFileLoading ? "grey" : "red"}`,
-                        cursor: "pointer",
-                      }}
-                      disabled={deleteFileLoading}
-                      onClick={() => handleDeleteSingleFile(file.id)}
-                    />
-                    <DownloadIcon
-                      sx={{ color: "green", cursor: "pointer" }}
-                      disabled={downloadFileLoading}
-                      onClick={() =>
-                        handleDownloadFile({ id: file.id, name: file.name })
-                      }
-                    />
+                    <img
+                      src={`https://drive.google.com/thumbnail?id=${file.id}`}
+                      alt="Image from Google Drive"
+                      style={{ height: "100%", width: "100%" }}
+                    ></img>
+                    {hovered === file.id && (
+                      <div
+                        style={{
+                          position: "absolute",
+                        }}
+                      >
+                        <DeleteIcon
+                          sx={{
+                            marginRight: "25px",
+                            color: `${deleteFileLoading ? "grey" : "red"}`,
+                            cursor: "pointer",
+                          }}
+                          disabled={deleteFileLoading}
+                          onClick={() => handleDeleteSingleFile(file.id)}
+                        />
+                        <DownloadIcon
+                          sx={{ color: "green", cursor: "pointer" }}
+                          disabled={downloadFileLoading}
+                          onClick={() =>
+                            handleDownloadFile({ id: file.id, name: file.name })
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))
+                ))
+              )}
+            </>
           ) : (
             <div style={{ display: "flex" }}>
               <span>No Image Found</span>
             </div>
           )}
         </div>
+        ;
       </div>
       {open && (
         <DriveDial
