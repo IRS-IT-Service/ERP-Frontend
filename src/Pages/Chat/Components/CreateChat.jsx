@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import {
   useGetAllUsersQuery,
@@ -16,6 +16,7 @@ import { usePeerContext } from "../../../CustomProvider/useWebRtc";
 import CallIcon from "@mui/icons-material/Call";
 import CallingDial from "./callingDial";
 import Toolbar from "@mui/material/Toolbar";
+import { formatDateForWhatsApp } from "../../../commonFunctions/commonFunctions";
 
 // import ToolbarItem from '@mui/material/ToolbarItem';
 
@@ -25,7 +26,6 @@ const CreateChat = () => {
   const socket = useSocket();
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const scrollRef = useRef(null);
 
   // gettting data from usePeer context
   // const {
@@ -131,13 +131,13 @@ const CreateChat = () => {
 
   // this functio is for removing notification icon from user div
   const handleOnClickUser = (user) => {
-    scrollToBottom();
+    console.log("onClickUser");
 
     setSingleUserData(user);
     const filterData = notificationData.filter(
       (data) => data.SenderId !== user.adminId
     );
-
+    scrollToBottom();
     dispatch(removeChatNotification(filterData));
   };
 
@@ -166,11 +166,12 @@ const CreateChat = () => {
         },
       ]);
       socket.emit("newChatMessage", messageData);
+      setMessage("");
       messagesEndRef.current.scrollIntoView({
         behavior: "smooth",
       });
 
-      setMessage("");
+      
     } catch (error) {
       console.log(error);
     }
@@ -337,6 +338,14 @@ const CreateChat = () => {
   // }, []);
 
   // useEffect(() => {}, [remoteStream]);
+
+  // Group messages by date
+  const groupedMessages = messageData.reduce((acc, msg) => {
+    const date = formatDateForWhatsApp(msg.createdAt);
+    acc[date] = acc[date] || [];
+    acc[date].push(msg);
+    return acc;
+  }, {});
 
   return (
     <Box
@@ -551,7 +560,6 @@ const CreateChat = () => {
               sx={{
                 flex: 1,
                 overflowY: "auto",
-
                 padding: "5px",
                 "&::-webkit-scrollbar": {
                   width: "2px",
@@ -559,106 +567,101 @@ const CreateChat = () => {
               }}
               ref={messagesEndRef}
             >
-              {messageData?.map((msg) => (
-                <div
-                  key={msg._id}
-                  style={{
-                    textAlign: msg.SenderId === adminId ? "right" : "left",
-                    marginBottom: "8px",
-                  }}
-                >
+              {Object.entries(groupedMessages).map(([date, messages]) => (
+                <div key={date}>
                   <div
                     style={{
-                      position: "relative",
-                      padding: "20px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
+                    <Button sx={{background:"#f4f3ef"}}>{date}</Button>
+                  </div>
+                  {messages.map((msg) => (
                     <div
+                      key={msg._id}
                       style={{
-                        position: "absolute",
-                        width: "20px",
-                        height: "10px",
-                        left: msg.SenderId === adminId ? "" : 0,
-                        right: msg.SenderId === adminId ? 0 : "",
-                        clipPath:
-                          msg.SenderId === adminId
-                            ? "polygon(100% 0, 0 0, 0 100%)"
-                            : "polygon(100% 0, 0 0, 100% 100%)",
-                        background:
-                          msg.SenderId === adminId ? "#dcf8c6" : "#fff",
-                      }}
-                    ></div>
-                    <div
-                      style={{
-                        display: "inline-block",
-                        padding: "8px",
-                        background:
-                          msg.SenderId === adminId ? "#dcf8c6" : "#fff",
-                        borderRadius:
-                          msg.SenderId === adminId
-                            ? "8px 0px 8px 8px"
-                            : "0px 0px 8px 8px",
-                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+                        textAlign: msg.SenderId === adminId ? "right" : "left",
+                        marginBottom: "8px",
                       }}
                     >
-                      {msg.Type === "text" ? (
-                        // <span>{msg.Content.message}</span>
+                      <div style={{ position: "relative", padding: "20px" }}>
                         <div
                           style={{
-                            display: "flex",
-
-                            justifyContent: "center",
-                            gap: "20px",
+                            position: "absolute",
+                            width: "20px",
+                            height: "10px",
+                            left: msg.SenderId === adminId ? "" : 0,
+                            right: msg.SenderId === adminId ? 0 : "",
+                            clipPath:
+                              msg.SenderId === adminId
+                                ? "polygon(100% 0, 0 0, 0 100%)"
+                                : "polygon(100% 0, 0 0, 100% 100%)",
+                            background:
+                              msg.SenderId === adminId ? "#dcf8c6" : "#fff",
                           }}
-                        >
-                          <p>{msg.Content.message}</p>
-                          <p
-                            style={{
-                              fontSize: "10px",
-                              marginTop: "20px",
-
-                              color: "grey",
-                            }}
-                          >
-                            {" "}
-                            {formatTimeWithAMPM(msg.createdAt)}{" "}
-                            <i className="fa-solid fa-check" />
-                          </p>
-                        </div>
-                      ) : msg.Type === "media" ? (
+                        ></div>
                         <div
                           style={{
-                            display: "flex",
-                            flexDirection: "column",
-
-                            justifyContent: "center",
+                            display: "inline-block",
+                            padding: "8px",
+                            background:
+                              msg.SenderId === adminId ? "#dcf8c6" : "#fff",
+                            borderRadius:
+                              msg.SenderId === adminId
+                                ? "8px 0px 8px 8px"
+                                : "0px 0px 8px 8px",
+                            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
                           }}
                         >
-                          <img
-                            src={msg?.Content?.url}
-                            alt="Media"
-                            style={{
-                              maxWidth: "250px",
-                              height: "auto",
-                              display: "block",
-                            }}
-                          />
-                          <p
-                            style={{
-                              fontSize: "10px",
-                              marginTop: "20px",
-
-                              color: "grey",
-                            }}
-                          >
-                            {" "}
-                            {formatTimeWithAMPM(msg.createdAt)}{" "}
-                            <i className="fa-solid fa-check" />
-                          </p>
+                          {msg.Type === "text" ? (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "20px",
+                              }}
+                            >
+                              <p>{msg.Content.message}</p>
+                              <p style={{ fontSize: "10px",marginTop:"12px", color: "grey" }}>
+                                {formatTimeWithAMPM(msg.createdAt)}{" "}
+                                <i className="fa-solid fa-check" />
+                              </p>
+                            </div>
+                          ) : msg.Type === "media" ? (
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <img
+                                src={msg?.Content?.url}
+                                alt="Media"
+                                style={{
+                                  maxWidth: "250px",
+                                  height: "auto",
+                                  display: "block",
+                                }}
+                              />
+                              <p
+                                style={{
+                                  fontSize: "10px",
+                                  marginTop: "10px",
+                                  color: "grey",
+                                }}
+                              >
+                                {formatTimeWithAMPM(msg.createdAt)}{" "}
+                                <i className="fa-solid fa-check" />
+                              </p>
+                            </div>
+                          ) : null}
                         </div>
-                      ) : null}
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               ))}
               {/* <div ref={messagesEndRef} /> */}
