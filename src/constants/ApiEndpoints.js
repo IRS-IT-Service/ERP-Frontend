@@ -15,3 +15,4 @@ export const Assets_URL = '/assets'
 export const WhatsApp_URL = "/whatsapp"
 export const Expo = "/expo"
 export const RnD_URL = "/r-and-d"
+export const DriveUrl = "/drive"

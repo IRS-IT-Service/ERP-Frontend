@@ -10,6 +10,8 @@ import Header from "../../../components/Common/Header";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+import StatusDial from "./statusDial";
+import RemarkDial from "./remarkDial";
 
 const infoDetail = [
   {
@@ -77,6 +79,10 @@ const ProductShipment = () => {
     dispatch(setInfo(false));
   };
 
+  const handleCloseStatus = () => {
+    setOpenDial(false);
+  };
+
   useEffect(() => {
     dispatch(setHeader(`Shipment History`));
   }, []);
@@ -89,11 +95,15 @@ const ProductShipment = () => {
   const [openDial, setOpenDial] = useState(false);
   const [barcodes, setBarcodes] = useState([]);
   const [search, setSearch] = useState("");
+  const [Value, setValue] = useState({});
+  const [statusOpen, setStatusOpen] = useState(false);
   const [date, setDate] = useState({
     From: "",
     To: Dateformat(new Date()),
   });
   const [searchDelay, setSearchDelay] = useState(false);
+  const [remarkOpen, setRemarkOpen] = useState(false);
+  const [remarkData, setremarkData] = useState({});
 
   /// function
   const calculatePreviousDate = (baseDate, daysToSubtract) => {
@@ -107,12 +117,20 @@ const ProductShipment = () => {
     data: getAllShipment,
     isLoading,
     isFetching,
+    refetch,
   } = useGetAllShipmentQuery(
     `?customerName=${search}&from=${date.From}&to=${date.To}`,
     {
       skip: !date.From || searchDelay,
     }
   );
+
+  const handleOpenStatus = (data, mark) => {
+    console.log(mark);
+    if (mark !== "Delivered") {
+      setStatusOpen(true), setValue(data);
+    }
+  };
 
   /// useEffects
 
@@ -129,7 +147,11 @@ const ProductShipment = () => {
         id: index + 1,
         sno: index + 1,
         Customer: item.CustomerName,
+        CustomerMobile: item.CustomerMobile || "N/A",
         Courier: item.CourierName,
+        Status: item.status || "InTransit",
+        Remark: item.Remark,
+        POD: item.POD,
         Tracking: item.TrackingId,
         Product: item.Barcode,
         date: formateDateAndTime(item.createdAt),
@@ -174,6 +196,10 @@ const ProductShipment = () => {
       }, 1500);
       setSearch(e.target.value);
     }
+  };
+
+  const handleOpenRemark = (param) => {
+    setRemarkOpen(true), setremarkData(param);
   };
 
   /// columns
@@ -222,6 +248,72 @@ const ProductShipment = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "CustomerMobile",
+      headerName: "Customer Number",
+      flex: 0.2,
+      minWidth: 100,
+      editable: true,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      minWidth: 250,
+      maxWidth: 250,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const data = params.row;
+
+        const color = params.row.Status === "InTransit" ? "red" : "green";
+
+        return (
+          <div
+            style={{
+              color: color,
+            }}
+          >
+            <Button
+              sx={{ color: `${color}` }}
+              onClick={() => handleOpenStatus(data, params.row.Status)}
+            >
+              {params.row.Status}
+            </Button>
+          </div>
+        );
+      },
+    },
+    {
+      field: "remark",
+      headerName: "Remark",
+      minWidth: 250,
+      maxWidth: 250,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const param = params.row;
+
+        return (
+          <div>
+            <Button
+              sx={{ color: `${color}` }}
+              onClick={() => handleOpenRemark(param)}
+              disabled={!param.Remark && !param.POD}
+            >
+              view
+            </Button>
+          </div>
+        );
+      },
     },
     {
       field: "date",
@@ -389,6 +481,22 @@ const ProductShipment = () => {
 
       {openDial && (
         <ProductsDial open={openDial} close={handleClose} data={barcodes} />
+      )}
+      {statusOpen && (
+        <StatusDial
+          open={statusOpen}
+          data={Value}
+          setStatusOpen={setStatusOpen}
+          refetch={refetch}
+        />
+      )}
+
+      {remarkOpen && (
+        <RemarkDial
+          open={remarkOpen}
+          data={remarkData}
+          setRemarkOpen={setRemarkOpen}
+        />
       )}
     </Box>
   );
