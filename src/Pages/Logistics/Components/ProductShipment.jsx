@@ -80,8 +80,8 @@ const ProductShipment = () => {
   };
 
   const handleCloseStatus = () => {
-    setOpenDial(false)
-  }
+    setOpenDial(false);
+  };
 
   useEffect(() => {
     dispatch(setHeader(`Shipment History`));
@@ -96,14 +96,14 @@ const ProductShipment = () => {
   const [barcodes, setBarcodes] = useState([]);
   const [search, setSearch] = useState("");
   const [Value, setValue] = useState("");
-  const [statusOpen, setStatusOpen] = useState(false)
+  const [statusOpen, setStatusOpen] = useState(false);
   const [date, setDate] = useState({
     From: "",
     To: Dateformat(new Date()),
   });
   const [searchDelay, setSearchDelay] = useState(false);
-  const [remarkOpen, setRemarkOpen] = useState(false)
-  const [remarkData ,setremarkData] = useState({});
+  const [remarkOpen, setRemarkOpen] = useState(false);
+  const [remarkData, setremarkData] = useState({});
 
   /// function
   const calculatePreviousDate = (baseDate, daysToSubtract) => {
@@ -111,7 +111,7 @@ const ProductShipment = () => {
     resultDate.setDate(baseDate.getDate() - daysToSubtract);
     return resultDate;
   };
-console.log(statusOpen)
+  console.log(statusOpen);
   // rtk query call
   const {
     data: getAllShipment,
@@ -125,14 +125,12 @@ console.log(statusOpen)
     }
   );
 
-  const handleOpenStatus = (id,mark) =>{
-    console.log(mark)
-    if(mark !== "Delivered"){
-      setStatusOpen(true),
-      setValue(id)
+  const handleOpenStatus = (id, mark) => {
+    console.log(mark);
+    if (mark !== "Delivered") {
+      setStatusOpen(true), setValue(id);
     }
-
-  }
+  };
 
   /// useEffects
 
@@ -149,11 +147,11 @@ console.log(statusOpen)
         id: index + 1,
         sno: index + 1,
         Customer: item.CustomerName,
-        CustomerMobile: item.customerMobile || "N/A",
+        CustomerMobile: item.CustomerMobile || "N/A",
         Courier: item.CourierName,
-        Status: item.status || "InTransit" ,
+        Status: item.status || "InTransit",
         Remark: item.Remark,
-        POD:item.POD,
+        POD: item.POD,
         Tracking: item.TrackingId,
         Product: item.Barcode,
         date: formateDateAndTime(item.createdAt),
@@ -201,9 +199,8 @@ console.log(statusOpen)
   };
 
   const handleOpenRemark = (param) => {
-    setRemarkOpen(true),
-    setremarkData(param)
-  }
+    setRemarkOpen(true), setremarkData(param);
+  };
 
   /// columns
   const columns = [
@@ -275,12 +272,7 @@ console.log(statusOpen)
       renderCell: (params) => {
         const id = params.row.Tracking;
 
-        const color =
-          params.row.Status === "InTransit"
-            ? "red"
-            : "green"
-       
-            
+        const color = params.row.Status === "InTransit" ? "red" : "green";
 
         return (
           <div
@@ -290,8 +282,7 @@ console.log(statusOpen)
           >
             <Button
               sx={{ color: `${color}` }}
-              onClick={() => handleOpenStatus(id ,params.row.Status)}
-        
+              onClick={() => handleOpenStatus(id, params.row.Status)}
             >
               {params.row.Status}
             </Button>
@@ -311,17 +302,12 @@ console.log(statusOpen)
       renderCell: (params) => {
         const param = params.row;
 
-       
-       
-            
-
         return (
-          <div
-        
-          >
+          <div>
             <Button
               sx={{ color: `${color}` }}
               onClick={() => handleOpenRemark(param)}
+              disabled={!param.Remark && !param.POD}
             >
               view
             </Button>
@@ -373,8 +359,6 @@ console.log(statusOpen)
         mt: "66px",
       }}
     >
-
-      
       {/* <Header
         Name={"Shipment History"}
         info={true}
@@ -498,27 +482,22 @@ console.log(statusOpen)
       {openDial && (
         <ProductsDial open={openDial} close={handleClose} data={barcodes} />
       )}
-      {
-        statusOpen && (
-          <StatusDial
+      {statusOpen && (
+        <StatusDial
           open={statusOpen}
           Tracking={Value}
           setStatusOpen={setStatusOpen}
           refetch={refetch}
+        />
+      )}
 
-           
-          />
-        )
-      }
-
-      {
-        remarkOpen && (
-          <RemarkDial
+      {remarkOpen && (
+        <RemarkDial
           open={remarkOpen}
           data={remarkData}
-          setRemarkOpen={setRemarkOpen} />
-        )
-      }
+          setRemarkOpen={setRemarkOpen}
+        />
+      )}
     </Box>
   );
 };

@@ -16,6 +16,7 @@ import { useChangeStatusMutation } from "../../../features/api/RnDSlice";
 import { useUpdateShipmentStatusMutation } from "../../../features/api/barcodeApiSlice";
 import { toast } from "react-toastify";
 
+
 const StatusDial = ({
   open,
   setStatusOpen,
@@ -131,7 +132,7 @@ const StatusDial = ({
     gap:"5px"
  }}> <Typography sx={{
     fontWeight:"bold"
- }}>Upload POD</Typography> <input type="file" onChange={(e)=>{setReasonFile(e.target.value)}} /></Box>
+ }}>Upload POD</Typography> <input type="file" onChange={(e)=>{setReasonFile(e.target.files[0])}} /></Box>
           </Box>
         </DialogContent>
         <DialogActions>

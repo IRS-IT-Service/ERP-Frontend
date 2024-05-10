@@ -15,7 +15,7 @@ import {
 import { useChangeStatusMutation } from "../../../features/api/RnDSlice";
 import { useUpdateShipmentStatusMutation } from "../../../features/api/barcodeApiSlice";
 import { toast } from "react-toastify";
-
+import NoImage from "../../../assets/NoImage.jpg"
 const RemarkDial = ({
   open,
   setRemarkOpen,
@@ -30,7 +30,7 @@ data,
   const [reasonFile,setReasonFile] = useState("")
 
 
-console.log(data)
+
 
   const handleStatusUpdate = async () => {
     try {
@@ -57,22 +57,25 @@ console.log(data)
       
       >
         <DialogTitle sx={{ textAlign: "center" }}>Remarks</DialogTitle>
-        <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
+        <DialogContent >
      
 <Box sx={{
     display: "flex",
     flexDirection:"column",
     alignItems: "center",
     border:"0.5px solid black",
-    width:"50vw",
+    
+   
+
 
   
   
   
 }}>
  <Box sx={{
-        width:"100%",
-        flexBasis:"80%",
+     width:"100%",
+     height:"50vh"
+
    
   
     }}> <Typography sx={{
@@ -83,16 +86,17 @@ console.log(data)
         Uploaded POD
     </Typography>
 
-    <img style={{
+<img style={{
         width:"100%",
         height:"100%",
         objectFit:"cover",
         objectPosition:"center"
-    }} src={data?.POD?.url} /> 
+    }} src={data?.POD?.url || NoImage} /> 
     </Box>
     <Box sx={{
         width:"100%",
-        flexBasis:"20%",
+    
+        marginTop:"2rem",
         borderTop:"0.5px solid black",
   
     }}><Typography sx={{

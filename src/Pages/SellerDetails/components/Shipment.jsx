@@ -513,7 +513,7 @@ console.log(data?.result)
               onChange={handleCourierNameChange}
               style={{ width: "100%", backgroundColor: "#fff", height: "28px" }}
             >
-              {getDyanmicValue?.data[0].courierPartner.map((option ,index) => (
+              {getDyanmicValue?.data[0]?.courierPartner?.map((option ,index) => (
                 <MenuItem key={index} value={option.courierName} >
                   {option.courierName}
                 </MenuItem>
@@ -544,6 +544,7 @@ console.log(data?.result)
               sx={{
                 background: "#FFFFFF",
                 textAlign: "center",
+                overflow:"auto"
               }}
             >
               {Link}
