@@ -6,22 +6,23 @@ import {
   Box,
   Button,
   CircularProgress,
-  Typography
+  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 import { toast } from "react-toastify";
-import { useDeleteFolderMutation } from "../../../features/api/driveApiSlice";
+import { useDeleteFileMutation } from "../../../features/api/driveApiSlice";
 
-const FolderDeleteDial = ({ open, setOpen, folderId,refetchAllFolder,folderName }) => {
+
+const FileDelete = ({ open, setDeleteConf, file,setTrigger }) => {
   const [otp, setOtp] = useState("");
   const [sendOtpForDelete, { isLoading:otpLoading }] = useSendMessageToAdminMutation();
   const adminContact = import.meta.env.VITE_ADMIN_CONTACT;
 
   const [
-    deleteFolder,
-    { isLoading: deleteFolderLoading },
-  ] = useDeleteFolderMutation();
+    deleteFile,
+    { isLoading: deleteFileLoading, refetch: deleteFileRefetch },
+  ] = useDeleteFileMutation();
 
   const handleSendOtp = async () => {
     const getOtp = Math.floor(Math.random() * 9000) + 1000;
@@ -29,7 +30,7 @@ const FolderDeleteDial = ({ open, setOpen, folderId,refetchAllFolder,folderName 
       const message = `Otp For Deleting Folder From Drive: ${getOtp}`;
       const info = { contact: adminContact, message: message };
       const sendOtpToAdmin = await sendOtpForDelete(info).unwrap();
-      localStorage.setItem("folderOtp", getOtp);
+      localStorage.setItem("fileOtp", getOtp);
       toast.success("Otp succssfull send to admin");
     } catch (error) {
       console.log(error);
@@ -37,33 +38,35 @@ const FolderDeleteDial = ({ open, setOpen, folderId,refetchAllFolder,folderName 
   };
 
   const handleDeleteSelectedFolder = async () => {
-    if (!folderId) return toast.error("plz select folder to delete");
-    const generatedOtp = localStorage.getItem("folderOtp");
+    if (!file.id) return toast.error("plz select folder to delete");
+    const generatedOtp = localStorage.getItem("fileOtp");
     if (+otp !== +generatedOtp)
       return toast.error("Plz put valid otp or try again");
     try {
-      const deleted = await deleteFolder(folderId).unwrap();
-      toast.success("Folders deleted successfully");
-      localStorage.removeItem("folderOtp");
-      refetchAllFolder()
-      setOpen(false)
-    } catch (error) {
+      const deleted = await deleteFile(file.id).unwrap();
+      setTrigger('delete')
+      setDeleteConf(false)
+      toast.success("File deleted successfully");
+      localStorage.removeItem("fileOtp");
+       } catch (error) {
       console.log(error);
       setOtp("")
     }
   };
+
+
   return (
     <Dialog open={open}>
       <DialogTitle></DialogTitle>
       <DialogContent>
-        <Box sx={{
-display:"flex" ,
-flexDirection: "column",
-justifyContent: "center",
-alignItems: "center",
-gap:"10px",
+        <Box sx={{display:"flex" ,
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap:"10px",
+        
         }}>
-      <Box sx={{
+          <Box sx={{
             width:"25rem",
            
             display: "flex",
@@ -74,9 +77,9 @@ gap:"10px",
             
           }}>
             <Typography>
-              Do you Really want to delete <span style={{
+              Do you really want to delete <span style={{
                 color:"red"
-              }}>{folderName} </span> Folder ?
+              }}>{file.name} </span> file ?
             </Typography>
           </Box>
         <Box
@@ -97,7 +100,7 @@ gap:"10px",
           </Button>
 
           <input
-            placeholder="Enter otp"
+            placeholder="Enter OTP"
             type="number"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
@@ -107,18 +110,18 @@ gap:"10px",
           <Button
             variant="contained"
             onClick={() => handleDeleteSelectedFolder()}
-            disabled={deleteFolderLoading}
+            disabled={deleteFileLoading}
           >
-            {deleteFolderLoading ? <CircularProgress size={30} sx={{color:"#fff"}} /> : "Delete"}
+            {deleteFileLoading ? <CircularProgress size={30} sx={{color:"#fff"}} /> : "Delete"}
           </Button>
         </Box>
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpen(false)}>Close</Button>
+        <Button onClick={() => setDeleteConf(false)}>Close</Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default FolderDeleteDial;
+export default FileDelete;
