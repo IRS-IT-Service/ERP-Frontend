@@ -114,20 +114,27 @@ const authSlice = createSlice({
       localStorage.removeItem("liveStatus");
     },
     addChatNotificationData: (state, action) => {
-      state.chatNotificationData = [
-        action.payload,
-        ...state.chatNotificationData,
-      ];
-      if (state.chatNotificationSound) {
-        const audio = new Audio(ChatNotificationSound);
-        audio.play();
+      const newDataId = action.payload._id;
+      if (
+        !state.chatNotificationData.some(
+          (notification) => notification._id === newDataId
+        )
+      ) {
+        state.chatNotificationData = [
+          action.payload,
+          ...state.chatNotificationData,
+        ];
+        if (state.chatNotificationSound) {
+          const audio = new Audio(ChatNotificationSound);
+          audio.play();
+        }
       }
     },
     removeChatNotification: (state, action) => {
       state.chatNotificationData = action.payload;
     },
     addChatMessageData: (state, action) => {
-      state.chatMessageData = action.payload
+      state.chatMessageData = action.payload;
     },
     removeChatMessageData: (state, action) => {
       state.chatMessageData = [];
