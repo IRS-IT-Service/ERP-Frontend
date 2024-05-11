@@ -583,6 +583,15 @@ const CreateChat = () => {
               }}
               ref={messagesEndRef}
             >
+                <Box sx={{
+                  width: "100%",
+                  height: "100%",
+            
+                  display: "flex",
+                  justifyContent:"center",
+                  alignItems: "center",
+                  zIndex:1000
+                }}> {isLoadingMessage && <CircularProgress />}</Box>
               {Object.entries(groupedMessages).map(([date, messages]) => (
                 <div key={date}>
                   <div
@@ -597,6 +606,7 @@ const CreateChat = () => {
                   >
                     <Button sx={{ background: "#f4f3ef" }}>{date}</Button>
                   </div>
+               
                   {messages.map((msg) => (
                     <div
                       key={msg._id}
@@ -605,7 +615,7 @@ const CreateChat = () => {
                         marginBottom: "8px",
                       }}
                     >
-                      {isLoadingMessage && <CircularProgress />}
+                   
                       <div style={{ position: "relative", padding: "20px" }}>
                         <div
                           style={{
