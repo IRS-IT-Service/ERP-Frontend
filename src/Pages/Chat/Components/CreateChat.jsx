@@ -594,7 +594,7 @@ const CreateChat = () => {
                 }}
               >
                 {" "}
-                {true && <CircularProgress />}
+                {isLoadingMessage && <CircularProgress />}
               </Box>
               {Object.entries(groupedMessages).map(([date, messages]) => (
                 <div key={date}>
