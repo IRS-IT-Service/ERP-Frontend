@@ -8,6 +8,13 @@ import {
   DialogTitle,
 } from "@mui/material";
 import React from "react";
+import excel from "../../../assets/DrivePNG/excel.png";
+import image from "../../../assets/DrivePNG/image.png";
+import pdf from "../../../assets/DrivePNG/pdf.png";
+import unknown from "../../../assets/DrivePNG/unknown.png";
+import word from "../../../assets/DrivePNG/word.png";
+import txt from "../../../assets/DrivePNG/txt.jpg";
+import noData from "../../../assets/no-data-found.jpg";
 
 const DriveDial = ({
   open,
@@ -21,7 +28,33 @@ const DriveDial = ({
   selectedFile,
   folderLoading,
   uploadLoading,
+
 }) => {
+
+  function getFileExtensionUrl(filename ,url) {
+    const parts = filename.split(".");
+    const extension = parts[parts.length - 1];
+;
+    switch (extension) {
+         case "csv":
+          case "xlsx":
+        return excel;
+      case "docx":
+        return word;
+        case "pdf":
+          return pdf;
+        case "png":
+        case "jpg":
+        case "jpeg":
+          return url
+        case "txt":
+          return txt;
+      
+         default:
+        return unknown;
+    }
+  }
+  
   return (
     <Dialog open={open}>
       <DialogTitle
@@ -44,11 +77,11 @@ const DriveDial = ({
               width: "150px",
               objectFit: "cover",
               marginTop: "20px",
-              border: "0.5px solid gray",
+         
             }}
           >
             <img
-              src={URL.createObjectURL(selectedFile)}
+              src={getFileExtensionUrl(selectedFile.value,URL.createObjectURL(selectedFile.files[0]))}
               alt="uploaded File"
               style={{ height: "100%", width: "100%" }}
             ></img>
@@ -74,20 +107,20 @@ const DriveDial = ({
               id="fileInput"
               type="file"
               style={{ display: "none" }}
-              onChange={(e) => setSelectedFile(e.target.files[0])}
+              onChange={(e) => setSelectedFile(e.target)}
             ></input>
           </label>
         )}
       </DialogContent>
       <DialogActions sx={{display:"flex",justifyContent:"space-around",alignItems:"center"}}>
-        <Button variant="outlined" onClick={() => close()}>Close</Button>
+        <Button variant="contained" onClick={() => close()}>Close</Button>
         {openFor === "addFolder" ? (
           <Button variant="outlined" onClick={() => handleCreateFolder()} disabled={folderLoading}>
             {" "}
-            {folderLoading ? <CircularProgress /> : "Create"}
+            {folderLoading ? <CircularProgress size={30} sx={{color:"#fff"}}  /> : "Create"}
           </Button>
         ) : (
-          <Button variant="outlined" onClick={() => handleUploadFile()} disabled={uploadLoading}>
+          <Button variant="contained" onClick={() => handleUploadFile()} disabled={uploadLoading}>
             {uploadLoading ? <CircularProgress /> : "Upload"}
           </Button>
         )}

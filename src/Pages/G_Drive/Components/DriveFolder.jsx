@@ -148,7 +148,7 @@ const DriveFolder = () => {
       return toast.error("File and folder required");
     try {
       const formData = new FormData();
-      formData.append("id", folderId), formData.append("file", selectedFile);
+      formData.append("id", folderId), formData.append("file", selectedFile.files[0]);
       const uploadfile = await uploadFile(formData).unwrap();
       toast.success("File uploaded successfully");
       setTrigger("upload");
@@ -220,7 +220,7 @@ const DriveFolder = () => {
   function getFileExtensionUrl(filename ,url) {
     const parts = filename.split(".");
     const extension = parts[parts.length - 1];
-  
+;
     switch (extension) {
          case "csv":
           case "xlsx":
@@ -497,7 +497,9 @@ const DriveFolder = () => {
                   <>
                     {gridView === "preview" ? (
                       <Box
+                      key={file?.id}
                         sx={{
+                        
                           display: "flex",
                           width: "150px",
 
@@ -522,7 +524,7 @@ const DriveFolder = () => {
                         onContextMenu={(e) => handleContextMenuFile(e, file)}
                       >
                         <Box
-                          key={file?.id}
+                         
                           sx={{
                             height: "120px",
                             width: "120px",
