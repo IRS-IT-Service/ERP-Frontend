@@ -65,7 +65,7 @@ const CreateChat = () => {
       setMessageData((previousData) => {
         return [...previousData, messageDatas];
       });
-      scrollToBottom()
+      scrollToBottom();
     }
   }, [messageDatas]);
 
@@ -90,7 +90,7 @@ const CreateChat = () => {
     }, {});
 
     setMessageCountsBySender(messageCountsBySender);
-    scrollToBottom()
+    scrollToBottom();
   }, [notificationData, notificationData?.length > 0, allUsers]);
 
   function formatTimeWithAMPM(timestamp) {
@@ -575,30 +575,34 @@ const CreateChat = () => {
                 width: "100%",
                 height: "84.8vh",
                 overflowY: "auto",
+                position: "relative",
                 padding: "5px",
                 "&::-webkit-scrollbar": {
                   width: "2px",
                 },
-                position:"relative"
               }}
               ref={messagesEndRef}
             >
-                <Box sx={{
-                  width: "100%",
-                  height: "100%",
-            
-                  display: "flex",
-                  justifyContent:"center",
-                  alignItems: "center",
-                  zIndex:1000
-                }}> {isLoadingMessage && <CircularProgress />}</Box>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+
+                  zIndex: 1000,
+                }}
+              >
+                {" "}
+                {true && <CircularProgress />}
+              </Box>
               {Object.entries(groupedMessages).map(([date, messages]) => (
                 <div key={date}>
                   <div
                     style={{
                       position: "sticky",
                       top: 0,
-                      zIndex:1,
+                      zIndex: 1,
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
@@ -606,7 +610,7 @@ const CreateChat = () => {
                   >
                     <Button sx={{ background: "#f4f3ef" }}>{date}</Button>
                   </div>
-               
+
                   {messages.map((msg) => (
                     <div
                       key={msg._id}
@@ -615,7 +619,6 @@ const CreateChat = () => {
                         marginBottom: "8px",
                       }}
                     >
-                   
                       <div style={{ position: "relative", padding: "20px" }}>
                         <div
                           style={{
