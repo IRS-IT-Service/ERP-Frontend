@@ -1,6 +1,7 @@
 import { Box, Button, CircularProgress } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import {
+  useChangeVisibilityMutation,
   useGetAllUsersQuery,
   useGetChatMessageMutation,
   useUploadFileOnImageKitMutation,
@@ -17,7 +18,7 @@ import CallIcon from "@mui/icons-material/Call";
 import CallingDial from "./callingDial";
 import Toolbar from "@mui/material/Toolbar";
 import { formatDateForWhatsApp } from "../../../commonFunctions/commonFunctions";
-
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 // import ToolbarItem from '@mui/material/ToolbarItem';
 
 const CreateChat = () => {
@@ -49,23 +50,30 @@ const CreateChat = () => {
   const [incomingCallData, setIncomingCallData] = useState(null);
   const [callDial, setCallDial] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isLoadingMessage, setIsLoadingMessage] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [myStream, setMyStream] = useState(null);
   const [calling, setCalling] = useState(false);
   const [acceptCall, setAcceptCall] = useState(false);
   const [connectedTo, setConnectedTo] = useState(null);
 
-  // setting redux message which is live text data to locat state
+  // setting redux message which is live text data to local state
   useEffect(() => {
-    setMessageData((previousData) => {
-      return [...previousData, messageDatas];
-    });
+    if (
+      (singleUserData && singleUserData?.adminId) === messageDatas?.SenderId
+    ) {
+      setMessageData((previousData) => {
+        return [...previousData, messageDatas];
+      });
+      scrollToBottom()
+    }
   }, [messageDatas]);
 
   // rtk query calling
   const { data: allUsers } = useGetAllUsersQuery();
   const [getMessage] = useGetChatMessageMutation();
   const [uploadFile, { isLoading }] = useUploadFileOnImageKitMutation();
+  const [changeVisibility, { refetch }] = useChangeVisibilityMutation();
 
   // getting online user from redux and showing whether they are online or offline
   const online = onLineUsers.includes(singleUserData?.adminId);
@@ -82,6 +90,7 @@ const CreateChat = () => {
     }, {});
 
     setMessageCountsBySender(messageCountsBySender);
+    scrollToBottom()
   }, [notificationData, notificationData?.length > 0, allUsers]);
 
   function formatTimeWithAMPM(timestamp) {
@@ -97,12 +106,8 @@ const CreateChat = () => {
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds} ${meridiem}`;
   }
 
-  // for curor on input box
-  useEffect(() => {
-    inputRef?.current?.focus();
-  }, [singleUserData?.adminId]);
-
   const scrollToBottom = () => {
+    console.log("Scroll to bottom", messagesEndRef.current);
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
@@ -118,30 +123,45 @@ const CreateChat = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoadingMessage(true);
         const data = { senderId: adminId, receiverId: singleUserData?.adminId };
         const result = await getMessage(data);
+        setIsLoadingMessage(false);
         setMessageData([...result.data]);
       } catch (error) {
         console.error("Error fetching chat messages:", error);
       }
     };
-
-    fetchData();
-  }, [singleUserData?.adminId]);
-
-  // this functio is for removing notification icon from user div
-  const handleOnClickUser = (user) => {
-    console.log("onClickUser");
-
-    setSingleUserData(user);
-    const filterData = notificationData.filter(
-      (data) => data.SenderId !== user.adminId
-    );
     scrollToBottom();
-    dispatch(removeChatNotification(filterData));
+    fetchData();
+  }, [singleUserData?.adminId, setSingleUserData, singleUserData]);
+
+  // this function is for removing notification icon from user div
+  const handleOnClickUser = (user) => {
+    scrollToBottom();
+    setSingleUserData(user);
   };
 
-  // functio for sending message
+  useEffect(() => {
+    inputRef?.current?.focus();
+    const changeVisible = async () => {
+      try {
+        const data = { senderId: singleUserData?.adminId, receiverId: adminId };
+        const result = await changeVisibility(data);
+        const filterData = notificationData.filter(
+          (data) => data.SenderId !== singleUserData?.adminId
+        );
+        dispatch(removeChatNotification(filterData));
+      } catch (error) {
+        console.error("Error fetching chat messages:", error);
+      }
+    };
+    if (singleUserData) {
+      changeVisible();
+    }
+  }, [setSingleUserData, singleUserData]);
+
+  // function for sending message
   const handleSubmit = async () => {
     scrollToBottom();
     if (!message) return;
@@ -167,11 +187,6 @@ const CreateChat = () => {
       ]);
       socket.emit("newChatMessage", messageData);
       setMessage("");
-      messagesEndRef.current.scrollIntoView({
-        behavior: "smooth",
-      });
-
-      
     } catch (error) {
       console.log(error);
     }
@@ -188,6 +203,7 @@ const CreateChat = () => {
   //function for submitting file
   const handleFileSend = async () => {
     if (!selectedImage) return;
+    scrollToBottom();
     try {
       const formData = new FormData();
       formData.append("file", selectedImage);
@@ -442,10 +458,8 @@ const CreateChat = () => {
           {Array.isArray(allUsers?.data) &&
             allUsers?.data.map((docs, i) => {
               const isAdminUser = docs.adminId === adminId;
-
               const userName = isAdminUser ? "You" : docs.name;
               const onlineUser = onLineUsers.includes(docs.adminId);
-
               return (
                 <div
                   style={{
@@ -525,7 +539,6 @@ const CreateChat = () => {
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
-
                               background: "green",
                               height: "20px",
                               width: "20px",
@@ -559,11 +572,14 @@ const CreateChat = () => {
             <Box
               sx={{
                 flex: 1,
+                width: "100%",
+                height: "84.8vh",
                 overflowY: "auto",
                 padding: "5px",
                 "&::-webkit-scrollbar": {
                   width: "2px",
                 },
+                position:"relative"
               }}
               ref={messagesEndRef}
             >
@@ -571,12 +587,15 @@ const CreateChat = () => {
                 <div key={date}>
                   <div
                     style={{
+                      position: "sticky",
+                      top: 0,
+                      zIndex:1,
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
                     }}
                   >
-                    <Button sx={{background:"#f4f3ef"}}>{date}</Button>
+                    <Button sx={{ background: "#f4f3ef" }}>{date}</Button>
                   </div>
                   {messages.map((msg) => (
                     <div
@@ -586,6 +605,7 @@ const CreateChat = () => {
                         marginBottom: "8px",
                       }}
                     >
+                      {isLoadingMessage && <CircularProgress />}
                       <div style={{ position: "relative", padding: "20px" }}>
                         <div
                           style={{
@@ -624,10 +644,34 @@ const CreateChat = () => {
                               }}
                             >
                               <p>{msg.Content.message}</p>
-                              <p style={{ fontSize: "10px",marginTop:"12px", color: "grey" }}>
-                                {formatTimeWithAMPM(msg.createdAt)}{" "}
-                                <i className="fa-solid fa-check" />
-                              </p>
+                              <div
+                                style={{
+                                  marginTop: "10px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "2px",
+                                }}
+                              >
+                                <span
+                                  style={{ color: "gray", fontSize: "10px" }}
+                                >
+                                  {" "}
+                                  {formatTimeWithAMPM(msg.createdAt)}{" "}
+                                </span>
+
+                                <span
+                                  style={{
+                                    color: `${
+                                      msg.Visibility === "seen"
+                                        ? "blue"
+                                        : "gray"
+                                    }`,
+                                  }}
+                                >
+                                  {" "}
+                                  <DoneAllIcon fontSize="4px" />
+                                </span>
+                              </div>
                             </div>
                           ) : msg.Type === "media" ? (
                             <div
@@ -646,16 +690,34 @@ const CreateChat = () => {
                                   display: "block",
                                 }}
                               />
-                              <p
+                              <div
                                 style={{
-                                  fontSize: "10px",
                                   marginTop: "10px",
-                                  color: "grey",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "2px",
                                 }}
                               >
-                                {formatTimeWithAMPM(msg.createdAt)}{" "}
-                                <i className="fa-solid fa-check" />
-                              </p>
+                                <span
+                                  style={{ color: "gray", fontSize: "10px" }}
+                                >
+                                  {" "}
+                                  {formatTimeWithAMPM(msg.createdAt)}{" "}
+                                </span>
+
+                                <span
+                                  style={{
+                                    color: `${
+                                      msg.Visibility === "seen"
+                                        ? "blue"
+                                        : "gray"
+                                    }`,
+                                  }}
+                                >
+                                  {" "}
+                                  <DoneAllIcon fontSize="4px" />
+                                </span>
+                              </div>
                             </div>
                           ) : null}
                         </div>
@@ -664,7 +726,6 @@ const CreateChat = () => {
                   ))}
                 </div>
               ))}
-              {/* <div ref={messagesEndRef} /> */}
             </Box>
 
             {/* to send message */}
