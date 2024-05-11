@@ -6,6 +6,12 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
@@ -16,6 +22,10 @@ import {
   useGetSingleSalesHistoryMutation,
   useGetSingleShipmentMutation,
 } from "../../../features/api/barcodeApiSlice";
+
+import { useAddDynamicValueMutation } from "../../../features/api/productApiSlice";
+import { useGetDynamicValueQuery } from "../../../features/api/productApiSlice";
+
 import { toast } from "react-toastify";
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "#B3CBFF",
@@ -28,7 +38,13 @@ const Shipment = () => {
   const [trackingId, setTrackingId] = useState("");
   const [courierName, setCourierName] = useState("");
   const [data, setData] = useState(null);
-
+  const [openDial, setOpenDial] = useState(false);
+  const [Link, setLink] = useState(null)
+  const [CourierDetails, setCourierDetails] = useState({
+    courierName: "",
+    Link: "",
+  });
+  const [addDynamicValue] = useAddDynamicValueMutation();
   // rkt query
   const [getSingleSales] = useGetSingleSalesHistoryMutation();
   const [createShipment, { isLoading: createShipmentLoading }] =
@@ -38,6 +54,12 @@ const Shipment = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
+
+  const {
+    data: getDyanmicValue,
+    isLoading: getDyanmaicValueLoading,
+    refetch,
+  } = useGetDynamicValueQuery();
 
   // fetching data to show
   useEffect(() => {
@@ -64,13 +86,61 @@ const Shipment = () => {
     "Blue Dart",
     "Ecom Express",
     "India Post",
-    "Self Pickup" ,
+    "Self Pickup",
     "Others",
   ];
+  
+
   const handleCourierNameChange = (event) => {
-    setCourierName(event.target.value);
+    const Values = event.target.value
+    setCourierName(Values);
+
+    const foundObject = getDyanmicValue?.data[0].courierPartner.find(item => item.courierName === Values);
+    setLink(foundObject?.Link)
+    
   };
 
+  const handleCourierPartner = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    if (name === "Link") {
+      setCourierDetails({
+        ...CourierDetails,
+        Link: value,
+      });
+    } else {
+      setCourierDetails({
+        ...CourierDetails,
+        courierName: value,
+      });
+    }
+  };
+
+  const handleSave = async () => {
+    if (
+      CourierDetails.courierName.trim() === "" &&
+      CourierDetails.Link.trim() === ""
+    )
+      return toast.error("Please select value");
+    try {
+      const NewValues = [
+        {
+          courierName: CourierDetails.courierName,
+          Link: CourierDetails.Link,
+        },
+      ];
+      const info = { name: "courierPartner", values: NewValues };
+      const result = await addDynamicValue(info).unwrap();
+      toast.success("Values Succesfully Save");
+
+      setCourierDetails({});
+      onClose();
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+console.log(data?.result)
   // function for rows
   const rowss = data?.barcodeDetails.map((item, index) => ({
     id: item.barcode, // Use a unique identifier as 'id'
@@ -101,6 +171,8 @@ const Shipment = () => {
       const info = {
         customername: data?.result?.CustomerName,
         courierName: courierName,
+        courierLink:Link,
+        customerMobile:data?.result?.MobileNo,
         trackingId: trackingId,
         salesId: data?.result?.SalesId,
         barcodes: barcodes,
@@ -110,10 +182,12 @@ const Shipment = () => {
       toast.success("Item has shipped successfully");
       setTrackingId("");
       setCourierName("");
+      setLink("")
     } catch (error) {
       console.log("Server Error", error.message);
       setTrackingId("");
       setCourierName("");
+      setLink("")
     }
   };
   // for disable the checkbox
@@ -161,8 +235,89 @@ const Shipment = () => {
     },
   ];
 
+  const onClose = () => {
+    setOpenDial(false);
+  };
+
+  const handleOpen = () => {
+    setOpenDial(true);
+  };
+
   return (
     <Box>
+      <Dialog open={openDial} onClose={onClose} width="xl">
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "right",
+            padding: "2px 10px 0 0",
+          }}
+        >
+          <i
+            style={{
+              cursor: "pointer",
+            }}
+            className="fa-solid fa-xmark"
+            onClick={onClose}
+          />
+        </Box>
+        <DialogTitle
+          sx={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
+          Add Courier Partner
+        </DialogTitle>
+        <DialogContent>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              padding: "20px",
+              gap: "20px",
+              width: "20vw",
+            }}
+          >
+            <TextField
+              id="outlined-basic"
+              label="Courier Name"
+              variant="outlined"
+              type="text"
+              name="Name"
+              value={CourierDetails.courierName}
+              onChange={handleCourierPartner}
+              size="small"
+              fullWidth
+            />
+            <TextField
+              id="outlined-basic"
+              label="Link"
+              variant="outlined"
+              type="text"
+              name="Link"
+              value={CourierDetails.Link}
+              onChange={handleCourierPartner}
+              size="small"
+              fullWidth
+            />
+          </Box>
+        </DialogContent>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "20px",
+            gap: "20px",
+          }}
+        >
+          <Button variant="contained" color="primary" onClick={handleSave}>
+            Submit
+          </Button>
+        </Box>
+      </Dialog>
       <Box
         sx={{
           display: "flex",
@@ -185,6 +340,11 @@ const Shipment = () => {
           boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
         }}
       >
+        <Box>
+          <Button variant="contained" onClick={handleOpen}>
+            add Courier Partner
+          </Button>
+        </Box>
         <Box
           sx={{
             backgroundColor: "#0003FA",
@@ -208,6 +368,7 @@ const Shipment = () => {
             />
           </h3>
         </Box>
+
         <Box
           sx={{
             backgroundColor: "#0003FA",
@@ -352,12 +513,42 @@ const Shipment = () => {
               onChange={handleCourierNameChange}
               style={{ width: "100%", backgroundColor: "#fff", height: "28px" }}
             >
-              {courierOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {getDyanmicValue?.data[0]?.courierPartner?.map((option ,index) => (
+                <MenuItem key={index} value={option.courierName} >
+                  {option.courierName}
                 </MenuItem>
               ))}
             </Select>
+          </div>
+        </Box>
+        <Box
+          sx={{
+            border: "2px solid #B3CBFF",
+            padding: "10px",
+            borderRadius: "5px",
+            width: "26%",
+            boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#0003FA",
+              padding: "5px",
+              borderRadius: "3px",
+            }}
+          >
+            <h2 style={{ textAlign: "center", color: "white" }}>
+              Courier Link
+            </h2>
+            <Typography
+              sx={{
+                background: "#FFFFFF",
+                textAlign: "center",
+                overflow:"auto"
+              }}
+            >
+              {Link}
+            </Typography>
           </div>
         </Box>
         <Box

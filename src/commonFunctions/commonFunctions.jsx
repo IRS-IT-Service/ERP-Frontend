@@ -72,5 +72,32 @@ const  formatTime =(originalDate) => {
   return `${formattedTime}`;
 }
 
+const formatDateForWhatsApp = (date) => {
+  const today = new Date();
+  const messageDate = new Date(date);
 
-export { formatIndianPrice, formatUSDPrice, NotificationSoundPlay ,formatDate,formateDateAndTime,formatTime, ChatNotificationPlay};
+  if (
+    messageDate.getDate() === today.getDate() &&
+    messageDate.getMonth() === today.getMonth() &&
+    messageDate.getFullYear() === today.getFullYear()
+  ) {
+    return 'Today';
+  } else {
+    today.setDate(today.getDate() - 1);
+    if (
+      messageDate.getDate() === today.getDate() &&
+      messageDate.getMonth() === today.getMonth() &&
+      messageDate.getFullYear() === today.getFullYear()
+    ) {
+      return 'Yesterday';
+    } else {
+      return messageDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+  }
+};
+
+export { formatIndianPrice, formatUSDPrice, NotificationSoundPlay ,formatDate,formateDateAndTime,formatTime, ChatNotificationPlay,formatDateForWhatsApp};

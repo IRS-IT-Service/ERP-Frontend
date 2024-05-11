@@ -249,6 +249,14 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
         body:data
       }),
     }),
+
+    updateShipmentStatus: builder.mutation({
+      query: (data) => ({
+        url: `${BARCODE_URL}/updateStatus`,
+        method: `POST`,
+        body:data
+      }),
+    }),
   }),
 });
 
@@ -288,5 +296,6 @@ export const {
   useGetPendingRequestQuery,
   useGetPendingRequestCountQuery,
   useAddProductInRnDInventoryMutation,
-  useUpdateSingleProductMutation
+  useUpdateSingleProductMutation,
+  useUpdateShipmentStatusMutation
 } = BarcodeSlice;

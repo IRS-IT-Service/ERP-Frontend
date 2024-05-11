@@ -1,7 +1,7 @@
 import "./App.css";
 import PrivateRoute from "./middleware/PrivateRoute";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createTheme, Box } from "@mui/material";
@@ -65,7 +65,10 @@ import { useSocket } from "./CustomProvider/useWebSocket";
 import { onMessage, getToken } from "firebase/messaging"; // Import necessary functions from Firebase messaging
 import { messaging } from "./firebase";
 import { logout } from "./features/slice/authSlice";
-import { useLogoutMutation } from "./features/api/usersApiSlice";
+import {
+  useGetReceivedMessagesMutation,
+  useLogoutMutation,
+} from "./features/api/usersApiSlice";
 import AddBoxDetails from "./Pages/Logistics/Components/AddBoxDetails";
 import SellerDetails from "./Pages/SellerDetails/SellerDetails";
 import AddBrand from "./Pages/AddBrand/AddBrand";
@@ -129,6 +132,8 @@ import PreOrder from "./Pages/DiscountQuery/PreOrder";
 import ChatMessage from "./Pages/Chat/ChatMessage";
 import Careers from "./Pages/Careers/Careers";
 import IrsConnect from "../public/chatlog.png";
+import Drive from "./Pages/G_Drive/Drive";
+import { RuleSharp } from "@mui/icons-material";
 
 function App() {
   /// initialize
@@ -143,6 +148,9 @@ function App() {
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
+
+  //rtk query api calling
+  const [getReceivedMessages, { refetch }] = useGetReceivedMessagesMutation();
 
   /// Push Notification
   const pushNotification = (title, data, navigateTo) => {
@@ -269,9 +277,15 @@ function App() {
   }, [socket]);
 
   useEffect(() => {
+    // const data = getReceivedMessages?.data?.map((data) =>
+    //   dispatch(addChatNotificationData({ ...data }))
+    // );
+
     if (socket) {
       socket.on("newChatMessage", (data) => {
-        dispatch(addChatNotificationData({ ...data.data }));
+        if (data.data.Visibility === "sent") {
+          dispatch(addChatNotificationData({ ...data.data }));
+        }
         dispatch(addChatMessageData(data.data));
         pushNotificatForChat(
           "New Chat Message Received",
@@ -328,6 +342,22 @@ function App() {
     });
   }, []);
 
+  const fetchData = async (adminid) => {
+    try {
+      const result = await getReceivedMessages(adminid);
+      const data = result?.data?.data?.map((data) =>
+        dispatch(addChatNotificationData({ ...data }))
+      );
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (adminid) {
+      fetchData(adminid);
+    }
+  }, [adminid, userInfo, socket, dispatch]);
   ///Functoins
   const handleLogout = async () => {
     try {
@@ -443,6 +473,7 @@ function App() {
                 />
                 <Route path="/addBrand" element={<AddBrand />} />
                 <Route path="/studentInfo" element={<Studentinfo />} />
+                <Route path="/googleDrive" element={<Drive />} />
                 {/* <Route
                   path="/UpdateSellerPrice"
                   element={

@@ -139,6 +139,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body:data
       }),
     }),
+    getReceivedMessages:builder.mutation({
+      query: (receiverId) => ({
+        url: `${BASEURL}/chat/getReceivedMessages/${receiverId}`,
+        method:"GET"
+      }),
+    }),
+    changeVisibility:builder.mutation({
+      query:((data) => ({
+        url: `${BASEURL}/chat/changeVisibility`,
+        method:"POST",
+        body:data 
+      }))
+    })
   }),
 });
 
@@ -162,5 +175,7 @@ export const {
   useCreateUserHistoryMutation,
   useUpdatePasswordMutation,
   useGetChatMessageMutation,
-  useUploadFileOnImageKitMutation
+  useUploadFileOnImageKitMutation,
+  useGetReceivedMessagesMutation,
+  useChangeVisibilityMutation
 } = userApiSlice;
