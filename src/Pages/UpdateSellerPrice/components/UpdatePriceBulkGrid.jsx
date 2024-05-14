@@ -35,7 +35,6 @@ const UpdatePriceBulk = () => {
   const navigate = useNavigate();
   const socket = useSocket();
   const newQuery = query.split("&")
-  console.log(newQuery)
 
 
   /// global state
