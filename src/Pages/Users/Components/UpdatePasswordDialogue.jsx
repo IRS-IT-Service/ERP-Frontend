@@ -17,13 +17,23 @@ import {
 } from "../../../features/api/usersApiSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { CategorySharp } from "@mui/icons-material";
+import { CategorySharp, ContactsOutlined } from "@mui/icons-material";
 
-const UpdatePasswordDialogue = ({ open, setOpen, adminId, name,departmentName,contactNo ,color}) => {
+const UpdatePasswordDialogue = ({
+  open,
+  setOpen,
+  adminId,
+  name,
+  departmentName,
+  contactNo,
+  color,
+}) => {
   const [password, setPassword] = useState("");
-  const [names,setName] = useState("");
-  const [department,setDepartment] = useState("")
-  const [contact,setContact] = useState("")
+  const [names, setName] = useState("");
+  const [department, setDepartment] = useState("");
+  const [contact, setContact] = useState("");
+  const [email, setEmail] = useState("");
+const [error , setError] = useState("");
   /// rtk query
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
 
@@ -34,24 +44,68 @@ const UpdatePasswordDialogue = ({ open, setOpen, adminId, name,departmentName,co
     setPassword("");
   };
 
+  const handleChange = (event) => {
+    const { value } = event.target;
+    const lowercaseEmail = value.toLowerCase(); 
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(lowercaseEmail)) {
+      setError("Invalid email format");
+    } else {
+      const emailParts = lowercaseEmail.split("@");
+      const emailDomain = emailParts[1];
+      const allowedDomains = [
+        "indianrobostore.com",
+        "irs.org.in",
+        "droneservicecenter.com",
+      ];
+      if (!allowedDomains.includes(emailDomain)) {
+        setError("The email domain must be either 'indianrobostore.com', 'irs.org.in', or 'droneservicecenter.com'.");
+      } 
+      else{
+        setError("");
+        setEmail(lowercaseEmail);
+      }
+    }
+    if(!lowercaseEmail){
+      setError("")
+    }
+  }
+
   const handleSubmit = async () => {
     // if (!password) {
     //   return toast.error("Plz Enter Password Before Submitting");
     // }
     try {
+      const emailParts = email.split("@");
+      if (emailParts.length !== 2) {
+        toast.error("Invalid email format");
+        return;
+      }
+      const emailDomain = emailParts[1];
+      const allowedDomains = [
+        "indianrobostore.com",
+        "irs.org.in",
+        "droneservicecenter.com",
+      ];
+      if (!allowedDomains.includes(emailDomain)) {
+        setError("The email domain must be either 'indianrobostore.com', 'irs.org.in', or 'droneservicecenter.com'.")
+        return;
+      }
+const emailLowecase = email?.toLowerCase()
       const data = {
         userId: adminId,
         newPassword: password,
-        department :department,
-        contact:contact,
-        name:names
+        department: department,
+        contact: contact,
+        name: names,
+        email: emailLowecase,
       };
       const update = await updatePassword(data);
       console.log(update);
       if (update.data?.status === true) {
         handleClose();
         setPassword("");
-        toast.success("Password Updated Successfully");
+        toast.success("Data Updated Successfully");
         return;
       }
     } catch (error) {
@@ -61,8 +115,22 @@ const UpdatePasswordDialogue = ({ open, setOpen, adminId, name,departmentName,co
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle sx={{textAlign:"center",background:color,color:"white"}}>Update Data of {name}</DialogTitle>
+        <DialogTitle
+          sx={{ textAlign: "center", background: color, color: "white" }}
+        >
+          Update Data of {name}
+        </DialogTitle>
         <DialogContent>
+          <TextField
+            margin="dense"
+            name="email"
+            label="Email.."
+            fullWidth
+            defaultValue={email}
+            onChange={handleChange}
+            error={error}
+            helperText = {error}
+          />
           <TextField
             margin="dense"
             name="names"
@@ -73,6 +141,7 @@ const UpdatePasswordDialogue = ({ open, setOpen, adminId, name,departmentName,co
               setName(event.target.value);
             }}
           />
+
           <TextField
             margin="dense"
             name="Department"
@@ -113,7 +182,7 @@ const UpdatePasswordDialogue = ({ open, setOpen, adminId, name,departmentName,co
             variant="contained"
             color="primary"
             disabled={isLoading}
-            sx={{background:color}}
+            sx={{ background: color }}
           >
             {isLoading ? (
               <CircularProgress size={24} color="inherit" /> // Show loading indicator
