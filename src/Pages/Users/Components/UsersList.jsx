@@ -40,6 +40,7 @@ const UserList = ({
   const [openProductRole, setOpenProductRole] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [confirmUser, setconfirmUser] = useState("");
+  const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState({
     userId: "",
@@ -166,12 +167,13 @@ const UserList = ({
     }
   };
 
-  const handlePasswordUpdate = ({ id, name, department, contactNo }) => {
+  const handlePasswordUpdate = ({ id, name, department, contactNo,email }) => {
     setAdminId(id);
     setName(name);
     setDepartment(department);
     setContact(contactNo);
     setOpenPasswordDial(!openPasswordDial);
+    setEmail(email)
   };
 
   /// columns
@@ -426,6 +428,7 @@ const UserList = ({
                   name: params.row.name,
                   department: params.row.department,
                   contactNo: params.row.contactNo,
+                  email: params.row.email
                 })
               }
               sx={{
@@ -546,6 +549,8 @@ const UserList = ({
           name={name}
           contactNo={contact}
           departmentName={department}
+          email={email}
+          setEmail={setEmail}
           color={color}
         />
       )}

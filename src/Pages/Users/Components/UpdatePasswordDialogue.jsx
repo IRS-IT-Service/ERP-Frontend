@@ -27,12 +27,13 @@ const UpdatePasswordDialogue = ({
   departmentName,
   contactNo,
   color,
+  setEmail,
+  email
 }) => {
   const [password, setPassword] = useState("");
   const [names, setName] = useState("");
   const [department, setDepartment] = useState("");
   const [contact, setContact] = useState("");
-  const [email, setEmail] = useState("");
 const [error , setError] = useState("");
   /// rtk query
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
