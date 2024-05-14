@@ -552,6 +552,7 @@ const UserList = ({
           email={email}
           setEmail={setEmail}
           color={color}
+          refetchAllUser={refetchAllUser}
         />
       )}
       <Box
