@@ -46,7 +46,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const debouncing = useRef();
 
   /// global state
-  const { deepSearch, checkedBrand, checkedCategory } = useSelector(
+  const { deepSearch, checkedBrand, checkedCategory,checkedGST } = useSelector(
     (state) => state.product
   );
   const { isAdmin } = useSelector((state) => state.auth.userInfo);
@@ -60,6 +60,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [loading, setLoading] = useState(false);
   const [downloadType, setDownloadType] = useState("value");
+  console.log(selectedItems);
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -162,7 +163,10 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       const data = allProductData?.data?.products?.map((item, index) => {
         data2.push(item.SKU);
         return {
-          id: item.SKU,
+          id:
+            index +
+            1 +
+            (allProductData.data.currentPage - 1) * allProductData.data.limit,
           Sno:
             index +
             1 +
@@ -204,12 +208,22 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     checkedCategory.forEach((item, index) => {
       newFilterString += `&category=${item}`;
     });
-    if (!checkedCategory.length && !checkedBrand.length) {
+
+    checkedGST.forEach((item, index) => {
+      if (index === 0) {
+        newFilterString += `&gst=${item}`;
+      } else {
+        newFilterString += `&gst=${item}`;
+      }
+    });
+    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
       setFilterString(`${newFilterString}page=1`);
       return;
     }
+
     setFilterString(`${newFilterString}&page=1`);
-  }, [checkedBrand, checkedCategory]);
+  }, [checkedBrand, checkedCategory, checkedGST]);
+
 
   useEffect(() => {
     apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
@@ -671,9 +685,18 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               {" "}
               <Switch disabled={true} />
             </Box>
-            <Box sx={{cursor:"pointer" ,display:"flex" ,gap:1,alignItems:"center"}} onClick={() => getNoImageFunc()} >
-              <Typography sx={{ fontWeight: "bold", fontSize: "12px" }} >Arrange By NoImage</Typography>
-              {" "}
+            <Box
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                gap: 1,
+                alignItems: "center",
+              }}
+              onClick={() => getNoImageFunc()}
+            >
+              <Typography sx={{ fontWeight: "bold", fontSize: "12px" }}>
+                Arrange By NoImage
+              </Typography>{" "}
               <ImageNotSupportedIcon onClick={() => getNoImageFunc()} />
             </Box>
           </Box>
