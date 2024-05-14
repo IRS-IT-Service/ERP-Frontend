@@ -42,6 +42,8 @@ const CreateChat = () => {
   const datas = useSelector((state) => state.auth);
   const onLineUsers = datas.onlineUsers;
   const messageDatas = datas.chatMessageData;
+  const typingData = datas.chatTyping;
+  console.log(typingData)
 
   // local state;
   const [singleUserData, setSingleUserData] = useState(null);
@@ -141,6 +143,14 @@ const CreateChat = () => {
     scrollToBottom();
     setSingleUserData(user);
   };
+
+  const handleChangeMessage = (e) =>{
+   setMessage(e.target.value);
+   const typingData = {senderId:adminId,receiverId:singleUserData?.adminId}
+   if(socket){
+    socket.emit("onTypingMessage",typingData)
+   }
+  }
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -804,7 +814,7 @@ const CreateChat = () => {
                   }}
                   value={message}
                   ref={inputRef}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={(e) => handleChangeMessage(e)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleSubmit();

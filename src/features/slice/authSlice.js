@@ -27,6 +27,7 @@ const initialState = {
   chatNotificationData: [],
   chatMessageData: {},
   chatMessageCount: {},
+  chatTyping: [],
 
   /// WholeSale seller portal data
   allWholeSaleUsers: {},
@@ -145,6 +146,10 @@ const authSlice = createSlice({
     removeChatNotificationCount: (state) => {
       state.chatMessageCount = {};
     },
+    
+    addChatTyping: (state, action) => {
+      state.chatTyping = [action.payload, ...state.chatTyping];
+    },
 
     /// WholeSale seller portal data
     addAllWholeSaleUsers: (state, action) => {
@@ -237,5 +242,6 @@ export const {
   addChatMessageData,
   removeChatMessageData,
   addChatNotificationCount,
+  addChatTyping,
 } = authSlice.actions;
 export default authSlice.reducer;
