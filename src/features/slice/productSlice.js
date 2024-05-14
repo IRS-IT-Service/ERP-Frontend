@@ -5,6 +5,7 @@ const initialState = {
   brands: [],
   GST: [],
   checkedBrand: [],
+  selectedItems: [],
   categories: [],
   checkedCategory: [],
   checkedGST: [],
@@ -73,6 +74,9 @@ const productSlice = createSlice({
     setDeepSearch: (state, action) => {
       state.deepSearch = action.payload;
     },
+    setSelectedItems: (state, action) => {
+      state.selectedItems = action.payload;
+    },
   },
 });
 
@@ -92,5 +96,6 @@ export const {
   setCheckedBrand,
   setCheckedCategory,
   setDeepSearch,
+  setSelectedItems
 } = productSlice.actions;
 export default productSlice.reducer;

@@ -121,7 +121,7 @@ const ProductStatus = () => {
   const handleClose = () => {
     dispatch(setInfo(false));
   };
- 
+
   useEffect(() => {
     dispatch(setHeader(`Product Status`));
   }, []);
