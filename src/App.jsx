@@ -60,6 +60,7 @@ import {
   addOnlineWholeSaleUsers,
   addChatNotificationData,
   addChatMessageData,
+  addChatTyping,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
 import { onMessage, getToken } from "firebase/messaging"; // Import necessary functions from Firebase messaging
@@ -294,11 +295,15 @@ function App() {
           "/chat"
         );
       });
+      socket.on("onTypingMessage",(data) => {
+      dispatch(addChatTyping(data))
+      })
     }
 
     return () => {
       if (socket) {
         socket.off("newChatMessage");
+        socket.off("onTypingMessage");
       }
     };
   }, [socket, adminid, dispatch]);
