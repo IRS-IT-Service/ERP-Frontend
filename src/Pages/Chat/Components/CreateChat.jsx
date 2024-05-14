@@ -43,7 +43,6 @@ const CreateChat = () => {
   const onLineUsers = datas.onlineUsers;
   const messageDatas = datas.chatMessageData;
   const typingData = datas.chatTyping;
-  console.log(typingData)
 
   // local state;
   const [singleUserData, setSingleUserData] = useState(null);
@@ -58,6 +57,7 @@ const CreateChat = () => {
   const [calling, setCalling] = useState(false);
   const [acceptCall, setAcceptCall] = useState(false);
   const [connectedTo, setConnectedTo] = useState(null);
+  const [typing, setTyping] = useState("");
 
   // setting redux message which is live text data to local state
   useEffect(() => {
@@ -70,6 +70,28 @@ const CreateChat = () => {
       scrollToBottom();
     }
   }, [messageDatas]);
+
+  useEffect(() => {
+    let typingTimeout;
+  
+    if (singleUserData) {
+      const filterData = typingData.filter(data => data.senderId === singleUserData.adminId && data.message === 'Typing...');
+      if (filterData.length > 0) {
+        setTyping("Typing...");
+        clearTimeout(typingTimeout); 
+        typingTimeout = setTimeout(() => {
+          setTyping(""); 
+        }, 1000); 
+      } else {
+        setTyping(""); 
+      }
+    }
+  
+    return () => clearTimeout(typingTimeout);
+  }, [typingData]);
+  
+  
+  
 
   // rtk query calling
   const { data: allUsers } = useGetAllUsersQuery();
@@ -109,7 +131,7 @@ const CreateChat = () => {
   }
 
   const scrollToBottom = () => {
-    console.log("Scroll to bottom", messagesEndRef.current);
+    // console.log("Scroll to bottom", messagesEndRef.current);
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
@@ -144,13 +166,16 @@ const CreateChat = () => {
     setSingleUserData(user);
   };
 
-  const handleChangeMessage = (e) =>{
-   setMessage(e.target.value);
-   const typingData = {senderId:adminId,receiverId:singleUserData?.adminId}
-   if(socket){
-    socket.emit("onTypingMessage",typingData)
-   }
-  }
+  const handleChangeMessage = (e) => {
+    setMessage(e.target.value);
+    const typingData = {
+      senderId: adminId,
+      receiverId: singleUserData?.adminId,
+    };
+    if (socket) {
+      socket.emit("onTypingMessage", typingData);
+    }
+  };
 
   useEffect(() => {
     inputRef?.current?.focus();
@@ -443,7 +468,7 @@ const CreateChat = () => {
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <span>{singleUserData?.name}</span>
                   <span style={{ color: `${online ? "blue" : "red"}` }}>
-                    {online ? "online" : "offline"}
+                    {typing || (online ? "Online" : "Offline")}
                   </span>
                 </div>
               </div>
