@@ -130,13 +130,12 @@ const PartsApproval = () => {
     useApproveRnDproductMutation();
 
   /// handlers
-  const handleApproveClick = async (SKU) => {
+  const handleApproveClick = async (data) => {
     try {
-      const data = {
-        SKU: [SKU],
+      const datas = {
+        items: [data],
       };
-
-      const res = await allAprovalSKU(data).unwrap();
+      const res = await allAprovalSKU(datas).unwrap();
       toast.success("Accepted Items successfully");
       setSelectedItems([]);
       refetch();
@@ -148,9 +147,8 @@ const PartsApproval = () => {
   const handleBulkApprove = async (bool) => {
     try {
       const data = {
-        SKU: selectedItems,
+        items: selectedItems,
       };
-
       const res = await allAprovalSKU(data).unwrap();
       toast.success(`Accepted Items ${selectedItems} successfully`);
       setSelectedItems([]);
@@ -169,6 +167,7 @@ const PartsApproval = () => {
           ...item,
           id: item.SKU,
           Sno: index + 1,
+          Sendqty:item.Sendqty
         };
       });
 
@@ -176,8 +175,10 @@ const PartsApproval = () => {
     }
   }, [allProductData]);
 
-  const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
+  const handleSelectionChange = (selection) => {
+    const selectedRowsWithSendQty = rows.filter(row => selection.includes(row.id));
+    setSelectedItems(selectedRowsWithSendQty)
+    console.log(selectedRowsWithSendQty);
   };
 
   //Columns*******************
@@ -274,7 +275,7 @@ const PartsApproval = () => {
               fontSize: "32px", // Adjust the size as needed
               cursor: "pointer", // Show pointer cursor on hover
             }}
-            onClick={() => handleApproveClick(params.row.SKU)}
+            onClick={() => handleApproveClick({SKU:params.row.SKU,received:params.row.Sendqty})}
           >
             <ThumbUpIcon />
           </div>
@@ -353,7 +354,7 @@ const PartsApproval = () => {
                 checkboxSelection
                 disableRowSelectionOnClick
                 onRowSelectionModelChange={handleSelectionChange}
-                rowSelectionModel={selectedItems}
+                // rowSelectionModel={selectedItems}
                 components={{
                   NoRowsOverlay: () => (
                     <Box
