@@ -60,7 +60,6 @@ const Content = ({
     hiddenColumns: latestHiddenColumns,
   } = useSelector((state) => state.auth);
 
-
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
     useSelector((state) => state.product);
   /// local state
@@ -129,6 +128,7 @@ const Content = ({
   // };
 
   const handleSelectionChange = (selectionModel) => {
+    console.log(selectionModel);
     setSelectedItems(selectionModel);
 
     const newSelectedRowsData = rows.filter((item) =>

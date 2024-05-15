@@ -24,6 +24,7 @@ import {
   setAllProducts,
   setAllProductsV2,
 } from "../../../features/slice/productSlice";
+
 import {
   useUpdateNotationMutation,
   useGetAllProductV2Query,
@@ -46,7 +47,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const debouncing = useRef();
 
   /// global state
-  const { deepSearch, checkedBrand, checkedCategory,checkedGST } = useSelector(
+  const { deepSearch, checkedBrand, checkedCategory, checkedGST } = useSelector(
     (state) => state.product
   );
   const { isAdmin } = useSelector((state) => state.auth.userInfo);
@@ -55,12 +56,13 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedSKU, setSelectedSKU] = useState([]);
+  const [FilterSKU, setFilterSKU] = useState([]);
   // console.log(selectedItems.length);
   const [open, setOpen] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [loading, setLoading] = useState(false);
   const [downloadType, setDownloadType] = useState("value");
-  console.log(selectedItems);
+  const [StoredSKU, setStoredSKU] = useState([]);
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -79,10 +81,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     pollingInterval: 1000 * 300,
   });
   /// handlers
-
-  const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
-  };
 
   const [notationUpdateApi, { isLoading: NotationLoading }] =
     useUpdateNotationMutation();
@@ -126,7 +124,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     setLoading(true);
     try {
       const body = {
-        data: selectedItems,
+        data: FilterSKU,
         columns: checkedItems,
         type: downloadType,
       };
@@ -160,6 +158,14 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   useEffect(() => {
     if (allProductData?.success) {
       const data2 = [];
+      const MapSKU = new Map(
+        allProductData?.data?.FilteredSKU.map((item, index) => [
+          index + 1,
+          item,
+        ])
+      );
+
+      setStoredSKU(MapSKU);
       const data = allProductData?.data?.products?.map((item, index) => {
         data2.push(item.SKU);
         return {
@@ -167,6 +173,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             index +
             1 +
             (allProductData.data.currentPage - 1) * allProductData.data.limit,
+
           Sno:
             index +
             1 +
@@ -186,6 +193,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           isImageExist: item.mainImage?.fileId ? true : false,
         };
       });
+
       handleavailEcwid(data2);
       dispatch(setAllProductsV2(allProductData.data));
       setRows(data);
@@ -194,6 +202,13 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       setPage(allProductData.data.currentPage);
     }
   }, [allProductData]);
+
+  const handleSelectionChange = (selectionModel) => {
+    const filterdValue = selectionModel.map((item) => StoredSKU.get(item));
+
+    setFilterSKU(filterdValue);
+    setSelectedItems(selectionModel);
+  };
 
   useEffect(() => {
     let newFilterString = "";
@@ -223,7 +238,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
 
     setFilterString(`${newFilterString}&page=1`);
   }, [checkedBrand, checkedCategory, checkedGST]);
-
 
   useEffect(() => {
     apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
@@ -590,7 +604,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     <Button
       variant="contained"
       onClick={() => {
-        if (selectedItems.length === 0) {
+        if (FilterSKU.length === 0) {
           window.alert("Please select Product First");
           return;
         }
@@ -607,7 +621,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     <Box>
       <Button
         onClick={() => {
-          if (selectedItems.length === 0) {
+          if (FilterSKU.length === 0) {
             window.alert("Please select Product First");
             return;
           }
