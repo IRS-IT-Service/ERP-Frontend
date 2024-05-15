@@ -124,7 +124,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     setLoading(true);
     try {
       const body = {
-        data: FilterSKU,
+        data: selectedItems,
         columns: checkedItems,
         type: downloadType,
       };
@@ -158,21 +158,11 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   useEffect(() => {
     if (allProductData?.success) {
       const data2 = [];
-      const MapSKU = new Map(
-        allProductData?.data?.FilteredSKU.map((item, index) => [
-          index + 1,
-          item,
-        ])
-      );
 
-      setStoredSKU(MapSKU);
       const data = allProductData?.data?.products?.map((item, index) => {
         data2.push(item.SKU);
         return {
-          id:
-            index +
-            1 +
-            (allProductData.data.currentPage - 1) * allProductData.data.limit,
+          id: item.SKU,
 
           Sno:
             index +
@@ -204,10 +194,8 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   }, [allProductData]);
 
   const handleSelectionChange = (selectionModel) => {
-    const filterdValue = selectionModel.map((item) => StoredSKU.get(item));
-
-    setFilterSKU(filterdValue);
-    setSelectedItems(selectionModel);
+    const uniqueArray = [...new Set(selectionModel)];
+    setSelectedItems(uniqueArray);
   };
 
   useEffect(() => {
@@ -604,7 +592,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     <Button
       variant="contained"
       onClick={() => {
-        if (FilterSKU.length === 0) {
+        if (selectedItems.length === 0) {
           window.alert("Please select Product First");
           return;
         }
@@ -621,7 +609,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     <Box>
       <Button
         onClick={() => {
-          if (FilterSKU.length === 0) {
+          if (selectedItems.length === 0) {
             window.alert("Please select Product First");
             return;
           }
