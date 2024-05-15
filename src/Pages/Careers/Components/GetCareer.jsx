@@ -101,23 +101,32 @@ const CreateCareer = () => {
     setSelectedFile(null);
   };
 
-  const handleDownloadFile = async (data) => {
-    if (!data) return toast.error("Please select a file to download");
+
+
+  const handleDownloadFile = async(data) =>{
     try {
-      const url = data.name;
-      const urls = url.split("/");
-      const fileName = urls[urls.length - 1];
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName; 
+      const url = data.name
+      const urlArray = url.split('/');
+      const fileName = urlArray.pop();
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', fileName); 
+  
       document.body.appendChild(link);
       link.click();
+  
       document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+  
       toast.success("File downloaded successfully");
     } catch (error) {
-      console.error(error);
-    }
-  };
+      console.error('Error downloading file:', error);
+      toast.error("Error downloading file");
+    }
+  }
 
   // fetching all files from api
   useEffect(() => {
