@@ -27,12 +27,14 @@ const UpdatePasswordDialogue = ({
   departmentName,
   contactNo,
   color,
+  setEmail,
+  email,
+  refetchAllUser
 }) => {
   const [password, setPassword] = useState("");
   const [names, setName] = useState("");
   const [department, setDepartment] = useState("");
   const [contact, setContact] = useState("");
-  const [email, setEmail] = useState("");
 const [error , setError] = useState("");
   /// rtk query
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
@@ -72,33 +74,16 @@ const [error , setError] = useState("");
   }
 
   const handleSubmit = async () => {
-    // if (!password) {
-    //   return toast.error("Plz Enter Password Before Submitting");
-    // }
+  
     try {
-      const emailParts = email.split("@");
-      if (emailParts.length !== 2) {
-        toast.error("Invalid email format");
-        return;
-      }
-      const emailDomain = emailParts[1];
-      const allowedDomains = [
-        "indianrobostore.com",
-        "irs.org.in",
-        "droneservicecenter.com",
-      ];
-      if (!allowedDomains.includes(emailDomain)) {
-        setError("The email domain must be either 'indianrobostore.com', 'irs.org.in', or 'droneservicecenter.com'.")
-        return;
-      }
-const emailLowecase = email?.toLowerCase()
+   
       const data = {
         userId: adminId,
         newPassword: password,
         department: department,
         contact: contact,
         name: names,
-        email: emailLowecase,
+        email: email,
       };
       const update = await updatePassword(data);
       console.log(update);
@@ -106,6 +91,7 @@ const emailLowecase = email?.toLowerCase()
         handleClose();
         setPassword("");
         toast.success("Data Updated Successfully");
+        refetchAllUser()
         return;
       }
     } catch (error) {
