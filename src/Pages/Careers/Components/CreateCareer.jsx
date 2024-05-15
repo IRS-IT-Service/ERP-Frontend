@@ -9,16 +9,14 @@ import React, { useState } from "react";
 import {
   useAddCareerMutation,
   useGetCareersQuery,
- 
 } from "../../../features/api/otherSlice";
 import { toast } from "react-toastify";
 import { DataGrid } from "@mui/x-data-grid";
 import { Fullscreen } from "@mui/icons-material";
 
 const CreateCareer = () => {
-  const [rows, setRows] = useState([]);
   const [addData, { isLoading }] = useAddCareerMutation();
-  const { data: getCareers,  } = useGetCareersQuery();
+  const { data: getCareers, refetch: getNewCareersRefetch, } = useGetCareersQuery();
   const [formData, setFormData] = useState({
     title: "",
     summary: "",
@@ -29,22 +27,6 @@ const CreateCareer = () => {
     experience: "",
     position: "",
   });
-
-  const columns = [
-    { title: "Full Stack Developer 1 year Experience" },
-    {
-      title: "Backend Developer 1 year Experience",
-    },
-    {
-      title: "Frontend Developer 1 year Experience",
-    },
-    {
-      title: "Frontend Developer 1 year Experience",
-    },
-    {
-      title: "Frontend Developer 1 year Experience",
-    },
-  ];
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -72,6 +54,8 @@ const CreateCareer = () => {
         position: "",
       });
       toast.success("Form Saved Successfully");
+
+      getNewCareersRefetch()
     } catch (error) {
       console.log(error.message);
     }
@@ -246,6 +230,7 @@ const CreateCareer = () => {
                     display: "flex",
                     justifyContent: "space-between",
                     marginRight: "1rem",
+                    marginBottom: "1rem",
                     width: "100%",
                   }}
                 >
