@@ -41,12 +41,16 @@ const CreateCareer = () => {
 
   // rtk query api calling
 
-  const { data: getCareers, loading: getAllCareersLoading, refetch: getNewCareersRefetch } = useGetCareersQuery();
+  const {
+    data: getCareers,
+    loading: getAllCareersLoading,
+    refetch: getNewCareersRefetch,
+  } = useGetCareersQuery();
 
   const handleClickFolder = (data) => {
     setCareerId(data.id);
     setCareerName(data.name); // Optionally set the career name as well
-    
+
     // Filter resumes based on the clicked career ID
     const career = getCareers.data.find((career) => career._id === data.id);
     if (career) {
@@ -55,7 +59,6 @@ const CreateCareer = () => {
       setResumes([]); // No resumes found for the clicked career
     }
   };
-  
 
   ///Handle Context Menu
 
@@ -79,7 +82,6 @@ const CreateCareer = () => {
     setFolderDeleteOpen(true);
   };
 
-
   const handleCloseMenu = () => {
     setShowMenu(false);
     setShowMenuFile(false);
@@ -93,27 +95,27 @@ const CreateCareer = () => {
     setGridView(newAlignment);
   };
 
-
   const handleCloseDial = async () => {
     setOpen(false);
     setCreateFolder("");
     setSelectedFile(null);
   };
 
-
-
   const handleDownloadFile = async (data) => {
-    if (!data) return toast.error("Plase select file to download");
+    if (!data) return toast.error("Please select a file to download");
     try {
-      const url = data?.url;
+      const url = data.name;
+      const urls = url.split("/");
+      const fileName = urls[urls.length - 1];
       const link = document.createElement("a");
       link.href = url;
+      link.download = fileName; 
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       toast.success("File downloaded successfully");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -122,9 +124,9 @@ const CreateCareer = () => {
     const fetchAllFiles = async () => {
       try {
         const result = await getCareers;
-        console.log(result?.data)
+        console.log(result?.data);
         setAllCareers(result?.data?.data);
-        console.log(allCareers)
+        console.log(allCareers);
       } catch (error) {
         console.log(error);
       }
@@ -137,7 +139,7 @@ const CreateCareer = () => {
   function getFileExtension(filename) {
     const parts = filename.split(".");
     const extension = parts[parts.length - 1];
-   
+
     switch (extension) {
       case "png":
       case "jpg":
@@ -158,15 +160,15 @@ const CreateCareer = () => {
     }
   }
 
-  function getFileExtensionUrl(filename ,url) {
+  function getFileExtensionUrl(filename, url) {
     const parts = filename.split(".");
     const extension = parts[parts.length - 1];
     switch (extension) {
       case "docx":
         return word;
-        case "pdf":
-        return url
-         default:
+      case "pdf":
+        return url;
+      default:
         return unknown;
     }
   }
@@ -334,8 +336,6 @@ const CreateCareer = () => {
             padding: "10px",
           }}
         >
-          
-         
           <ToggleButtonGroup
             value={gridView}
             exclusive
@@ -361,26 +361,25 @@ const CreateCareer = () => {
         >
           {resumes && resumes.length > 0 ? (
             <>
-              {getAllCareersLoading? (
-                <Box sx={{
-                  width: "100%",
-                  height: "54vh",
-                   display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-               
-               
-                }}>
-                <CircularProgress />
+              {getAllCareersLoading ? (
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: "54vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <CircularProgress />
                 </Box>
               ) : (
                 resumes?.map((file) => (
                   <>
                     {gridView === "preview" ? (
                       <Box
-                      key={file?.fileId}
+                        key={file?.fileId}
                         sx={{
-                        
                           display: "flex",
                           width: "150px",
 
@@ -399,13 +398,10 @@ const CreateCareer = () => {
                             borderRadius: "5px",
                           },
                         }}
-                        onDoubleClick={() =>
-                          handleDownloadFile({ id: file.fileId, name: file.url })
-                        }
+                        onDoubleClick={() => handleDownloadFile(file)}
                         onContextMenu={(e) => handleContextMenuFile(e, file)}
                       >
                         <Box
-                         
                           sx={{
                             height: "120px",
                             width: "120px",
@@ -462,7 +458,10 @@ const CreateCareer = () => {
                           },
                         }}
                         onDoubleClick={() =>
-                          handleDownloadFile({ id: file.fileId, name: file.url })
+                          handleDownloadFile({
+                            id: file.fileId,
+                            name: file.url,
+                          })
                         }
                         onContextMenu={(e) => handleContextMenuFile(e, file)}
                       >
@@ -511,12 +510,7 @@ const CreateCareer = () => {
                         cursor: "pointer",
                         padding: "5px",
                       }}
-                      onClick={() =>
-                        handleDownloadFile({
-                          id: FileName.id,
-                          name: FileName.name,
-                        })
-                      }
+                      onClick={() => handleDownloadFile(file)}
                     >
                       <Box
                         sx={{
@@ -581,18 +575,21 @@ const CreateCareer = () => {
               )}
             </>
           ) : (
-            <Box sx={{
-              width: "100%",
-              height: "54vh",
-               display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-           
-           
-            }}>
-           <img src={noData} style={{
-            width:"20%"
-           }} />
+            <Box
+              sx={{
+                width: "100%",
+                height: "54vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <img
+                src={noData}
+                style={{
+                  width: "20%",
+                }}
+              />
             </Box>
           )}
         </div>
@@ -606,15 +603,10 @@ const CreateCareer = () => {
           selectedFile={selectedFile}
           setSelectedFile={setSelectedFile}
           openFor={openFor}
-  
         />
       )}
-      
-
     </Box>
   );
 };
 
 export default CreateCareer;
-
-
