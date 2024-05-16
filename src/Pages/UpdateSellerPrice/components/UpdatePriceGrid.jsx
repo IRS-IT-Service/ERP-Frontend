@@ -60,7 +60,6 @@ const Content = ({
     hiddenColumns: latestHiddenColumns,
   } = useSelector((state) => state.auth);
 
-
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
     useSelector((state) => state.product);
   /// local state
@@ -129,10 +128,11 @@ const Content = ({
   // };
 
   const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
+    const uniqueArray = [...new Set(selectionModel)];
+    setSelectedItems(uniqueArray);
 
     const newSelectedRowsData = rows.filter((item) =>
-      selectionModel.includes(item.id)
+      uniqueArray.includes(item.id)
     );
 
     setSelectedItemsData(newSelectedRowsData);
@@ -392,7 +392,7 @@ const Content = ({
     if (editedRows.length && rows.length) {
       const lastArrayItem = editedRows.length - 1;
       if (editedRows[lastArrayItem].field === "SellerPrice") {
-        const updatedArr1 = rows.map((item1) => {
+        const updatedArr1 = rows?.map((item1) => {
           const matchingItem = editedRows.find(
             (item2) => item2.id === item1.id
           );

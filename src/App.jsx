@@ -135,6 +135,7 @@ import Careers from "./Pages/Careers/Careers";
 import IrsConnect from "../public/chatlog.png";
 import Drive from "./Pages/G_Drive/Drive";
 import { RuleSharp } from "@mui/icons-material";
+import CareerDetails from "./Pages/Careers/CareerDetails";
 
 function App() {
   /// initialize
@@ -796,7 +797,9 @@ function App() {
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
                 {/* Careers */}
+                
                 <Route path="/careers" element={<Careers />} />
+                <Route path="/careers/details" element={<CareerDetails />} />
               </Route>
             </Routes>
           </Suspense>
