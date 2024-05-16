@@ -431,7 +431,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                                 height: "13px",
                                 borderRadius: "100%",
                                 backgroundColor: `${
-                                  item.isFullFilled
+                                  (item.Quantity === item.RandDReceived)
                                     ? "rgba(5, 134, 15, 0.8)"
                                     : "rgba(207, 0, 0, 0.8)"
                                 }`,
