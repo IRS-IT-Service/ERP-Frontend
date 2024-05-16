@@ -19,6 +19,7 @@ import CallingDial from "./callingDial";
 import Toolbar from "@mui/material/Toolbar";
 import { formatDateForWhatsApp } from "../../../commonFunctions/commonFunctions";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { toast } from "react-toastify";
 // import ToolbarItem from '@mui/material/ToolbarItem';
 
 const CreateChat = () => {
@@ -137,6 +138,29 @@ const CreateChat = () => {
     }
   };
 
+  const handleDownLoadFile = async(url) =>{
+    try {
+      const urlArray = url.split('/');
+      const fileName = urlArray.pop();
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', fileName); 
+  
+      document.body.appendChild(link);
+      link.click();
+  
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+  
+      toast.success("File downloaded successfully");
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast.error("Error downloading file");
+    }
+  }
   // for like when user comes to chat then the div scroll down to bottom
   // useEffect(() => {
   //   messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
@@ -736,7 +760,9 @@ const CreateChat = () => {
                                   maxWidth: "250px",
                                   height: "auto",
                                   display: "block",
+                                  cursor:"pointer"
                                 }}
+                                onDoubleClick={() => handleDownLoadFile(msg?.Content?.url)}
                               />
                               <div
                                 style={{
