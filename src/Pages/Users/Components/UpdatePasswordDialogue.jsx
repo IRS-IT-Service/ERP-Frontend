@@ -92,6 +92,8 @@ const UpdatePasswordDialogue = ({
       formData.append("id", adminId);
       formData.append("Image", file);
       const uploadImage = await updateProfile(formData).unwrap();
+      setFile(null);
+      setOpen(false)
       toast.success("Profile Updated successfully");
     } catch (error) {
       console.log(error);
@@ -209,8 +211,9 @@ const UpdatePasswordDialogue = ({
                   borderRadius: "10px",
                 }}
                 onClick={() => handleSaveFile()}
+                disabled = {ProfileLoading}
               >
-                save
+             {ProfileLoading ? <CircularProgress/> : "Save"}  
               </button>
             )}
           </div>
