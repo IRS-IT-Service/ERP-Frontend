@@ -136,22 +136,29 @@ export const userApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: `${BASEURL}/chat/uploadFile`,
         method: "POST",
-        body:data
+        body: data,
       }),
     }),
-    getReceivedMessages:builder.mutation({
+    getReceivedMessages: builder.mutation({
       query: (receiverId) => ({
         url: `${BASEURL}/chat/getReceivedMessages/${receiverId}`,
-        method:"GET"
+        method: "GET",
       }),
     }),
-    changeVisibility:builder.mutation({
-      query:((data) => ({
+    changeVisibility: builder.mutation({
+      query: (data) => ({
         url: `${BASEURL}/chat/changeVisibility`,
-        method:"POST",
-        body:data 
-      }))
-    })
+        method: "POST",
+        body: data,
+      }),
+    }),
+    updateProfile: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/updateProfile`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -177,5 +184,6 @@ export const {
   useGetChatMessageMutation,
   useUploadFileOnImageKitMutation,
   useGetReceivedMessagesMutation,
-  useChangeVisibilityMutation
+  useChangeVisibilityMutation,
+  useUpdateProfileMutation,
 } = userApiSlice;
