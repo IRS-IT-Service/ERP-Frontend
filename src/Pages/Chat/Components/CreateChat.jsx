@@ -525,6 +525,7 @@ const CreateChat = () => {
             height: "100%",
             width: "25%",
             overflowY: "auto",
+            overflowX: "hidden",
             borderRight: "0.2px solid #eeee",
           }}
         >
