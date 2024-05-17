@@ -14,10 +14,12 @@ import {
   useRegisterMutation,
   useMasterPasswordMutation,
   useUpdatePasswordMutation,
+  useUpdateProfileMutation,
 } from "../../../features/api/usersApiSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CategorySharp, ContactsOutlined } from "@mui/icons-material";
+import { blue, green } from "@mui/material/colors";
 
 const UpdatePasswordDialogue = ({
   open,
@@ -29,15 +31,18 @@ const UpdatePasswordDialogue = ({
   color,
   setEmail,
   email,
-  refetchAllUser
+  refetchAllUser,
 }) => {
   const [password, setPassword] = useState("");
   const [names, setName] = useState("");
   const [department, setDepartment] = useState("");
   const [contact, setContact] = useState("");
-const [error , setError] = useState("");
+  const [error, setError] = useState("");
+  const [file, setFile] = useState(null);
   /// rtk query
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
+  const [updateProfile, { isLoading: ProfileLoading }] =
+    useUpdateProfileMutation();
 
   /// local state
 
@@ -48,7 +53,7 @@ const [error , setError] = useState("");
 
   const handleChange = (event) => {
     const { value } = event.target;
-    const lowercaseEmail = value.toLowerCase(); 
+    const lowercaseEmail = value.toLowerCase();
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(lowercaseEmail)) {
       setError("Invalid email format");
@@ -61,22 +66,41 @@ const [error , setError] = useState("");
         "droneservicecenter.com",
       ];
       if (!allowedDomains.includes(emailDomain)) {
-        setError("The email domain must be either 'indianrobostore.com', 'irs.org.in', or 'droneservicecenter.com'.");
-      } 
-      else{
+        setError(
+          "The email domain must be either 'indianrobostore.com', 'irs.org.in', or 'droneservicecenter.com'."
+        );
+      } else {
         setError("");
         setEmail(lowercaseEmail);
       }
     }
-    if(!lowercaseEmail){
-      setError("")
+    if (!lowercaseEmail) {
+      setError("");
     }
-  }
+  };
+  const handleFileChange = (e) => {
+    const files = e.target.files[0];
+    if (files) {
+      setFile(files);
+    }
+  };
 
-  const handleSubmit = async () => {
-  
+  const handleSaveFile = async () => {
     try {
-   
+      if (!file || !adminId) return toast.error("File and Id are required");
+      let formData = new FormData();
+      formData.append("id", adminId);
+      formData.append("Image", file);
+      const uploadImage = await updateProfile(formData).unwrap();
+      setFile(null);
+      setOpen(false)
+      toast.success("Profile Updated successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleSubmit = async () => {
+    try {
       const data = {
         userId: adminId,
         newPassword: password,
@@ -91,7 +115,7 @@ const [error , setError] = useState("");
         handleClose();
         setPassword("");
         toast.success("Data Updated Successfully");
-        refetchAllUser()
+        refetchAllUser();
         return;
       }
     } catch (error) {
@@ -115,7 +139,7 @@ const [error , setError] = useState("");
             defaultValue={email}
             onChange={handleChange}
             error={error}
-            helperText = {error}
+            helperText={error}
           />
           <TextField
             margin="dense"
@@ -160,6 +184,39 @@ const [error , setError] = useState("");
               setPassword(event.target.value);
             }}
           />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+              marginTop: "10px",
+            }}
+          >
+            <label
+              htmlFor="fileUpload"
+              style={{ cursor: "pointer", color: `${file ? "green" : "blue"}` }}
+            >
+              <input
+                id="fileUpload"
+                type="file"
+                style={{ display: "none" }}
+                onChange={(e) => handleFileChange(e)}
+              />
+              Update Profile
+            </label>
+            {file && (
+              <button
+                style={{
+                  padding: "10px",
+                  cursor: "pointer",
+                  borderRadius: "10px",
+                }}
+                onClick={() => handleSaveFile()}
+                disabled = {ProfileLoading}
+              >
+             {ProfileLoading ? <CircularProgress/> : "Save"}  
+              </button>
+            )}
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
