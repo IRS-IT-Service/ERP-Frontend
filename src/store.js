@@ -72,7 +72,7 @@ const store = configureStore({
     dscForm: DscFormSlice,
     RAndDForm: RAndDFormSlice,
     liveCalc: LiveCalcReducer,
-    seletedItems: selectedItemsSlice,
+    SelectedItems: selectedItemsSlice,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

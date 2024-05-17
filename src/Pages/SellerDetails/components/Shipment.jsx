@@ -140,7 +140,7 @@ const Shipment = () => {
       console.log(error);
     }
   };
-console.log(data?.result)
+
   // function for rows
   const rowss = data?.barcodeDetails.map((item, index) => ({
     id: item.barcode, // Use a unique identifier as 'id'
@@ -160,7 +160,7 @@ console.log(data?.result)
 
   // handle submit here
   const handleSubmit = async () => {
-    if (!trackingId || !courierName) {
+    if ((!trackingId && courierName !== "SELF PICKUP") || !courierName) {
       return toast.error("Please Provide TrackingId Or CourierName");
     }
     if (selectedItemsData.length <= 0) {

@@ -21,6 +21,10 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setStoredselectedSKU,
+  removeSelectedSKU,
+} from "../../../features/slice/selectedItemsSlice";
+import {
   setAllProducts,
   setAllProductsV2,
 } from "../../../features/slice/productSlice";
@@ -45,16 +49,22 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const navigate = useNavigate();
   const apiRef = useGridApiRef();
   const debouncing = useRef();
+  let MapSKU = {}
 
   /// global state
   const { deepSearch, checkedBrand, checkedCategory, checkedGST } = useSelector(
     (state) => state.product
   );
   const { isAdmin } = useSelector((state) => state.auth.userInfo);
+  const { NewselectedSKU } = useSelector((state) => state.SelectedItems);
+
+  
+
+ 
 
   /// local state
   const [rows, setRows] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [NewselectedItems, setNewSelectedItems] = useState([]);
   const [selectedSKU, setSelectedSKU] = useState([]);
   const [FilterSKU, setFilterSKU] = useState([]);
   // console.log(selectedItems.length);
@@ -62,7 +72,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [loading, setLoading] = useState(false);
   const [downloadType, setDownloadType] = useState("value");
-  const [StoredSKU, setStoredSKU] = useState([]);
+  const [StoredSKU, setStoredSKU] = useState(new Map());
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -98,6 +108,9 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     }
   };
 
+
+
+ 
   const handleIsActiveyncUpdate = async (id, status, type) => {
     try {
       const data = {
@@ -124,7 +137,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     setLoading(true);
     try {
       const body = {
-        data: selectedItems,
+        data: FilterSKU,
         columns: checkedItems,
         type: downloadType,
       };
@@ -160,9 +173,13 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       const data2 = [];
 
       const data = allProductData?.data?.products?.map((item, index) => {
+        dispatch(setStoredselectedSKU(item.SKU));
         data2.push(item.SKU);
         return {
-          id: item.SKU,
+          id:
+            index +
+            1 +
+            (allProductData.data.currentPage - 1) * allProductData.data.limit,
 
           Sno:
             index +
@@ -193,9 +210,37 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     }
   }, [allProductData]);
 
+  // useEffect(()=>{
+  //   const NewData= (new Map(
+  //     NewselectedSKU.map((item, index) => {
+  //       return [index + 1, item];
+  //     }))
+  //   );
+  //   setStoredSKU(NewData)
+  // },[allProductData])
+
+
+
+  useEffect(()=>{
+    dispatch(removeSelectedSKU())
+  },[checkedBrand, checkedCategory, checkedGST])
+
+
+
+
   const handleSelectionChange = (selectionModel) => {
-    const uniqueArray = [...new Set(selectionModel)];
-    setSelectedItems(uniqueArray);
+    const NewData= (new Map(
+      NewselectedSKU.map((item, index) => {
+        return [index + 1, item];
+      }))
+    );
+    const FilteredSKU = selectionModel.map((item) => {
+      return NewData.get(item);
+    });
+   
+    setFilterSKU(FilteredSKU);
+
+    setNewSelectedItems(selectionModel);
   };
 
   useEffect(() => {
@@ -592,7 +637,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     <Button
       variant="contained"
       onClick={() => {
-        if (selectedItems.length === 0) {
+        if (NewselectedItems.length === 0) {
           window.alert("Please select Product First");
           return;
         }
@@ -609,7 +654,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     <Box>
       <Button
         onClick={() => {
-          if (selectedItems.length === 0) {
+          if (NewselectedItems.length === 0) {
             window.alert("Please select Product First");
             return;
           }
@@ -739,7 +784,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
         apiRef={apiRef}
         customButton1={isAdmin ? downloadWithValueCustomButton : ""}
         customButton2={downloadWithTrueFalseCustomButton}
-        count={selectedItems}
+        count={NewselectedItems}
       />
       <ProductStatusDownloadDialog
         open={open}
@@ -779,7 +824,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           checkboxSelection
           disableRowSelectionOnClick
           onRowSelectionModelChange={handleSelectionChange}
-          rowSelectionModel={selectedItems}
+          rowSelectionModel={NewselectedItems}
           columnVisibilityModel={hiddenColumns}
           keepNonExistentRowsSelected
           onColumnVisibilityModelChange={(newModel) =>
