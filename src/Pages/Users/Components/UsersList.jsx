@@ -48,6 +48,7 @@ const UserList = ({
   });
   const [openPasswordDial, setOpenPasswordDial] = useState("");
   const [name, setName] = useState("");
+  const [file, setFile] = useState(null);
 
   /// rtk query
   const [userUpdateApi, { isLoading }] = useUserRoleUpdateMutation();
@@ -150,6 +151,8 @@ const UserList = ({
     }
   };
 
+ 
+
   const handleUserDelete = async (adminId) => {
     try {
       const data = {
@@ -167,13 +170,13 @@ const UserList = ({
     }
   };
 
-  const handlePasswordUpdate = ({ id, name, department, contactNo,email }) => {
+  const handlePasswordUpdate = ({ id, name, department, contactNo, email }) => {
     setAdminId(id);
     setName(name);
     setDepartment(department);
     setContact(contactNo);
     setOpenPasswordDial(!openPasswordDial);
-    setEmail(email)
+    setEmail(email);
   };
 
   /// columns
@@ -428,7 +431,7 @@ const UserList = ({
                   name: params.row.name,
                   department: params.row.department,
                   contactNo: params.row.contactNo,
-                  email: params.row.email
+                  email: params.row.email,
                 })
               }
               sx={{
