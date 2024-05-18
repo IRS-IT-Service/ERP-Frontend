@@ -2,7 +2,6 @@ import { React, useEffect, useState } from "react";
 import { Box, styled } from "@mui/material";
 import ProductHistory from "../Home_Page/Components/ProductHistory";
 import ProductStatusGrid from "./Components/ProductStatusGrid";
-import Header from "../../components/Common/Header";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import { useDispatch, useSelector } from "react-redux";
