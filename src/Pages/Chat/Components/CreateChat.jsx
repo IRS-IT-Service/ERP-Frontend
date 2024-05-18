@@ -22,6 +22,8 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { toast } from "react-toastify";
 import whatsImage from "../../../../public/ChatBackground.jpeg";
 import frontImage from "../../../../public/FrontChat.png";
+import MoodIcon from "@mui/icons-material/Mood";
+import EmojiPicker from "emoji-picker-react";
 // import ToolbarItem from '@mui/material/ToolbarItem';
 
 const CreateChat = () => {
@@ -61,6 +63,8 @@ const CreateChat = () => {
   const [acceptCall, setAcceptCall] = useState(false);
   const [connectedTo, setConnectedTo] = useState(null);
   const [typing, setTyping] = useState("");
+  const [emoji, setEmoji] = useState(false);
+  const [emojiData, setEmojiData] = useState("");
 
   // setting redux message which is live text data to local state
   useEffect(() => {
@@ -294,6 +298,18 @@ const CreateChat = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleClickOnDiv = () => {
+    if (emoji || selectedImage) {
+      setEmoji(false), setSelectedImage(null);
+    }
+  };
+
+  const handleEmojiClick = (data) => {
+    setEmojiData(data.emoji);
+    setMessage(message + data.emoji);
+    setEmoji(false);
   };
 
   // this are the webrtc methods and functions for calls which is getting shutdown because of microphone problems
@@ -659,6 +675,7 @@ const CreateChat = () => {
                 },
               }}
               ref={messagesEndRef}
+              onClick={() => handleClickOnDiv()}
             >
               <Box
                 sx={{
@@ -836,7 +853,36 @@ const CreateChat = () => {
                 // border:"1px solid"
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "6px",
+                }}
+              >
+                <div
+                  style={{ marginTop: "4px", cursor: "pointer" }}
+                  onClick={() => setEmoji(!emoji)}
+                >
+                  <MoodIcon />
+                </div>
+                <div style={{ position: "relative" }}>
+                  {emoji && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "60px",
+                        zIndex: 1,
+                        left: "-50px",
+                      }}
+                    >
+                      <EmojiPicker
+                        onEmojiClick={(emojiData) =>
+                          handleEmojiClick(emojiData)
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
                 <div style={{ position: "relative" }}>
                   {selectedImage && (
                     <Box
