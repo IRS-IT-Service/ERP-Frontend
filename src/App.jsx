@@ -136,6 +136,7 @@ import IrsConnect from "../public/chatlog.png";
 import Drive from "./Pages/G_Drive/Drive";
 import { RuleSharp } from "@mui/icons-material";
 import CareerDetails from "./Pages/Careers/CareerDetails";
+import TestingComponent from "./Pages/Testing Component/TestingComponent";
 
 function App() {
   /// initialize
@@ -414,7 +415,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <Suspense fallback={<Loading />}>
             <Routes>
-              <Route path="/testing" element={<Testing />} />
+ 
               <Route
                 path="/login"
                 element={<Login registrationToken={registrationToken} />}
@@ -797,7 +798,7 @@ function App() {
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
                 {/* Careers */}
-                
+                <Route path="/testing" element={<TestingComponent />} />
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
               </Route>
