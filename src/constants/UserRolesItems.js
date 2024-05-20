@@ -183,29 +183,35 @@ const userRolesData = [
         path: "/PriceHistory",
         icon: "fa-solid fa-hand-holding-dollar",
       },
-      {
-        id: 56,
-        name: "Add Proforma",
-        path: "/AddProforma",
-        icon: "fa fa-file-text",
-      },
-      {
-        id: 57,
-        name: "Proforma List",
-        path: "/ProformaList",
-        icon: "fa fa-list",
-      },
-      {
-        id: 58,
-        name: "Proforma Details",
-        path: "/ProformaDetails",
-        icon: "fa fa-list",
-      },
+      // {
+      //   id: 56,
+      //   name: "Add Proforma",
+      //   path: "/AddProforma",
+      //   icon: "fa fa-file-text",
+      // },
+      // {
+      //   id: 57,
+      //   name: "Proforma List",
+      //   path: "/ProformaList",
+      //   icon: "fa fa-list",
+      // },
+      // {
+      //   id: 58,
+      //   name: "Proforma Details",
+      //   path: "/ProformaDetails",
+      //   icon: "fa fa-list",
+      // },
       {
         id: 77,
         name: "Add Clients",
         path: "/addClient",
         icon: "fa-solid fa-user-plus",
+      },
+      {
+        id: 78,
+        name: "Create Shipment Order",
+        path: "/createOrderShipment",
+        icon: "fa-solid fa-truck-arrow-right",
       },
     ],
   },
@@ -548,6 +554,7 @@ const userRolesData = [
         icon: "fa-solid fa-circle-info",
         notification: true,
       },
+      
       {
         id: 75,
         name: "Career",
@@ -559,6 +566,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 77
+// last routes is 78
 
 export default userRolesData;

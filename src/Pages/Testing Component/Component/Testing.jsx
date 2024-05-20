@@ -93,17 +93,17 @@ const Note = styled.div`
 
 const Marquee = styled.div`
   display: flex;
-  width: 1200px;
+  width: 100vw;
   overflow: hidden;
   user-select: none;
 
-  // mask-image: linear-gradient(
-  //   to right,
-  //   hsl(0 0% 0% / 0),
-  //   hsl(0 0% 0% / 1) 10%,
-  //   hsl(0 0% 0% / 1) 90%,
-  //   hsl(0 0% 0% / 0)
-  // );
+  mask-image: linear-gradient(
+    to right,
+    hsl(0 0% 0% / 0),
+    hsl(0 0% 0% / 1) 10%,
+    hsl(0 0% 0% / 1) 90%,
+    hsl(0 0% 0% / 0)
+  );
 `;
 
 const scrollX = keyframes`
