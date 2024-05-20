@@ -8,11 +8,16 @@ import {
   Typography,
   TextField,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 import React, { useState } from "react";
 import axios from "axios";
+import { useAddClientMutation } from "../../../features/api/clientAndShipmentApiSlice";
+import { toast } from "react-toastify";
 
-const AddSingleClientDial = ({ open, setOpen }) => {
+const AddSingleClientDial = ({ open, setOpen, refetch }) => {
+  // api calling
+  const [addClient, { isLoading }] = useAddClientMutation();
   // local state
   const [form, setForm] = useState({
     CompanyName: "",
@@ -21,7 +26,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
     Email: "",
     GST: "",
     Pincode: "",
-    City: "",
+    Country: "",
     State: "",
     District: "",
     Address: "",
@@ -32,7 +37,8 @@ const AddSingleClientDial = ({ open, setOpen }) => {
     EmailError: false,
     GSTError: false,
   });
-  // onchange functtion
+  
+  // onchange function
   const handleChange = (e) => {
     let helperText = "";
     const { name, value } = e.target;
@@ -41,7 +47,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
       ...prevError,
       [`${name}Error`]: false,
     }));
-  
+
     if (name === "Contact") {
       if (value.length !== 10) {
         setError((prevError) => ({
@@ -51,8 +57,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
         helperText = "Contact number should be 10 digits";
       }
     }
-  
-    // Validation for GST
+
     if (name === "GST") {
       if (value.length !== 16) {
         setError((prevError) => ({
@@ -62,8 +67,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
         helperText = "GSTIN should be 16 digits";
       }
     }
-  
-    // Validation for Email
+
     if (name === "Email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
@@ -74,12 +78,12 @@ const AddSingleClientDial = ({ open, setOpen }) => {
         helperText = "Enter a valid email address";
       }
     }
-  
+
     if (name === "Pincode") {
       if (value.length === 0) {
         setForm((prevForm) => ({
           ...prevForm,
-          City: "",
+          Country: "",
           State: "",
           District: "",
         }));
@@ -99,7 +103,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
                 const postOffice = data.PostOffice[0];
                 setForm((prevForm) => ({
                   ...prevForm,
-                  City: postOffice.Name,
+                  Country: postOffice.Country,
                   State: postOffice.State,
                   District: postOffice.District,
                 }));
@@ -120,11 +124,51 @@ const AddSingleClientDial = ({ open, setOpen }) => {
   };
 
   // submit function
-  const handleSubmit = () => {
-    if (!form.CompanyName || !form.GST || !form.Address)
+  const handleSubmit = async () => {
+    if (!form.Email || !form.Contact || !form.ContactName || !form.Pincode)
       return toast.error("Plz Fill the Form Before Submitting");
+
     try {
-    } catch (e) {}
+      const info = {
+        datas: [
+          {
+            CompanyName: form.CompanyName,
+            ContactNumber: form.Contact,
+            ContactName: form.ContactName,
+            Email: form.Email,
+            PermanentAddress: {
+              Pincode: form.Pincode,
+              District: form.District,
+              State: form.State,
+              Country: form.Country,
+              Address: form.Address,
+            },
+            GSTIN: form.GST,
+          },
+        ],
+      };
+
+      const result = await addClient(info).unwrap();
+      refetch();
+      setForm({
+        CompanyName: "",
+        Contact: "",
+        ContactName: "",
+        Email: "",
+        GST: "",
+        Pincode: "",
+        Country: "",
+        State: "",
+        District: "",
+        Address: "",
+        helperText: "",
+      });
+      setOpen(false);
+      setError({ ContactError: false, EmailError: false, GSTError: false });
+      toast.success("Client added successfully");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -181,6 +225,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             label="Enter Email"
             type="email"
             name="Email"
+            required
             value={form.Email}
             onChange={(e) => handleChange(e)}
             error={error.EmailError}
@@ -215,19 +260,9 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             <Grid item xs={6}>
               <TextField
                 sx={{ textAlign: "center" }}
-                label="Enter City"
-                fullWidth
-                name="City"
-                value={form.City}
-                onChange={(e) => handleChange(e)}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                sx={{ textAlign: "center" }}
                 label="Enter District"
                 fullWidth
-                name="Districe"
+                name="District"
                 value={form.District}
                 onChange={(e) => handleChange(e)}
               />
@@ -239,6 +274,16 @@ const AddSingleClientDial = ({ open, setOpen }) => {
                 fullWidth
                 name="State"
                 value={form.State}
+                onChange={(e) => handleChange(e)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                sx={{ textAlign: "center" }}
+                label="Enter Country"
+                fullWidth
+                name="Country"
+                value={form.Country}
                 onChange={(e) => handleChange(e)}
               />
             </Grid>
@@ -256,8 +301,12 @@ const AddSingleClientDial = ({ open, setOpen }) => {
         </Box>
       </DialogContent>
       <DialogActions sx={{ display: "flex", justifyContent: "space-around" }}>
-        <Button variant="contained" onClick={() => handleSubmit()}>
-          Add
+        <Button
+          variant="contained"
+          onClick={() => handleSubmit()}
+          disabled={isLoading}
+        >
+          {isLoading ? <CircularProgress /> : "ADD"}
         </Button>
         <Button variant="contained" onClick={() => setOpen(false)}>
           Close
