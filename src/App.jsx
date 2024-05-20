@@ -136,9 +136,13 @@ import IrsConnect from "../public/chatlog.png";
 import Drive from "./Pages/G_Drive/Drive";
 import { RuleSharp } from "@mui/icons-material";
 import CareerDetails from "./Pages/Careers/CareerDetails";
+<<<<<<< HEAD
+import TestingComponent from "./Pages/Testing Component/TestingComponent";
+=======
 import AddClient from "./Pages/PackagingAndClient/Components/AddClient";
 import Client from "./Pages/PackagingAndClient/Client";
 import BulkAddClient from "./Pages/PackagingAndClient/Components/BulkAddClient";
+>>>>>>> 6dc8dfc078974d60b390e1ed66149bffba27b00c
 
 function App() {
   /// initialize
@@ -417,7 +421,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <Suspense fallback={<Loading />}>
             <Routes>
-              <Route path="/testing" element={<Testing />} />
+ 
               <Route
                 path="/login"
                 element={<Login registrationToken={registrationToken} />}
@@ -802,7 +806,6 @@ function App() {
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
                 {/* Careers */}
-
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
               </Route>
