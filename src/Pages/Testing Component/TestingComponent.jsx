@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Box, styled } from '@mui/material';
 import Testing from './Component/Testing';
-import Testing2 from './Component/Testing2';
+
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -21,7 +21,7 @@ const TestingComponent = () => {
     >
       <DrawerHeader />
       {/* <Testing /> */}
-      <Testing2 />
+      <Testing/>
     </Box>
   );
 };
