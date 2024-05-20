@@ -10,6 +10,7 @@ import {
   Grid,
 } from "@mui/material";
 import React, { useState } from "react";
+import axios from "axios";
 
 const AddSingleClientDial = ({ open, setOpen }) => {
   // local state
@@ -24,15 +25,99 @@ const AddSingleClientDial = ({ open, setOpen }) => {
     State: "",
     District: "",
     Address: "",
+    helperText: "",
   });
- 
+  const [error, setError] = useState({
+    ContactError: false,
+    EmailError: false,
+    GSTError: false,
+  });
   // onchange functtion
   const handleChange = (e) => {
+    let helperText = "";
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
 
- 
+    setError((prevError) => ({
+      ...prevError,
+      [`${name}Error`]: false,
+    }));
+  
+    if (name === "Contact") {
+      if (value.length !== 10) {
+        setError((prevError) => ({
+          ...prevError,
+          ContactError: true,
+        }));
+        helperText = "Contact number should be 10 digits";
+      }
+    }
+  
+    // Validation for GST
+    if (name === "GST") {
+      if (value.length !== 16) {
+        setError((prevError) => ({
+          ...prevError,
+          GSTError: true,
+        }));
+        helperText = "GSTIN should be 16 digits";
+      }
+    }
+  
+    // Validation for Email
+    if (name === "Email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        setError((prevError) => ({
+          ...prevError,
+          EmailError: true,
+        }));
+        helperText = "Enter a valid email address";
+      }
+    }
+  
+    if (name === "Pincode") {
+      if (value.length === 0) {
+        setForm((prevForm) => ({
+          ...prevForm,
+          City: "",
+          State: "",
+          District: "",
+        }));
+      } else if (value.length === 6) {
+        const fetchPincodeDetails = async (pincode) => {
+          try {
+            const response = await axios.get(
+              `https://api.postalpincode.in/pincode/${pincode}`
+            );
+            if (
+              response.status === 200 &&
+              response.data &&
+              response.data.length > 0
+            ) {
+              const data = response.data[0];
+              if (data.PostOffice && data.PostOffice.length > 0) {
+                const postOffice = data.PostOffice[0];
+                setForm((prevForm) => ({
+                  ...prevForm,
+                  City: postOffice.Name,
+                  State: postOffice.State,
+                  District: postOffice.District,
+                }));
+              } else {
+                console.log("Pincode Details not found");
+              }
+            } else {
+              console.log("No data received from the API");
+            }
+          } catch (error) {
+            console.error("Error:", error.message);
+          }
+        };
+        fetchPincodeDetails(value);
+      }
+    }
+    setForm((prev) => ({ ...prev, [name]: value, helperText }));
+  };
 
   // submit function
   const handleSubmit = () => {
@@ -55,13 +140,16 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            // width: "30rem",
+            mt: "6px",
           }}
+          autoComplete="off"
+          component="form"
+          noValidate
         >
           <TextField
             variant="outlined"
             fullWidth
-            placeholder="Enter Company Name"
+            label="Enter Company Name"
             name="CompanyName"
             required
             value={form.CompanyName}
@@ -70,7 +158,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
           <TextField
             variant="outlined"
             fullWidth
-            placeholder="Enter Contact Name"
+            label="Enter Contact Name"
             name="ContactName"
             required
             value={form.ContactName}
@@ -79,27 +167,35 @@ const AddSingleClientDial = ({ open, setOpen }) => {
           <TextField
             variant="outlined"
             fullWidth
-            placeholder="Enter Contact"
+            label="Enter Contact"
             name="Contact"
             value={form.Contact}
+            type="number"
+            error={error.ContactError}
+            helperText={form.helperText}
             onChange={(e) => handleChange(e)}
           />
           <TextField
             variant="outlined"
             fullWidth
-            placeholder="Enter Email"
+            label="Enter Email"
+            type="email"
             name="Email"
             value={form.Email}
             onChange={(e) => handleChange(e)}
+            error={error.EmailError}
+            helperText={form.helperText}
           />
           <TextField
             variant="outlined"
             fullWidth
-            placeholder="Enter GSTIN"
+            label="Enter GSTIN"
             required
             name="GST"
             value={form.GST}
             onChange={(e) => handleChange(e)}
+            error={error.GSTError}
+            helperText={form.helperText}
           />
           <Typography sx={{ textAlign: "center", fontWeight: "bold" }}>
             Add Address
@@ -109,7 +205,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
               <TextField
                 sx={{ textAlign: "center" }}
                 type="number"
-                placeholder="Enter Pincode"
+                label="Enter Pincode"
                 fullWidth
                 name="Pincode"
                 value={form.Pincode}
@@ -119,7 +215,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             <Grid item xs={6}>
               <TextField
                 sx={{ textAlign: "center" }}
-                placeholder="Enter City"
+                label="Enter City"
                 fullWidth
                 name="City"
                 value={form.City}
@@ -129,7 +225,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             <Grid item xs={6}>
               <TextField
                 sx={{ textAlign: "center" }}
-                placeholder="Enter District"
+                label="Enter District"
                 fullWidth
                 name="Districe"
                 value={form.District}
@@ -139,7 +235,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             <Grid item xs={6}>
               <TextField
                 sx={{ textAlign: "center" }}
-                placeholder="Enter State"
+                label="Enter State"
                 fullWidth
                 name="State"
                 value={form.State}
@@ -149,7 +245,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             <Grid item xs={12}>
               <TextField
                 sx={{ textAlign: "center" }}
-                placeholder="Enter Address"
+                label="Enter Address"
                 fullWidth
                 name="Address"
                 value={form.Address}
