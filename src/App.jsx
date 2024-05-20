@@ -136,7 +136,13 @@ import IrsConnect from "../public/chatlog.png";
 import Drive from "./Pages/G_Drive/Drive";
 import { RuleSharp } from "@mui/icons-material";
 import CareerDetails from "./Pages/Careers/CareerDetails";
+<<<<<<< HEAD
 import TestingComponent from "./Pages/Testing Component/TestingComponent";
+=======
+import AddClient from "./Pages/PackagingAndClient/Components/AddClient";
+import Client from "./Pages/PackagingAndClient/Client";
+import BulkAddClient from "./Pages/PackagingAndClient/Components/BulkAddClient";
+>>>>>>> 6dc8dfc078974d60b390e1ed66149bffba27b00c
 
 function App() {
   /// initialize
@@ -296,9 +302,9 @@ function App() {
           "/chat"
         );
       });
-      socket.on("onTypingMessage",(data) => {
-      dispatch(addChatTyping(data))
-      })
+      socket.on("onTypingMessage", (data) => {
+        dispatch(addChatTyping(data));
+      });
     }
 
     return () => {
@@ -644,6 +650,8 @@ function App() {
                   path="/OrderSelection/:id"
                   element={<OneRestockOrder />}
                 />
+                <Route path="/addClient" element={<Client />} />
+                <Route path="/bulkAdd" element={<BulkAddClient />} />
                 <Route
                   path="/OverseasOrderlist/:id"
                   element={<OverSeasOrderProductGrid />}
@@ -798,7 +806,6 @@ function App() {
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
                 {/* Careers */}
-                <Route path="/testing" element={<TestingComponent />} />
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
               </Route>

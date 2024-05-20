@@ -201,6 +201,12 @@ const userRolesData = [
         path: "/ProformaDetails",
         icon: "fa fa-list",
       },
+      {
+        id: 77,
+        name: "Add Clients",
+        path: "/addClient",
+        icon: "fa-solid fa-user-plus",
+      },
     ],
   },
   {
@@ -553,6 +559,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 76
+// last routes is 77
 
 export default userRolesData;

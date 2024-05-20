@@ -20,6 +20,10 @@ import Toolbar from "@mui/material/Toolbar";
 import { formatDateForWhatsApp } from "../../../commonFunctions/commonFunctions";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { toast } from "react-toastify";
+import whatsImage from "../../../../public/ChatBackground.jpeg";
+import frontImage from "../../../../public/FrontChat.png";
+import MoodIcon from "@mui/icons-material/Mood";
+import EmojiPicker from "emoji-picker-react";
 // import ToolbarItem from '@mui/material/ToolbarItem';
 
 const CreateChat = () => {
@@ -59,6 +63,8 @@ const CreateChat = () => {
   const [acceptCall, setAcceptCall] = useState(false);
   const [connectedTo, setConnectedTo] = useState(null);
   const [typing, setTyping] = useState("");
+  const [emoji, setEmoji] = useState(false);
+  const [emojiData, setEmojiData] = useState("");
 
   // setting redux message which is live text data to local state
   useEffect(() => {
@@ -74,25 +80,26 @@ const CreateChat = () => {
 
   useEffect(() => {
     let typingTimeout;
-  
+
     if (singleUserData) {
-      const filterData = typingData.filter(data => data.senderId === singleUserData.adminId && data.message === 'Typing...');
+      const filterData = typingData.filter(
+        (data) =>
+          data.senderId === singleUserData.adminId &&
+          data.message === "Typing..."
+      );
       if (filterData.length > 0) {
         setTyping("Typing...");
-        clearTimeout(typingTimeout); 
+        clearTimeout(typingTimeout);
         typingTimeout = setTimeout(() => {
-          setTyping(""); 
-        }, 1000); 
+          setTyping("");
+        }, 1000);
       } else {
-        setTyping(""); 
+        setTyping("");
       }
     }
-  
+
     return () => clearTimeout(typingTimeout);
   }, [typingData]);
-  
-  
-  
 
   // rtk query calling
   const { data: allUsers } = useGetAllUsersQuery();
@@ -138,29 +145,29 @@ const CreateChat = () => {
     }
   };
 
-  const handleDownLoadFile = async(url) =>{
+  const handleDownLoadFile = async (url) => {
     try {
-      const urlArray = url.split('/');
+      const urlArray = url.split("/");
       const fileName = urlArray.pop();
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute('download', fileName); 
-  
+      link.setAttribute("download", fileName);
+
       document.body.appendChild(link);
       link.click();
-  
+
       document.body.removeChild(link);
       URL.revokeObjectURL(blobUrl);
-  
+
       toast.success("File downloaded successfully");
     } catch (error) {
-      console.error('Error downloading file:', error);
+      console.error("Error downloading file:", error);
       toast.error("Error downloading file");
     }
-  }
+  };
   // for like when user comes to chat then the div scroll down to bottom
   // useEffect(() => {
   //   messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
@@ -291,6 +298,18 @@ const CreateChat = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleClickOnDiv = () => {
+    if (emoji || selectedImage) {
+      setEmoji(false), setSelectedImage(null);
+    }
+  };
+
+  const handleEmojiClick = (data) => {
+    setEmojiData(data.emoji);
+    setMessage(message + data.emoji);
+    setEmoji(false);
   };
 
   // this are the webrtc methods and functions for calls which is getting shutdown because of microphone problems
@@ -425,21 +444,24 @@ const CreateChat = () => {
   return (
     <Box
       sx={{
-        height: "91vh",
-        width: "95%",
+        height: "87vh",
+        width: "98%",
         mt: "10px",
         border: "0.2px solid grey",
         borderRadius: "10px",
-        background: "#eceff1",
+        background: "#fefefe",
         boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+        overflow: "hidden",
       }}
     >
+      {/* header */}
       <Box
         sx={{
           display: "flex",
-          gap: "22%",
-          height: "50px",
-          padding: "2px",
+          alignItems: "center",
+          height: "7%",
+          gap: "20%",
+          borderBottom: "0.2px solid #eee",
         }}
       >
         <span
@@ -447,8 +469,10 @@ const CreateChat = () => {
             fontFamily: "cursive",
             padding: "15px",
             fontWeight: "bold",
+            cursor: "pointer",
             // color: " rgb(138, 43, 226)",
           }}
+          onClick={() => setSingleUserData()}
         >
           IRS-Chat
         </span>
@@ -465,55 +489,65 @@ const CreateChat = () => {
           )} */}
         {/* {myStream && <audio controls autoPlay srcObject={myStream}></audio>} */}
         {singleUserData && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ display: "flex" }}>
+          <div>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <div
+                style={{
+                  height: "45px",
+                  width: "45px",
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                }}
+              >
                 <img
-                  src={noImage}
+                  src={singleUserData?.profileImage?.url || noImage}
                   style={{
-                    height: "40px",
-                    width: "40px",
-                    borderRadius: "20px",
+                    height: "100%",
+                    width: "100%",
+                    objectFit: "cover",
                   }}
-                  alt=""
                 ></img>
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span>{singleUserData?.name}</span>
-                  <span style={{ color: `${online ? "blue" : "red"}` }}>
-                    {typing || (online ? "Online" : "Offline")}
-                  </span>
-                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <span>{singleUserData?.name}</span>
+                <span
+                  style={{
+                    color: `${online ? "blue" : typing ? "grey" : "red"}`,
+                  }}
+                >
+                  {typing || (online ? "Online" : "Offline")}
+                </span>
               </div>
             </div>
             {/* <div
-              style={{ marginLeft: "300px", cursor: "pointer" }}
-              onClick={() =>
-                handleCallRequest({
-                  senderId: adminId,
-                  receiverId: singleUserData?.adminId,
-                })
-              }
-            >
-              <CallIcon />
-            </div> */}
+          //   style={{ marginLeft: "300px", cursor: "pointer" }}
+          //   onClick={() =>
+          //     handleCallRequest({
+          //       senderId: adminId,
+          //       receiverId: singleUserData?.adminId,
+          //     })
+          //   }
+          // >
+          //   <CallIcon />
+          // </div> */}
           </div>
         )}
       </Box>
       {/* to show the users */}
-      <Box sx={{ display: "flex" }}>
-        <Box sx={{ height: "100%", width: "25%", overflowY: "auto" }}>
+      <Box sx={{ display: "flex", height: "93%" }}>
+        <Box
+          sx={{
+            height: "100%",
+            width: "25%",
+            overflowY: "auto",
+            overflowX: "hidden",
+            borderRight: "0.2px solid #eeee",
+            "&::-webkit-scrollbar": {
+              width: "2px",
+            },
+          }}
+        >
           {Array.isArray(allUsers?.data) &&
             allUsers?.data.map((docs, i) => {
               const isAdminUser = docs.adminId === adminId;
@@ -524,25 +558,24 @@ const CreateChat = () => {
                   style={{
                     display: "flex",
                     gap: "10px",
-                    padding: "3px",
                     margin: "2px",
+                    padding: "6px",
                     cursor: "pointer",
+                    width: "99%",
                     position: "relative",
-                    boxShadow:
-                      "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+                    borderRadius: "5px",
                     background: `${
-                      singleUserData?._id === docs._id ? "#b0bec5" : ""
+                      singleUserData?._id === docs._id ? "#e0e0e0" : "#fff"
                     }`,
                   }}
                   key={i}
                   onClick={() => handleOnClickUser(docs)}
                 >
                   <img
-                    src={noImage}
+                    src={docs?.profileImage?.url || noImage}
                     style={{
                       height: "40px",
                       width: "40px",
-                      // border: "1px solid green",
                       borderRadius: "20px",
                     }}
                     alt=""
@@ -565,6 +598,8 @@ const CreateChat = () => {
                       <span
                         style={{
                           color: `${userName === "You" ? "green" : ""}`,
+                          fontWeight: "bolder",
+                          opacity: "0.8",
                         }}
                       >
                         {userName}
@@ -590,7 +625,7 @@ const CreateChat = () => {
                         marginRight: "7px",
                       }}
                     >
-                      <span>{docs.ContactNo}</span>
+                      <span style={{ opacity: "0.7" }}>{docs.ContactNo}</span>
                       {messageCountsBySender &&
                         messageCountsBySender[docs?.adminId] && (
                           <span
@@ -598,7 +633,7 @@ const CreateChat = () => {
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
-                              background: "green",
+                              background: "#1daa61",
                               height: "20px",
                               width: "20px",
                               borderRadius: 50,
@@ -621,9 +656,11 @@ const CreateChat = () => {
           <Box
             sx={{
               width: "75%",
-              height: "84.8vh",
+              height: "100%",
               display: "flex",
-              backgroundColor: "#cfd8dc",
+              backgroundImage: `url(${whatsImage})`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
               flexDirection: "column",
             }}
           >
@@ -641,6 +678,7 @@ const CreateChat = () => {
                 },
               }}
               ref={messagesEndRef}
+              onClick={() => handleClickOnDiv()}
             >
               <Box
                 sx={{
@@ -691,7 +729,7 @@ const CreateChat = () => {
                                 ? "polygon(100% 0, 0 0, 0 100%)"
                                 : "polygon(100% 0, 0 0, 100% 100%)",
                             background:
-                              msg.SenderId === adminId ? "#dcf8c6" : "#fff",
+                              msg.SenderId === adminId ? "#d9fdd3" : "#fff",
                           }}
                         ></div>
                         <div
@@ -699,7 +737,7 @@ const CreateChat = () => {
                             display: "inline-block",
                             padding: "8px",
                             background:
-                              msg.SenderId === adminId ? "#dcf8c6" : "#fff",
+                              msg.SenderId === adminId ? "#d9fdd3" : "#fff",
                             borderRadius:
                               msg.SenderId === adminId
                                 ? "8px 0px 8px 8px"
@@ -711,8 +749,12 @@ const CreateChat = () => {
                             <div
                               style={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "end",
+                                maxWidth: "35rem",
+                                flexWrap: "wrap",
                                 gap: "20px",
+                                padding: "0px 10px",
+                                textAlign: "start",
                               }}
                             >
                               <p>{msg.Content.message}</p>
@@ -720,6 +762,7 @@ const CreateChat = () => {
                                 style={{
                                   marginTop: "10px",
                                   display: "flex",
+
                                   alignItems: "center",
                                   gap: "2px",
                                 }}
@@ -735,7 +778,7 @@ const CreateChat = () => {
                                   style={{
                                     color: `${
                                       msg.Visibility === "seen"
-                                        ? "blue"
+                                        ? "#1d8df6"
                                         : "gray"
                                     }`,
                                   }}
@@ -760,9 +803,11 @@ const CreateChat = () => {
                                   maxWidth: "250px",
                                   height: "auto",
                                   display: "block",
-                                  cursor:"pointer"
+                                  cursor: "pointer",
                                 }}
-                                onDoubleClick={() => handleDownLoadFile(msg?.Content?.url)}
+                                onDoubleClick={() =>
+                                  handleDownLoadFile(msg?.Content?.url)
+                                }
                               />
                               <div
                                 style={{
@@ -783,7 +828,7 @@ const CreateChat = () => {
                                   style={{
                                     color: `${
                                       msg.Visibility === "seen"
-                                        ? "blue"
+                                        ? "#1d8df6"
                                         : "gray"
                                     }`,
                                   }}
@@ -807,10 +852,40 @@ const CreateChat = () => {
               style={{
                 height: "42px",
                 padding: "3px",
-                background: "white",
+                background: "#fcfcfc",
+                // border:"1px solid"
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "6px",
+                }}
+              >
+                <div
+                  style={{ marginTop: "4px", cursor: "pointer" }}
+                  onClick={() => setEmoji(!emoji)}
+                >
+                  <MoodIcon />
+                </div>
+                <div style={{ position: "relative" }}>
+                  {emoji && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "60px",
+                        zIndex: 1,
+                        left: "-50px",
+                      }}
+                    >
+                      <EmojiPicker
+                        onEmojiClick={(emojiData) =>
+                          handleEmojiClick(emojiData)
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
                 <div style={{ position: "relative" }}>
                   {selectedImage && (
                     <Box
@@ -898,7 +973,7 @@ const CreateChat = () => {
               width: "75%",
               height: "84.8vh",
               display: "flex",
-              backgroundColor: "#fff",
+              backgroundColor: "#f0ebe3",
               justifyContent: "center",
               // flexDirection: "column",
               alignItems: "center",
@@ -906,8 +981,8 @@ const CreateChat = () => {
           >
             <div>
               <img
-                src={chatLogo}
-                style={{ height: "300px", width: "300px" }}
+                src={frontImage}
+                style={{ height: "700px", width: "700px" }}
               ></img>
             </div>
           </Box>
