@@ -543,6 +543,9 @@ const CreateChat = () => {
             overflowY: "auto",
             overflowX: "hidden",
             borderRight: "0.2px solid #eeee",
+            "&::-webkit-scrollbar": {
+              width: "2px",
+            },
           }}
         >
           {Array.isArray(allUsers?.data) &&

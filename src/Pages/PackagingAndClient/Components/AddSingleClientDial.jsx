@@ -5,7 +5,9 @@ import {
   DialogActions,
   DialogTitle,
   DialogContent,
+  Typography,
   TextField,
+  Grid,
 } from "@mui/material";
 import React, { useState } from "react";
 
@@ -17,13 +19,20 @@ const AddSingleClientDial = ({ open, setOpen }) => {
     ContactName: "",
     Email: "",
     GST: "",
+    Pincode: "",
+    City: "",
+    State: "",
+    District: "",
     Address: "",
   });
+ 
   // onchange functtion
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
+
+ 
 
   // submit function
   const handleSubmit = () => {
@@ -46,7 +55,7 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            width: "30rem",
+            // width: "30rem",
           }}
         >
           <TextField
@@ -92,15 +101,62 @@ const AddSingleClientDial = ({ open, setOpen }) => {
             value={form.GST}
             onChange={(e) => handleChange(e)}
           />
-          <TextField
-            variant="outlined"
-            fullWidth
-            placeholder="Enter Address"
-            name="Address"
-            required
-            value={form.Address}
-            onChange={(e) => handleChange(e)}
-          />
+          <Typography sx={{ textAlign: "center", fontWeight: "bold" }}>
+            Add Address
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                sx={{ textAlign: "center" }}
+                type="number"
+                placeholder="Enter Pincode"
+                fullWidth
+                name="Pincode"
+                value={form.Pincode}
+                onChange={(e) => handleChange(e)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                sx={{ textAlign: "center" }}
+                placeholder="Enter City"
+                fullWidth
+                name="City"
+                value={form.City}
+                onChange={(e) => handleChange(e)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                sx={{ textAlign: "center" }}
+                placeholder="Enter District"
+                fullWidth
+                name="Districe"
+                value={form.District}
+                onChange={(e) => handleChange(e)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                sx={{ textAlign: "center" }}
+                placeholder="Enter State"
+                fullWidth
+                name="State"
+                value={form.State}
+                onChange={(e) => handleChange(e)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                sx={{ textAlign: "center" }}
+                placeholder="Enter Address"
+                fullWidth
+                name="Address"
+                value={form.Address}
+                onChange={(e) => handleChange(e)}
+              />
+            </Grid>
+          </Grid>
         </Box>
       </DialogContent>
       <DialogActions sx={{ display: "flex", justifyContent: "space-around" }}>

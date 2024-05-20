@@ -298,9 +298,9 @@ function App() {
           "/chat"
         );
       });
-      socket.on("onTypingMessage",(data) => {
-      dispatch(addChatTyping(data))
-      })
+      socket.on("onTypingMessage", (data) => {
+        dispatch(addChatTyping(data));
+      });
     }
 
     return () => {
@@ -646,14 +646,8 @@ function App() {
                   path="/OrderSelection/:id"
                   element={<OneRestockOrder />}
                 />
-                <Route
-                  path="/addClient"
-                  element={<Client/>}
-                />
-                <Route
-                  path="/bulkAdd"
-                  element={<BulkAddClient/>}
-                />
+                <Route path="/addClient" element={<Client />} />
+                <Route path="/bulkAdd" element={<BulkAddClient />} />
                 <Route
                   path="/OverseasOrderlist/:id"
                   element={<OverSeasOrderProductGrid />}
@@ -808,7 +802,7 @@ function App() {
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
                 {/* Careers */}
-                
+
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
               </Route>
