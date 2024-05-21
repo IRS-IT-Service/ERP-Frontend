@@ -96,6 +96,7 @@ const Marquee = styled.div`
   width: 1200px;
   overflow: hidden;
   user-select: none;
+  border:2px solid red;
 
   // mask-image: linear-gradient(
   //   to right,
@@ -139,6 +140,7 @@ const ImageGroup = styled.div`
   place-items: center;
   width: clamp(10rem, 1rem + 40vmin, 30rem);
   padding: calc(clamp(10rem, 1rem + 30vmin, 30rem) / 10);
+
 `;
 
 const Image = styled.img`
