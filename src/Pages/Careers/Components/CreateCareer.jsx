@@ -11,8 +11,6 @@ import {
   useGetCareersQuery,
 } from "../../../features/api/otherSlice";
 import { toast } from "react-toastify";
-import { DataGrid } from "@mui/x-data-grid";
-import { Fullscreen } from "@mui/icons-material";
 
 const CreateCareer = () => {
   const [addData, { isLoading }] = useAddCareerMutation();
