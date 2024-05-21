@@ -18,8 +18,6 @@ import {
   styled,
   InputAdornment,
   Autocomplete,
-  
-
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -35,11 +33,7 @@ const columns = [
   { field: "Brand", headerName: "Brand" },
   { field: "GST", headerName: "GST (%)" },
   { field: "InStock", headerName: "In Store" },
-  { field: "R&DStock", headerName: "New Parts" },
-  { field: "Old", headerName: "Old Parts" },
-  { field: "Require QTY", headerName: "Require QTY" },
-  { field: "UseOld", headerName: "Use Old Parts" },
-  { field: "NewQty", headerName: "New Qty" },
+ { field: "Require QTY", headerName: "Require QTY" },
   { field: "Delete", headerName: "Remove" },
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -67,7 +61,7 @@ import {
   useGetSingleProjectQuery,
 } from "../../../features/api/RnDSlice";
 import { useNavigate } from "react-router-dom";
-import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
+
 const AddshipmentDial = ({
   data,
   removeSelectedItems,
@@ -94,8 +88,8 @@ const AddshipmentDial = ({
 
   const [Requireqty, setRequireqty] = useState([]);
   const [preOrder, setPreorder] = useState(null);
-  const [Newqty, setNewqty] = useState({});
-  const [Oldqty, setOldqty] = useState({});
+  const [qty, setQty] = useState({});
+  const [finalData, setFinalData] = useState([{}]);
   const [FinalPreorder, setFinalPreorder] = useState({});
 
   /// rtk query
@@ -122,9 +116,6 @@ const AddshipmentDial = ({
     setRequireqty(newData);
   }, [setOpen, open]);
 
-  useEffect(() => {
-    dispatch(setAddparts(Requireqty));
-  }, [setNewqty, Newqty, setOldqty, Oldqty]);
 
   //Reset value after delete elements
   useEffect(() => {
@@ -143,47 +134,39 @@ const AddshipmentDial = ({
 
   const handleQuantityChange = (event, item) => {
     const { value, name } = event.target;
-    let error = ''; 
+    let error = false;
+
   
-    if (name === "reqQTY") {
-      setNewqty({ ...Newqty, [item.SKU]: value });
-    } else if (name === "Oldparts") {
-      if (value > item.OldQty) {
-        error = 'Enter a value less than or equal to Old Qty';
-      } else {
-        setOldqty({ ...Oldqty, [item.SKU]: value });
-      }
-    }
-  
-    const result = Requireqty.map((doc) => {
-      if (doc.SKU === item.SKU) {
-        if (name === "reqQTY") {
-          return {
-            ...doc,
-            RequireQty: +value,
-          };
-        } else if (name === "Oldparts") {
-          return {
-            ...doc,
-            OldQty: +value,
-            error: error 
-          };
-        }
-      }
-      return doc;
-    });
-  
-    setRequireqty(result);
+      setQty({ ...qty, [item.SKU]: value });
+      setRequireqty((prev)=>{
+        return prev.map((data) => {
+          if (data.SKU === item.SKU) {
+            if(value > item.Quantity) {
+              error = true;
+            }
+            
+            return {
+             ...data,
+              Qty: value,
+          error:error
+            };
+          }
+          return data;
+        });
+      })
+    
+
+
+
   };
-  
-  
-  
-  
+
+
+  console.log(Requireqty)
   useEffect(() => {
     return () => {
       removeSelectedItems([]);
-      setNewqty({});
-      setOldqty({});
+    
+
       setPreorder();
       setRequireqty([]);
     };
@@ -193,12 +176,12 @@ const AddshipmentDial = ({
   const handleSubmit = async () => {
     try {
       const requestData = Requireqty.filter((item) => item.Quantity);
-       console.log(Requireqty)
+      console.log(Requireqty);
       let info = {
         id: id,
         items: Requireqty,
       };
-      console.log(info)
+      console.log(info);
       const filterData = requestData.filter((item) => item.error > 0);
       if (filterData.length > 0) return toast.error("Missing Require Quantiy");
       const result = await addProjectItems(info).unwrap();
@@ -256,128 +239,166 @@ const AddshipmentDial = ({
 
         <DialogContent>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Grid container spacing={2} >
-                <Grid item xs={7} sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap:"10px",
-                 
-  
-                }}>
-            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
-              Company Name {" "}
-     
-            </Typography>
-            <TextField   autocomplete={false}
-                          size="small"
-                          sx={{
-                            "& input": {
-                              height: "20px",
-                            width: "46rem",
-                            },
-                   
-                          }}
-                          name="reqQTY"
-                        //   value={Newqty[item.SKU]}
-                          type="number"
-                          onChange={(event) => {
-                            // handleQuantityChange(event, item);
-                          }} />
+            <Grid container spacing={2}>
+              <Grid
+                item
+                xs={5}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
+                  Company Name{" "}
+                </Typography>
+                <Autocomplete
+                style={{
+                  width: "80%",
+                  backgroundColor: "rgba(255, 255, 255)",
+                }}
+                options={data?.data || []}
+                getOptionLabel={(option) => option.ModelName}
+                // onChange={handleSelectedChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select"
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                    }}
+                    size="small"
+                  />
+                )}
+              />
+            
+              </Grid>
+              <Grid
+                item
+                xs={3.5}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "10px",
+      
+                }}
+              >
+                <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
+                  Contact person{" "}
+                </Typography>
+                <Autocomplete
+                style={{
+                  width: "75%",
+                  backgroundColor: "rgba(255, 255, 255)",
+                }}
+                options={data?.data || []}
+                getOptionLabel={(option) => option.ModelName}
+                // onChange={handleSelectedChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select"
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                    }}
+                    size="small"
+                  />
+                )}
+              />
+              </Grid>
+              <Grid
+                item
+                xs={3.5}
+                sx={{
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                  gap: "10px",
+           
+                }}
+              >
+                <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
+                  Upload Invoice{" "}
+                </Typography>
+                <input
+                  name="reqQTY"
+                  type="file"
+                  //   value={Newqty[item.SKU]}
+            
+                  onChange={(event) => {
+                    // handleQuantityChange(event, item);
+                  }}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                sx={{
+                  display: "flex",
+                  justifyContent: "start",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
+                  Billing Address{" "}
+                </Typography>
+                <Autocomplete
+                style={{
+                  width: "50%",
+                  backgroundColor: "rgba(255, 255, 255)",
+                }}
+                options={data?.data || []}
+                getOptionLabel={(option) => option.ModelName}
+                // onChange={handleSelectedChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select"
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                    }}
+                    size="small"
+                  />
+                )}
+              />
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                sx={{
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
+                  Shipping Address{" "}
+                </Typography>
+                <Autocomplete
+                style={{
+                  width: "50%",
+                  backgroundColor: "rgba(255, 255, 255)",
+                }}
+                options={data?.data || []}
+                getOptionLabel={(option) => option.ModelName}
+                // onChange={handleSelectedChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select"
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                    }}
+                    size="small"
+                  />
+                )}
+              />
+              </Grid>
             </Grid>
-            <Grid item xs={3} sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap:"10px",
-         
-  
-                }}>
-            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
-              Contact person {" "}
-     
-            </Typography>
-            <TextField   autocomplete={false}
-                          size="small"
-                          sx={{
-                            "& input": {
-                              height: "20px",
-                            width: "14rem",
-                            },
-                          }}
-                          name="reqQTY"
-                        //   value={Newqty[item.SKU]}
-                          type="number"
-                          onChange={(event) => {
-                            // handleQuantityChange(event, item);
-                          }} />
-            </Grid>
-            <Grid item xs={2} sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap:"10px",
-               
-  
-                }}>
-            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
-              Invoice No {" "}
-     
-            </Typography>
-            <TextField   autocomplete={false}
-                          size="small"
-                          sx={{
-                            "& input": {
-                              height: "20px",
-                            width: "8rem",
-                            },
-                          }}
-                          name="reqQTY"
-                        //   value={Newqty[item.SKU]}
-                          type="number"
-                          onChange={(event) => {
-                            // handleQuantityChange(event, item);
-                          }} />
-            </Grid>
-            <Grid item xs={6}>
-            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
-              Billing Address{" "}
-              <TextField   autocomplete={false}
-                          size="small"
-                          sx={{
-                            "& input": {
-                              height: "10px",
-                              maxWidth: "100%",
-                            },
-                          }}
-                          name="reqQTY"
-                        //   value={Newqty[item.SKU]}
-                          type="number"
-                          onChange={(event) => {
-                            // handleQuantityChange(event, item);
-                          }} />
-            </Typography>
-            </Grid>
-            <Grid item xs={6}>
-            <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
-              Shipping Address{" "}
-              <TextField   autocomplete={false}
-                          size="small"
-                          sx={{
-                            "& input": {
-                              height: "10px",
-                              maxWidth: "100%",
-                            },
-                          }}
-                          name="reqQTY"
-                        //   value={Newqty[item.SKU]}
-                          type="number"
-                          onChange={(event) => {
-                            // handleQuantityChange(event, item);
-                          }} />
-            </Typography>
-            </Grid>
-         </Grid>
           </Box>
           <TableContainer sx={{ maxHeight: "60vh", marginTop: "0.3rem" }}>
             <Table stickyHeader aria-label="sticky table">
@@ -413,12 +434,8 @@ const AddshipmentDial = ({
                       <StyleTable sx={{ fontSize: ".8rem" }}>
                         {item.Quantity}
                       </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {item.NewQty}
-                      </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {item.OldQty}
-                      </StyleTable>
+              
+                   
                       <StyleTable>
                         <TextField
                           autocomplete={false}
@@ -429,34 +446,15 @@ const AddshipmentDial = ({
                               maxWidth: "30px",
                             },
                           }}
-                          name="reqQTY"
-                          value={Newqty[item.SKU]}
+                          name="Qty"
+                            value={qty[item.SKU]}
                           type="number"
                           onChange={(event) => {
                             handleQuantityChange(event, item);
                           }}
-                        />
-                      </StyleTable>
-                      <StyleTable>
-                        <TextField
-                          autocomplete={false}
-                          size="small"
-                          sx={{
-                            "& input": {
-                              height: "10px",
-                              maxWidth: "30px",
-                            },
-                          }}
-                          name="Oldparts"
-                          disabled = {item.OldQty == "" || item.OldQty < 0}
-                          value={Oldqty[item.SKU]}
-                          type="number"
-                          onChange={(event) => {
-                            handleQuantityChange(event, item);
-                          }}
-                          error={Requireqty[index]?.error > 0}
+                          error={Requireqty[index]?.error}
                           helperText={
-                            Requireqty[index]?.error > 0 ? (
+                            Requireqty[index]?.error  ? (
                               <spna style={{ fontSize: "9px" }}>
                                 Enter valid Qty!
                               </spna>
@@ -466,10 +464,8 @@ const AddshipmentDial = ({
                           }
                         />
                       </StyleTable>
-                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
-                        {(Newqty[item.SKU] || 0) - (Oldqty[item.SKU] || 0)}
-                      </StyleTable>
-               
+                    
+
                       <StyleTable>
                         <DeleteIcon
                           sx={{

@@ -376,11 +376,7 @@ const CreateOrdershipment = () => {
           <Button size="small" onClick={() => status()}>
             <CachedIcon />
           </Button>
-          <Box>
-            <Button variant="outlined" sx={{color :`${buttonBlink ? "green":"blue"} `}} onClick={() => fetchDataWithQuery("RandDProducts")}>
-              Fetch R&D
-            </Button>
-          </Box>
+       
           <TablePagination
             component="div"
             count={totalProductCount}

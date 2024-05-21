@@ -93,17 +93,18 @@ const Note = styled.div`
 
 const Marquee = styled.div`
   display: flex;
-  width: 100vw;
+  width: 1200px;
   overflow: hidden;
   user-select: none;
+  border:2px solid red;
 
-  mask-image: linear-gradient(
-    to right,
-    hsl(0 0% 0% / 0),
-    hsl(0 0% 0% / 1) 10%,
-    hsl(0 0% 0% / 1) 90%,
-    hsl(0 0% 0% / 0)
-  );
+  // mask-image: linear-gradient(
+  //   to right,
+  //   hsl(0 0% 0% / 0),
+  //   hsl(0 0% 0% / 1) 10%,
+  //   hsl(0 0% 0% / 1) 90%,
+  //   hsl(0 0% 0% / 0)
+  // );
 `;
 
 const scrollX = keyframes`
@@ -139,6 +140,7 @@ const ImageGroup = styled.div`
   place-items: center;
   width: clamp(10rem, 1rem + 40vmin, 30rem);
   padding: calc(clamp(10rem, 1rem + 30vmin, 30rem) / 10);
+
 `;
 
 const Image = styled.img`
