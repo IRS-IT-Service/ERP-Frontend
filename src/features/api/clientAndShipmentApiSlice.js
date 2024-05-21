@@ -22,7 +22,15 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getAllPackages: builder.query({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/getAllCustomerOrderShipment?query=${data}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useAddClientMutation,useGetAllClientQuery } = clientAndShipmentApiSlice;
+export const { useAddClientMutation,useGetAllClientQuery,useGetAllPackagesQuery } = clientAndShipmentApiSlice;

@@ -213,6 +213,12 @@ const userRolesData = [
         path: "/createOrderShipment",
         icon: "fa-solid fa-truck-arrow-right",
       },
+      {
+        id: 80,
+        name: "Shipment List",
+        path: "/shipmentList",
+        icon: "fa-solid fa-truck-arrow-right",
+      },
     ],
   },
   {

@@ -142,6 +142,7 @@ import BulkAddClient from "./Pages/PackagingAndClient/Components/BulkAddClient";
 import TestingComponent from "./Pages/Testing Component/TestingComponent";
 
 import CreateOrderShipmentMain from "./Pages/PackagingAndClient/CreateOrderShipmentMain";
+import ShipmentList from "./Pages/PackagingAndClient/ShipmentList";
 
 function App() {
   /// initialize
@@ -630,6 +631,10 @@ function App() {
                   element={<AllOverseasShipment />}
                 />
                 <Route
+                  path="/shipmentList"
+                  element={<ShipmentList />}
+                />
+                <Route
                   path="/RestockOrderList"
                   element={
                     <UserRole name={"Restock Order"}>
@@ -804,6 +809,7 @@ function App() {
                   element={<AddCustomerForMarketing />}
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
+                
                 {/* Careers */}
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
