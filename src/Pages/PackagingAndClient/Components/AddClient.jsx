@@ -1,24 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import AddSingleClientDial from "./AddSingleClientDial";
+import { useGetAllClientQuery } from "../../../features/api/clientAndShipmentApiSlice";
+import Client from "../Client";
 
 const AddClient = () => {
-  const navigate = useNavigate();
+  // api calling
+  const { data: getAllClient, refetch, isLoading } = useGetAllClientQuery();
+ 
+  // local state
   const [open, setOpen] = useState(false);
-  const rows = [
-    {
-      Sno: 1,
-      id: 1,
-      CompanyName: "DareDeals",
-      GST: "132345",
-      Address: " Manichowk Muzaffarpur Bihar India",
-      ContactNumber: 9709260818,
-      ContactName: "Saket Jha",
-      Email: "saketjha@gmail.com",
-    },
-  ];
+  const [rows,setRows] = useState([])
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (getAllClient?.client) {
+      const response = getAllClient.client.map((client, index) => {
+        return {
+          Sno: index + 1,
+          id: client._id,
+          CompanyName: client.CompanyName,
+          GST: client.GSTIN,
+          Address:
+            client.PermanentAddress?.Address +
+            " " +
+            client.PermanentAddress?.District +
+            " " +
+            client.PermanentAddress?.State +
+            " " +
+            client.PermanentAddress?.Country +
+            " " +
+            client.PermanentAddress?.Pincode,
+          ContactNumber: client.ContactNumber,
+          ContactName: client.ContactName,
+          Email: client.Email,
+        };
+      });
+      setRows(response)
+    }
+  }, [getAllClient]);
+  
   const columns = [
     {
       field: "Sno",
@@ -125,7 +148,7 @@ const AddClient = () => {
       >
         <DataGrid columns={columns} rows={rows} />
       </Box>
-      {open && <AddSingleClientDial open={open} setOpen={setOpen} />}
+      {open && <AddSingleClientDial open={open} setOpen={setOpen} refetch={refetch} />}
     </Box>
   );
 };

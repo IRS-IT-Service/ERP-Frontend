@@ -32,7 +32,7 @@ const DiscountQueryGrid = () => {
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
     useSelector((state) => state.product);
   const { createQueryItems, createQuerySku } = useSelector(
-    (state) => state.seletedItems
+    (state) => state.SelectedItems
   );
   /// local state
 
