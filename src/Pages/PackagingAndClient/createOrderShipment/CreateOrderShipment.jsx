@@ -99,21 +99,9 @@ const CreateOrdershipment = () => {
   const newValue = ""
   const idValue = ""
   const name = ""
-  const { data: allData, isLoading: dataLoading } = useGetSingleProjectQuery(
-    idValue,
-    {
-      skip,
-    }
-  );
 
-  useEffect(() => {
-    let selectSKU = [];
-    if (allData?.success) {
-      selectSKU = allData.data.projectItem?.map((item) => item.SKU);
-    }
 
-    setSelectedSKU(selectSKU);
-  }, [allData]);
+
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
@@ -411,10 +399,8 @@ const CreateOrdershipment = () => {
 
       <FilterBarV2
         apiRef={apiRef}
-        customButton={
-        "Add Parts"
-        }
-        customOnClick={id === "R&D" ? handleSetAddItem : handleOpenDialog}
+        customButton={realData.length > 0 ? "Create shipment Order" : ""}
+        customOnClick={handleOpenDialog}
       />
       {open && (
         <AddshimentpartsDial
@@ -434,27 +420,7 @@ const CreateOrdershipment = () => {
         />
       )}
 
-      {openAdditem && (
-        <AddRnDQtyDial
-          data={realData}
-          apiRef={apiRef}
-          removeSelectedItems={removeSelectedItems}
-          open={openAdditem}
-          setOpen={setOpenAdditem}
-          dispatch={dispatch}
-          id={idValue}
-          name={name}
-          removeSelectedCreateQuery={removeSelectedCreateQuery}
-          removeSelectedSkuQuery={removeSelectedSkuQuery}
-          setSelectedItemsData={setSelectedItemsData}
-          selectedItemsData={selectedItemsData}
-          refetch={refetch}
-          setSelectedItems={setSelectedItems}
-          selectedItems={selectedItems}
-          updateValue={updateValue}
-          setUpdateValue={setUpdateValue}
-        />
-      )}
+
 
       <InfoDialogBox
         infoDetails={infoDetail}
@@ -500,9 +466,9 @@ const CreateOrdershipment = () => {
                 }}
                 checkboxSelection
                 disableRowSelectionOnClick
-                isRowSelectable={(params) =>
-                  !SelectedSKU.includes(params.row.SKU)
-                }
+                // isRowSelectable={(params) =>
+                //   !SelectedSKU.includes(params.row.SKU)
+                // }
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected
