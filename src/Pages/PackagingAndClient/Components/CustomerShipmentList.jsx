@@ -152,7 +152,7 @@ const CustomerShipmentList = () => {
           <Button
             variant="contained"
             sx={{ color: "#fff", background: "green" }}
-            onClick={() => navigate(`/ItemsAprroval?ShippingId=${id}`)}
+            onClick={() => navigate(`/ItemsAprroval/${id}`)}
           >
             Dispatch
           </Button>

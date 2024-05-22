@@ -795,6 +795,7 @@ function App() {
                 <Route path="/Project" element={<Project />} />
 
                 <Route path="/ItemsAprroval" element={<ItemsApproval />} />
+                <Route path="/ItemsAprroval/:id" element={<ItemsApproval />} />
                 <Route path="/PartsApproval" element={<PartsApproval />} />
                 <Route path="/PreOrder" element={<PreOrder />} />
 

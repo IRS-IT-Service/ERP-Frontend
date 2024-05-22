@@ -57,6 +57,14 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getCustomerOrderShipment: builder.query({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/getCustomerOrderShipment/${data}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -67,4 +75,5 @@ export const {
   useUpdateCustomershippingAddressMutation,
   useCreateShipmentOrderMutation,
   useUpdateShipmentMutation,
+  useGetCustomerOrderShipmentQuery,
 } = clientAndShipmentApiSlice;

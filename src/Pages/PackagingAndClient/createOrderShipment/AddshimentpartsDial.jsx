@@ -171,8 +171,8 @@ const AddshipmentDial = ({
 
   const handleToggleAddress = (event) => {
     const checked = event.target.checked;
-    if (checked) {
-      setSelectedAddress(permanent);
+    if (checked && selectedCustomer?.PermanentAddress) {
+      setSelectedAddress(selectedCustomer?.PermanentAddress);
     } else {
       setSelectedAddress({});
     }
@@ -205,7 +205,7 @@ const AddshipmentDial = ({
   };
 
   const handleSelectedChange = (event, newValue) => {
-    console.log(newValue);
+    
     if (newValue && newValue.id) {
       const foundItem = clientData.client.find(
         (item) => item._id === newValue.id
