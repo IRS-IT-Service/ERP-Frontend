@@ -29,6 +29,9 @@ import word from "../../../assets/DrivePNG/word.png";
 import txt from "../../../assets/DrivePNG/txt.jpg";
 import noData from "../../../assets/no-data-found.jpg";
 import FileDelete from "./FileDelete";
+import FolderVerificationDial from "./FolderVerificationDial";
+import { useSelector, useDispatch } from "react-redux";
+
 const DriveFolder = () => {
   // local state
   const [createFolderName, setCreateFolder] = useState("");
@@ -48,6 +51,7 @@ const DriveFolder = () => {
   const [menuPositionFile, setMenuPositionFile] = useState({ x: 0, y: 0 });
   const [gridView, setGridView] = useState("icon");
   const [deleteConf, setDeleteConf] = useState(false);
+  const [folderVerify, setFolderVerifyOtp] = useState(false);
 
   // rtk query api calling
   const [
@@ -74,11 +78,22 @@ const DriveFolder = () => {
     { isLoading: deleteFileLoading, refetch: deleteFileRefetch },
   ] = useDeleteFileMutation();
 
-  // functions for hanlding things
+  // using dispatch
 
+  const dispatch = useDispatch();
+
+  const { DriveVerifyOtp } = useSelector((state) => state.auth);
+
+  // functions for hanlding things
   const handleClickFolder = (data) => {
-    setFolderId(data.id);
-    setFolderName(data.name);
+    if (!DriveVerifyOtp) {
+      setFolderVerifyOtp(true);
+      setFolderId(data.id);
+      setFolderName(data.name);
+    } else {
+      setFolderId(data.id);
+      setFolderName(data.name);
+    }
   };
 
   ///Handle Context Menu
@@ -148,7 +163,8 @@ const DriveFolder = () => {
       return toast.error("File and folder required");
     try {
       const formData = new FormData();
-      formData.append("id", folderId), formData.append("file", selectedFile.files[0]);
+      formData.append("id", folderId),
+        formData.append("file", selectedFile.files[0]);
       const uploadfile = await uploadFile(formData).unwrap();
       toast.success("File uploaded successfully");
       setTrigger("upload");
@@ -188,7 +204,7 @@ const DriveFolder = () => {
         console.log(error);
       }
     };
-    if (folderId) {
+    if (folderId &&  DriveVerifyOtp) {
       fetchAllFiles();
     }
   }, [folderId, setFolderId, trigger, setTrigger]);
@@ -196,7 +212,7 @@ const DriveFolder = () => {
   function getFileExtension(filename) {
     const parts = filename.split(".");
     const extension = parts[parts.length - 1];
-   
+
     switch (extension) {
       case "png":
       case "jpg":
@@ -217,23 +233,22 @@ const DriveFolder = () => {
     }
   }
 
-  function getFileExtensionUrl(filename ,url) {
+  function getFileExtensionUrl(filename, url) {
     const parts = filename.split(".");
     const extension = parts[parts.length - 1];
-;
     switch (extension) {
-         case "csv":
-          case "xlsx":
+      case "csv":
+      case "xlsx":
         return excel;
       case "docx":
         return word;
-        case "pdf":
-        case "png":
-        case "jpg":
-        case "jpeg":
-        case "txt":
-        return url
-         default:
+      case "pdf":
+      case "png":
+      case "jpg":
+      case "jpeg":
+      case "txt":
+        return url;
+      default:
         return unknown;
     }
   }
@@ -421,34 +436,33 @@ const DriveFolder = () => {
           }}
         >
           {folderId && (
-    
-             <Box
-             sx={{
-               fontSize: "12px",
-               display:"flex",
-               justifyContent: "center",
-               alignItems: "center",
-               gap:"5px",
-               width: "100px",
+            <Box
+              sx={{
+                fontSize: "12px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "5px",
+                width: "100px",
                 borderRadius: "10px",
-               cursor: "pointer",
-               "&:hover": {
-                 backgroundColor: "black",
-                 color: "#fff",
-               },
-               border: "1px solid grey",
-             }}
-             onClick={() => handleOpenDial("fileUpload")}
-           >
-             <i class="fa-solid fa-plus"></i> Upload Files
-           </Box>
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "black",
+                  color: "#fff",
+                },
+                border: "1px solid grey",
+              }}
+              onClick={() => handleOpenDial("fileUpload")}
+            >
+              <i class="fa-solid fa-plus"></i> Upload Files
+            </Box>
           )}
           <span
             style={{
               fontFamily: "cursive",
               fontWeight: "bold",
               color: "green",
-              marginLeft:`${!folderName ? "35rem" : ""}`
+              marginLeft: `${!folderName ? "35rem" : ""}`,
             }}
           >
             {folderName
@@ -480,26 +494,25 @@ const DriveFolder = () => {
         >
           {allFiles && allFiles.length > 0 ? (
             <>
-              {getAllFilesLoading? (
-                <Box sx={{
-                  width: "100%",
-                  height: "54vh",
-                   display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-               
-               
-                }}>
-                <CircularProgress />
+              {getAllFilesLoading ? (
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: "54vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <CircularProgress />
                 </Box>
               ) : (
                 allFiles.map((file) => (
                   <>
                     {gridView === "preview" ? (
                       <Box
-                      key={file?.id}
+                        key={file?.id}
                         sx={{
-                        
                           display: "flex",
                           width: "150px",
 
@@ -524,7 +537,6 @@ const DriveFolder = () => {
                         onContextMenu={(e) => handleContextMenuFile(e, file)}
                       >
                         <Box
-                         
                           sx={{
                             height: "120px",
                             width: "120px",
@@ -538,7 +550,10 @@ const DriveFolder = () => {
                           }}
                         >
                           <img
-                            src={getFileExtensionUrl(file.name ,`https://drive.google.com/thumbnail?id=${file.id}`)}
+                            src={getFileExtensionUrl(
+                              file.name,
+                              `https://drive.google.com/thumbnail?id=${file.id}`
+                            )}
                             alt="Image from Google Drive"
                             style={{
                               height: "100%",
@@ -700,18 +715,21 @@ const DriveFolder = () => {
               )}
             </>
           ) : (
-            <Box sx={{
-              width: "100%",
-              height: "54vh",
-               display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-           
-           
-            }}>
-           <img src={noData} style={{
-            width:"20%"
-           }} />
+            <Box
+              sx={{
+                width: "100%",
+                height: "54vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <img
+                src={noData}
+                style={{
+                  width: "20%",
+                }}
+              />
             </Box>
           )}
         </div>
@@ -738,6 +756,17 @@ const DriveFolder = () => {
           folderId={folderId}
           folderName={folderName}
           refetchAllFolder={refetchAllFolder}
+        />
+      )}
+      {folderVerify && (
+        <FolderVerificationDial
+          open={folderVerify}
+          setOpen={setFolderVerifyOtp}
+          folderId={folderId}
+          folderName={folderName}
+          refetchAllFolder={refetchAllFolder}
+          dispatch={dispatch}
+          setTrigger={setTrigger}
         />
       )}
 

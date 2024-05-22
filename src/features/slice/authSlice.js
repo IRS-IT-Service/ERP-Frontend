@@ -20,6 +20,8 @@ const initialState = {
   hiddenColumns: JSON.parse(localStorage.getItem("hiddenColumns") || "[]"),
   error: null,
 
+  DriveVerifyOtp:"",
+
   /// admin portal data
   allUsers: {},
   onlineUsers: [],
@@ -75,6 +77,10 @@ const authSlice = createSlice({
     removeUserInfo: (state) => {
       state.userInfo = null;
       localStorage.removeItem("userInfo");
+    },
+
+    AddDriveVerifyOtp:(state,action) =>{
+      state.DriveVerifyOtp = action.payload
     },
 
     /// admin portal data
@@ -243,5 +249,6 @@ export const {
   removeChatMessageData,
   addChatNotificationCount,
   addChatTyping,
+  AddDriveVerifyOtp
 } = authSlice.actions;
 export default authSlice.reducer;
