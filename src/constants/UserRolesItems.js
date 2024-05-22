@@ -217,7 +217,7 @@ const userRolesData = [
         id: 80,
         name: "Shipment List",
         path: "/shipmentList",
-        icon: "fa-solid fa-truck-arrow-right",
+        icon: "fa-solid fa-table-list",
       },
     ],
   },
