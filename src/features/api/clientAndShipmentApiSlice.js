@@ -30,7 +30,17 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    updateShipment: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/updateCustomerOrderShipment?query=${data.id}`,
+          method: "POST",
+          body: data
+        };
+      }
+    })
+    
   }),
 });
 
-export const { useAddClientMutation,useGetAllClientQuery,useGetAllPackagesQuery } = clientAndShipmentApiSlice;
+export const { useAddClientMutation,useGetAllClientQuery,useGetAllPackagesQuery,useUpdateShipmentMutation } = clientAndShipmentApiSlice;

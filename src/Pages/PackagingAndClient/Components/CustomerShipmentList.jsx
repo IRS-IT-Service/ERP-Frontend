@@ -1,12 +1,23 @@
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useGetAllPackagesQuery } from "../../../features/api/clientAndShipmentApiSlice";
+import { useNavigate } from "react-router-dom";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import PackingAndCourierDial from "./PackingAndCourierDial";
+import InvoiceDial from "./InvoiceDial";
+import { OpenInBrowser } from "@mui/icons-material";
 
 const CustomerShipmentList = () => {
   // local state variables
   const [queryParams, setQueryParams] = useState("InPackaging");
   const [rows, setRows] = useState([]);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const [courierOpen, setCourierOpen] = useState(false);
+  const [details, setDetails] = useState({});
+  const [items, setItems] = useState({});
+
+  const navigate = useNavigate();
 
   // rtk query
   const {
@@ -14,7 +25,6 @@ const CustomerShipmentList = () => {
     isLoading,
     refetch,
   } = useGetAllPackagesQuery(queryParams);
-  console.log(getAllShipments);
 
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {
@@ -26,21 +36,32 @@ const CustomerShipmentList = () => {
           ShipmentId: item.OrderShipmentId,
           CustomerName: item.ContactPerson,
           CustomerContact: item.Contact,
-          ShipAddress:
-            item.ShippingAddress?.City +
-            " " +
-            item.ShippingAddress?.District || "" +
-            " " +
-            item.ShippingAddress?.State +
-            " " +
-            item.ShippingAddress?.Country +
-            "," +
-            item.ShippingAddress?.Pincode,
-            PackingDetails:item.IsPacked,
-            CourierDetails:item.HasCourierId,
-            Invoice: item.Invoice,
-            PackageDispatch:item.Dispatched,
-            OrderCompleted:item.IsCompletedOrder
+          ShipAddress: item.ShippingAddress
+            ? (item.ShippingAddress.City
+                ? item.ShippingAddress.City + " "
+                : "") +
+              (item.ShippingAddress.District
+                ? item.ShippingAddress.District + " "
+                : "") +
+              (item.ShippingAddress.State
+                ? item.ShippingAddress.State + " "
+                : "") +
+              (item.ShippingAddress.Country
+                ? item.ShippingAddress.Country + " "
+                : "") +
+              (item.ShippingAddress.Pincode ? item.ShippingAddress.Pincode : "")
+            : "",
+          PackingDetails: item.IsPacked,
+          CourierDetails: item.HasCourierId,
+          Invoice: item.Invoice,
+          PackageDispatch: item.Dispatched,
+          OrderCompleted: item.IsCompletedOrder,
+          Products: item.Items,
+          Weight: item.PackageWeight,
+          Dimension: item.PackageDimension,
+          CourierLink: item.CourierLink,
+          CourierName: item.CourierName,
+          TrackingId: item.TrackingId,
         };
       });
       setRows(result);
@@ -52,12 +73,22 @@ const CustomerShipmentList = () => {
     setQueryParams(newQuery);
   };
 
+  const handlePackageOpen = (data) => {
+    setCourierOpen(true);
+    setDetails(data);
+  };
+
+  const handleInvoiceOpen = (data) => {
+    setInvoiceOpen(true);
+    setDetails(data);
+  };
+
   const columns = [
     {
       field: "Sno",
       headerName: "Sno",
       flex: 0.1,
-      minWidth: 10,
+      minWidth: 50,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -77,7 +108,7 @@ const CustomerShipmentList = () => {
       field: "CustomerName",
       headerName: "Customer-Name",
       flex: 0.3,
-      minWidth: 100,
+      minWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -87,7 +118,7 @@ const CustomerShipmentList = () => {
       field: "CustomerContact",
       headerName: "Contact-No",
       flex: 0.3,
-      minWidth: 100,
+      minWidth: 150,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -98,7 +129,7 @@ const CustomerShipmentList = () => {
       field: "ShipAddress",
       headerName: "Ship-Address",
       flex: 0.3,
-      minWidth: 100,
+      minWidth: 250,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -114,6 +145,23 @@ const CustomerShipmentList = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const dispatched = !params.value;
+        const id = params.row.ShipmentId;
+        return dispatched ? (
+          <Button
+            variant="contained"
+            sx={{ color: "#fff", background: "green" }}
+            onClick={() => navigate(`/ItemsAprroval?ShippingId=${id}`)}
+          >
+            Dispatch
+          </Button>
+        ) : (
+          <Box sx={{ color: "green" }}>
+            <VerifiedIcon />
+          </Box>
+        );
+      },
     },
     {
       field: "PackingDetails",
@@ -124,32 +172,98 @@ const CustomerShipmentList = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const packed = !params.value;
+        const orderId = params.row.ShipmentId;
+        const CustomerName = params.row.CustomerName;
+        const Weight = params.row.Weight;
+        const Dimension = params.row.Dimension;
+        const openFor = "Packing";
+        return (
+          <Button
+            onClick={() =>
+              handlePackageOpen({
+                OpenFor: openFor,
+                CustomerName: CustomerName,
+                OrderId: orderId,
+                Weight: Weight,
+                Dimension: Dimension,
+              })
+            }
+          >
+            {packed ? "Open" : <VerifiedIcon sx={{ color: "green" }} />}
+          </Button>
+        );
+      },
     },
     {
       field: "CourierDetails",
       headerName: "Courier-Details",
       flex: 0.3,
-      minWidth: 250,
+      minWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const packed = !params.value;
+        const orderId = params.row.ShipmentId;
+        const CustomerName = params.row.CustomerName;
+        const CourierName = params.row.CourierName;
+        const TrackingId = params.row.TrackingId;
+        const Link = params.row.CourierLink;
+        const openFor = "Courier";
+        return (
+          <Button
+            onClick={() =>
+              handlePackageOpen({
+                OpenFor: openFor,
+                CustomerName: CustomerName,
+                OrderId: orderId,
+                CourierName: CourierName,
+                Link: Link,
+                TrackingId: TrackingId,
+              })
+            }
+          >
+            {packed ? "Open" : <VerifiedIcon sx={{ color: "green" }} />}
+          </Button>
+        );
+      },
     },
     {
       field: "Invoice",
       headerName: "Invoice",
       flex: 0.3,
-      minWidth: 250,
+      minWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const invoice = params.value;
+        const orderId = params.row.ShipmentId;
+        const CustomerName = params.row.CustomerName;
+        return (
+          <Button
+            onClick={() =>
+              handleInvoiceOpen({
+                invoice: invoice,
+                OrderId: orderId,
+                CustomerName: CustomerName,
+              })
+            }
+          >
+            {invoice ? "View" : "Upload"}
+          </Button>
+        );
+      },
     },
     {
       field: "OrderCompleted",
       headerName: "Completed",
       flex: 0.3,
-      minWidth: 250,
+      minWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -202,6 +316,21 @@ const CustomerShipmentList = () => {
       >
         <DataGrid rows={rows} columns={columns} />
       </Box>
+      {courierOpen && (
+        <PackingAndCourierDial
+          open={courierOpen}
+          setOpen={setCourierOpen}
+          details={details}
+          refetch={refetch}
+        />
+      )}
+      {invoiceOpen && (
+        <InvoiceDial
+          open={invoiceOpen}
+          setOpen={setInvoiceOpen}
+          details={details}
+        />
+      )}
     </Box>
   );
 };

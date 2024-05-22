@@ -24,15 +24,21 @@ const AddClient = () => {
           CompanyName: client.CompanyName,
           GST: client.GSTIN,
           Address:
-            client.PermanentAddress?.Address +
-            " " +
-            client.PermanentAddress?.District +
-            " " +
-            client.PermanentAddress?.State +
-            " " +
-            client.PermanentAddress?.Country +
-            " " +
-            client.PermanentAddress?.Pincode,
+          client.PermanentAddress
+          ? (client.PermanentAddress?.city
+              ? client.PermanentAddress.city + " "
+              : "") +
+            (client.PermanentAddress.district
+              ? client.PermanentAddress.district + " "
+              : "") +
+            (client.PermanentAddress.state
+              ? client.PermanentAddress.state + " "
+              : "") +
+            (client.PermanentAddress.country
+              ? client.PermanentAddress.country + " "
+              : "") +
+            (client.PermanentAddress.pincode ? client.PermanentAddress.pincode : "")
+          : "",
           ContactNumber: client.ContactNumber,
           ContactName: client.ContactName,
           Email: client.Email,
