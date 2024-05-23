@@ -522,6 +522,21 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       //     ? `${(+params.value).toFixed(0)} `
       //     : `₹ ${(+params.value).toFixed(0)} `,
     },
+    {
+      field: "Done",
+      headerName: `Done`,
+      flex: 0.3,
+      minWidth: 30,
+      maxWidth: 120,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header--Pending",
+      cellClassName: "super-app-theme--cell",
+      // valueFormatter: (params) =>
+      //   query === "Quantity"
+      //     ? `${(+params.value).toFixed(0)} `
+      //     : `₹ ${(+params.value).toFixed(0)} `,
+    },
 
     // Add more columns if needed
   ];
@@ -569,16 +584,11 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
           </TableRow>
           <TableRow>
-            <TableCell sx={{padding:1 ,fontWeight:"bold",fontSize:"12px"}}>Contact No</TableCell>
-            <TableCell sx={{padding:1 ,fontSize:"12px"}}>{clientData?.client?.Contact}</TableCell>
+            <TableCell sx={{padding:1 ,fontWeight:"bold",fontSize:"12px"}}>Company Name</TableCell>
+            <TableCell sx={{padding:1 ,fontSize:"12px"}}>{clientData?.client?.CompanyName}</TableCell>
 
           </TableRow>
-          <TableRow>
-            <TableCell sx={{padding:1 ,fontWeight:"bold",fontSize:"12px"}}>Shipping Address</TableCell>
-            <TableCell sx={{padding:1 ,fontSize:"12px"}}>        {shippingAddress}
-            </TableCell>
-
-          </TableRow>
+       
        
         </TableBody>
       </Table>

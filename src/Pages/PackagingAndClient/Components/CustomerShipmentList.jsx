@@ -19,6 +19,21 @@ const CustomerShipmentList = () => {
 
   const navigate = useNavigate();
 
+  const formatShippingAddress = (address) => {
+    if (!address) return '';
+  
+    const {
+      addressLine1 = '',
+      addressLine2 = '',
+      city = '',
+      state = '',
+      country = '',
+      pincode = ''
+    } = address;
+  
+    return `${addressLine1}, ${addressLine2}, ${city}, ${state}, ${country}, ${pincode}`;
+  };
+
   // rtk query
   const {
     data: getAllShipments,
@@ -29,6 +44,7 @@ const CustomerShipmentList = () => {
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {
       const result = getAllShipments.client.map((item, index) => {
+        const shippingAddress = formatShippingAddress(item.ShippingAddress);
         return {
           ...item,
           Sno: index + 1,
@@ -36,21 +52,7 @@ const CustomerShipmentList = () => {
           ShipmentId: item.OrderShipmentId,
           CustomerName: item.ContactPerson,
           CustomerContact: item.Contact,
-          ShipAddress: item.ShippingAddress
-            ? (item.ShippingAddress.City
-                ? item.ShippingAddress.City + " "
-                : "") +
-              (item.ShippingAddress.District
-                ? item.ShippingAddress.District + " "
-                : "") +
-              (item.ShippingAddress.State
-                ? item.ShippingAddress.State + " "
-                : "") +
-              (item.ShippingAddress.Country
-                ? item.ShippingAddress.Country + " "
-                : "") +
-              (item.ShippingAddress.Pincode ? item.ShippingAddress.Pincode : "")
-            : "",
+          ShipAddress:shippingAddress,
           PackingDetails: item.IsPacked,
           CourierDetails: item.HasCourierId,
           Invoice: item.Invoice,

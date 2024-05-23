@@ -87,7 +87,6 @@ const AddshipmentDial = ({
 }) => {
   /// initialize
 
-
   const socket = useSocket();
   const navigate = useNavigate();
 
@@ -205,7 +204,6 @@ const AddshipmentDial = ({
   };
 
   const handleSelectedChange = (event, newValue) => {
-    
     if (newValue && newValue.id) {
       const foundItem = clientData.client.find(
         (item) => item._id === newValue.id
@@ -225,7 +223,6 @@ const AddshipmentDial = ({
     return () => {
       removeSelectedItems([]);
 
-  
       setRequireqty([]);
     };
   }, [setOpen]);
@@ -276,6 +273,7 @@ const AddshipmentDial = ({
       formData.append("file", selectedCustomer.Invoice);
       formData.append("ContactPerson", selectedCustomer.ContactName);
       formData.append("Contact", selectedCustomer.ContactNumber);
+      formData.append("CompanyName", selectedCustomer.CompanyName);
       formData.append("Items", JSON.stringify(Requireqty));
       const result = await createShipment(formData).unwrap();
 
@@ -368,8 +366,6 @@ const AddshipmentDial = ({
     }
   };
 
-
-
   return (
     <div>
       <Dialog open={open} maxWidth="xl" onClose={handleCloseDialog}>
@@ -428,7 +424,7 @@ const AddshipmentDial = ({
                     backgroundColor: "rgba(255, 255, 255)",
                   }}
                   options={companyDetails}
-                   onChange={handleSelectedChange}
+                  onChange={handleSelectedChange}
                   renderInput={(params) => (
                     <TextField
                       {...params}
