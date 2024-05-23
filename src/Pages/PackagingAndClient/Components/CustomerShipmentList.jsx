@@ -331,6 +331,7 @@ const CustomerShipmentList = () => {
           open={invoiceOpen}
           setOpen={setInvoiceOpen}
           details={details}
+          refetch={refetch}
         />
       )}
     </Box>
