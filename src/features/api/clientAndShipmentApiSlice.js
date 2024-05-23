@@ -65,6 +65,17 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    updateInvoice: builder.mutation({
+      query: (data) => {
+        console.log(data)
+        return {
+          url: `${clientAndShipmentApi}/updateInvoice`,
+          method: "PUT",
+          body: data,
+        };
+        
+      },
+    }),
   }),
 });
 
@@ -76,4 +87,5 @@ export const {
   useCreateShipmentOrderMutation,
   useUpdateShipmentMutation,
   useGetCustomerOrderShipmentQuery,
+  useUpdateInvoiceMutation,
 } = clientAndShipmentApiSlice;

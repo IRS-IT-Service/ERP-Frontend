@@ -40,4 +40,10 @@ export const discountQueryApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useCreateDiscountQueryMutation,useGetDiscountQueryQuery,useGetDiscountQueryByIdQuery,useGetDiscountQueryAdminQuery,useUpdateDiscountQueryMutation } = discountQueryApiSlice;
+export const {
+  useCreateDiscountQueryMutation,
+  useGetDiscountQueryQuery,
+  useGetDiscountQueryByIdQuery,
+  useGetDiscountQueryAdminQuery,
+  useUpdateDiscountQueryMutation,
+} = discountQueryApiSlice;
