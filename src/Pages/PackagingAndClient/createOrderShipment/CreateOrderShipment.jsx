@@ -20,11 +20,10 @@ import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
-import { useGetSingleProjectQuery } from "../../../features/api/RnDSlice";
 import AddshimentpartsDial from "./AddshimentpartsDial";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useParams } from "react-router-dom";
-import AddRnDQtyDial from "../../R&D_NEW/Dialogues/AddRnDQtyDial";
+
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
