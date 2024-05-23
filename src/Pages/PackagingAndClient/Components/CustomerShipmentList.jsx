@@ -42,6 +42,13 @@ const CustomerShipmentList = () => {
     refetch,
   } = useGetAllPackagesQuery(queryParams);
 
+useEffect(()=>{
+
+    refetch()
+
+},[getAllShipments])
+
+
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {
       const result = getAllShipments.client.map((item, index) => {

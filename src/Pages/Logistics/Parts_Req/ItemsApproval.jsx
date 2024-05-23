@@ -333,7 +333,7 @@ if(!allDone){
       setBarcoderow([]);
       setImage("");
       setBarcode("");
-      refetch();
+  
       const historyRes = await createUserHistoryApi(addBarcodHistory);
       Swal.fire({
         icon: "success",
