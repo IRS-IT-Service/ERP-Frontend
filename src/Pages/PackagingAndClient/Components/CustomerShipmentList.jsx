@@ -7,6 +7,7 @@ import VerifiedIcon from "@mui/icons-material/Verified";
 import PackingAndCourierDial from "./PackingAndCourierDial";
 import InvoiceDial from "./InvoiceDial";
 import { OpenInBrowser } from "@mui/icons-material";
+import OrderDetailsDialog from "./OrderDetailsDialog";
 
 const CustomerShipmentList = () => {
   // local state variables
@@ -14,24 +15,24 @@ const CustomerShipmentList = () => {
   const [rows, setRows] = useState([]);
   const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [courierOpen, setCourierOpen] = useState(false);
+  const [orderdetailsopen, setOrderdetailsOpen] = useState(false);
   const [details, setDetails] = useState({});
   const [items, setItems] = useState({});
 
   const navigate = useNavigate();
 
-  const formatShippingAddress = (address) => {
-    if (!address) return '';
+  const formatShippingAddress = (obj,keyOrder = []) => {
+    if (!obj || typeof obj !== 'object') return '';
+
+ 
+    const keys = keyOrder.length ? keyOrder : Object.keys(obj);
+
+    const formattedString = keys
+      .map(key => obj[key] || '') 
+      .filter(value => value) 
+      .join(', '); 
   
-    const {
-      addressLine1 = '',
-      addressLine2 = '',
-      city = '',
-      state = '',
-      country = '',
-      pincode = ''
-    } = address;
-  
-    return `${addressLine1}, ${addressLine2}, ${city}, ${state}, ${country}, ${pincode}`;
+    return formattedString;
   };
 
   // rtk query
@@ -44,7 +45,8 @@ const CustomerShipmentList = () => {
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {
       const result = getAllShipments.client.map((item, index) => {
-        const shippingAddress = formatShippingAddress(item.ShippingAddress);
+        const keyOrder = ['Address', 'District', 'State', 'Country','Pincode'];
+        const shippingAddress = formatShippingAddress(item.ShippingAddress,keyOrder);
         return {
           ...item,
           Sno: index + 1,
@@ -79,6 +81,11 @@ const CustomerShipmentList = () => {
     setCourierOpen(true);
     setDetails(data);
   };
+
+  const handleOrderdetailsOpen = (data) =>{
+    setOrderdetailsOpen(true);
+    setDetails(data);
+  }
 
   const handleInvoiceOpen = (data) => {
     setInvoiceOpen(true);
@@ -183,6 +190,7 @@ const CustomerShipmentList = () => {
         const openFor = "Packing";
         return (
           <Button
+          disabled={!params.row.Dispatched && params.row.IsPacked}
             onClick={() =>
               handlePackageOpen({
                 OpenFor: openFor,
@@ -217,6 +225,7 @@ const CustomerShipmentList = () => {
         const openFor = "Courier";
         return (
           <Button
+          disabled={!params.row.IsPacked && !params.row.HasCourierId}
             onClick={() =>
               handlePackageOpen({
                 OpenFor: openFor,
@@ -270,6 +279,20 @@ const CustomerShipmentList = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const IsCompletedOrder = params.row.IsCompletedOrder;
+        return (
+          <Button
+          disabled={params.row.IsCompletedOrder && !params.row.IsPacked && !params.row.HasCourierId}
+            onClick={() =>
+              handleOrderdetailsOpen(params.row)   
+              
+            }
+          >
+            {IsCompletedOrder ? "Submitted" : "Open"}
+          </Button>
+        );
+      },
     },
   ];
 
@@ -333,6 +356,15 @@ const CustomerShipmentList = () => {
           details={details}
         />
       )}
+      {
+        orderdetailsopen && (
+          <OrderDetailsDialog
+            open={orderdetailsopen}
+            setOpen={setOrderdetailsOpen}
+            details={details}
+          />
+        )
+      }
     </Box>
   );
 };
