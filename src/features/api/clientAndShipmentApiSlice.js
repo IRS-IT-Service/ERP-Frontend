@@ -22,7 +22,58 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getAllPackages: builder.query({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/getAllCustomerOrderShipment?query=${data}`,
+          method: "GET",
+        };
+      },
+    }),
+    updateCustomershippingAddress: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/updateCustomershippingAddress`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    createShipmentOrder: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/createCustomerOrderShipment`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    updateShipment: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/updateCustomerOrderShipment?query=${data.id}`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    getCustomerOrderShipment: builder.query({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/getCustomerOrderShipment/${data}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
-export const { useAddClientMutation,useGetAllClientQuery } = clientAndShipmentApiSlice;
+export const {
+  useAddClientMutation,
+  useGetAllClientQuery,
+  useGetAllPackagesQuery,
+  useUpdateCustomershippingAddressMutation,
+  useCreateShipmentOrderMutation,
+  useUpdateShipmentMutation,
+  useGetCustomerOrderShipmentQuery,
+} = clientAndShipmentApiSlice;

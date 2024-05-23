@@ -24,6 +24,13 @@ export const otherApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    getApplicants: builder.mutation({
+      query: (id) => ({
+        url: `/common/getApplicants/${id}`,
+        method: "GET",
+      }),
+    }),
   
   }),
 });
@@ -32,4 +39,5 @@ export const {
   useGetStudentinfoQuery,
   useAddCareerMutation,
   useGetCareersQuery,
+  useGetApplicantsMutation,
 } = otherApiSlice;

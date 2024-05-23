@@ -257,6 +257,13 @@ export const BarcodeSlice = apiSlice.injectEndpoints({
         body:data
       }),
     }),
+    getsingleShipmentbyorderId: builder.query({
+      query: (data) => ({
+        url: `${BARCODE_URL}/shipmentData/${data}`,
+        method: `GET`,
+    
+      }),
+    }),
   }),
 });
 
@@ -297,5 +304,6 @@ export const {
   useGetPendingRequestCountQuery,
   useAddProductInRnDInventoryMutation,
   useUpdateSingleProductMutation,
-  useUpdateShipmentStatusMutation
+  useUpdateShipmentStatusMutation,
+  useGetsingleShipmentbyorderIdQuery
 } = BarcodeSlice;

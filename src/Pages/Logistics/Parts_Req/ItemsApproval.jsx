@@ -1,4 +1,4 @@
-import { React, useEffect, useState, useContext } from "react";
+import { React, useEffect, useState, useContext} from "react";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import Nodata from "../../../assets/error.gif";
 import FilterBar from "../../../components/Common/FilterBar";
@@ -26,6 +26,7 @@ import {
   CircularProgress,
   Grid,
   InputAdornment,
+  
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -48,6 +49,7 @@ import {
   useDispatchBarcodeInBulkMutation,
 } from "../../../features/api/barcodeApiSlice";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
+import {useGetCustomerOrderShipmentQuery} from "../../../features/api/clientAndShipmentApiSlice"
 import Swal from "sweetalert2";
 const StyleCell = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
@@ -124,6 +126,10 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   /// initialization
   const socket = useSocket();
   const navigate = useNavigate();
+  const {id} = useParams()
+  const skip = !id
+
+
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
@@ -133,6 +139,12 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     useDispatchBarcodeInBulkMutation();
 
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
+
+  const {data:clientData , isLoading:clientLoading} = useGetCustomerOrderShipmentQuery(id ,{
+    skip,
+  })
+
+
 
   /// local state
   const [rows, setRows] = useState([]);
@@ -154,8 +166,8 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     isLoading: productLoading,
     isFetching,
     refetch,
-  } = useGetPendingRequestQuery({
-    refetchOnMountOrArgChange: true,
+  } = useGetPendingRequestQuery(id,{
+     skip:!skip
   });
 
   useEffect(() => {
@@ -165,11 +177,30 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           ...item,
           id: item._id,
           Sno: index + 1,
+        
         };
       });
       setRows(newData);
     }
   }, [allProductData]);
+
+  useEffect(() => {
+    if (clientData?.status) {
+      const newData = clientData.client.Items?.map((item, index) => {
+        return {
+          ...item,
+          id: item._id,
+          Sno: index + 1,
+          Count:item.Qty,
+          Name:item.productName,
+          Isdone:false,
+
+
+        };
+      });
+      setRows(newData);
+    }
+  }, [clientData]);
 
   const isBarcodeAlreadyExists = (rows, serialNumber) => {
     return rows.some((row) => row.serialNumber === serialNumber);
@@ -188,8 +219,23 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     }
 
     if (skuCounts.hasOwnProperty(newSku)) {
+      if ((reqCount[newSku] === skuCounts[newSku])) {
+           setRows((prev)=>{
+          return prev.map((item)=>{
+            if(item.SKU === newSku){
+              return {
+               ...item,
+               Isdone:true
+              }
+            }
+            return item
+          })
+        })
+      }
       if (!(reqCount[newSku] >= skuCounts[newSku])) {
+     
         return true;
+  
       }
     } else {
       return false;
@@ -233,12 +279,33 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
     try {
       const data = groupBySKU(barcodeRow);
-      const params = {
-        CustomerName: "R & D",
-        MobileNo: null,
-        InvoiceNo: "N/A",
-        barcodes: data,
-      };
+      const allDone = rows.every(row => row.Isdone === true);
+      let params = null
+if(id){
+if(!allDone){
+  return toast.error("Please provide all required quantities")
+}
+  params = {
+    OrderShipmentId:clientData?.client?.OrderShipmentId,
+    CustomerName:clientData?.client?.ContactPerson,
+    MobileNo: clientData?.client?.Contact,
+    CompanyName:clientData?.client?.CompanyName,
+    InvoiceNo: "N/A",
+    barcodes: data,
+  };
+
+}else{
+  params = {
+    CustomerName: "R & D",
+    OrderShipmentId:null,
+    CompanyName:"N/A",
+    MobileNo: null,
+    InvoiceNo: "N/A",
+    barcodes: data,
+  };
+}
+
+   
 
       const res = await dispatchBarcodeApi(params).unwrap();
 
@@ -266,7 +333,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       setBarcoderow([]);
       setImage("");
       setBarcode("");
-      refetch();
+  
       const historyRes = await createUserHistoryApi(addBarcodHistory);
       Swal.fire({
         icon: "success",
@@ -275,6 +342,10 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
         allowOutsideClick: false,
         timer: 700,
       });
+if(id){
+  navigate("/shipmentList")
+}
+
     } catch (error) {
       console.error("An error occurred during dispatch:", error);
       Swal.fire({
@@ -288,7 +359,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       setBarcoderow([]);
       setImage("");
       setBarcode("");
-      value = {}; // This line might not be necessary
+  
     }
   };
 
@@ -296,6 +367,8 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     if (!countSKUs(finalBarcodeRow, rows, latestSKU.SKU)) {
       const latestValue = finalBarcodeRow.slice();
       setBarcoderow(latestValue);
+     
+ 
     } else if (finalBarcodeRow.length > 0) {
       toast.error("Items are already fulfilled as per requirements");
       const latestValue = finalBarcodeRow.slice();
@@ -305,6 +378,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       );
 
       setFinalBarcodeRow(currentValue);
+      console.log(currentValue);
     }
   }, [finalBarcodeRow, setFinalBarcodeRow]);
 
@@ -366,6 +440,24 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     );
   };
 
+  //convert object into string
+
+  const formatShippingAddress = (obj,keyOrder = []) => {
+    if (!obj || typeof obj !== 'object') return '';
+
+    // If keyOrder is provided, sort the keys accordingly; otherwise, use the object's keys as is
+    const keys = keyOrder.length ? keyOrder : Object.keys(obj);
+  
+    // Build the string by iterating over the keys and getting corresponding values from the object
+    const formattedString = keys
+      .map(key => obj[key] || '') // Get the value for each key or an empty string if undefined
+      .filter(value => value) // Filter out any empty values
+      .join(', '); // Join the values with a comma and space
+  
+    return formattedString;
+  };
+  const keyOrder = ['Address', 'District', 'State', 'Country','Pincode'];
+  const shippingAddress = formatShippingAddress(clientData?.client?.ShippingAddress,keyOrder);
   /// Columns
   const columns = [
     {
@@ -437,29 +529,29 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-    {
-      field: "Brand",
-      headerName: "Brand",
-      flex: 0.3,
-      minWidth: 120,
-      maxWidth: 150,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
-    {
-      field: "GST",
-      headerName: "GST",
-      flex: 0.3,
-      minWidth: 70,
-      maxWidth: 70,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `${params.value} %`,
-    },
+    // {
+    //   field: "Brand",
+    //   headerName: "Brand",
+    //   flex: 0.3,
+    //   minWidth: 120,
+    //   maxWidth: 150,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    // },
+    // {
+    //   field: "GST",
+    //   headerName: "GST",
+    //   flex: 0.3,
+    //   minWidth: 70,
+    //   maxWidth: 70,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    //   valueFormatter: (params) => `${params.value} %`,
+    // },
 
     {
       field: "Count",
@@ -475,6 +567,36 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       //   query === "Quantity"
       //     ? `${(+params.value).toFixed(0)} `
       //     : `₹ ${(+params.value).toFixed(0)} `,
+    },
+    {
+      field: "Done",
+      headerName: `Done`,
+      flex: 0.3,
+      minWidth: 30,
+      maxWidth: 120,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header--Pending",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              height: "100%",
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color:"green",
+              fontSize:"20px"
+            }}
+      
+          >
+          
+            {params.row.Isdone ? <i className="fa-solid fa-check"></i> : "" }
+          </div>
+        );
+      },
     },
 
     // Add more columns if needed
@@ -507,6 +629,33 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
         <Grid container>
           <Grid item xs={6} sx={{ mt: "5px" }}>
+    {id && <Box>
+      <Table>
+        <TableBody>
+       
+          <TableRow>
+            <TableCell sx={{padding:1 ,fontWeight:"bold",fontSize:"12px"}}>Shipment Id</TableCell>
+            <TableCell sx={{padding:1 ,fontSize:"12px"}}>{clientData?.client?.OrderShipmentId}</TableCell>
+
+          </TableRow>
+       
+          <TableRow>
+            <TableCell sx={{padding:1 ,fontWeight:"bold",fontSize:"12px"}}>Customer Name</TableCell>
+            <TableCell sx={{padding:1 ,fontSize:"12px"}}>{clientData?.client?.ContactPerson}</TableCell>
+
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{padding:1 ,fontWeight:"bold",fontSize:"12px"}}>Company Name</TableCell>
+            <TableCell sx={{padding:1 ,fontSize:"12px"}}>{clientData?.client?.CompanyName}</TableCell>
+
+          </TableRow>
+       
+       
+        </TableBody>
+      </Table>
+    </Box>
+
+    }
             <Box
               sx={{
                 width: "100%",

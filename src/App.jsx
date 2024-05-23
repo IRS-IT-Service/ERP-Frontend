@@ -136,10 +136,13 @@ import IrsConnect from "../public/chatlog.png";
 import Drive from "./Pages/G_Drive/Drive";
 import { RuleSharp } from "@mui/icons-material";
 import CareerDetails from "./Pages/Careers/CareerDetails";
-import TestingComponent from "./Pages/Testing Component/TestingComponent";
 import AddClient from "./Pages/PackagingAndClient/Components/AddClient";
 import Client from "./Pages/PackagingAndClient/Client";
 import BulkAddClient from "./Pages/PackagingAndClient/Components/BulkAddClient";
+import TestingComponent from "./Pages/Testing Component/TestingComponent";
+
+import CreateOrderShipmentMain from "./Pages/PackagingAndClient/CreateOrderShipmentMain";
+import ShipmentList from "./Pages/PackagingAndClient/ShipmentList";
 
 function App() {
   /// initialize
@@ -628,6 +631,10 @@ function App() {
                   element={<AllOverseasShipment />}
                 />
                 <Route
+                  path="/shipmentList"
+                  element={<ShipmentList />}
+                />
+                <Route
                   path="/RestockOrderList"
                   element={
                     <UserRole name={"Restock Order"}>
@@ -788,6 +795,7 @@ function App() {
                 <Route path="/Project" element={<Project />} />
 
                 <Route path="/ItemsAprroval" element={<ItemsApproval />} />
+                <Route path="/ItemsAprroval/:id" element={<ItemsApproval />} />
                 <Route path="/PartsApproval" element={<PartsApproval />} />
                 <Route path="/PreOrder" element={<PreOrder />} />
 
@@ -802,9 +810,13 @@ function App() {
                   element={<AddCustomerForMarketing />}
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
+                
                 {/* Careers */}
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
+                <Route path="/createOrderShipment" element={<CreateOrderShipmentMain />} />
+                <Route path="/testing" element={<TestingComponent />} />
+
               </Route>
             </Routes>
           </Suspense>
