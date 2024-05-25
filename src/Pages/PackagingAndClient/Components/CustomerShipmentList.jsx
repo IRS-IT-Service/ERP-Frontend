@@ -64,6 +64,7 @@ const CustomerShipmentList = () => {
           CourierLink: item.CourierLink,
           CourierName: item.CourierName,
           TrackingId: item.TrackingId,
+          FieldPackingDetails:item.PackingDetails
         };
       });
       setRows(result);
@@ -177,6 +178,7 @@ const CustomerShipmentList = () => {
       renderCell: (params) => {
         const packed = !params.value;
         const orderId = params.row.ShipmentId;
+        const fieldDetails = params.row.FieldPackingDetails;
         const CustomerName = params.row.CustomerName;
         const Weight = params.row.Weight;
         const Dimension = params.row.Dimension;
@@ -190,6 +192,7 @@ const CustomerShipmentList = () => {
                 OrderId: orderId,
                 Weight: Weight,
                 Dimension: Dimension,
+                fieldDetails:fieldDetails
               })
             }
           >

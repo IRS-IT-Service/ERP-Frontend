@@ -65,6 +65,24 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    upatePackaging: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/updatePackaging`,
+          method: "PUT",
+          body: data,
+        };
+      },
+    }),
+    updateShipmentImage: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/addShipmentBoxImage`,
+          method: "PUT",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -76,4 +94,5 @@ export const {
   useCreateShipmentOrderMutation,
   useUpdateShipmentMutation,
   useGetCustomerOrderShipmentQuery,
+  useUpatePackagingMutation,useUpdateShipmentImageMutation
 } = clientAndShipmentApiSlice;
