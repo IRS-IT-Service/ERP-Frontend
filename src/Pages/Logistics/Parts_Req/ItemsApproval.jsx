@@ -177,6 +177,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           ...item,
           id: item._id,
           Sno: index + 1,
+        
         };
       });
       setRows(newData);
@@ -192,7 +193,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           Sno: index + 1,
           Count:item.Qty,
           Name:item.productName,
-
+          Isdone:false,
 
 
         };
@@ -218,8 +219,23 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     }
 
     if (skuCounts.hasOwnProperty(newSku)) {
+      if ((reqCount[newSku] === skuCounts[newSku])) {
+           setRows((prev)=>{
+          return prev.map((item)=>{
+            if(item.SKU === newSku){
+              return {
+               ...item,
+               Isdone:true
+              }
+            }
+            return item
+          })
+        })
+      }
       if (!(reqCount[newSku] >= skuCounts[newSku])) {
+     
         return true;
+  
       }
     } else {
       return false;
@@ -263,12 +279,33 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
     try {
       const data = groupBySKU(barcodeRow);
-      const params = {
-        CustomerName: "R & D",
-        MobileNo: null,
-        InvoiceNo: "N/A",
-        barcodes: data,
-      };
+      const allDone = rows.every(row => row.Isdone === true);
+      let params = null
+if(id){
+if(!allDone){
+  return toast.error("Please provide all required quantities")
+}
+  params = {
+    OrderShipmentId:clientData?.client?.OrderShipmentId,
+    CustomerName:clientData?.client?.ContactPerson,
+    MobileNo: clientData?.client?.Contact,
+    CompanyName:clientData?.client?.CompanyName,
+    InvoiceNo: "N/A",
+    barcodes: data,
+  };
+
+}else{
+  params = {
+    CustomerName: "R & D",
+    OrderShipmentId:null,
+    CompanyName:"N/A",
+    MobileNo: null,
+    InvoiceNo: "N/A",
+    barcodes: data,
+  };
+}
+
+   
 
       const res = await dispatchBarcodeApi(params).unwrap();
 
@@ -296,7 +333,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       setBarcoderow([]);
       setImage("");
       setBarcode("");
-      refetch();
+  
       const historyRes = await createUserHistoryApi(addBarcodHistory);
       Swal.fire({
         icon: "success",
@@ -305,6 +342,10 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
         allowOutsideClick: false,
         timer: 700,
       });
+if(id){
+  navigate("/shipmentList")
+}
+
     } catch (error) {
       console.error("An error occurred during dispatch:", error);
       Swal.fire({
@@ -318,7 +359,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       setBarcoderow([]);
       setImage("");
       setBarcode("");
-      value = {}; // This line might not be necessary
+  
     }
   };
 
@@ -326,6 +367,8 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     if (!countSKUs(finalBarcodeRow, rows, latestSKU.SKU)) {
       const latestValue = finalBarcodeRow.slice();
       setBarcoderow(latestValue);
+     
+ 
     } else if (finalBarcodeRow.length > 0) {
       toast.error("Items are already fulfilled as per requirements");
       const latestValue = finalBarcodeRow.slice();
@@ -335,6 +378,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       );
 
       setFinalBarcodeRow(currentValue);
+      console.log(currentValue);
     }
   }, [finalBarcodeRow, setFinalBarcodeRow]);
 
@@ -397,21 +441,23 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   };
 
   //convert object into string
-  const formatShippingAddress = (address) => {
-    if (!address) return '';
+
+  const formatShippingAddress = (obj,keyOrder = []) => {
+    if (!obj || typeof obj !== 'object') return '';
+
+    // If keyOrder is provided, sort the keys accordingly; otherwise, use the object's keys as is
+    const keys = keyOrder.length ? keyOrder : Object.keys(obj);
   
-    const {
-      addressLine1 = '',
-      addressLine2 = '',
-      city = '',
-      state = '',
-      country = '',
-      pincode = ''
-    } = address;
+    // Build the string by iterating over the keys and getting corresponding values from the object
+    const formattedString = keys
+      .map(key => obj[key] || '') // Get the value for each key or an empty string if undefined
+      .filter(value => value) // Filter out any empty values
+      .join(', '); // Join the values with a comma and space
   
-    return `${addressLine1}, ${addressLine2}, ${city}, ${state}, ${country}, ${pincode}`;
+    return formattedString;
   };
-  const shippingAddress = formatShippingAddress(clientData?.client?.ShippingAddress);
+  const keyOrder = ['Address', 'District', 'State', 'Country','Pincode'];
+  const shippingAddress = formatShippingAddress(clientData?.client?.ShippingAddress,keyOrder);
   /// Columns
   const columns = [
     {
@@ -532,10 +578,25 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header--Pending",
       cellClassName: "super-app-theme--cell",
-      // valueFormatter: (params) =>
-      //   query === "Quantity"
-      //     ? `${(+params.value).toFixed(0)} `
-      //     : `₹ ${(+params.value).toFixed(0)} `,
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              height: "100%",
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color:"green",
+              fontSize:"20px"
+            }}
+      
+          >
+          
+            {params.row.Isdone ? <i className="fa-solid fa-check"></i> : "" }
+          </div>
+        );
+      },
     },
 
     // Add more columns if needed

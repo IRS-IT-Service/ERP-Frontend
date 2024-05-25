@@ -59,7 +59,7 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
     }
 
     if (name === "GST") {
-      if (value.length !== 16) {
+      if (value.length !== 15) {
         setError((prevError) => ({
           ...prevError,
           GSTError: true,
