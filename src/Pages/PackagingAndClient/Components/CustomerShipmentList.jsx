@@ -73,6 +73,7 @@ useEffect(()=>{
           CourierLink: item.CourierLink,
           CourierName: item.CourierName,
           TrackingId: item.TrackingId,
+          FieldPackingDetails:item.PackingDetails
         };
       });
       setRows(result);
@@ -191,6 +192,7 @@ useEffect(()=>{
       renderCell: (params) => {
         const packed = !params.value;
         const orderId = params.row.ShipmentId;
+        const fieldDetails = params.row.FieldPackingDetails;
         const CustomerName = params.row.CustomerName;
         const Weight = params.row.Weight;
         const Dimension = params.row.Dimension;
@@ -205,6 +207,7 @@ useEffect(()=>{
                 OrderId: orderId,
                 Weight: Weight,
                 Dimension: Dimension,
+                fieldDetails:fieldDetails
               })
             }
           >
