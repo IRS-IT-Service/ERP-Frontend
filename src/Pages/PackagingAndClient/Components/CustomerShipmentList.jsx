@@ -73,7 +73,7 @@ const CustomerShipmentList = () => {
           id: item._id,
           ShipmentId: item.OrderShipmentId,
           CustomerName: item.ContactPerson,
-          CustomerContact: item.Contact,
+          CustomerContact: ( item.AlternateNumber && item.AlternateNumber !== "undefined") ? item.AlternateNumber : item.Contact ,
           ShipAddress: shippingAddress,
           PackingDetails: item.IsPacked,
           CourierDetails: item.HasCourierId,
@@ -263,7 +263,8 @@ const CustomerShipmentList = () => {
         const Dimension = params.row.Dimension;
         const openFor = "Packing";
         return (
-          <Box
+          <Button
+          disabled={!params.row.Dispatched && !params.row.IsPacked}
             onClick={() =>
               handlePackageOpen({
                 OpenFor: openFor,
@@ -275,7 +276,7 @@ const CustomerShipmentList = () => {
               })
             }
           >
-            {/* {packed ? "Open" : <VerifiedIcon sx={{ color: "green" }} />} */}
+
             {packed ? (
               <Box
                 sx={{
@@ -317,7 +318,7 @@ const CustomerShipmentList = () => {
                 <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
               </Box>
             )}
-          </Box>
+          </Button>
         );
       },
     },
@@ -339,7 +340,7 @@ const CustomerShipmentList = () => {
         const Link = params.row.CourierLink;
         const openFor = "Courier";
         return (
-          <Box
+          <Button
             disabled={!params.row.IsPacked && !params.row.HasCourierId}
             onClick={() =>
               handlePackageOpen({
@@ -383,7 +384,7 @@ const CustomerShipmentList = () => {
             ) : (
               <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
             )}
-          </Box>
+          </Button>
         );
       },
     },
