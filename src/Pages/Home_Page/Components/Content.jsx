@@ -68,7 +68,7 @@ const Content = ({ autoHeight, text }) => {
           GST: item.GST,
           SellerPrice: item.SellerPrice.toFixed(2),
           Brand: item.Brand,
-          Quantity: item.ActualQuantity > 1 ? item.ActualQuantity : 0,
+          Quantity: item.ActualQuantity ,
           AssignedQuantity:item.AssignedQuantity + item.ActualQuantity,
           Category: item.Category,
           isVerifiedSellerPrice: item.isVerifiedSellerPrice,
