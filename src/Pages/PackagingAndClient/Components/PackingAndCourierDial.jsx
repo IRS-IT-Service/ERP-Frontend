@@ -31,6 +31,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Height } from "@mui/icons-material";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -197,7 +198,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
     setPackingDetails(newPackingDetails);
   };
 
-  // HANDLE DELETE BOX WHEN WE ADD 
+  // HANDLE DELETE BOX WHEN WE ADD
   const handleDeleteBox = (index) => {
     setPackingDetails((prevDetails) => {
       return prevDetails.filter((_, i) => i !== index);
@@ -206,6 +207,14 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
 
   // HANDLE PACKING SUBMIT FUNCTION
   const handlePackaging = async () => {
+    if (
+      !packingDetails[0]?.Length ||
+      !packingDetails[0]?.ActualWeight ||
+      !packingDetails[0]?.Width ||
+      !packingDetails[0]?.Height
+    ) {
+      return toast.error("Plase Fill Packing Details befor submission");
+    }
     try {
       const info = { id: details.OrderId, datas: packingDetails };
       const result = await updataPackages(info).unwrap();
@@ -368,18 +377,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                           >
                             Height<sup>cm</sup>
                           </TableCell>
-                          <TableCell
-                            sx={{
-                              [`&.${tableCellClasses.head}`]: {
-                                backgroundColor: "blue",
-                                color: "white",
-                                padding: 0,
-                                textAlign: "center",
-                              },
-                            }}
-                          >
-                            Vol.Weight
-                          </TableCell>
+
                           <TableCell
                             sx={{
                               [`&.${tableCellClasses.head}`]: {
@@ -432,6 +430,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                       </TableHead>
                       <TableBody>
                         {packingDetails?.map((item, index) => {
+                          console.log(index);
                           return (
                             <StyledTableRow key={index}>
                               <TableCell
@@ -493,18 +492,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                   }}
                                 />
                               </StyledTableCell>
-                              <StyledTableCell>
-                                <TextField
-                                  type="number"
-                                  placeholder="Vol.Weight"
-                                  size="small"
-                                  name="VolumetryWeight"
-                                  value={item.VolumetryWeight || ""}
-                                  onChange={(e) => {
-                                    handleBoxValueChange(e, index);
-                                  }}
-                                />
-                              </StyledTableCell>
+
                               <StyledTableCell>
                                 <TextField
                                   type="text"
@@ -577,9 +565,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                 )}
                               </StyledTableCell>
                               <StyledTableCell>
-                                {index === 0 ? (
-                                  ""
-                                ) : (
+                                {packingDetails.length > 1 && (
                                   <DeleteIcon
                                     sx={{ color: "red", cursor: "pointer" }}
                                     onClick={() => {
