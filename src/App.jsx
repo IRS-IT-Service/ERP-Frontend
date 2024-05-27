@@ -143,6 +143,7 @@ import TestingComponent from "./Pages/Testing Component/TestingComponent";
 
 import CreateOrderShipmentMain from "./Pages/PackagingAndClient/CreateOrderShipmentMain";
 import ShipmentList from "./Pages/PackagingAndClient/ShipmentList";
+import ShiproketMain from "./Pages/PackagingAndClient/Shiprocket/ShiproketMain";
 
 function App() {
   /// initialize
@@ -421,7 +422,6 @@ function App() {
         <ThemeProvider theme={theme}>
           <Suspense fallback={<Loading />}>
             <Routes>
- 
               <Route
                 path="/login"
                 element={<Login registrationToken={registrationToken} />}
@@ -630,10 +630,7 @@ function App() {
                   path="/allOverseasShipment"
                   element={<AllOverseasShipment />}
                 />
-                <Route
-                  path="/shipmentList"
-                  element={<ShipmentList />}
-                />
+                <Route path="/shipmentList" element={<ShipmentList />} />
                 <Route
                   path="/RestockOrderList"
                   element={
@@ -669,6 +666,8 @@ function App() {
                     </UserRole>
                   }
                 />
+                <Route path="/shipRocket" element={<ShiproketMain />} />
+
                 <Route path="/compare/:id" element={<Compare />} />
                 {/* Sales Router */}
                 <Route
@@ -713,7 +712,6 @@ function App() {
                 />
                 <Route path="/logisticList" element={<LogisticsList />} />
                 <Route path="/addBoxDetails/:id" element={<AddBoxDetails />} />
-                <Route path="/calc" element={<Calc />} />
                 {/* <Route path="/calc" element={<NewCalcRishabh />} /> */}
 
                 <Route path="/savedCalc" element={<CalcEdit />} />
@@ -810,13 +808,15 @@ function App() {
                   element={<AddCustomerForMarketing />}
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
-                
+
                 {/* Careers */}
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
-                <Route path="/createOrderShipment" element={<CreateOrderShipmentMain />} />
+                <Route
+                  path="/createOrderShipment"
+                  element={<CreateOrderShipmentMain />}
+                />
                 <Route path="/testing" element={<TestingComponent />} />
-
               </Route>
             </Routes>
           </Suspense>
