@@ -86,7 +86,6 @@ const LogisticsList = () => {
           logisticId: item.logisticId,
           Sno: index + 1,
           date: formatDate(item.Date),
-
           HAWB: item.Hawb,
           PI: item.Pi,
           CI: item.Ci,
