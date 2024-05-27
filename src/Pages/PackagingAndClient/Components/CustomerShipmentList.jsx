@@ -1,4 +1,8 @@
-import { DataGrid } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbarQuickFilter,
+  GridToolbar,
+} from "@mui/x-data-grid";
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useGetAllPackagesQuery } from "../../../features/api/clientAndShipmentApiSlice";
@@ -8,6 +12,11 @@ import PackingAndCourierDial from "./PackingAndCourierDial";
 import InvoiceDial from "./InvoiceDial";
 import { OpenInBrowser } from "@mui/icons-material";
 import OrderDetailsDialog from "./OrderDetailsDialog";
+import {
+  formatDate,
+} from "../../../commonFunctions/commonFunctions";
+import { Portal } from "@mui/base/Portal";
+import Grid from "@mui/material/Grid";
 
 const CustomerShipmentList = () => {
   // local state variables
@@ -21,17 +30,16 @@ const CustomerShipmentList = () => {
 
   const navigate = useNavigate();
 
-  const formatShippingAddress = (obj,keyOrder = []) => {
-    if (!obj || typeof obj !== 'object') return '';
+  const formatShippingAddress = (obj, keyOrder = []) => {
+    if (!obj || typeof obj !== "object") return "";
 
- 
     const keys = keyOrder.length ? keyOrder : Object.keys(obj);
 
     const formattedString = keys
-      .map(key => obj[key] || '') 
-      .filter(value => value) 
-      .join(', '); 
-  
+      .map((key) => obj[key] || "")
+      .filter((value) => value)
+      .join(", ");
+
     return formattedString;
   };
 
@@ -42,18 +50,18 @@ const CustomerShipmentList = () => {
     refetch,
   } = useGetAllPackagesQuery(queryParams);
 
-useEffect(()=>{
-
-    refetch()
-
-},[getAllShipments])
-
+  useEffect(() => {
+    refetch();
+  }, [getAllShipments]);
 
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {
       const result = getAllShipments.client.map((item, index) => {
-        const keyOrder = ['Address', 'District', 'State', 'Country','Pincode'];
-        const shippingAddress = formatShippingAddress(item.ShippingAddress,keyOrder);
+        const keyOrder = ["Address", "District", "State", "Country", "Pincode"];
+        const shippingAddress = formatShippingAddress(
+          item.ShippingAddress,
+          keyOrder
+        );
         return {
           ...item,
           Sno: index + 1,
@@ -61,7 +69,7 @@ useEffect(()=>{
           ShipmentId: item.OrderShipmentId,
           CustomerName: item.ContactPerson,
           CustomerContact: item.Contact,
-          ShipAddress:shippingAddress,
+          ShipAddress: shippingAddress,
           PackingDetails: item.IsPacked,
           CourierDetails: item.HasCourierId,
           Invoice: item.Invoice,
@@ -73,7 +81,8 @@ useEffect(()=>{
           CourierLink: item.CourierLink,
           CourierName: item.CourierName,
           TrackingId: item.TrackingId,
-          FieldPackingDetails:item.PackingDetails
+          FieldPackingDetails: item.PackingDetails,
+          OrderDate: formatDate(item.createdAt),
         };
       });
       setRows(result);
@@ -90,16 +99,27 @@ useEffect(()=>{
     setDetails(data);
   };
 
-  const handleOrderdetailsOpen = (data) =>{
+  const handleOrderdetailsOpen = (data) => {
     setOrderdetailsOpen(true);
     setDetails(data);
-  }
+  };
 
   const handleInvoiceOpen = (data) => {
     setInvoiceOpen(true);
     setDetails(data);
   };
 
+  function MyCustomToolbar(prop) {
+    return (
+      <React.Fragment>
+        <Portal container={() => document.getElementById("filter-panel")}>
+          <GridToolbarQuickFilter />
+        </Portal>
+        {/* <GridToolbar {...prop} /> */}
+      </React.Fragment>
+    );
+  }
+  
   const columns = [
     {
       field: "Sno",
@@ -114,6 +134,16 @@ useEffect(()=>{
     {
       field: "ShipmentId",
       headerName: "ShipmentId",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "OrderDate",
+      headerName: "Order-Date",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -199,7 +229,7 @@ useEffect(()=>{
         const openFor = "Packing";
         return (
           <Button
-          disabled={!params.row.Dispatched && params.row.IsPacked}
+            disabled={!params.row.Dispatched && params.row.IsPacked}
             onClick={() =>
               handlePackageOpen({
                 OpenFor: openFor,
@@ -207,7 +237,7 @@ useEffect(()=>{
                 OrderId: orderId,
                 Weight: Weight,
                 Dimension: Dimension,
-                fieldDetails:fieldDetails
+                fieldDetails: fieldDetails,
               })
             }
           >
@@ -235,7 +265,7 @@ useEffect(()=>{
         const openFor = "Courier";
         return (
           <Button
-          disabled={!params.row.IsPacked && !params.row.HasCourierId}
+            disabled={!params.row.IsPacked && !params.row.HasCourierId}
             onClick={() =>
               handlePackageOpen({
                 OpenFor: openFor,
@@ -293,11 +323,12 @@ useEffect(()=>{
         const IsCompletedOrder = params.row.IsCompletedOrder;
         return (
           <Button
-          disabled={params.row.IsCompletedOrder && !params.row.IsPacked && !params.row.HasCourierId}
-            onClick={() =>
-              handleOrderdetailsOpen(params.row)   
-              
+            disabled={
+              params.row.IsCompletedOrder &&
+              !params.row.IsPacked &&
+              !params.row.HasCourierId
             }
+            onClick={() => handleOrderdetailsOpen(params.row)}
           >
             {IsCompletedOrder ? "Submitted" : "Open"}
           </Button>
@@ -326,9 +357,12 @@ useEffect(()=>{
   return (
     <Box>
       <CustomToolbar />
+      <Grid item>
+        <Box id="filter-panel" />
+      </Grid>
       <Box
         sx={{
-          height: "87vh",
+          height: "84vh",
           "& .super-app-theme--header": {
             background: "#eee",
             color: "black",
@@ -349,7 +383,22 @@ useEffect(()=>{
           position: "relative",
         }}
       >
-        <DataGrid rows={rows} columns={columns} />
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          slots={{
+            toolbar: MyCustomToolbar,
+          }}
+          loading ={isLoading}
+          initialState={{
+            filter: {
+              filterModel: {
+                items: ["OrderDate"],
+                quickFilterExcludeHiddenColumns: true,
+              },
+            },
+          }}
+        />
       </Box>
       {courierOpen && (
         <PackingAndCourierDial
@@ -367,15 +416,13 @@ useEffect(()=>{
           refetch={refetch}
         />
       )}
-      {
-        orderdetailsopen && (
-          <OrderDetailsDialog
-            open={orderdetailsopen}
-            setOpen={setOrderdetailsOpen}
-            details={details}
-          />
-        )
-      }
+      {orderdetailsopen && (
+        <OrderDetailsDialog
+          open={orderdetailsopen}
+          setOpen={setOrderdetailsOpen}
+          details={details}
+        />
+      )}
     </Box>
   );
 };

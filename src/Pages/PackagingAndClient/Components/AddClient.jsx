@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import AddSingleClientDial from "./AddSingleClientDial";
 import { useGetAllClientQuery } from "../../../features/api/clientAndShipmentApiSlice";
 import { useGridApiRef } from "@mui/x-data-grid";
-import Client from "../Client";
 
 const AddClient = () => {
   // api calling
@@ -18,7 +17,6 @@ const AddClient = () => {
   const [rows,setRows] = useState([])
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [searchDelay, setSearchDelay] = useState(false);
 
   const formatShippingAddress = (obj,keyOrder = []) => {
     if (!obj || typeof obj !== 'object') return '';
@@ -45,7 +43,6 @@ const AddClient = () => {
 
   useEffect(() => {
     if (getAllClient?.client) {
-      
       const response = getAllClient.client.map((client, index) => {
         const keyOrder = ['Address', 'District', 'State', 'Country','Pincode'];
         const shippingAddress = formatShippingAddress(client.PermanentAddress,keyOrder);
@@ -68,6 +65,16 @@ const AddClient = () => {
   const columns = [
     {
       field: "Sno",
+      headerName: "Sno",
+      flex: 0.1,
+      minWidth: 10,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "ContactName",
       headerName: "Sno",
       flex: 0.1,
       minWidth: 10,
@@ -127,16 +134,7 @@ const AddClient = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-    {
-      field: "Order",
-      headerName: "Create Order",
-      flex: 0.3,
-      minWidth: 250,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
+    
   ];
   return (
     <Box sx={{}}>
