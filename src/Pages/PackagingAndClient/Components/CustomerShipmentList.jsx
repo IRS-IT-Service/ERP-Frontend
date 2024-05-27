@@ -3,20 +3,25 @@ import {
   GridToolbarQuickFilter,
   GridToolbar,
 } from "@mui/x-data-grid";
-import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {
+  Box,
+  Button,
+  ToggleButton,
+  ToggleButtonGroup,
+  collapseClasses,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useGetAllPackagesQuery } from "../../../features/api/clientAndShipmentApiSlice";
 import { useNavigate } from "react-router-dom";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import PackingAndCourierDial from "./PackingAndCourierDial";
 import InvoiceDial from "./InvoiceDial";
-import { OpenInBrowser } from "@mui/icons-material";
+import { Margin, OpenInBrowser } from "@mui/icons-material";
 import OrderDetailsDialog from "./OrderDetailsDialog";
-import {
-  formatDate,
-} from "../../../commonFunctions/commonFunctions";
+import { formatDate } from "../../../commonFunctions/commonFunctions";
 import { Portal } from "@mui/base/Portal";
 import Grid from "@mui/material/Grid";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
 const CustomerShipmentList = () => {
   // local state variables
@@ -119,7 +124,7 @@ const CustomerShipmentList = () => {
       </React.Fragment>
     );
   }
-  
+
   const columns = [
     {
       field: "Sno",
@@ -187,7 +192,7 @@ const CustomerShipmentList = () => {
       field: "PackageDispatch",
       headerName: "Package-Dispatch",
       flex: 0.3,
-      minWidth: 250,
+      minWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -196,16 +201,46 @@ const CustomerShipmentList = () => {
         const dispatched = !params.value;
         const id = params.row.ShipmentId;
         return dispatched ? (
-          <Button
-            variant="contained"
-            sx={{ color: "#fff", background: "green" }}
-            onClick={() => navigate(`/ItemsAprroval/${id}`)}
-          >
-            Dispatch
-          </Button>
+          <Box onClick={() => navigate(`/ItemsAprroval/${id}`)}>
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    color: "#fff",
+                    background:
+                      params.row.Dispatched && !params.row.IsPacked
+                        ? "#ccc"
+                        : "green",
+                    borderRadius: "50%",
+
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  1
+                </Box>
+              </Box>
+            </Box>
+          </Box>
         ) : (
-          <Box sx={{ color: "green" }}>
-            <VerifiedIcon />
+          <Box>
+            <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
           </Box>
         );
       },
@@ -228,8 +263,7 @@ const CustomerShipmentList = () => {
         const Dimension = params.row.Dimension;
         const openFor = "Packing";
         return (
-          <Button
-            disabled={!params.row.Dispatched && params.row.IsPacked}
+          <Box
             onClick={() =>
               handlePackageOpen({
                 OpenFor: openFor,
@@ -241,8 +275,49 @@ const CustomerShipmentList = () => {
               })
             }
           >
-            {packed ? "Open" : <VerifiedIcon sx={{ color: "green" }} />}
-          </Button>
+            {/* {packed ? "Open" : <VerifiedIcon sx={{ color: "green" }} />} */}
+            {packed ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      color: "#fff",
+                      background:
+                        !params.row.Dispatched && !params.row.IsPacked
+                          ? "#ccc"
+                          : "green",
+                      borderRadius: "50%",
+
+                      width: "30px",
+                      height: "30px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    2
+                  </Box>
+                </Box>
+              </Box>
+            ) : (
+              <Box>
+                <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
+              </Box>
+            )}
+          </Box>
         );
       },
     },
@@ -264,7 +339,7 @@ const CustomerShipmentList = () => {
         const Link = params.row.CourierLink;
         const openFor = "Courier";
         return (
-          <Button
+          <Box
             disabled={!params.row.IsPacked && !params.row.HasCourierId}
             onClick={() =>
               handlePackageOpen({
@@ -277,8 +352,38 @@ const CustomerShipmentList = () => {
               })
             }
           >
-            {packed ? "Open" : <VerifiedIcon sx={{ color: "green" }} />}
-          </Button>
+            {packed ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    color: "#fff",
+                    background:
+                      !params.row.IsPacked && !params.row.HasCourierId
+                        ? "#ccc"
+                        : "green",
+                    borderRadius: "50%",
+
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  3
+                </Box>
+              </Box>
+            ) : (
+              <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
+            )}
+          </Box>
         );
       },
     },
@@ -311,6 +416,46 @@ const CustomerShipmentList = () => {
       },
     },
     {
+      field: "status",
+      headerName: "Status",
+      flex: 0.2,
+      minWidth: 100,
+      maxWidth: 250,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const data = params.row;
+
+        const color = params.row.IsPacked
+          ? params.row.HasCourierId
+            ? "orange"
+            : "blue"
+          : params.row.IsCompletedOrder
+          ? "green"
+          : "red";
+
+        const status = params.row.IsPacked
+          ? params.row.HasCourierId
+            ? "In transit"
+            : "Packed"
+          : params.row.IsCompletedOrder
+          ? "delivered"
+          : "Intialized";
+
+        return (
+          <div
+            style={{
+              color: color,
+            }}
+          >
+            <Button sx={{ color: `${color}` }}>{status}</Button>
+          </div>
+        );
+      },
+    },
+    {
       field: "OrderCompleted",
       headerName: "Completed",
       flex: 0.3,
@@ -339,7 +484,24 @@ const CustomerShipmentList = () => {
 
   const CustomToolbar = () => {
     return (
-      <Box style={{ display: "flex", justifyContent: "end", gap: "10px" }}>
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "end",
+          gap: "20px",
+          marginTop: "5px",
+        }}
+      >
+        <Button
+          size="small"
+          variant="contained"
+          sx={{
+            background: "purple",
+          }}
+          onClick={() => navigate("/shipRocket")}
+        >
+          Shipment rate Comparision
+        </Button>
         <ToggleButtonGroup
           color="primary"
           value={queryParams}
@@ -389,7 +551,7 @@ const CustomerShipmentList = () => {
           slots={{
             toolbar: MyCustomToolbar,
           }}
-          loading ={isLoading}
+          loading={isLoading}
           initialState={{
             filter: {
               filterModel: {

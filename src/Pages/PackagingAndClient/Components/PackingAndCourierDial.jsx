@@ -390,7 +390,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                           >
                             Marking
                           </TableCell>
-                          <TableCell
+                          {/* <TableCell
                             sx={{
                               [`&.${tableCellClasses.head}`]: {
                                 backgroundColor: "blue",
@@ -401,7 +401,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                             }}
                           >
                             Description
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell
                             sx={{
                               [`&.${tableCellClasses.head}`]: {
@@ -430,7 +430,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                       </TableHead>
                       <TableBody>
                         {packingDetails?.map((item, index) => {
-                          console.log(index);
+                          
                           return (
                             <StyledTableRow key={index}>
                               <TableCell
@@ -505,7 +505,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                   }}
                                 />
                               </StyledTableCell>
-                              <StyledTableCell>
+                              {/* <StyledTableCell>
                                 <TextField
                                   type="text"
                                   placeholder="Description"
@@ -516,7 +516,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                     handleBoxValueChange(e, index);
                                   }}
                                 />
-                              </StyledTableCell>
+                              </StyledTableCell> */}
                               <StyledTableCell>
                                 {item.Photo ? (
                                   <Button
