@@ -14,6 +14,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useAddClientMutation } from "../../../features/api/clientAndShipmentApiSlice";
 import { toast } from "react-toastify";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 const AddSingleClientDial = ({ open, setOpen, refetch }) => {
   // api calling
@@ -31,13 +33,14 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
     District: "",
     Address: "",
     helperText: "",
+    ClientType: "Company",
   });
   const [error, setError] = useState({
     ContactError: false,
     EmailError: false,
     GSTError: false,
   });
-  
+
   // onchange function
   const handleChange = (e) => {
     let helperText = "";
@@ -59,7 +62,7 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
     }
 
     if (name === "GST") {
-      if (value.length !== 16) {
+      if (value.length !== 15) {
         setError((prevError) => ({
           ...prevError,
           GSTError: true,
@@ -171,14 +174,31 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
     }
   };
 
+  const handleChangeforType = (e, name) => {
+    const { value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <Dialog open={open}>
       <DialogTitle
-        sx={{ textAlign: "center", color: "blue", fontWeight: "bold" }}
+        sx={{ textAlign: "center",background:"#eee", fontWeight: "bold" }}
       >
         Add Single Client
       </DialogTitle>
       <DialogContent>
+        <div style={{ display: "flex", justifyContent: "center" ,marginTop:"4px"}}>
+          <ToggleButtonGroup
+            color="primary"
+            value={form.ClientType}
+            exclusive
+            onChange={(e) => handleChangeforType(e, "ClientType")}
+            aria-label="Platform"
+          >
+            <ToggleButton value="Individual">Individual</ToggleButton>
+            <ToggleButton value="Company">Company</ToggleButton>
+          </ToggleButtonGroup>
+        </div>
         <Box
           sx={{
             display: "flex",
@@ -195,14 +215,14 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
             fullWidth
             label="Enter Company Name"
             name="CompanyName"
-            required
+            required = {form.ClientType === "Company" ? true : false}
             value={form.CompanyName}
             onChange={(e) => handleChange(e)}
           />
           <TextField
             variant="outlined"
             fullWidth
-            label="Enter Contact Name"
+            label="Enter Name"
             name="ContactName"
             required
             value={form.ContactName}
@@ -211,8 +231,9 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
           <TextField
             variant="outlined"
             fullWidth
-            label="Enter Contact"
+            label="Phone "
             name="Contact"
+            required
             value={form.Contact}
             type="number"
             error={error.ContactError}
@@ -235,7 +256,7 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
             variant="outlined"
             fullWidth
             label="Enter GSTIN"
-            required
+            required={form.ClientType === "Company" ? true : false}
             name="GST"
             value={form.GST}
             onChange={(e) => handleChange(e)}
