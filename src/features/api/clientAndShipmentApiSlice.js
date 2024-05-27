@@ -93,6 +93,7 @@ export const {
   useUpdateCustomershippingAddressMutation,
   useCreateShipmentOrderMutation,
   useUpdateShipmentMutation,
+  useUpdateInvoiceMutation,
   useGetCustomerOrderShipmentQuery,
   useUpatePackagingMutation,useUpdateShipmentImageMutation
 } = clientAndShipmentApiSlice;

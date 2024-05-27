@@ -990,6 +990,7 @@ const handleOpenItemsDialog = () => {
             }}
           >
             <Box>
+       
               {addAddress ? (
                 <Box
                   sx={{
@@ -1093,7 +1094,7 @@ const handleOpenItemsDialog = () => {
                   </Table>
                 </Box>
               ) : (
-                selectedCustomer?.AlternateAddress &&
+                selectedCustomer?.AlternateAddress.length > 0 ?
                 selectedCustomer?.AlternateAddress?.map((item, index) => (
                   <ListItemButton
                     key={index}
@@ -1124,7 +1125,10 @@ const handleOpenItemsDialog = () => {
                     />
                   </ListItemButton>
                 ))
-              )}
+              :   <Typography sx={{
+                padding:"10px",
+                textAlign: "center",
+              }}>No shipping address</Typography>)}
               <Box
                 sx={{
                   display: "flex",
