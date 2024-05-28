@@ -67,7 +67,7 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
           ...prevError,
           GSTError: true,
         }));
-        helperText = "GSTIN should be 16 digits";
+        helperText = "GSTIN should be 15 digits";
       }
     }
 
