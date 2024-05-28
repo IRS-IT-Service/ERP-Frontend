@@ -527,7 +527,7 @@ const CustomerShipmentList = () => {
           aria-label="Platform"
         >
           <ToggleButton value="InPackaging">In-Packaging</ToggleButton>
-          <ToggleButton value="Dispatched">Dispatched</ToggleButton>
+          <ToggleButton value="Dispatched">Delivered</ToggleButton>
         </ToggleButtonGroup>
       </Box>
     );
