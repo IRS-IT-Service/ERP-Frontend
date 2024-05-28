@@ -76,7 +76,6 @@ const MyAccountDetails = () => {
   const [verifySeller, { isLoading }] = useVerifySellerMutation();
 
   /// handler
-  console.log(personalDetails)
 
   const handleVerify = async (value) => {
     try {
