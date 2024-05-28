@@ -11,29 +11,27 @@ const AddClient = () => {
   const { data: getAllClient, refetch, isLoading } = useGetAllClientQuery();
 
   const apiRef = useGridApiRef();
- 
+
   // local state
   const [open, setOpen] = useState(false);
-  const [rows,setRows] = useState([])
+  const [rows, setRows] = useState([]);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
-  const formatShippingAddress = (obj,keyOrder = []) => {
-    if (!obj || typeof obj !== 'object') return '';
+  const formatShippingAddress = (obj, keyOrder = []) => {
+    if (!obj || typeof obj !== "object") return "";
 
- 
     const keys = keyOrder.length ? keyOrder : Object.keys(obj);
 
     const formattedString = keys
-      .map(key => obj[key] || '') 
-      .filter(value => value) 
-      .join(', '); 
-  
+      .map((key) => obj[key] || "")
+      .filter((value) => value)
+      .join(", ");
+
     return formattedString;
   };
 
   ///search
-
 
   const handleFilterChange = (field, operator, value) => {
     apiRef.current.setFilterModel({
@@ -44,24 +42,28 @@ const AddClient = () => {
   useEffect(() => {
     if (getAllClient?.client) {
       const response = getAllClient.client.map((client, index) => {
-        const keyOrder = ['Address', 'District', 'State', 'Country','Pincode'];
-        const shippingAddress = formatShippingAddress(client.PermanentAddress,keyOrder);
+        const keyOrder = ["Address", "District", "State", "Country", "Pincode"];
+        const shippingAddress = formatShippingAddress(
+          client.PermanentAddress,
+          keyOrder
+        );
+        console.log(client)
         return {
+          ...client,
           Sno: index + 1,
           id: client._id,
           CompanyName: client.CompanyName,
           GST: client.GSTIN,
-          Address:shippingAddress ,
-         
+          Address: shippingAddress,
           ContactNumber: client.ContactNumber,
           ContactName: client.ContactName,
           Email: client.Email,
         };
       });
-      setRows(response)
+      setRows(response);
     }
   }, [getAllClient]);
-  
+
   const columns = [
     {
       field: "Sno",
@@ -75,9 +77,9 @@ const AddClient = () => {
     },
     {
       field: "ContactName",
-      headerName: "Sno",
-      flex: 0.1,
-      minWidth: 10,
+      headerName: "Contact Name",
+      flex: 0.3,
+      minWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -115,6 +117,16 @@ const AddClient = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
+      field: "ClientType",
+      headerName: "Type",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
       field: "Email",
       headerName: "Email",
       flex: 0.3,
@@ -134,11 +146,9 @@ const AddClient = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-    
   ];
   return (
     <Box sx={{}}>
-      
       <Box
         sx={{
           display: "flex",
@@ -147,9 +157,8 @@ const AddClient = () => {
           padding: "10px",
         }}
       >
-               <Box >
-        
-        <input
+        <Box>
+          <input
             placeholder="search Company Name"
             style={{
               width: "30rem",
@@ -160,10 +169,10 @@ const AddClient = () => {
             name="search"
             onChange={(e) => {
               setSearch(e.target.value);
-               handleFilterChange("CompanyName", "contains", e.target.value);
+              handleFilterChange("CompanyName", "contains", e.target.value);
             }}
           />
-           </Box> 
+        </Box>
         <Button variant="outlined" onClick={() => navigate("/bulkAdd")}>
           Bulk Add Client
         </Button>
@@ -171,7 +180,6 @@ const AddClient = () => {
           {" "}
           Add Single Client
         </Button>
- 
       </Box>
 
       <Box
@@ -197,9 +205,11 @@ const AddClient = () => {
           position: "relative",
         }}
       >
-        <DataGrid columns={columns} rows={rows}  apiRef={apiRef} />
+        <DataGrid columns={columns} rows={rows} apiRef={apiRef} />
       </Box>
-      {open && <AddSingleClientDial open={open} setOpen={setOpen} refetch={refetch} />}
+      {open && (
+        <AddSingleClientDial open={open} setOpen={setOpen} refetch={refetch} />
+      )}
     </Box>
   );
 };

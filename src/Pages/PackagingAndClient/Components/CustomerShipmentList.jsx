@@ -67,6 +67,7 @@ const CustomerShipmentList = () => {
           item.ShippingAddress,
           keyOrder
         );
+  
         return {
           ...item,
           Sno: index + 1,

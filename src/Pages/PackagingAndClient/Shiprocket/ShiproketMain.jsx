@@ -168,12 +168,14 @@ const ShiproketMain = () => {
             <div style={{ display: "flex", justifyContent: "space-around" }}>
               <TextField
                 label="Pickup Pincode"
+                size="small"
                 name="pickupCode"
                 value={form.pickupCode}
                 onChange={(e) => handleChange(e)}
               />
               <TextField
                 label="Delivery Pincode"
+                size="small"
                 name="deliverCode"
                 value={form.deliverCode}
                 onChange={(e) => handleChange(e)}
@@ -195,6 +197,7 @@ const ShiproketMain = () => {
               <TextField
                 label="Weight"
                 name="weight"
+                size="small"
                 type="number"
                 value={form.weight}
                 onChange={(e) => handleChange(e)}
@@ -218,12 +221,14 @@ const ShiproketMain = () => {
                 label="Length (in cm)"
                 name="length"
                 type="number"
+                size="small"
                 value={form.length}
                 onChange={(e) => handleChange(e)}
               />
               <TextField
                 label="Breadth (in cm)"
                 name="breadth"
+                size="small"
                 type="number"
                 value={form.breadth}
                 onChange={(e) => handleChange(e)}
@@ -231,6 +236,7 @@ const ShiproketMain = () => {
               <TextField
                 label="Height (in cm)"
                 name="height"
+                size="small"
                 type="number"
                 value={form.height}
                 onChange={(e) => handleChange(e)}
@@ -259,10 +265,35 @@ const ShiproketMain = () => {
         </Paper>
       </Box>
       {/* to show the data of courier */}
-      <Box sx={{ height: "57vh", marginTop: "10px" }}>
+     
+      <Box
+        sx={{
+          height: "57vh",
+          "& .super-app-theme--header": {
+            background: "#eee",
+            color: "black",
+            textAlign: "center",
+          },
+          "& .vertical-lines .MuiDataGrid-cell": {
+            borderRight: "1px solid #e0e0e0",
+          },
+          "& .supercursor-app-theme--cell:hover": {
+            background:
+              "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
+            color: "white",
+            cursor: "pointer",
+          },
+          "& .MuiDataGrid-columnHeaderTitleContainer": {
+            background: "#eee",
+          },
+          position: "relative",
+          marginTop: "20px"
+        }}
+      >
         <DataGrid rows={shipDatas} columns={columns} />
+        </Box>
       </Box>
-    </Box>
+
   );
 };
 
