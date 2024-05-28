@@ -11,7 +11,7 @@ import {
   collapseClasses,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useGetAllPackagesQuery } from "../../../features/api/clientAndShipmentApiSlice";
+import { useGetAllPackagesQuery  } from "../../../features/api/clientAndShipmentApiSlice";
 import { useNavigate } from "react-router-dom";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import PackingAndCourierDial from "./PackingAndCourierDial";
@@ -430,21 +430,36 @@ const CustomerShipmentList = () => {
       renderCell: (params) => {
         const data = params.row;
 
-        const color = params.row.IsPacked
-          ? params.row.HasCourierId
-            ? "orange"
-            : "blue"
-          : params.row.IsCompletedOrder
-          ? "green"
-          : "red";
+        const color =  params.row.IsCompletedOrder
+        ? "Green"
+        : params.row.Dispatched
+            ? "#663300"
+            : params.row.IsPacked
+                ? "#003300"
+                : params.row.HasCourierId
+                    ? " #cc9900"
+                    : " #cc0000";
 
-        const status = params.row.IsPacked
-          ? params.row.HasCourierId
-            ? "In transit"
-            : "Packed"
-          : params.row.IsCompletedOrder
-          ? "delivered"
-          : "Intialized";
+
+          const status = params.row.IsCompletedOrder
+          ? "Delivered"
+          : params.row.Dispatched
+              ? "Dispatched"
+              : params.row.IsPacked
+                  ? "Packed"
+                  : params.row.HasCourierId
+                      ? "In Transit"
+                      : "Initialized";
+      
+
+
+        // const status = params.row.IsPacked
+        //   ? params.row.HasCourierId
+        //     ? "In transit"
+        //     : "Packed"
+        //   : params.row.IsCompletedOrder
+        //   ? "delivered"
+        //   : "Intialized";
 
         return (
           <div
@@ -585,6 +600,8 @@ const CustomerShipmentList = () => {
           open={orderdetailsopen}
           setOpen={setOrderdetailsOpen}
           details={details}
+          isLoading={isLoading}
+          refetch={refetch}
         />
       )}
     </Box>

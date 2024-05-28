@@ -20,6 +20,7 @@ import {
   useUpatePackagingMutation,
   useUpdateShipmentMutation,
   useUpdateShipmentImageMutation,
+  
 } from "../../../features/api/clientAndShipmentApiSlice";
 import { toast } from "react-toastify";
 import Table from "@mui/material/Table";
@@ -117,10 +118,14 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
   const { data: getDyanmicValue } = useGetDynamicValueQuery();
   const [updateShipment, { isLoading: updateShipmentLoading }] =
     useUpdateShipmentMutation();
+
   const [updataPackages, { isLoading: loadingPacking }] =
     useUpatePackagingMutation();
+    
   const [updateImage, { isLoading: loadingBoxImage }] =
     useUpdateShipmentImageMutation();
+
+
 
   const packageDisable = details?.fieldDetails?.length > 0 ? true : false;
 

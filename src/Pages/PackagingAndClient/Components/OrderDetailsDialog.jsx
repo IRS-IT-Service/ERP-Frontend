@@ -22,7 +22,14 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import {
   useGetsingleShipmentbyorderIdQuery,
   useCreateShipmentMutation,
+
 } from "../../../features/api/barcodeApiSlice";
+
+import {
+  useChangeStatusForDeliverMutation
+  } from "../../../features/api/clientAndShipmentApiSlice";
+
+  import { toast } from "react-toastify";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -44,8 +51,10 @@ const OrderDetailsDialog = ({
   updateShipmentLoading,
   packageDisable,
   courierDisable,
+  isLoading,
+  refetch
 }) => {
-  const skip = !open;
+  const skip = !open || !details.Dispatched;
 
   const { data: barcodeData, isLoading: clientLoading } =
     useGetsingleShipmentbyorderIdQuery(details.ShipmentId, {
@@ -54,6 +63,11 @@ const OrderDetailsDialog = ({
 
   const [createShipment, { isLoading: createShipmentLoading }] =
     useCreateShipmentMutation();
+
+
+    const [updateData, { isLoading: loadingUpdatedata }] =
+    useChangeStatusForDeliverMutation();
+
 
   const [toggleSwitch, setToggleSwitch] = useState(true);
   const [imageDetails, setImageDetails] = useState(null);
@@ -71,41 +85,34 @@ const OrderDetailsDialog = ({
   };
 
 
+
+
   const handleSubmit = async () => {
-    if ((!trackingId && courierName !== "SELF PICKUP") || !courierName) {
-      return toast.error("Please Provide TrackingId Or CourierName");
-    }
-    if (selectedItemsData.length <= 0) {
-      return toast.error("Plz SelectItems to Send");
-    }
-    const barcodes = selectedItemsData.map((item) => item.barcode);
+
     try {
-      const info = {
-        customername: data?.result?.CustomerName,
-        courierName: courierName,
-        courierLink: Link,
-        customerMobile: data?.result?.MobileNo,
-        trackingId: trackingId,
-        salesId: data?.result?.SalesId,
-        barcodes: barcodes,
-      };
-      const result = await createShipment(info);
+  
+      if (!details.ShipmentId) {
+        return toast.error("Shipment Id not available");
+      }
+  
+      const result = await updateData(details.ShipmentId).unwrap();
 
       toast.success("Item has shipped successfully");
+      refetch()
+      setOpen(false)
+  
+
     } catch (error) {
       console.log("Server Error", error.message);
     }
   };
 
-console.log(details.PackingDetails
 
-)
 
-console.log(details.HasCourierId
-)
+
   return (
     <Box>
-      <Dialog open={open} maxWidth="xl">
+      <Dialog open={open} maxWidth="xl" onClose={()=>setOpen(false)}>
         <DialogTitle
           sx={{ textAlign: "center", color: "white", background: "blue" ,padding:0.5 }}
         >
@@ -417,11 +424,11 @@ console.log(details.HasCourierId
         <DialogActions sx={{ display: "flex", justifyContent: "space-around" }}>
           <Button
             variant="contained"
-            disabled={updateShipmentLoading || !details.HasCourierId || !details.PackingDetails
+            disabled={isLoading || !details.HasCourierId || !details.PackingDetails || details.IsCompletedOrder
             }
             onClick={handleSubmit}
           >
-            {createShipmentLoading ? <CircularProgress /> : "Final Submit"}
+            {isLoading ? <CircularProgress /> : "Final Submit"}
           </Button>
 
           <Button variant="outlined" onClick={() => setOpen(false)}>
