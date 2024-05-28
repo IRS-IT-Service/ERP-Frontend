@@ -193,7 +193,7 @@ const realData = uniqueSKUsArray?.filter((item) =>
 
 const handleAdditems = () => {
   setOpen(false)
-  console.log(selectedItemsData)
+
   setSelectedData(selectedItemsData);
 };
 

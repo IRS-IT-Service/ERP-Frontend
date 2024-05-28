@@ -12,7 +12,10 @@ import {
 } from "@mui/material";
 import CartGrid from "../../../components/Common/CardGrid";
 import { useNavigate } from "react-router-dom";
-import { useDeleteSellerMutation, useGetAllSellerQuery } from "../../../features/api/sellerApiSlice";
+import {
+  useDeleteSellerMutation,
+  useGetAllSellerQuery,
+} from "../../../features/api/sellerApiSlice";
 import Loading from "../../../components/Common/Loading";
 import { toast } from "react-toastify";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
@@ -25,6 +28,7 @@ const SellerVerificationList = () => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [deleteData, setDeleteData] = useState("");
 
   /// global state
 
@@ -38,7 +42,7 @@ const SellerVerificationList = () => {
     data: allSellerData,
     isLoading: SellerList,
   } = useGetAllSellerQuery("both");
-  const [deleteSeller,{isLoading}] = useDeleteSellerMutation()
+  const [deleteSeller, { isLoading }] = useDeleteSellerMutation();
 
   /// useEffect
 
@@ -49,7 +53,7 @@ const SellerVerificationList = () => {
           ...item,
           id: index,
           sellerId: item.sellerId,
-          Date:formatDate(item.createdAt),
+          Date: formatDate(item.createdAt),
           UserName: item.name,
           status:
             item.personalQuery === "not_submit"
@@ -63,13 +67,21 @@ const SellerVerificationList = () => {
     }
   }, [allSellerData]);
 
-  const handleDelete = async(sellerId) => {
+  const handleOpenDial = (id) => {
+    setDeleteData(id);
+    setOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteData) return toast.error("SellerId is Required");
     try {
-      const result = await deleteSeller(sellerId);
+      const result = await deleteSeller(deleteData).unwrap();
       toast.success("Seller deleted successfully");
-      refetchSeller()
-      setOpen(false)
-    } catch (error) {}
+      refetchSeller();
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
   const columns = [
     {
@@ -139,7 +151,6 @@ const SellerVerificationList = () => {
       align: "center",
       headerAlign: "center",
       minWidth: 150,
-      
     },
     {
       field: "gstActive",
@@ -197,21 +208,7 @@ const SellerVerificationList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => (
-        <Button onClick={() => setOpen(!open)}>
-          {open && (
-            <Dialog open={open}>
-              <DialogTitle></DialogTitle>
-              <DialogContent>
-                You will loose this document from the database
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setOpen(!open)}>Close</Button>
-                <Button onClick={() => handleDelete(params.row.sellerId)}>
-                  Delete
-                </Button>
-              </DialogActions>
-            </Dialog>
-          )}
+        <Button onClick={() => handleOpenDial(params.row.sellerId)}>
           delete
         </Button>
       ),
@@ -223,6 +220,18 @@ const SellerVerificationList = () => {
         <Loading loading={SellerList} />
         <CartGrid columns={columns} rows={row} rowHeight={40} Height={"80vh"} />
       </Grid>
+      {open && (
+        <Dialog open={open}>
+          <DialogTitle></DialogTitle>
+          <DialogContent>
+            You will loose this document from the database
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpen(!open)}>Close</Button>
+            <Button onClick={() => handleDelete()}>Delete</Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </StyledBox>
   );
 };

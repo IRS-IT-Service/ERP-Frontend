@@ -373,8 +373,8 @@ const handleOpenItemsDialog = () => {
         State: form.State,
         Country: form.Country,
         Pincode: form.Pincode,
-        addressLine1: form.Address1,
-        addressLine2: form.Address2,
+        AddressLine1: form.Address1,
+        AddressLine2: form.Address2,
       };
 
       const result = await addmoreaddress(info).unwrap();
@@ -395,7 +395,6 @@ const handleOpenItemsDialog = () => {
   const handleSubmit = async () => {
     try {
       const isItemsFulfilled = Requireqty.every(item => item.Qty && item.Qty !== "");
-      console.log(isItemsFulfilled)
       const isEmpty = Object.keys(selectedAddress).length === 0;
 
       if (!selectedCustomer.ClientId) {
@@ -431,7 +430,7 @@ const handleOpenItemsDialog = () => {
     let helperText = "";
     const { name, value, files } = e.target;
     if (name === "address1") {
-      console.log(value);
+    
       setForm((prevForm) => ({
         ...prevForm,
         Address1: value,
@@ -835,11 +834,11 @@ const handleOpenItemsDialog = () => {
                             return (
                               <TableRow key={key} sx={{ padding: 0 }}>
                                 <TableCell
-                                  sx={{ padding: 0.5, fontWeight: "bold" }}
+                                  sx={{ padding: 0.5, fontWeight: "bold"}}
                                 >
                                   {key?.toLocaleUpperCase()}:
                                 </TableCell>
-                                <TableCell sx={{ padding: 0 }}>
+                                <TableCell sx={{ padding:0 }}>
                                   {selectedAddress[key]}
                                 </TableCell>
                               </TableRow>
@@ -982,19 +981,21 @@ const handleOpenItemsDialog = () => {
           <Popover
             id={idPop}
             open={openPop}
+   
             anchorEl={anchorEl}
             onClose={handleClose}
             anchorOrigin={{
-              vertical: "top",
+              vertical: "left",
               horizontal: "right",
             }}
+       
           >
             <Box>
        
               {addAddress ? (
                 <Box
                   sx={{
-                    width: "100%",
+                    width: "25vw",
                     height: "auto",
                     padding: "10px",
                   }}
@@ -1008,6 +1009,7 @@ const handleOpenItemsDialog = () => {
                         <TableCell sx={{ padding: 1 }}>
                           <TextField
                             size="small"
+                            fullWidth
                             value={form.Address1}
                             name="address1"
                             onChange={(e) => handleChange(e)}
@@ -1021,6 +1023,7 @@ const handleOpenItemsDialog = () => {
                         <TableCell sx={{ padding: 1 }}>
                           <TextField
                             size="small"
+                            fullWidth
                             value={form.Address2}
                             name="address2"
                             onChange={(e) => handleChange(e)}
@@ -1034,6 +1037,7 @@ const handleOpenItemsDialog = () => {
                         <TableCell sx={{ padding: 1 }}>
                           <TextField
                             size="small"
+                            fullWidth
                             name="city"
                             value={form.City}
                             onChange={(e) => handleChange(e)}
@@ -1047,6 +1051,7 @@ const handleOpenItemsDialog = () => {
                         <TableCell sx={{ padding: 1 }}>
                           <TextField
                             size="small"
+                            fullWidth
                             name="pincode"
                             helperText={form.helperText}
                             error={form.error}
@@ -1061,6 +1066,7 @@ const handleOpenItemsDialog = () => {
                         <TableCell sx={{ padding: 1 }}>
                           <TextField
                             size="small"
+                            fullWidth
                             value={form.District}
                             InputProps={{ readOnly: true }}
                           />
@@ -1073,6 +1079,7 @@ const handleOpenItemsDialog = () => {
                         <TableCell sx={{ padding: 1 }}>
                           <TextField
                             size="small"
+                            fullWidth
                             value={form.State}
                             InputProps={{ readOnly: true }}
                           />
@@ -1085,6 +1092,7 @@ const handleOpenItemsDialog = () => {
                         <TableCell sx={{ padding: 1 }}>
                           <TextField
                             size="small"
+                            fullWidth
                             value={form.Country}
                             InputProps={{ readOnly: true }}
                           />
@@ -1121,7 +1129,7 @@ const handleOpenItemsDialog = () => {
                         display: "flex",
                         flexWrap: "wrap",
                       }}
-                      primary={`${item.addressLine1}, ${item.addressLine2}, ${item.city}, ${item.state}, ${item.country}, ${item.pincode}`}
+                      primary={`${item.AddressLine1}, ${item.AddressLine2}, ${item.City}, ${item.State}, ${item.Country}, ${item.Pincode}`}
                     />
                   </ListItemButton>
                 ))

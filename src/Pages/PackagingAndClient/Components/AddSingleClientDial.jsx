@@ -139,6 +139,7 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
             ContactNumber: form.Contact,
             ContactName: form.ContactName,
             Email: form.Email,
+            ClientType: form.ClientType,
             PermanentAddress: {
               Pincode: form.Pincode,
               District: form.District,
@@ -146,7 +147,7 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
               Country: form.Country,
               Address: form.Address,
             },
-            GSTIN: form.GST,
+            GSTIN: form.GST || "N/A",
           },
         ],
       };
@@ -164,6 +165,7 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
         State: "",
         District: "",
         Address: "",
+        ClientType: "",
         helperText: "",
       });
       setOpen(false);

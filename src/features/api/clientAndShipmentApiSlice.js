@@ -94,6 +94,17 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         
       },
     }),
+    changeStatusForDeliver: builder.mutation({
+      query: (data) => {
+        console.log(data)
+        return {
+          url: `${clientAndShipmentApi}/changeStatusForDeliver/${data}`,
+          method: "PUT",
+          body: data,
+        };
+        
+      },
+    }),
   }),
 });
 
@@ -107,4 +118,6 @@ export const {
   useGetCustomerOrderShipmentQuery,
   useUpatePackagingMutation,useUpdateShipmentImageMutation,
   useUpdateInvoiceMutation,
+  useChangeStatusForDeliverMutation,
+
 } = clientAndShipmentApiSlice;

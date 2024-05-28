@@ -20,6 +20,7 @@ import {
   useUpatePackagingMutation,
   useUpdateShipmentMutation,
   useUpdateShipmentImageMutation,
+  
 } from "../../../features/api/clientAndShipmentApiSlice";
 import { toast } from "react-toastify";
 import Table from "@mui/material/Table";
@@ -117,10 +118,14 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
   const { data: getDyanmicValue } = useGetDynamicValueQuery();
   const [updateShipment, { isLoading: updateShipmentLoading }] =
     useUpdateShipmentMutation();
+
   const [updataPackages, { isLoading: loadingPacking }] =
     useUpatePackagingMutation();
+    
   const [updateImage, { isLoading: loadingBoxImage }] =
     useUpdateShipmentImageMutation();
+
+
 
   const packageDisable = details?.fieldDetails?.length > 0 ? true : false;
 
@@ -266,24 +271,26 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
   };
   return (
     <Box>
-      <Dialog open={open} maxWidth={"xl"}>
+      <Dialog open={open} maxWidth="xl">
         <DialogTitle
           sx={{ textAlign: "center", color: "white", background: "blue" }}
         >
           Plz Enter Details of {details.OpenFor}{" "}
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ marginTop: "10px", height: "100%", width: "100%" }}>
+          <Box sx={{ marginTop: "10px", height: "100%", width: details.OpenFor === "Packing" ? "100%" :"20vw" }}>
             <Box
               sx={{
                 display: "flex",
+                flexDirection:details.OpenFor === "Packing" ? "row" :"column",
                 justifyContent: "space-between",
                 backgroundColor: "gray",
                 alignItems: "center",
                 marginBottom: "10px",
                 borderBottom: "1px solid #ccc",
-                padding: "10px",
+                padding: "20px",
                 borderRadius: "4px",
+                gap:"20px"
               }}
             >
               <span style={{ fontWeight: "bold" }}>
@@ -421,6 +428,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                 color: "white",
                                 padding: 0,
                                 textAlign: "center",
+                             
                               },
                             }}
                           >
@@ -612,7 +620,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                   value={courierDetails.courierName || details?.CourierName}
                   helperText="Please select courier name"
                   onChange={(e) => handleCourierNameChange(e)}
-                  disabled={details?.CourierName ? true : false}
+           
                 >
                   {getDyanmicValue?.data[0]?.courierPartner?.map(
                     (option, index) => (
@@ -628,8 +636,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                   value={courierDetails.Link || details?.Link}
                   onChange={(e) => handleCourierNameChange(e)}
                   label="Courier Link"
-                  disabled={details?.Link ? true : false}
-                  InputLabelProps={{
+                   InputLabelProps={{
                     shrink: courierDetails.Link || details?.Link ? true : false,
                   }}
                 ></TextField>{" "}
@@ -637,9 +644,8 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                   fullWidth
                   label="Enter Tracking Id"
                   name="trackingId"
-                  value={courierDetails.trackingId || details?.TrackingId}
                   onChange={(e) => handleCourierNameChange(e)}
-                  disabled={details?.TrackingId ? true : false}
+                  // disabled={details?.TrackingId ? true : false}
                 ></TextField>
               </Box>
             )}
