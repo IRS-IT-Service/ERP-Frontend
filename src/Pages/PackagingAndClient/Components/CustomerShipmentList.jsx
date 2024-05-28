@@ -417,61 +417,70 @@ const CustomerShipmentList = () => {
         );
       },
     },
-    {
-      field: "status",
-      headerName: "Status",
-      flex: 0.2,
-      minWidth: 100,
-      maxWidth: 250,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      headerAlign: "center",
-      align: "center",
-      renderCell: (params) => {
-        const data = params.row;
+//     {
+//       field: "status",
+//       headerName: "Status",
+//       flex: 0.2,
+//       minWidth: 100,
+//       maxWidth: 250,
+//       headerClassName: "super-app-theme--header",
+//       cellClassName: "super-app-theme--cell",
+//       headerAlign: "center",
+//       align: "center",
+//       renderCell: (params) => {
+//         const data = params.row;
 
-        const color =  params.row.IsCompletedOrder
-        ? "Green"
-        : params.row.Dispatched
-            ? "#663300"
-            : params.row.IsPacked
-                ? "#003300"
-                : params.row.HasCourierId
-                    ? " #cc9900"
-                    : " #cc0000";
+//         function getOrderStatus(row) {
+//           switch (true) {
+//               case row.IsCompletedOrder  :
+//                   return "Delivered";
+              
+//               case row.Items.length > 0 && !row.CourierDetails :
+//                   return "Dispatched";
+              
+//               case row.CourierDetails:
+//                   return "Packed";
+              
+//               case row.Items.length > 0 && row.CourierDetails:
+//                   return "In Transit";
+              
+//               default:
+//                   return "Initialized";
+//           }
+//       }
 
+//         const color =  params.row.IsCompletedOrder
+//         ? "Green"
+//         : params.row.Dispatched || !params.row.IsPacked
+//             ? "#663300"
+//             : params.row.IsPacked || params.row.Dispatched
+//                 ? "#003300"
+//                 : params.row.HasCourierId ||  params.row.IsPacked || params.row.Dispatched
+//                     ? " #cc9900"
+//                     : " #cc0000";
 
-          const status = params.row.IsCompletedOrder
-          ? "Delivered"
-          : params.row.Dispatched
-              ? "Dispatched"
-              : params.row.IsPacked
-                  ? "Packed"
-                  : params.row.HasCourierId
-                      ? "In Transit"
-                      : "Initialized";
-      
+//      const status = getOrderStatus(params.row);
+// console.log(status);
 
+//         // const status = params.row.IsPacked
+//         //   ? params.row.HasCourierId
+//         //     ? "In transit"
+//         //     : "Packed"
+//         //   : params.row.IsCompletedOrder
+//         //   ? "delivered"
+//         //   : "Intialized";
 
-        // const status = params.row.IsPacked
-        //   ? params.row.HasCourierId
-        //     ? "In transit"
-        //     : "Packed"
-        //   : params.row.IsCompletedOrder
-        //   ? "delivered"
-        //   : "Intialized";
-
-        return (
-          <div
-            style={{
-              color: color,
-            }}
-          >
-            <Button sx={{ color: `${color}` }}>{status}</Button>
-          </div>
-        );
-      },
-    },
+//         return (
+//           <div
+//             style={{
+//               color: color,
+//             }}
+//           >
+//             <Button sx={{ color: `${color}` }}>{status}</Button>
+//           </div>
+//         );
+//       },
+//     },
     {
       field: "OrderCompleted",
       headerName: "Completed",
