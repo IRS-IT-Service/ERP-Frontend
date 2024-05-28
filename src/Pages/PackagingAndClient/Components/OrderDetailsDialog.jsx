@@ -97,8 +97,12 @@ const OrderDetailsDialog = ({
     }
   };
 
+console.log(details.PackingDetails
 
+)
 
+console.log(details.HasCourierId
+)
   return (
     <Box>
       <Dialog open={open} maxWidth="xl">
@@ -413,7 +417,8 @@ const OrderDetailsDialog = ({
         <DialogActions sx={{ display: "flex", justifyContent: "space-around" }}>
           <Button
             variant="contained"
-            disabled={updateShipmentLoading || packageDisable || courierDisable}
+            disabled={updateShipmentLoading || !details.HasCourierId || !details.PackingDetails
+            }
             onClick={handleSubmit}
           >
             {createShipmentLoading ? <CircularProgress /> : "Final Submit"}
