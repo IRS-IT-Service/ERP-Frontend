@@ -310,7 +310,7 @@ const handleOpenItemsDialog = () => {
     setRequireqty((prev) => {
       return prev.map((data) => {
         if (data.SKU === item.SKU) {
-          if (value > item.Quantity) {
+              if (value > item.Quantity || value === "0") {
             error = true;
           }
 
@@ -390,11 +390,11 @@ const handleOpenItemsDialog = () => {
     }
   };
 
-
   // handling send query
   const handleSubmit = async () => {
     try {
       const isItemsFulfilled = Requireqty.every(item => item.Qty && item.Qty !== "");
+      const isItemsError = Requireqty.some(item => item.error && item.error === true);
       const isEmpty = Object.keys(selectedAddress).length === 0;
 
       if (!selectedCustomer.ClientId) {
@@ -403,6 +403,8 @@ const handleOpenItemsDialog = () => {
         return toast.error("Please select Shipping Address");
       }else if(!isItemsFulfilled){
         return toast.error("Please select quantity");
+      }else if(isItemsError){
+        return toast.error("Invalid quantity");
       }
       const formData = new FormData();
       formData.append("ClientId", selectedCustomer.ClientId);
@@ -713,7 +715,7 @@ const handleOpenItemsDialog = () => {
                   <Box>
                     <FormControlLabel
                       label="Shipping address same as billing address"
-                      sx={{ "& .MuiFormControlLabel-label": { fontSize: 12 } }}
+                      sx={{ "& .MuiFormControlLabel-label": { fontSize: 13 ,fontWeight:"bold" } }}
                       control={
                         <Checkbox
                           size="small"
