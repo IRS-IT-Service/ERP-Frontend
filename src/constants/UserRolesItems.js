@@ -459,7 +459,7 @@ const userRolesData = [
       },
       {
         id: 73,
-        name: "Parts Requirement",
+        name: "R & D Parts Requirement",
         path: "/ItemsAprroval",
         icon: "fa-solid fa-check-double",
         notification: true,
