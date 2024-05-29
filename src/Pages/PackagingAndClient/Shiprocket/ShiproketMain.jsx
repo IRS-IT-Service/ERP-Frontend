@@ -8,10 +8,15 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 import { useGetShipRocketCourierMutation } from "../../../features/api/otherSlice";
 import { toast } from "react-toastify";
 import { DataGrid } from "@mui/x-data-grid";
+import axios from "axios";
 
 const ShiproketMain = () => {
   const [shipDatas, setShipData] = useState([]);
@@ -24,13 +29,56 @@ const ShiproketMain = () => {
     height: "",
     cod: "0",
     unit: "gram",
+    pickupCity: "",
+    pickupState: "",
+    deliverCity: "",
+    deliverState: "",
   });
 
   const [getShippingData, { isLoading }] = useGetShipRocketCourierMutation();
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    try {
+      if (
+        (name === "pickupCode" || value.length === 6) &&
+        (name === "deliverCode" || value.length === 6)
+      ) {
+        const response = await axios.get(
+          `https://api.postalpincode.in/pincode/${value}`
+        );
+        if (
+          response.status === 200 &&
+          response.data &&
+          response.data.length > 0
+        ) {
+          const data = response.data[0];
+          if (data.PostOffice && data.PostOffice.length > 0) {
+            const postOffice = data.PostOffice[0];
+            if (name === "pickupCode") {
+              setForm((prevForm) => ({
+                ...prevForm,
+                pickupCity: postOffice.District,
+                pickupState: postOffice.State,
+              }));
+            } else {
+              setForm((prevForm) => ({
+                ...prevForm,
+                deliverCity: postOffice.District,
+                deliverState: postOffice.State,
+              }));
+            }
+          } else {
+            console.log("Pincode Details not found");
+          }
+        } else {
+          console.log("No data received from the API");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleSubmit = async () => {
@@ -50,7 +98,7 @@ const ShiproketMain = () => {
       const info = {
         pickup_postcode: form.pickupCode,
         delivery_postcode: form.deliverCode,
-        cod: "0",
+        cod: form.cod,
         weight: weight,
         length: form.length,
         breadth: form.breadth,
@@ -61,6 +109,34 @@ const ShiproketMain = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const picodeFiller = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.postalpincode.in/pincode/${pincode}`
+      );
+      if (
+        response.status === 200 &&
+        response.data &&
+        response.data.length > 0
+      ) {
+        const data = response.data[0];
+        if (data.PostOffice && data.PostOffice.length > 0) {
+          const postOffice = data.PostOffice[0];
+          setForm((prevForm) => ({
+            ...prevForm,
+            Country: postOffice.Country,
+            State: postOffice.State,
+            District: postOffice.District,
+          }));
+        } else {
+          console.log("Pincode Details not found");
+        }
+      } else {
+        console.log("No data received from the API");
+      }
+    } catch (error) {}
   };
 
   const columns = [
@@ -126,6 +202,17 @@ const ShiproketMain = () => {
     },
   ];
 
+  // function for calculating volumetric weights
+  const calculateVolumetricWeight = () => {
+    let length = form.length;
+    let breadth = form.breadth;
+    let height = form.height;
+    if (!length || !height || !breadth) return "0.00";
+
+    const volumetricWeight = (length * breadth * height) / 5000;
+
+    return volumetricWeight.toFixed(3);
+  };
   return (
     <Box
       component="main"
@@ -135,67 +222,87 @@ const ShiproketMain = () => {
         width: "100%",
         overflowY: "auto",
         marginTop: "80px",
-        height: "85vh",
+        height: "87vh",
+        // border:"1px solid yellow"
       }}
     >
       {/* Input Field For Get Delivery partner  */}
-      <Box sx={{}}>
-        <Paper
-          elevation={8}
-          sx={{ height: "100%", width: "90%", margin: "auto" }}
+
+      <Box
+        sx={{
+          display: "flex",
+          gap: "8px",
+          // flexDirection: "column",
+          // gap: "10px",
+          // justifyContent: "center",
+          //   alignItems: "center",
+        }}
+      >
+        <Box
+          sx={{
+            width: "75%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "25px",
+          }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-              justifyContent: "center",
-              //   alignItems: "center",
-            }}
-          >
-            <span
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
               style={{
-                width: "20%",
-                textAlign: "center",
-                zIndex: 1,
-                background: "linear-gradient(to right,#182848, #4b6cb7 )",
-                color:"#eee",
-                clipPath: "polygon(0% 0%, 100% 0%, 80% 100%, 0% 100%)",
+                width: "45%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
               }}
             >
-              Pickup-Details
-            </span>
-            <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <span style={{ fontWeight: "bold", opacity: "0.7" }}>
+                Pickup Pincode
+              </span>
               <TextField
-                label="Pickup Pincode"
+                placeholder="Enter 6 digit pickup area pincode"
                 size="small"
                 name="pickupCode"
+                fullWidth
                 value={form.pickupCode}
                 onChange={(e) => handleChange(e)}
               />
+            </div>
+            <div
+              style={{
+                width: "45%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+              }}
+            >
+              <span style={{ fontWeight: "bold", opacity: "0.7" }}>
+                Delivery Pincode
+              </span>
               <TextField
-                label="Delivery Pincode"
+                placeholder="Enter 6 digit delivery area pincode"
                 size="small"
                 name="deliverCode"
+                fullWidth
                 value={form.deliverCode}
                 onChange={(e) => handleChange(e)}
               />
             </div>
-            <span
+          </div>{" "}
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
               style={{
-                width: "20%",
-                textAlign: "center",
-                zIndex: 1,
-                background: "linear-gradient(to right,#182848, #4b6cb7 )",
-                color:"#eee",
-                clipPath: "polygon(0% 0%, 100% 0%, 80% 100%, 0% 100%)",
+                width: "35%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
               }}
             >
-              Product-Details
-            </span>
-            <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <span style={{ fontWeight: "bold", opacity: "0.7" }}>
+                Actual Weight
+              </span>
               <TextField
-                label="Weight"
+                placeholder="0.00"
+                variant="outlined"
                 name="weight"
                 size="small"
                 type="number"
@@ -206,94 +313,281 @@ const ShiproketMain = () => {
                     <TextField
                       select
                       name="unit"
+                      size="small"
                       value={form.unit}
                       onChange={(e) => handleChange(e)}
                       variant="standard"
-                      sx={{ width: "50%" }}
+                      sx={{ width: "50%", opacity: "0.6" }}
                     >
-                      <MenuItem value="gram">Gram</MenuItem>
-                      <MenuItem value="kg">Kilogram</MenuItem>
+                      <MenuItem sx={{ opacity: 0.6 }} value="gram">
+                        Gram
+                      </MenuItem>
+                      <MenuItem sx={{ opacity: 0.6 }} value="kg">
+                        Kilogram
+                      </MenuItem>
                     </TextField>
                   ),
                 }}
               />
-              <TextField
-                label="Length (in cm)"
-                name="length"
-                type="number"
-                size="small"
-                value={form.length}
-                onChange={(e) => handleChange(e)}
-              />
-              <TextField
-                label="Breadth (in cm)"
-                name="breadth"
-                size="small"
-                type="number"
-                value={form.breadth}
-                onChange={(e) => handleChange(e)}
-              />
-              <TextField
-                label="Height (in cm)"
-                name="height"
-                size="small"
-                type="number"
-                value={form.height}
-                onChange={(e) => handleChange(e)}
-              />
+            </div>
+
+            <div
+              style={{
+                width: "45%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+              }}
+            >
+              <span style={{ fontWeight: "bold", opacity: "0.7" }}>
+                Dimensions
+              </span>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <TextField
+                  placeholder="Length (in cm)"
+                  name="length"
+                  type="number"
+                  size="small"
+                  value={form.length}
+                  onChange={(e) => handleChange(e)}
+                />
+                <TextField
+                  placeholder="Breadth (in cm)"
+                  name="breadth"
+                  size="small"
+                  type="number"
+                  value={form.breadth}
+                  onChange={(e) => handleChange(e)}
+                />
+                <TextField
+                  placeholder="Height (in cm)"
+                  name="height"
+                  size="small"
+                  type="number"
+                  value={form.height}
+                  onChange={(e) => handleChange(e)}
+                />
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
+              style={{
+                width: "45%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+              }}
+            >
+              <span style={{ fontWeight: "bold", opacity: "0.7" }}>
+                Payment type
+              </span>
+              <div>
+                <RadioGroup
+                  defaultValue="0"
+                  name="cod"
+                  row
+                  onChange={(e) => handleChange(e)}
+                >
+                  <FormControlLabel
+                    sx={{ opacity: "0.6" }}
+                    value="1"
+                    control={<Radio />}
+                    label="Cash On Delivery"
+                  />
+                  <FormControlLabel
+                    sx={{ opacity: "0.6" }}
+                    value="0"
+                    control={<Radio />}
+                    label="Prepaid"
+                  />
+                </RadioGroup>
+              </div>
             </div>
             <div
               style={{
+                width: "45%",
                 display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+              }}
+            >
+              <span style={{ fontWeight: "bold", opacity: "0.7" }}>
+                Volumetric Weight
+              </span>
+              <TextField
+                placeholder="0.00"
+                size="small"
+                name="deliverCode"
+                sx={{ opacity: "0.6" }}
+                fullWidth
+                value={calculateVolumetricWeight()}
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              gap: "40px",
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={() => handleSubmit()}
+              disabled={isLoading}
+              size="small"
+            >
+              {isLoading ? <CircularProgress /> : "Calculate"}
+            </Button>
+            <Button onClick={() => window.location.reload()} variant="outlined"               size="small"
+>
+              Reset
+            </Button>
+          </div>
+        </Box>
+        <Box sx={{ width: "24%" }}>
+          <Paper elevation={8} sx={{ height: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
-              <Button
-                sx={{
-                  background: "linear-gradient(to right,#182848, #4b6cb7 )",
-                  color: "white",
-                  margin: "2px",
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-                onClick={() => handleSubmit()}
-                disabled={isLoading}
               >
-                {isLoading ? <CircularProgress /> : "Get-Details"}
-              </Button>
+                <LocationOnIcon sx={{ color: "blue" }} />{" "}
+                <span style={{ fontWeight: "bold", opacity: "0.7" }}>
+                  Pickup Location
+                </span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "4px",
+                  border: "0.2px solid #03396c",
+                  borderTopStyle: "dotted",
+                  borderBottomStyle: "dotted",
+                  width: "60%",
+                  borderRadius: "8px",
+                  boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+                }}
+              >
+                <span
+                  style={{
+                    textAlign: "center",
+                    fontWeight: "bolder",
+                    opacity: "0.6",
+                    fontSize: "14px",
+                  }}
+                >
+                  {form.pickupCity ? form.pickupCity : "City"}{" "}
+                </span>
+                <span
+                  value={"State"}
+                  style={{
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    opacity: "0.8",
+                    fontSize: "16px",
+                  }}
+                >
+                  {form.pickupState ? form.pickupState : "State"}{" "}
+                </span>
+              </div>
             </div>
-          </Box>
-        </Paper>
+            <div
+              style={{
+                width: "1px",
+                height: "40%",
+                border: "0.2px dotted #03396c",
+                margin: "auto",
+              }}
+            />{" "}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <LocationOnIcon sx={{ color: "blue" }} />{" "}
+                <span style={{ fontWeight: "bold", opacity: "0.7" }}>
+                  Delivery Location
+                </span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "4px",
+                  border: "0.2px solid #03396c",
+                  borderTopStyle: "dotted",
+                  borderBottomStyle: "dotted",
+                  width: "60%",
+                  borderRadius: "8px",
+                  boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+                }}
+              >
+                <span
+                  style={{
+                    textAlign: "center",
+                    fontWeight: "bolder",
+                    opacity: "0.6",
+                    fontSize: "14px",
+                  }}
+                >
+                  {form.deliverCity ? form.deliverCity : "City"}{" "}
+                </span>
+                <span
+                  value={"State"}
+                  style={{
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    opacity: "0.8",
+                    fontSize: "16px",
+                  }}
+                >
+                  {form.deliverState ? form.deliverState : "State"}{" "}
+                </span>
+              </div>
+            </div>{" "}
+          </Paper>
+        </Box>
       </Box>
       {/* to show the data of courier */}
-     
+
       <Box
         sx={{
-          height: "57vh",
+          height: "53vh",width:"100%",
           "& .super-app-theme--header": {
             background: "#eee",
             color: "black",
             textAlign: "center",
+            marginTop:"15px"
           },
-          "& .vertical-lines .MuiDataGrid-cell": {
-            borderRight: "1px solid #e0e0e0",
-          },
-          "& .supercursor-app-theme--cell:hover": {
-            background:
-              "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-            color: "white",
-            cursor: "pointer",
-          },
-          "& .MuiDataGrid-columnHeaderTitleContainer": {
-            background: "#eee",
-          },
-          position: "relative",
-          marginTop: "20px"
+          
         }}
       >
         <DataGrid rows={shipDatas} columns={columns} />
-        </Box>
       </Box>
-
+    </Box>
   );
 };
 
