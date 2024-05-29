@@ -390,6 +390,63 @@ const CustomerShipmentList = () => {
       },
     },
     {
+      field: "OrderCompleted",
+      headerName: "Completed",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const IsCompletedOrder = params.row.IsCompletedOrder;
+        const packed = !params.value;
+        return (
+          <Button
+            disabled={
+              params.row.IsCompletedOrder &&
+              !params.row.IsPacked &&
+              !params.row.HasCourierId
+            }
+            onClick={() => handleOrderdetailsOpen(params.row)}
+          >
+            {/* {IsCompletedOrder ? "Submitted" : "Open"} */}
+            {packed ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    color: "#fff",
+                    background:
+                     !params.row.Dispatched || !params.row.IsPacked || params.row.IsCompletedOrder || !params.row.HasCourierId
+                        ? "#ccc"
+                        : "green",
+                    borderRadius: "50%",
+
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  4
+                </Box>
+              </Box>
+            ) : (
+              <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
+            )}
+          </Button>
+        );
+      },
+    },
+    {
       field: "Invoice",
       headerName: "Invoice",
       flex: 0.3,
@@ -481,31 +538,7 @@ const CustomerShipmentList = () => {
 //         );
 //       },
 //     },
-    {
-      field: "OrderCompleted",
-      headerName: "Completed",
-      flex: 0.3,
-      minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        const IsCompletedOrder = params.row.IsCompletedOrder;
-        return (
-          <Button
-            disabled={
-              params.row.IsCompletedOrder &&
-              !params.row.IsPacked &&
-              !params.row.HasCourierId
-            }
-            onClick={() => handleOrderdetailsOpen(params.row)}
-          >
-            {IsCompletedOrder ? "Submitted" : "Open"}
-          </Button>
-        );
-      },
-    },
+   
   ];
 
   const CustomToolbar = () => {

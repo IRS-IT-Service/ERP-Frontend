@@ -212,7 +212,8 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
           component="form"
           noValidate
         >
-          <TextField
+         { form.ClientType === "Company" ?  
+         <TextField
             variant="outlined"
             fullWidth
             label="Enter Company Name"
@@ -220,7 +221,8 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
             required = {form.ClientType === "Company" ? true : false}
             value={form.CompanyName}
             onChange={(e) => handleChange(e)}
-          />
+          />  : ""}
+
           <TextField
             variant="outlined"
             fullWidth

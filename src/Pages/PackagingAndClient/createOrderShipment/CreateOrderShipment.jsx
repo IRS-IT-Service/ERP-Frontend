@@ -24,6 +24,11 @@ import {
   Checkbox,
   ListItemText,
   FormControlLabel,
+  Select, 
+  MenuItem, 
+  InputLabel,
+  OutlinedInput,
+  Chip 
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -32,6 +37,7 @@ import { setAddparts } from "../../../features/slice/R&DSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+
 import axios from "axios";
 const columns = [
   { field: "Sno", headerName: "S.No" },
@@ -188,6 +194,8 @@ const createOrderShipment = ({
   const [selectedItems, setSelectedItems] = useState([]);
   const [FinalData,setFinalData] = useState([])
   const [updateValue, setUpdateValue] = useState([]);
+  const [personType , setPersonType] = useState("Company")
+  const [Clientlist,setClientlist] = useState([])
   const [form, setForm] = useState({
     Pincode: "",
     Country: "",
@@ -277,7 +285,8 @@ const handleOpenItemsDialog = () => {
   };
 
   useEffect(() => {
-    if (clientData?.client) {
+
+    if (clientData?.client && personType === "Company") {
       const companyNames = clientData?.client?.map((customer, index) => {
         return {
           id: customer._id,
@@ -285,8 +294,43 @@ const handleOpenItemsDialog = () => {
         };
       });
       setCompanyDetails(companyNames);
+    }else if(clientData?.client && personType === "Individual"){
+
+      const ClientList = clientData?.client?.map((customer, index) => {
+       
+        if(customer.ClientType === "Individual" ) 
+        {
+         
+        return {
+          id: customer._id,
+          label: customer.ContactName,
+        };
+      }
+      return null;
+      }).filter(item => item !== null);;
+     
+      setClientlist(ClientList)
     }
-  }, [clientData]);
+  }, [clientData,personType,setPersonType]);
+
+
+  useEffect(()=>{
+{
+  
+  setSelectedAddress({})
+  setSelectedCustomer({
+    ContactName:"",
+    ContactNumber:"",
+    AlternateNumber:"",
+    Invoice:"",
+
+  })
+}
+
+
+  },[personType,setPersonType])
+
+
 
   const handleToggleAddress = (event) => {
     const checked = event.target.checked;
@@ -429,10 +473,15 @@ const handleOpenItemsDialog = () => {
       console.log("error at Discount Query create ", e);
     }
   };
+const handleSelectType = (e) =>{
+  setPersonType(e.target.value)
+}
+
 
   const handleChange = (e) => {
     let helperText = "";
     const { name, value, files } = e.target;
+ 
     if (name === "address1") {
     
       setForm((prevForm) => ({
@@ -524,54 +573,71 @@ const handleOpenItemsDialog = () => {
         close={handleCloseInfo}
       />
       <Box>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "end",
-              paddingTop: ".5rem",
-              paddingX: ".7rem",
-            }}
-          >
-            {/* <CancelIcon
-              sx={{ cursor: "pointer", "&:hover": { color: "red" } }}
-              onClick={(event) => {
-                setOpen(false);
-              }}
-            /> */}
-          </Box>
-        </Box>
+  
 
         <Box>
           <Box
             sx={{
               display: "flex",
+              flexDirection: "column",
+              gap:"20px",
               justifyContent: "space-between",
+              alignItems: "center",
               marginTop: "10px",
+        
             }}
           >
-            <Grid container spacing={2}>
-              <Grid
-                item
-                xs={4}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
+      
+              <Box sx={{
+                display: "flex",
+                width: "100%",
+                flexWrap: "wrap",
+                alignItems: "center",
+                // justifyContent: "center",
+          
+                padding:"5px",
+                gap:"10px"
+              }}>
+              <Box>
+         
+                  
+
+      <Select
+    
+        sx={{ width: '15rem', color: 'red' }}
+
+        size="small"
+
+        value={personType}
+        renderValue={(selected) => {
+
+          if (selected.length === 0) {
+            return <em>Placeholder</em>;
+          }
+
+          return selected
+   
+
+       
+        }}
+        onChange={handleSelectType}
+   
+      >
+       <MenuItem value={"Company"}>Company</MenuItem>
+        <MenuItem value={"Individual"}>Individual</MenuItem>
+   
+      </Select>
+   
+                </Box>
+           { personType === "Company" &&  <Box
+            
               >
                 {/* <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
                   Company Name{" "}
                 </Typography> */}
                 <Autocomplete
                   style={{
-                    width: "100%",
+                    width: "26rem",
                     backgroundColor: "rgba(255, 255, 255)",
                   }}
                   options={companyDetails}
@@ -587,16 +653,9 @@ const handleOpenItemsDialog = () => {
                     />
                   )}
                 />
-              </Grid>
-              <Grid
-                item
-                xs={2}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
+              </Box> }
+           {  personType === "Company" ?   <Box
+           
               >
                 {/* <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
                   Contact person{" "}
@@ -615,16 +674,28 @@ const handleOpenItemsDialog = () => {
                   }}
                   onChange={(e) => handleChange(e)}
                 />
-              </Grid>
-              <Grid
-                item
-                xs={2}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
+              </Box> : <Box>
+              <Autocomplete
+                  style={{
+                    width: "26rem",
+                    backgroundColor: "rgba(255, 255, 255)",
+                  }}
+                  options={Clientlist}
+                  onChange={handleSelectedChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Client Name"
+                      onChange={(e) => {
+                        console.log(e.target.value);
+                      }}
+                      size="small"
+                    />
+                  )}
+                />
+                </Box>  }
+              <Box
+             
               >
                 {/* <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
                   Contact Number{" "}
@@ -644,16 +715,9 @@ const handleOpenItemsDialog = () => {
                   }}
                   onChange={(e) => handleChange(e)}
                 />
-              </Grid>
-              <Grid
-                item
-                xs={2}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
+              </Box>
+              <Box
+            
               >
                 {/* <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
                   Alternate Number{" "}
@@ -674,16 +738,9 @@ const handleOpenItemsDialog = () => {
                   }}
                   onChange={(e) => handleChange(e)}
                 />
-              </Grid>
-              <Grid
-                item
-                xs={2}
-                sx={{
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
+              </Box>
+              <Box
+           
               >
                 <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
                   Upload Invoice{" "}
@@ -695,17 +752,16 @@ const handleOpenItemsDialog = () => {
 
                   onChange={(e) => handleChange(e)}
                 />
-              </Grid>
-              <Grid
-                item
-                xs={6}
-                sx={{
-                  display: "flex",
-                  justifyContent: "start",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
+              </Box>
+              </Box>
+              {/* Address box */}
+         <Box sx={{
+        
+          display: "flex",
+          width: "100%",
+          justifyContent: "space-between",
+          flexWrap: "wrap"
+         }}>
                 <Box>
                   <Typography
                     variant="span"
@@ -763,17 +819,8 @@ const handleOpenItemsDialog = () => {
                     </Table>
                   </Box>
                 </Box>
-              </Grid>
-              <Grid
-                item
-                xs={6}
-                sx={{
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
+       
+          
                 <Box
                   sx={{
                     display: "flex",
@@ -855,8 +902,8 @@ const handleOpenItemsDialog = () => {
                     )}
                   </Box>
                 </Box>
-              </Grid>
-            </Grid>
+                </Box>
+    
           </Box>
           {selectedCustomer?.ClientId &&  <Button onClick={handleOpenItemsDialog}>Add items</Button> }
           <TableContainer sx={{ height: "40vh", marginTop: "0.3rem" }}>

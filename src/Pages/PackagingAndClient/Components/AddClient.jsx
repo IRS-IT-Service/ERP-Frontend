@@ -47,12 +47,12 @@ const AddClient = () => {
           client.PermanentAddress,
           keyOrder
         );
-        console.log(client)
+     
         return {
           ...client,
           Sno: index + 1,
           id: client._id,
-          CompanyName: client.CompanyName,
+          CompanyName: client.CompanyName || "N/A",
           GST: client.GSTIN,
           Address: shippingAddress,
           ContactNumber: client.ContactNumber,
