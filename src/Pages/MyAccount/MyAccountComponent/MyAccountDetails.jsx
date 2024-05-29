@@ -87,7 +87,7 @@ const MyAccountDetails = () => {
       };
       const res = await verifySeller(data).unwrap();
       toast.success(`Seller Verifcation Complete`);
-      refetch()
+      refetch();
       navigate("/sellerVerify");
     } catch (error) {
       console.error("An error occurred during login:", error);
@@ -240,15 +240,16 @@ const MyAccountDetails = () => {
                     />
                   )}
                 </TableCell> */}
-                 <TableCell className={classes.tableCell}>MSME Number</TableCell>
+                <TableCell className={classes.tableCell}>MSME Number</TableCell>
                 <TableCell>
                   {personalDetails?.details.msme
                     ? personalDetails?.details.msme
                     : "Not available"}
                 </TableCell>
               </TableRow>
+
               <TableRow>
-              <TableCell className={classes.tableCell}>
+                <TableCell className={classes.tableCell}>
                   Bank details
                 </TableCell>
                 <TableCell>
@@ -270,7 +271,7 @@ const MyAccountDetails = () => {
                     />
                   )}
                 </TableCell>
-       
+
                 <TableCell className={classes.tableCell}>
                   MSME Certificate
                 </TableCell>
@@ -292,8 +293,7 @@ const MyAccountDetails = () => {
                     />
                   )}
                 </TableCell>
-               
-                
+
                 {/* <TableCell className={classes.tableCell}>
                   Cancel Cheque
                 </TableCell>
@@ -315,6 +315,14 @@ const MyAccountDetails = () => {
                     />
                   )}
                 </TableCell> */}
+              </TableRow>
+              <TableRow>
+                <TableCell className={classes.tableCell}>Website</TableCell>
+                <TableCell>
+                  {personalDetails?.details.website
+                    ? personalDetails?.details.website
+                    : " Not available"}{" "}
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
