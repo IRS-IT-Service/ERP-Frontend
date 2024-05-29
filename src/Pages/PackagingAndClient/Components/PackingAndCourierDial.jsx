@@ -80,6 +80,8 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
   const [imageDetails, setImageDetails] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [popOpen, setPopOpen] = useState(false);
+  const [toggleWeights,setToggleWeights] = useState(false)
+  const [toggleDimension,setToggleDimension] = useState(false)
 
   // functions for popover
   const handleClick = (event) => {
