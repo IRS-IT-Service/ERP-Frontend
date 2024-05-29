@@ -715,6 +715,7 @@ function App() {
                 {/* <Route path="/calc" element={<NewCalcRishabh />} /> */}
 
                 <Route path="/savedCalc" element={<CalcEdit />} />
+                <Route path="/calc" element={<Calc/>} />
                 <Route path="/calc/:id" element={<Calc />} />
                 <Route path="/dispatch_Return" element={<Dispatch_Return />} />
                 <Route path="/product-shipment" element={<ProductShipment />} />

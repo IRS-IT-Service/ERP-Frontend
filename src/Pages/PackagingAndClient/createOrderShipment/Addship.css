@@ -1,0 +1,16 @@
+
+.selected-value {
+    background-color: rebeccapurple;
+    color: yellow;
+ 
+  }
+  .selected-value:hover {
+    background-color: purple;
+    cursor: pointer;
+  }
+
+
+  .disabled-value {
+    background-color: #0000004d;
+    opacity: 0.8;
+  }
