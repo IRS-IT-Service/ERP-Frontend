@@ -47,6 +47,9 @@ import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import AddshimentpartsDial from "./AddshimentpartsDial";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useParams } from "react-router-dom";
+import { createTheme, ThemeProvider } from "@mui/material";
+import './Addship.css'
+
 
 import { toast } from "react-toastify";
 import {
@@ -55,6 +58,26 @@ import {
   GridToolbarContainer,
 } from "@mui/x-data-grid";
 
+
+
+const myTheme = createTheme({
+  components: {
+    //@ts-ignore - this isn't in the TS because DataGird is not exported from `@mui/material`
+    MuiDataGrid: {
+      styleOverrides: {
+        row: {
+          "&.Mui-selected": {
+            backgroundColor: "rebeccapurple",
+            color: "yellow",
+            "&:hover": {
+              backgroundColor: "purple"
+            }
+          }
+        }
+      }
+    }
+  }
+});
 
 
 
@@ -74,7 +97,7 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
 
 
 
-import { useNavigate } from "react-router-dom";
+
 
 const AddshipmentDial = ({
   data,
@@ -372,15 +395,16 @@ function CustomFooter(props) {
    </GridToolbarContainer>
  );
 }
-
-
-
-
+const getRowClassName = (params) => {
+  return (!selectedDiabledItems.includes(params.row.SKU) &&
+  params.row.ActualQuantity > 0) ? "selected-value" : "disabled-value";
+};
 
 
 
   return (
     <div> 
+    
      
       <Dialog open={open}  onClose={()=>setOpen(false)}
           sx={{ backdropFilter: "blur(5px)" }}
@@ -428,6 +452,7 @@ function CustomFooter(props) {
           <Loading loading={true} />
         ) : (
           <Grid item xs={12} sx={{ mt: "5px" }}>
+               <ThemeProvider theme={myTheme}>
             <Box
               sx={{
                 width: "100%",
@@ -465,6 +490,7 @@ function CustomFooter(props) {
                   !selectedDiabledItems.includes(params.row.SKU) &&
                   params.row.ActualQuantity > 0
                 }
+                getCellClassName={getRowClassName}
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected
@@ -476,6 +502,7 @@ function CustomFooter(props) {
                 }}
               />
             </Box>
+            </ThemeProvider>
           </Grid>
         )}
       </Grid>
