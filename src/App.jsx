@@ -63,8 +63,7 @@ import {
   addChatTyping,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
-import { onMessage, getToken } from "firebase/messaging"; // Import necessary functions from Firebase messaging
-import { messaging } from "./firebase";
+import { getToken } from "firebase/messaging";
 import { logout } from "./features/slice/authSlice";
 import {
   useGetReceivedMessagesMutation,
@@ -132,18 +131,22 @@ import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
 import PreOrder from "./Pages/DiscountQuery/PreOrder";
 import ChatMessage from "./Pages/Chat/ChatMessage";
 import Careers from "./Pages/Careers/Careers";
-import IrsConnect from "../public/chatlog.png";
 import Drive from "./Pages/G_Drive/Drive";
-import { RuleSharp } from "@mui/icons-material";
 import CareerDetails from "./Pages/Careers/CareerDetails";
-import AddClient from "./Pages/PackagingAndClient/Components/AddClient";
 import Client from "./Pages/PackagingAndClient/Client";
 import BulkAddClient from "./Pages/PackagingAndClient/Components/BulkAddClient";
 import TestingComponent from "./Pages/Testing Component/TestingComponent";
-
 import CreateOrderShipmentMain from "./Pages/PackagingAndClient/CreateOrderShipmentMain";
 import ShipmentList from "./Pages/PackagingAndClient/ShipmentList";
 import ShiproketMain from "./Pages/PackagingAndClient/Shiprocket/ShiproketMain";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "./firebase";
+import { getMessaging } from "firebase/messaging/sw";
+import useVisibilityChange from "./commonFunctions/useVisibilityChange";
+import {
+  toastNotification,
+  sendNativeNotification,
+} from "./commonFunctions/notificationHelpers";
 
 function App() {
   /// initialize
@@ -325,6 +328,8 @@ function App() {
     setMode(Mode === true ? "dark" : "light");
   }, [Mode]);
 
+  const isForeGround = useVisibilityChange();
+
   useEffect(() => {
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
@@ -349,12 +354,37 @@ function App() {
         console.log("Unable to get permission to notify.");
       }
     });
-
     onMessage(messaging, (payload) => {
-      // console.log("Message received.", payload);
-      // Handle the received message here
+      if (isForeGround) {
+        toastNotification({
+          title:payload?.notification?.title,
+          description: payload?.notification?.body,
+          status: "info",
+        });
+      } else {
+        sendNativeNotification({
+          title:payload?.notification?.title,
+          body:payload?.notification?.body,
+        });
+      }
     });
   }, []);
+  // useEffect(() => {
+  //   const handleBackgroundMessage = (payload) => {
+  //     console.log('Received background message:', payload);
+  //     // Handle the background message here
+  //   };
+
+  //   getMessaging().then((messaging) => {
+  //     messaging.onBackgroundMessage(handleBackgroundMessage);
+  //   }).catch((error) => {
+  //     console.error('Error getting messaging:', error);
+  //   });
+
+  //   return () => {
+  //     messaging.onBackgroundMessage(handleBackgroundMessage);
+  //   };
+  // }, []);
 
   const fetchData = async (adminid) => {
     try {
@@ -715,7 +745,7 @@ function App() {
                 {/* <Route path="/calc" element={<NewCalcRishabh />} /> */}
 
                 <Route path="/savedCalc" element={<CalcEdit />} />
-                <Route path="/calc" element={<Calc/>} />
+                <Route path="/calc" element={<Calc />} />
                 <Route path="/calc/:id" element={<Calc />} />
                 <Route path="/dispatch_Return" element={<Dispatch_Return />} />
                 <Route path="/product-shipment" element={<ProductShipment />} />
