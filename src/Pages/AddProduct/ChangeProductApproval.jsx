@@ -74,7 +74,7 @@ const ChangeProductApproval = () => {
   const handleSubmitBulk = async (status) => {
     try {
       const processedSKU = data?.data?.map((item) => item.SKU);
-
+      if(processedSKU.length <= 0) return toast.error("No Product to Approve")
       const params = {
         SKU: processedSKU,
         status,
@@ -213,7 +213,7 @@ const ChangeProductApproval = () => {
                     </TableRow>
 
                     <TableRow>
-                      <TableCell
+                      {/* <TableCell
                         sx={{
                           fontWeight: "bold",
                         }}
@@ -227,9 +227,18 @@ const ChangeProductApproval = () => {
                         >
                           Accept
                         </Button>
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         {" "}
+                        <Button
+                          variant="contained"
+                          sx={{ backgroundColor: "#00563B",marginRight:"16px" }}
+                          onClick={() => {
+                            handleSubmit(item?.SKU, true);
+                          }}
+                        >
+                          Accept
+                        </Button>
                         <Button
                           variant="contained"
                           sx={{ backgroundColor: "#AA0000" }}
@@ -246,7 +255,10 @@ const ChangeProductApproval = () => {
                           : ""}
                       </TableCell>
                       <TableCell sx={{ color: "#AA0000" }}>
-                        {checkChange(item?.AlternativeName, item?.changedValues?.AlternativeName)
+                        {checkChange(
+                          item?.AlternativeName,
+                          item?.changedValues?.AlternativeName
+                        )
                           ? item?.changedValues?.AlternativeName
                           : ""}
                       </TableCell>
