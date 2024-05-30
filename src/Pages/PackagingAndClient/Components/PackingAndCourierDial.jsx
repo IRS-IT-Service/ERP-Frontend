@@ -13,6 +13,8 @@ import {
   styled,
   Popover,
   Typography,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useGetDynamicValueQuery } from "../../../features/api/productApiSlice";
@@ -20,7 +22,6 @@ import {
   useUpatePackagingMutation,
   useUpdateShipmentMutation,
   useUpdateShipmentImageMutation,
-  
 } from "../../../features/api/clientAndShipmentApiSlice";
 import { toast } from "react-toastify";
 import Table from "@mui/material/Table";
@@ -73,6 +74,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
       Height: "",
       VolumetryWeight: "",
       Marking: "",
+      Unit: "kg",
       Description: "",
       Photo: null,
     },
@@ -80,8 +82,11 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
   const [imageDetails, setImageDetails] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [popOpen, setPopOpen] = useState(false);
-  const [toggleWeights,setToggleWeights] = useState(false)
-  const [toggleDimension,setToggleDimension] = useState(false)
+  const [Unit, setUnit] = useState([
+    {
+      ActualWeight: "",
+    },
+  ]);
 
   // functions for popover
   const handleClick = (event) => {
@@ -110,6 +115,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
           VolumetryWeight: "",
           Marking: "",
           Description: "",
+          Unit: "kg",
           Photo: null,
         },
       ]);
@@ -123,11 +129,9 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
 
   const [updataPackages, { isLoading: loadingPacking }] =
     useUpatePackagingMutation();
-    
+
   const [updateImage, { isLoading: loadingBoxImage }] =
     useUpdateShipmentImageMutation();
-
-
 
   const packageDisable = details?.fieldDetails?.length > 0 ? true : false;
 
@@ -151,14 +155,43 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
   };
 
   // HANDLE FOR PACKING RELATED FIELDS ONLY
+
   const handleBoxValueChange = (e, index) => {
     const { value, name } = e.target;
+
+    if (name === "ActualWeight") {
+      setUnit((prev) => {
+        const updatedUnits = [...prev];
+        updatedUnits[index] = {
+          ...updatedUnits[index],
+          [name]: value,
+        };
+        return updatedUnits;
+      });
+    }
+
     setPackingDetails((prev) => {
       const updatedPackingDetails = [...prev];
+      let updatedValue = value;
+
+      if (name === "ActualWeight" && prev[index].Unit === "gm") {
+        updatedValue = +value / 1000;
+      }
+
       updatedPackingDetails[index] = {
         ...updatedPackingDetails[index],
-        [name]: value,
+        [name]: updatedValue,
       };
+      if (name === "Unit") {
+        updatedPackingDetails[index].Unit = value;
+        if (value === "gm") {
+          updatedPackingDetails[index].ActualWeight =
+            +Unit[index].ActualWeight / 1000;
+        } else if (value === "kg") {
+          updatedPackingDetails[index].ActualWeight = +Unit[index].ActualWeight;
+        }
+      }
+
       return updatedPackingDetails;
     });
   };
@@ -198,16 +231,22 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
         Height: "",
         VolumetryWeight: "",
         Marking: "",
+        Unit: "kg",
         Description: "",
         Photo: null,
       },
     ];
+    const newUnit = [...Unit, { ActualWeight: "" }];
     setPackingDetails(newPackingDetails);
+    setUnit(newUnit);
   };
 
   // HANDLE DELETE BOX WHEN WE ADD
   const handleDeleteBox = (index) => {
     setPackingDetails((prevDetails) => {
+      return prevDetails.filter((_, i) => i !== index);
+    });
+    setUnit((prevDetails) => {
       return prevDetails.filter((_, i) => i !== index);
     });
   };
@@ -235,6 +274,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
           Height: "",
           VolumetryWeight: "",
           Marking: "",
+          Unit: "kg",
           Description: "",
           Photo: null,
         },
@@ -271,6 +311,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
       console.log(error);
     }
   };
+
   return (
     <Box>
       <Dialog open={open} maxWidth="xl">
@@ -280,11 +321,17 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
           Plz Enter Details of {details.OpenFor}{" "}
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ marginTop: "10px", height: "100%", width: details.OpenFor === "Packing" ? "100%" :"20vw" }}>
+          <Box
+            sx={{
+              marginTop: "10px",
+              height: "100%",
+              width: details.OpenFor === "Packing" ? "100%" : "20vw",
+            }}
+          >
             <Box
               sx={{
                 display: "flex",
-                flexDirection:details.OpenFor === "Packing" ? "row" :"column",
+                flexDirection: details.OpenFor === "Packing" ? "row" : "column",
                 justifyContent: "space-between",
                 backgroundColor: "gray",
                 alignItems: "center",
@@ -292,7 +339,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                 borderBottom: "1px solid #ccc",
                 padding: "20px",
                 borderRadius: "4px",
-                gap:"20px"
+                gap: "20px",
               }}
             >
               <span style={{ fontWeight: "bold" }}>
@@ -428,9 +475,8 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                               [`&.${tableCellClasses.head}`]: {
                                 backgroundColor: "blue",
                                 color: "white",
-                                padding: 0,
+                                paddingLeft: 4,
                                 textAlign: "center",
-                             
                               },
                             }}
                           >
@@ -440,7 +486,6 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                       </TableHead>
                       <TableBody>
                         {packingDetails?.map((item, index) => {
-                          
                           return (
                             <StyledTableRow key={index}>
                               <TableCell
@@ -448,8 +493,8 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                   [`&.${tableCellClasses.head}`]: {
                                     backgroundColor: "blue",
                                     color: "white",
-                                    padding: 0,
                                     textAlign: "center",
+                                    paddingLeft: 4,
                                   },
                                 }}
                               >
@@ -457,6 +502,49 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                               </TableCell>
                               <StyledTableCell component="th" scope="row">
                                 <TextField
+                                  placeholder="Weight"
+                                  variant="outlined"
+                                  name="ActualWeight"
+                                  size="small"
+                                  type="number"
+                                  value={
+                                    Unit[index]?.ActualWeight ||
+                                    item?.ActualWeight
+                                  }
+                                  onChange={(e) =>
+                                    handleBoxValueChange(e, index)
+                                  }
+                                  InputProps={{
+                                    endAdornment: (
+                                      <TextField
+                                        select
+                                        name="Unit"
+                                        size="small"
+                                        value={item.Unit}
+                                        onChange={(e) =>
+                                          handleBoxValueChange(e, index)
+                                        }
+                                        variant="standard"
+                                        sx={{ width: "50%", opacity: "0.6" }}
+                                      >
+                                        <MenuItem
+                                          sx={{ opacity: 0.6 }}
+                                          value="gm"
+                                        >
+                                          Gram
+                                        </MenuItem>
+                                        <MenuItem
+                                          sx={{ opacity: 0.6 }}
+                                          value="kg"
+                                        >
+                                          Kilogram
+                                        </MenuItem>
+                                      </TextField>
+                                    ),
+                                  }}
+                                />
+
+                                {/* <TextField
                                   placeholder="A.Weight"
                                   size="small"
                                   name="ActualWeight"
@@ -464,7 +552,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                   onChange={(e) => {
                                     handleBoxValueChange(e, index);
                                   }}
-                                />
+                                /> */}
                               </StyledTableCell>
                               <StyledTableCell>
                                 <TextField
@@ -575,14 +663,15 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                 )}
                               </StyledTableCell>
                               <StyledTableCell>
-                                {packingDetails.length > 1 && (
-                                  <DeleteIcon
-                                    sx={{ color: "red", cursor: "pointer" }}
-                                    onClick={() => {
-                                      handleDeleteBox(index);
-                                    }}
-                                  />
-                                )}
+                                {packingDetails.length > 1 &&
+                           
+                                      <DeleteIcon
+                                        sx={{ color: "red", cursor: "pointer" }}
+                                        onClick={() => {
+                                          handleDeleteBox(index);
+                                        }}
+                                      />
+                                    }
                               </StyledTableCell>
                             </StyledTableRow>
                           );
@@ -599,7 +688,11 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                     margin: "20px",
                   }}
                 >
-                  <Button onClick={() => handleAddMore()} variant="outlined">
+                  <Button
+                    disabled={updateShipmentLoading || packageDisable}
+                    onClick={() => handleAddMore()}
+                    variant="outlined"
+                  >
                     Add More Box
                   </Button>
                 </div>
@@ -622,7 +715,6 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                   value={courierDetails.courierName || details?.CourierName}
                   helperText="Please select courier name"
                   onChange={(e) => handleCourierNameChange(e)}
-           
                 >
                   {getDyanmicValue?.data[0]?.courierPartner?.map(
                     (option, index) => (
@@ -638,7 +730,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                   value={courierDetails.Link || details?.Link}
                   onChange={(e) => handleCourierNameChange(e)}
                   label="Courier Link"
-                   InputLabelProps={{
+                  InputLabelProps={{
                     shrink: courierDetails.Link || details?.Link ? true : false,
                   }}
                 ></TextField>{" "}
