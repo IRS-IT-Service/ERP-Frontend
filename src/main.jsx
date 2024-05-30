@@ -7,6 +7,7 @@ import store from "./store.js";
 import { Provider } from "react-redux";
 import { WebSocketProvider } from "./CustomProvider/useWebSocket.jsx";
 import { WebRtcProvider } from "./CustomProvider/useWebRtc.jsx";
+import { register } from './serviceWorker';
 // if ("serviceWorker" in navigator) {
 //   navigator.serviceWorker.register("/firebase-messaging-sw.js")
 //     .then((registration) => {
@@ -30,3 +31,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </React.StrictMode>
   </Provider>
 );
+register()
