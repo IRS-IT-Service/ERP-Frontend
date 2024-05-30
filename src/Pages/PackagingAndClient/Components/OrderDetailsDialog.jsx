@@ -362,9 +362,10 @@ const OrderDetailsDialog = ({
                     <TableHead>
                       <TableRow>
                         <StyledTableCell align="center">Sno</StyledTableCell>
-                        <StyledTableCell align="center">Length</StyledTableCell>
-                        <StyledTableCell align="center">Width</StyledTableCell>
-                        <StyledTableCell align="center">Height</StyledTableCell>
+                        <StyledTableCell align="center">Weight<sup>kg</sup></StyledTableCell>
+                        <StyledTableCell align="center">Length<sup>cm</sup></StyledTableCell>
+                        <StyledTableCell align="center">Width<sup>cm</sup></StyledTableCell>
+                        <StyledTableCell align="center">Height<sup>cm</sup></StyledTableCell>
                         <StyledTableCell align="center">
                           Marking
                         </StyledTableCell>
@@ -377,6 +378,9 @@ const OrderDetailsDialog = ({
                           <TableRow key={index}>
                             <StyledTableCell align="center">
                               {index + 1}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                              {item.ActualWeight}
                             </StyledTableCell>
                             <StyledTableCell align="center">
                               {item.Length}
