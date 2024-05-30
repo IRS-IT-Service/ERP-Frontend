@@ -157,6 +157,9 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
   // HANDLE FOR PACKING RELATED FIELDS ONLY
 
   const handleBoxValueChange = (e, index) => {
+    if(details && details?.fieldDetails.length > 0){
+      return
+    }
     const { value, name } = e.target;
 
     if (name === "ActualWeight") {
@@ -395,7 +398,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                               },
                             }}
                           >
-                            A.Weight
+                            A.Weight {(details && details?.fieldDetails.length > 0) && <sup>kg</sup>}
                           </TableCell>
                           <TableCell
                             sx={{
@@ -504,6 +507,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                 <TextField
                                   placeholder="Weight"
                                   variant="outlined"
+                                  fullWidth
                                   name="ActualWeight"
                                   size="small"
                                   type="number"
@@ -519,6 +523,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                                       <TextField
                                         select
                                         name="Unit"
+                                        fullWidth
                                         size="small"
                                         value={item.Unit}
                                         onChange={(e) =>
