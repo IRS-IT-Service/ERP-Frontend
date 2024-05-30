@@ -398,7 +398,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                               },
                             }}
                           >
-                            A.Weight {details && details?.fieldDetails && <sup>kg</sup>}
+                            A.Weight {(details && details?.fieldDetails.length > 0) && <sup>kg</sup>}
                           </TableCell>
                           <TableCell
                             sx={{
