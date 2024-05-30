@@ -223,7 +223,20 @@ const handleAdditems = () => {
 /// useEffect
 useEffect(() => {
  if (allProductData?.success) {
-   const data = allProductData?.data?.products?.map((item, index) => {
+  const sorted = [...allProductData?.data?.products].sort((a, b) => {
+    const aCondition = !selectedDiabledItems.includes(a.SKU) && a.ActualQuantity > 0;
+    const bCondition = !selectedDiabledItems.includes(b.SKU) && b.ActualQuantity > 0;
+
+    if (allProductData.data.products) {
+      if (aCondition && !bCondition) return -1;
+      if (!aCondition && bCondition) return 1;
+    } else {
+      if (aCondition && !bCondition) return 1;
+      if (!aCondition && bCondition) return -1;
+    }
+    return 0;
+  });
+   const data = sorted?.map((item, index) => {
      return {
        ...item,
        id: item.SKU,
