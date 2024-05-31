@@ -144,7 +144,6 @@ import { messaging } from "./firebase";
 import useVisibilityChange from "./commonFunctions/useVisibilityChange";
 import {
   toastNotification,
-  sendNativeNotification,
 } from "./commonFunctions/notificationHelpers";
 
 
