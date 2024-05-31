@@ -557,7 +557,7 @@ const Calc = () => {
       console.log(err);
     }
   };
-//function for Price History
+  //function for Price History
   const matchSKUs = (usdPrice, rmbPrice, qty) => {
     let skus = [];
 
@@ -594,8 +594,8 @@ const Calc = () => {
   const handleSyncLandingCost = async () => {
     try {
       const result = [];
-      
-     for (const sku in landingCostExGst) {
+
+      for (const sku in landingCostExGst) {
         if (landingCostExGst.hasOwnProperty(sku)) {
           result.push({
             SKU: sku,
@@ -1886,6 +1886,17 @@ const Calc = () => {
     setSubLandingCostExGst(newSubLandingCostExGst);
   };
 
+  //Calculate GST
+  function calculateValueWithGST(value, gstPercentage) {
+    if (typeof value !== "number" || typeof gstPercentage !== "number") {
+      throw new Error("Both value and gstPercentage should be numbers");
+    }
+
+    const gstAmount = (value * gstPercentage) / 100;
+
+    return value + gstAmount;
+  }
+
   return (
     <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%" }}>
       <DrawerHeader />
@@ -2117,6 +2128,7 @@ const Calc = () => {
                           >
                             {row.Name}
                           </Typography>
+
                           <Typography
                             sx={{
                               fontSize: ".666rem",
@@ -2129,9 +2141,10 @@ const Calc = () => {
                               whiteSpace: "nowrap",
                             }}
                           >
-                            Current LandingCost:{" "}
+                            Old LC without GST :{" "}
                             {formatIndianPrice(row.LandingCost)}
                           </Typography>
+
                           <Typography
                             sx={{
                               fontSize: ".666rem",
@@ -2144,7 +2157,7 @@ const Calc = () => {
                               whiteSpace: "nowrap",
                             }}
                           >
-                            New LandingCost :{" "}
+                            New LC without GST :{" "}
                             {formatIndianPrice(landingCostExGst[row.SKU])}
                           </Typography>
 
@@ -2188,12 +2201,13 @@ const Calc = () => {
                         <Box
                           sx={{
                             display: "flex",
-                            justifyContent: "space-between",
+                            justifyContent: "",
                             marginTop: ".4rem",
                             // marginBottom: ".4rem",
                             // border: '2px solid yellow',
                             padding: ".2rem",
                             border: "2px solid #3385ff",
+                            justifyContent: "space-between",
                             borderRadius: ".4rem",
                             boxShadow: "-3px 3px 4px 0px #404040",
                           }}
@@ -2231,6 +2245,7 @@ const Calc = () => {
                               }}
                             />
                           </Box>
+
                           <Box display={"flex"}>
                             <Typography
                               sx={{
@@ -2355,6 +2370,68 @@ const Calc = () => {
                                 );
                               }}
                             />
+                          </Box>
+                          <Box display={"flex"}>
+                            <Typography
+                              sx={{
+                                fontWeight: "bold",
+                                fontSize: ".7rem",
+                                marginTop: "3px",
+                                marginRight: "3px",
+                              }}
+                            >
+                              Old LC with({" "}
+                              {gstPer[row.SKU] ? gstPer[row.SKU] : ""} % GST)
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontSize: ".666rem",
+                                color: "black",
+                                backgroundColor: "#fff",
+                                paddingX: "1rem",
+                                border: "1px solid black",
+                                borderRadius: ".2rem",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {" "}
+                              {row.LandingCost ||
+                              gstPer[row.SKU]
+                                ? formatIndianPrice(
+                                    calculateValueWithGST(
+                                      row.LandingCost,
+                                      gstPer[row.SKU]
+                                    )
+                                  )
+                                : ""}
+                            </Typography>
+                          </Box>
+                          <Box display={"flex"}>
+                            <Typography
+                              sx={{
+                                fontWeight: "bold",
+                                fontSize: ".7rem",
+                                marginTop: "3px",
+                                marginRight: "3px",
+                              }}
+                            >
+                              New LC with({" "}
+                              {gstPer[row.SKU] ? gstPer[row.SKU] : ""} % GST)
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontSize: ".666rem",
+                                color: "black",
+                                backgroundColor: "#fff",
+                                paddingX: "1rem",
+                                border: "1px solid black",
+                                borderRadius: ".2rem",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {" "}
+                              {formatIndianPrice(landingCost[row.SKU])}
+                            </Typography>
                           </Box>
                         </Box>
                       </Box>
