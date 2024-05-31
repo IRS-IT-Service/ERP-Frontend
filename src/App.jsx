@@ -141,18 +141,19 @@ import ShipmentList from "./Pages/PackagingAndClient/ShipmentList";
 import ShiproketMain from "./Pages/PackagingAndClient/Shiprocket/ShiproketMain";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase";
-import { getMessaging } from "firebase/messaging/sw";
 import useVisibilityChange from "./commonFunctions/useVisibilityChange";
 import {
   toastNotification,
   sendNativeNotification,
 } from "./commonFunctions/notificationHelpers";
 
+
 function App() {
   /// initialize
   const dispatch = useDispatch();
   const socket = useSocket();
   const navigate = useNavigate();
+  const isForeGround = useVisibilityChange();
 
   /// global state
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
@@ -164,8 +165,10 @@ function App() {
 
   //rtk query api calling
   const [getReceivedMessages, { refetch }] = useGetReceivedMessagesMutation();
+  const [logoutApi, { error }] = useLogoutMutation();
 
-  /// Push Notification
+
+  /// Push Notification using react library
   const pushNotification = (title, data, navigateTo) => {
     addNotification({
       title: title,
@@ -179,6 +182,7 @@ function App() {
       },
     });
   };
+
   /// Push Notification for chat messages
   const pushNotificatForChat = (title, data, navigateTo) => {
     addNotification({
@@ -195,14 +199,12 @@ function App() {
   };
 
   /// webSocket Event Handlers
-
   // OnMessage
   const handleNewMessage = (data) => {
     // console.log("Handling new message:", data);
   };
 
   //onlineUsers
-
   const handleOnlineUsers = (data) => {
     const userIds = Object.keys(data);
 
@@ -228,7 +230,6 @@ function App() {
   };
 
   /// webSocket Events
-
   useEffect(() => {
     if (socket) {
       if (isAdmin) {
@@ -240,8 +241,6 @@ function App() {
           // console.log("Received Event onMessage for Admin :", data);
           handleNewMessage(data);
         });
-
-        // Listen for the 'onlineUsers' event
 
         // Listen for the 'onlineWholeSaleUsers' event
         socket.on("onlineWholeSaleUsers", (data) => {
@@ -284,16 +283,11 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
-        // socket.off("newChatMessage");
       }
     };
   }, [socket]);
 
   useEffect(() => {
-    // const data = getReceivedMessages?.data?.map((data) =>
-    //   dispatch(addChatNotificationData({ ...data }))
-    // );
-
     if (socket) {
       socket.on("newChatMessage", (data) => {
         if (data.data.Visibility === "sent") {
@@ -319,28 +313,21 @@ function App() {
     };
   }, [socket, adminid, dispatch]);
 
-  /// rtk query
-  // const { data: getAllUserApi } = useGetAllUsersQuery();
-  // const { data: getAllWholeSellers } = useGetAllSellerQuery();
-  const [logoutApi, { error }] = useLogoutMutation();
+ 
 
   useEffect(() => {
     setMode(Mode === true ? "dark" : "light");
   }, [Mode]);
 
-  const isForeGround = useVisibilityChange();
 
   useEffect(() => {
     Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        // console.log("Notification permission granted.");
-        // const messaging = getMessaging();
+      if (permission === "granted") {     
         getToken(messaging, {
           vapidKey:
             "BM3r8o8qHsrmxPGM2sHJUlabsSEs-EONb1wg4mOPrNi0r8JYi86BI85wqtWhduF3fdnsfhr8nu814QdYzCHj3VU",
         })
           .then((currentToken) => {
-            // console.log("Current token:", currentToken); // Debug log.
             if (currentToken) {
               setRegistrationToken(currentToken);
             } else {
@@ -356,36 +343,20 @@ function App() {
     });
     onMessage(messaging, (payload) => {
       if (isForeGround) {
+
         toastNotification({
           title:payload?.notification?.title,
           description: payload?.notification?.body,
           status: "info",
         });
       } else {
-        sendNativeNotification({
-          title:payload?.notification?.title,
-          body:payload?.notification?.body,
-        });
+        // if user is not viewing the page it will show a notification in background using firebase sw
+        // console.log("helleee bac")
       }
     });
   }, []);
-  // useEffect(() => {
-  //   const handleBackgroundMessage = (payload) => {
-  //     console.log('Received background message:', payload);
-  //     // Handle the background message here
-  //   };
-
-  //   getMessaging().then((messaging) => {
-  //     messaging.onBackgroundMessage(handleBackgroundMessage);
-  //   }).catch((error) => {
-  //     console.error('Error getting messaging:', error);
-  //   });
-
-  //   return () => {
-  //     messaging.onBackgroundMessage(handleBackgroundMessage);
-  //   };
-  // }, []);
-
+  
+  // for chat web
   const fetchData = async (adminid) => {
     try {
       const result = await getReceivedMessages(adminid);

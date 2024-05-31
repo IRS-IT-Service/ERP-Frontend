@@ -15,17 +15,20 @@ firebase.initializeApp({
 });
 
 // Get Firebase Messaging instance
-const messaging = firebase.messaging();
+ const messaging = firebase.messaging();
+
+// Other service worker code...
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message:', payload);
+  // console.log('[firebase-messaging-sw.js] Received background message:', payload);
   
   // Customize notification here
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-  };
+  // const notificationTitle = payload.notification.title;
+  // const notificationOptions = {
+  //   body: payload.notification.body,
+  // };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  // self.registration.showNotification(notificationTitle, notificationOptions);
 });
+

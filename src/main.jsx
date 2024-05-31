@@ -8,15 +8,7 @@ import { Provider } from "react-redux";
 import { WebSocketProvider } from "./CustomProvider/useWebSocket.jsx";
 import { WebRtcProvider } from "./CustomProvider/useWebRtc.jsx";
 import { register } from './serviceWorker';
-// if ("serviceWorker" in navigator) {
-//   navigator.serviceWorker.register("/firebase-messaging-sw.js")
-//     .then((registration) => {
-//       console.log("Service worker registered:", registration);
-//     })
-//     .catch((error) => {
-//       console.error("Service worker registration failed:", error);
-//     });
-// }
+
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
