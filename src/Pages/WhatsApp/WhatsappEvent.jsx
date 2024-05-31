@@ -58,6 +58,10 @@ const approvalItems = [
     name: "Whole Sale Otp",
     icon: "fa-solid fa-key",
   },
+  {
+    name: "Shipment Event",
+    icon: "fa-solid fa-key",
+  },
 ];
 
 // infoDialog box data
