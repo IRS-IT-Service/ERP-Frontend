@@ -13,7 +13,6 @@ const Careers = () => {
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
     >
       <DrawerHeader />
-
       <CreateCareer />
     </Box>
   );
