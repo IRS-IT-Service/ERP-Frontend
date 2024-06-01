@@ -260,7 +260,7 @@ const DriveFolder = () => {
       name: 'Add Folder',
       screenshot: (
         <img
-          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(2).png?updatedAt=1717239469459'
+          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addFolder.png?updatedAt=1717241870063'
           height={'60%'}
           width={'90%'}
         />
@@ -272,7 +272,7 @@ const DriveFolder = () => {
       name: 'Files',
       screenshot: (
         <img
-          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(1).png?updatedAt=1717239469395'
+          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/files.png?updatedAt=1717241931656'
           height={'40%'}
           width={'40%'}
         />
@@ -283,7 +283,7 @@ const DriveFolder = () => {
       name: 'Upload Files',
       screenshot: (
         <img
-          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717239445782'
+          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/uploadFiles.png?updatedAt=1717241910103'
           height={'40%'}
           width={'40%'}
         />
