@@ -1,12 +1,12 @@
-import { React, useEffect, useState } from "react";
-import { Box, styled } from "@mui/material";
-import UploadImageGrid from "./component/UploadImageGrid";
-import Header from "../../components/Common/Header";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { React, useEffect, useState } from 'react';
+import { Box, styled } from '@mui/material';
+import UploadImageGrid from './component/UploadImageGrid';
+import Header from '../../components/Common/Header';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
@@ -41,7 +41,7 @@ const infoDetail = [
     name: 'Sort By GST',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717226676944'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortByGst.png?updatedAt=1717242547125'
         height={'60%'}
         width={'90%'}
       />
@@ -53,7 +53,7 @@ const infoDetail = [
     name: 'Clear All Filter',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717240595434'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
         height={'60%'}
         width={'90%'}
       />
@@ -136,7 +136,8 @@ const infoDetail = [
 ];
 
 const UploadImageCom = () => {
-  const description = 'This is for uploading and editing products. You can upload images and edit product details'
+  const description =
+    'This is for uploading and editing products. You can upload images and edit product details';
   const dispatch = useDispatch();
 
   const { isInfoOpen } = useSelector((state) => state.ui);
@@ -145,13 +146,13 @@ const UploadImageCom = () => {
   };
 
   useEffect(() => {
-    dispatch(setHeader("Upload Image / Edit Product"));
+    dispatch(setHeader('Upload Image / Edit Product'));
   }, []);
 
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
     >
       <DrawerHeader />
 
@@ -159,12 +160,12 @@ const UploadImageCom = () => {
        info={true}
        customOnClick={handleOpen} /> */}
       <InfoDialogBox
-       infoDetails={infoDetail}
-       description={description}
+        infoDetails={infoDetail}
+        description={description}
         open={isInfoOpen}
         close={handleClose}
       />
-      
+
       <UploadImageGrid />
     </Box>
   );
