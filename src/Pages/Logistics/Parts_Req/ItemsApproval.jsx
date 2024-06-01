@@ -65,7 +65,7 @@ const infoDetail = [
     name: "Parts requirement",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(2).png?updatedAt=1717239439369"
         height={"100%"}
         width={"100%"}
         style={
@@ -76,7 +76,11 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
+    instruction: `Sno: Serial number of the entry.
+    SKU: Stock Keeping Unit, a unique identifier for each part.
+    Product: Name and description of the part.
+    Parts Request: Quantity of parts requested.
+    Done: Status of the request (if completed).`,
   },
 
   {
@@ -94,7 +98,8 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
+    instruction: `Barcode Entry Field: Enter the barcode number of the part.
+    Submit Button: Submit the entered barcode for processing.`,
   },
 
   {
@@ -117,7 +122,7 @@ const infoDetail = [
 ];
 
 const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
-  const description = `"This is an Approval Module for mutual functionalities such as Stock, MRP, Sales Price, Seller Price, and Cost. In this module, you grant permission by selecting the products. Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions."`;
+  const description = `The main interface of the Parts Requirement section is system for fullfillment`;
 
   const DrawerHeader = styled("div")(({ theme }) => ({
     ...theme.mixins.toolbar,

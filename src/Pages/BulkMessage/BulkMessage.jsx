@@ -27,7 +27,7 @@ const infoDetail = [
     name: "Send Text Message with Media",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717227410216"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(1).png?updatedAt=1717238709704"
         height={"60%"}
         width={"90%"}
       />

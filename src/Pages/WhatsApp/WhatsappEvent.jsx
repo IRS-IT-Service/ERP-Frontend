@@ -75,7 +75,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'Whatsapp Event for Inventory Approval to assigned User getting Message',
   },
   {
     name: 'MRP Approval',
@@ -86,7 +86,7 @@ const infoDetail = [
         width={'100%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for MRP Approval to assigned User getting Message",
   },
   {
     name: 'SalesPrice Approval',
@@ -97,7 +97,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for SalesPrice Approval to assigned User getting Message",
   },
   {
     name: 'SellerPrice Approval',
@@ -108,7 +108,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for SellerPrice Approval to assigned User getting Message",
   },
   {
     name: 'Cost Approval',
@@ -119,7 +119,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for Cost Approval to assigned User getting Message",
   },
   {
     name: 'OpenBox Approval',
@@ -130,7 +130,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for OpenBox Approval to assigned User getting Message",
   },
   {
     name: 'New Product Approval',
@@ -141,7 +141,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: 'Whatsapp Event for New Product Approval to assigned User getting Message',
   },
   {
     name: 'Product Changes Approval',
@@ -152,7 +152,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: 'Whatsapp Event for Product Changes Approval to assigned User getting Message',
   },
   {
     name: 'Stock Approval',
@@ -163,7 +163,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: 'Whatsapp Event for Stock Approval to assigned User getting Message',
   },
   {
     name: 'WholeSale SignUp',
@@ -174,7 +174,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for WholeSale SignUp to assigned User getting Message",
   },
   {
     name: 'WholeSale Registration Form',
@@ -185,7 +185,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for WholeSale Registration Form to assigned User getting Message",
   },
   {
     name: 'WholeSale OTP',
@@ -196,7 +196,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for WholeSale OTP to assigned User getting Message",
   },
   {
     name: 'Shipment Event',
@@ -207,7 +207,7 @@ const infoDetail = [
         width={'40%'}
       />
     ),
-    instruction: '',
+    instruction: " Whatsapp Event for Shipment Event to assigned User getting Message",
   },
 ];
 const WhatsappEvent = () => {

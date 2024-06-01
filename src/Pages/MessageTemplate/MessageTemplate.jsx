@@ -15,7 +15,7 @@ const infoDetail = [
     name: "Register Wholesale",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(1).png?updatedAt=1717227575758"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717238582689"
         height={"60%"}
         width={"90%"}
       />
