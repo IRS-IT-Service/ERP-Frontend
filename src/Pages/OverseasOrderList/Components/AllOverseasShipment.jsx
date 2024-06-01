@@ -44,7 +44,7 @@ const infoDetail = [
     name: 'Status',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717232238653'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717246052254'
         height={'60%'}
         width={'90%'}
       />

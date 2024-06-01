@@ -65,7 +65,7 @@ const infoDetail = [
     name: "Parts requirement",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(2).png?updatedAt=1717239439369"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/partsReq.png?updatedAt=1717245317209"
         height={"100%"}
         width={"100%"}
         style={

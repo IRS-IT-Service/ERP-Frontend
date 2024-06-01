@@ -1,6 +1,6 @@
-import { React, useEffect, useState, useRef } from "react";
-import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
+import { React, useEffect, useState, useRef } from 'react';
+import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 import {
   Accordion,
   AccordionSummary,
@@ -21,114 +21,102 @@ import {
   DialogActions,
   TextField,
   Grid,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import WeightTable from "./Component/WeightTable";
-import PriceTable from "./Component/PriceTable";
-import CommonInput from "./Component/CommonInput";
-import ShippingTable from "./Component/ShippingTable";
-import FinalCalcTable from "./Component/FinalCalcTable";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import SubtotalCalc from "./Component/SubtotalCalc";
-import OtherCharges from "./Component/OtherChargesTable";
-import { formatIndianPrice } from "../../commonFunctions/commonFunctions";
-import { useUpdateProductsColumnMutation } from "../../features/api/productApiSlice";
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import WeightTable from './Component/WeightTable';
+import PriceTable from './Component/PriceTable';
+import CommonInput from './Component/CommonInput';
+import ShippingTable from './Component/ShippingTable';
+import FinalCalcTable from './Component/FinalCalcTable';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import SubtotalCalc from './Component/SubtotalCalc';
+import OtherCharges from './Component/OtherChargesTable';
+import { formatIndianPrice } from '../../commonFunctions/commonFunctions';
+import { useUpdateProductsColumnMutation } from '../../features/api/productApiSlice';
 import {
   useGetProductBySearchQuery,
   useAddCalcMutation,
   useGetCalcByIdQuery,
   useUpdateCalcMutation,
-} from "../../features/api/productApiSlice";
-import { useSocket } from "../../CustomProvider/useWebSocket";
-import { useDispatch, useSelector } from "react-redux";
-import Loading from "../../components/Common/Loading";
-import Header from "../../components/Common/Header";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import { useAddPriceHistoryMutation } from "../../features/api/PriceHistoryApiSlice";
+} from '../../features/api/productApiSlice';
+import { useSocket } from '../../CustomProvider/useWebSocket';
+import { useDispatch, useSelector } from 'react-redux';
+import Loading from '../../components/Common/Loading';
+import Header from '../../components/Common/Header';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
+import { useAddPriceHistoryMutation } from '../../features/api/PriceHistoryApiSlice';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Save",
+    name: 'Save',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/save_costCalculator.png?updatedAt=1703223683718"
-        height={"50%"}
-        width={"50%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/save_costCalculator.png?updatedAt=1703223683718'
+        height={'50%'}
+        width={'50%'}
       />
     ),
     instruction:
       "If you click 'View,' you can save the price for that particular price list",
   },
-  {
-    name: "View Sub-total",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/View-sub-total_costCalculator.png?updatedAt=1703223683795"
-        height={"100%"}
-        width={"100%"}
-      />
-    ),
-    instruction:
-      "If you click 'View Sub-total,' you can see the particular price list total here",
-  },
 ];
 
-const StyleButton = styled("button")(({ theme }) => ({
-  background: "#85A6ff",
-  color: "#fff",
-  height: "2rem",
-  marginTop: "1.2rem",
-  borderRadius: "10px",
-  padding: "0 12px",
-  border: "none",
+const StyleButton = styled('button')(({ theme }) => ({
+  background: '#85A6ff',
+  color: '#fff',
+  height: '2rem',
+  marginTop: '1.2rem',
+  borderRadius: '10px',
+  padding: '0 12px',
+  border: 'none',
 
-  "&:hover": {
+  '&:hover': {
     // corrected the selector
-    background: "#B3CBFF",
+    background: '#B3CBFF',
     boxShadow:
-      "rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px",
+      'rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px',
   },
-  cursor: "pointer",
+  cursor: 'pointer',
 }));
 
 const StyledInputbase = styled(InputBase)(({ theme }) => ({
-  borderRadius: "10px",
+  borderRadius: '10px',
   input: {
-    "&:hover": {
-      color: "rgb(15, 126, 252)",
+    '&:hover': {
+      color: 'rgb(15, 126, 252)',
     },
   },
-  width: "100%",
-  background: theme.palette.mode === "dark" ? "grey" : "#fff",
-  color: theme.palette.mode === "dark" ? "#fff" : "black",
+  width: '100%',
+  background: theme.palette.mode === 'dark' ? 'grey' : '#fff',
+  color: theme.palette.mode === 'dark' ? '#fff' : 'black',
 }));
 
 const StyleCollapse = styled(Collapse)(({ theme }) => ({
-  position: "absolute",
-  width: " 60%",
-  paddingX: "1rem",
-  paddingTop: ".5rem",
-  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-  maxHeight: "25rem",
-  overflow: "auto",
-  zIndex: "100",
+  position: 'absolute',
+  width: ' 60%',
+  paddingX: '1rem',
+  paddingTop: '.5rem',
+  boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
+  maxHeight: '25rem',
+  overflow: 'auto',
+  zIndex: '100',
 
-  background: theme.palette.mode === "dark" ? "grey" : "#eee",
-  color: theme.palette.mode === "dark" ? "#fff" : "black",
+  background: theme.palette.mode === 'dark' ? 'grey' : '#eee',
+  color: theme.palette.mode === 'dark' ? '#fff' : 'black',
 }));
 
 const Calc = () => {
   // infodialog state
   const description1 =
-    "This is a Price Calculator where you can calculate the price ";
+    'This is a Price Calculator where you can calculate the price ';
 
   const dispatch = useDispatch();
   const [addpriceHistory, { isLoading: addpriceHistoryLoading }] =
@@ -200,7 +188,7 @@ const Calc = () => {
   };
 
   // search functionality
-  const [testSearch, setTestSearch] = useState("");
+  const [testSearch, setTestSearch] = useState('');
   const filteredData = data?.data.filter(
     (item) =>
       item.Name?.toLowerCase().includes(testSearch?.toLowerCase()) ||
@@ -211,17 +199,17 @@ const Calc = () => {
 
   const [step, setStep] = useState(0);
   const [openSave, setOpenSave] = useState(false);
-  const [calcId, setCalcId] = useState("");
-  const [description, setDescription] = useState("");
+  const [calcId, setCalcId] = useState('');
+  const [description, setDescription] = useState('');
   const [isEdited, setIsEdited] = useState(false);
   const [open, setOpen] = useState(false);
 
   // weight state
   const [qty, setQty] = useState({});
   const [dimensions, setDimensions] = useState({});
-  const [unit, setUnit] = useState("cm");
-  const [WeightUnit, setWeightUnit] = useState("gm");
-  const [Courier, setCourier] = useState("cargo");
+  const [unit, setUnit] = useState('cm');
+  const [WeightUnit, setWeightUnit] = useState('gm');
+  const [Courier, setCourier] = useState('cargo');
   const [volumeWeight, setVolumeWeight] = useState({});
   const [actualWeight, setActualWeight] = useState({});
   const [weightCompare, setWeightCompare] = useState({});
@@ -230,7 +218,7 @@ const Calc = () => {
   const [totalVolumeWeight, setTotalVolumeWeight] = useState(null);
   const [totalActualWeight, setTotalActualWeight] = useState(null);
   const [volumeWeightRatio, setVolumeWeightRatio] = useState({});
-  const [extraWeight, setExtraWeight] = useState("");
+  const [extraWeight, setExtraWeight] = useState('');
   const [extraWeightIntoRatio, setExtraWeightIntoRatio] = useState({});
   const [finalWeight, setFinalWeight] = useState({});
   const [subTotalFinalWeight, setSubTotalFinalWeight] = useState(null);
@@ -241,30 +229,30 @@ const Calc = () => {
   const [totalUsdPrice, setTotalUsdPrice] = useState({});
   const [subTotalUsdPrice, setSubTotalUsdPrice] = useState(null);
   const [usdPriceRatio, setUsdPriceRatio] = useState({});
-  const [conversionRateBOE, setConversionRateBOE] = useState("");
-  const [conversionRatePayment, setConversionRatePayment] = useState("");
+  const [conversionRateBOE, setConversionRateBOE] = useState('');
+  const [conversionRatePayment, setConversionRatePayment] = useState('');
   const [indianRateBoe, setIndianRateBoe] = useState({});
   const [subTotalIndianRateBoe, setSubTotalIndianRateBoe] = useState(null);
   const [indianRatePayment, setIndianRatePayment] = useState({});
   const [subTotalIndianRatePayment, setSubTotalIndianRatePayment] =
     useState(null);
-  const [paymentTermCommon, setPaymentTermCommon] = useState("fob");
-  const [frieghtCommon, setFrieghtCommon] = useState("");
-  const [frieghtValueCommon, setFrieghtValueCommon] = useState("");
+  const [paymentTermCommon, setPaymentTermCommon] = useState('fob');
+  const [frieghtCommon, setFrieghtCommon] = useState('');
+  const [frieghtValueCommon, setFrieghtValueCommon] = useState('');
   const [frieght, setFrieght] = useState({});
   const [subTotalFrieght, setSubTotalFrieght] = useState(null);
   const [insurance, setInsurance] = useState({});
-  const [insuranceCommon, setInsuranceCommon] = useState("");
+  const [insuranceCommon, setInsuranceCommon] = useState('');
   const [subTotalInsurance, setSubTotalInsurance] = useState(null);
   const [basicDutyPer, setBasicDutyPer] = useState({});
   const [basicDutyValue, setBasicDutyValue] = useState({});
   const [subTotalBasicDuty, setSubTotalBasicDuty] = useState(null);
-  const [swChargeCommon, setSwChargeCommon] = useState("");
+  const [swChargeCommon, setSwChargeCommon] = useState('');
   const [swCharge, setSwCharge] = useState({});
   const [landingForOtherValueCommon, setLandingForOtherValueCommon] =
-    useState("");
+    useState('');
   const [landingForOtherValue, setLandingForOtherValue] = useState({});
-  const [lateFee, setLateFee] = useState("");
+  const [lateFee, setLateFee] = useState('');
   const [lateFeeValue, setLateFeeValue] = useState({});
   const [assesableValue, setAssesableValue] = useState({});
   const [subTotalAssesable, setSubTotalAssesable] = useState(null);
@@ -275,18 +263,18 @@ const Calc = () => {
   const [subCdTotal, setSubCdTotal] = useState(null);
 
   // shipping state
-  const [ShippingFee, setShippingFee] = useState("");
-  const [gstOnShipping, setGstOnShipping] = useState("");
+  const [ShippingFee, setShippingFee] = useState('');
+  const [gstOnShipping, setGstOnShipping] = useState('');
   const [shippingValue, setShippingValue] = useState({});
   const [shippingGstValue, setShippingGstValue] = useState({});
   const [totalShipping, setTotalShipping] = useState({});
   const [subTotalShipping, setSubtotalShipping] = useState(null);
 
   // other Charges
-  const [regularBillentry, setRegularBillentry] = useState("");
-  const [warehouseCharge, setWarehouseCharge] = useState("");
-  const [bankCharge, setBankCharge] = useState("");
-  const [otherCharge, setOtherCharge] = useState("");
+  const [regularBillentry, setRegularBillentry] = useState('');
+  const [warehouseCharge, setWarehouseCharge] = useState('');
+  const [bankCharge, setBankCharge] = useState('');
+  const [otherCharge, setOtherCharge] = useState('');
   const [regularBillentryValue, setRegularBillentryValue] = useState({});
   const [warehouseChargeValue, setWarehouseChargeValue] = useState({});
   const [bankChargeValue, setBankChargeValue] = useState({});
@@ -326,95 +314,95 @@ const Calc = () => {
   const handleValueChange = (type, sku, value, dimensionType) => {
     setIsEdited(true);
     isInitialCheck.current = true;
-    if (type === "qty") {
+    if (type === 'qty') {
       setQty({ ...qty, [sku]: value });
     }
-    if (type === "dimensions") {
+    if (type === 'dimensions') {
       setDimensions({
         ...dimensions,
         [sku]: { ...dimensions[sku], [dimensionType]: value },
       });
     }
-    if (type === "unit") {
+    if (type === 'unit') {
       setUnit(value);
     }
-    if (type === "paymentTermCommon") {
+    if (type === 'paymentTermCommon') {
       setPaymentTermCommon(value);
-      if (value === "cif") {
+      if (value === 'cif') {
         setInsuranceCommon(0);
         setFrieghtCommon(0);
       }
     }
-    if (type === "WeightUnit") {
+    if (type === 'WeightUnit') {
       setWeightUnit(value);
     }
-    if (type === "Courier") {
+    if (type === 'Courier') {
       setCourier(value);
     }
-    if (type === "extraWeight") {
+    if (type === 'extraWeight') {
       setExtraWeight(value);
     }
-    if (type === "actualWeight") {
+    if (type === 'actualWeight') {
       setActualWeight({ ...actualWeight, [sku]: value });
     }
-    if (type === "usdPrice") {
+    if (type === 'usdPrice') {
       setUsdPrice({ ...usdPrice, [sku]: value });
     }
-    if (type === "rmbPrice") {
+    if (type === 'rmbPrice') {
       setRMBPrice({ ...rmbPrice, [sku]: value });
     }
-    if (type === "ratePayment") {
+    if (type === 'ratePayment') {
       setConversionRatePayment(value);
     }
-    if (type === "rateBoe") {
+    if (type === 'rateBoe') {
       setConversionRateBOE(value);
     }
-    if (type === "frieghtCommon") {
+    if (type === 'frieghtCommon') {
       setFrieghtCommon(value);
     }
-    if (type === "frieghtValueCommon") {
+    if (type === 'frieghtValueCommon') {
       setFrieghtValueCommon(value);
     }
-    if (type === "landingOtherValueCommon") {
+    if (type === 'landingOtherValueCommon') {
       setLandingForOtherValueCommon(value);
     }
-    if (type === "lateFee") {
+    if (type === 'lateFee') {
       setLateFee(value);
     }
-    if (type === "swCharge") {
+    if (type === 'swCharge') {
       setSwChargeCommon(value);
     }
-    if (type === "basicDutyPer") {
+    if (type === 'basicDutyPer') {
       setBasicDutyPer({
         ...basicDutyPer,
         [sku]: value,
       });
     }
-    if (type === "gstPer") {
+    if (type === 'gstPer') {
       setGstPer({
         ...gstPer,
         [sku]: value,
       });
     }
-    if (type === "ShippingFee") {
+    if (type === 'ShippingFee') {
       setShippingFee(value);
     }
-    if (type === "gstOnShipping") {
+    if (type === 'gstOnShipping') {
       setGstOnShipping(value);
     }
-    if (type === "regularBillentry") {
+    if (type === 'regularBillentry') {
       setRegularBillentry(value);
     }
-    if (type === "warehouseCharge") {
+    if (type === 'warehouseCharge') {
       setWarehouseCharge(value);
     }
-    if (type === "bankCharge") {
+    if (type === 'bankCharge') {
       setBankCharge(value);
     }
-    if (type === "otherCharge") {
+    if (type === 'otherCharge') {
       setOtherCharge(value);
     }
-    if (type === "insuranceCommon") {
+    if (type === 'insuranceCommon') {
       setInsuranceCommon(value);
     }
   };
@@ -525,35 +513,35 @@ const Calc = () => {
           if (isToast) {
             return;
           }
-          toast.success("no Changes detected");
+          toast.success('no Changes detected');
           return;
         }
         const res = await updateCalcApi({ id: id, data: { data: params } });
 
         if (isToast) {
-          toast.success("Upated Successfully");
+          toast.success('Upated Successfully');
         }
       } else {
         if (!calcId) {
-          toast.error("Please enter a unique id for identification");
+          toast.error('Please enter a unique id for identification');
           return;
         }
         if (!description) {
-          toast.error("Please enter a description");
+          toast.error('Please enter a description');
           return;
         }
 
         const res = await addCalcApi({ data: params }).unwrap();
 
-        toast.success(" Data Saved Successfully");
+        toast.success(' Data Saved Successfully');
         setOpenSave(false);
         console.log(res);
-        navigate(`/calc/${res.data["_id"]}?replace=true`);
+        navigate(`/calc/${res.data['_id']}?replace=true`);
       }
 
       setIsEdited(false);
     } catch (err) {
-      console.log("Error at add Calc");
+      console.log('Error at add Calc');
       console.log(err);
     }
   };
@@ -620,24 +608,24 @@ const Calc = () => {
       const matchedProducts = matchSKUs(usdPrice, rmbPrice, qty);
 
       const params = {
-        type: "LandingCost",
+        type: 'LandingCost',
         body: { products: filteredArray },
       };
       const res = await updateProductsApi(params).unwrap();
       const res1 = await addpriceHistory(matchedProducts).unwrap();
       handleSaveCalcData(true);
-      toast.success("Landing Cost Synced Successfully");
+      toast.success('Landing Cost Synced Successfully');
       const liveStatusData = {
         message: `${userInfo.name} updated LandingCost of ${filteredArray
           .map((product) => `${product.SKU} to ${product.value}`)
-          .join(", ")} `,
+          .join(', ')} `,
         time: new Date(),
       };
       setTimeout(() => {
-        socket.emit("liveStatusServer", liveStatusData);
+        socket.emit('liveStatusServer', liveStatusData);
       }, [2000]);
     } catch (err) {
-      console.log("Error at sync Landing Cost in Calc");
+      console.log('Error at sync Landing Cost in Calc');
       console.log(err);
     }
   };
@@ -652,16 +640,16 @@ const Calc = () => {
   ) => {
     try {
       if (!NewLandingCost) {
-        toast.error("Landing Cost is not available");
+        toast.error('Landing Cost is not available');
         return;
       }
       if (currentLandingCost === Math.ceil(NewLandingCost)) {
-        toast.success("Landing Cost already Synced");
+        toast.success('Landing Cost already Synced');
         return;
       }
 
       const params = {
-        type: "LandingCost",
+        type: 'LandingCost',
         body: { products: [{ SKU: SKU, value: Math.ceil(NewLandingCost) }] },
       };
       const value = [
@@ -688,10 +676,10 @@ const Calc = () => {
         time: new Date(),
       };
       setTimeout(() => {
-        socket.emit("liveStatusServer", liveStatusData);
+        socket.emit('liveStatusServer', liveStatusData);
       }, [2000]);
     } catch (err) {
-      console.log("Error at sync One Landing Cost");
+      console.log('Error at sync One Landing Cost');
     }
   };
   /// useEffect
@@ -712,9 +700,9 @@ const Calc = () => {
       // weight
       setQty(oneCalcData.data.weightState.qty || {});
       setDimensions(oneCalcData.data.weightState.dimensions || {});
-      setUnit(oneCalcData.data.weightState.unit || "cf");
-      setWeightUnit(oneCalcData.data.weightState.WeightUnit || "gm");
-      setCourier(oneCalcData.data.weightState.Courier || "cargo");
+      setUnit(oneCalcData.data.weightState.unit || 'cf');
+      setWeightUnit(oneCalcData.data.weightState.WeightUnit || 'gm');
+      setCourier(oneCalcData.data.weightState.Courier || 'cargo');
       setVolumeWeight(oneCalcData.data.weightState.volumeWeight || {});
       setActualWeight(oneCalcData.data.weightState.actualWeight || {});
       setWeightCompare(oneCalcData.data.weightState.weightCompare || {});
@@ -729,7 +717,7 @@ const Calc = () => {
       setVolumeWeightRatio(
         oneCalcData.data.weightState.volumeWeightRatio || {}
       );
-      setExtraWeight(oneCalcData.data.weightState.extraWeight || "");
+      setExtraWeight(oneCalcData.data.weightState.extraWeight || '');
       setExtraWeightIntoRatio(
         oneCalcData.data.weightState.extraWeightIntoRatio || {}
       );
@@ -744,9 +732,9 @@ const Calc = () => {
       setTotalUsdPrice(oneCalcData.data.priceState.totalUsdPrice || {});
       setSubTotalUsdPrice(oneCalcData.data.priceState.subTotalUsdPrice || null);
       setUsdPriceRatio(oneCalcData.data.priceState.usdPriceRatio || {});
-      setConversionRateBOE(oneCalcData.data.priceState.conversionRateBOE || "");
+      setConversionRateBOE(oneCalcData.data.priceState.conversionRateBOE || '');
       setConversionRatePayment(
-        oneCalcData.data.priceState.conversionRatePayment || ""
+        oneCalcData.data.priceState.conversionRatePayment || ''
       );
       setIndianRateBoe(oneCalcData.data.priceState.indianRateBoe || {});
 
@@ -758,12 +746,12 @@ const Calc = () => {
         oneCalcData.data.priceState.subTotalIndianRatePayment || null
       );
       setPaymentTermCommon(
-        oneCalcData.data.priceState.paymentTermCommon || "fob"
+        oneCalcData.data.priceState.paymentTermCommon || 'fob'
       );
-      setInsuranceCommon(oneCalcData.data.priceState.insuranceCommon || "");
-      setFrieghtCommon(oneCalcData.data.priceState.frieghtCommon || "");
+      setInsuranceCommon(oneCalcData.data.priceState.insuranceCommon || '');
+      setFrieghtCommon(oneCalcData.data.priceState.frieghtCommon || '');
       setFrieghtValueCommon(
-        oneCalcData.data.priceState.frieghtValueCommon || ""
+        oneCalcData.data.priceState.frieghtValueCommon || ''
       );
       setFrieght(oneCalcData.data.priceState.frieght || {});
       setSubTotalFrieght(oneCalcData.data.priceState.subTotalFrieght || null);
@@ -776,15 +764,15 @@ const Calc = () => {
       setSubTotalBasicDuty(
         oneCalcData.data.priceState.subTotalBasicDuty || null
       );
-      setSwChargeCommon(oneCalcData.data.priceState.swChargeCommon || "");
+      setSwChargeCommon(oneCalcData.data.priceState.swChargeCommon || '');
       setSwCharge(oneCalcData.data.priceState.swCharge || {});
       setLandingForOtherValueCommon(
-        oneCalcData.data.priceState.landingForOtherValueCommon || ""
+        oneCalcData.data.priceState.landingForOtherValueCommon || ''
       );
       setLandingForOtherValue(
         oneCalcData.data.priceState.landingForOtherValue || {}
       );
-      setLateFee(oneCalcData.data.priceState.lateFee || "");
+      setLateFee(oneCalcData.data.priceState.lateFee || '');
       setLateFeeValue(oneCalcData.data.priceState.lateFeeValue || {});
       setSubTotalAssesable(
         oneCalcData.data.priceState.subTotalAssesable || null
@@ -796,8 +784,8 @@ const Calc = () => {
       setSubCdTotal(oneCalcData.data.priceState.subCdTotal || null);
 
       // Shipping
-      setShippingFee(oneCalcData.data.shippingState.ShippingFee || "");
-      setGstOnShipping(oneCalcData.data.shippingState.gstOnShipping || "");
+      setShippingFee(oneCalcData.data.shippingState.ShippingFee || '');
+      setGstOnShipping(oneCalcData.data.shippingState.gstOnShipping || '');
       setShippingValue(oneCalcData.data.shippingState.shippingValue || {});
       setShippingGstValue(
         oneCalcData.data.shippingState.shippingGstValue || {}
@@ -809,13 +797,13 @@ const Calc = () => {
 
       // other charges
       setRegularBillentry(
-        oneCalcData.data.otherChargeState.regularBillentry || ""
+        oneCalcData.data.otherChargeState.regularBillentry || ''
       );
       setWarehouseCharge(
-        oneCalcData.data.otherChargeState.warehouseCharge || ""
+        oneCalcData.data.otherChargeState.warehouseCharge || ''
       );
-      setBankCharge(oneCalcData.data.otherChargeState.bankCharge || "");
-      setOtherCharge(oneCalcData.data.otherChargeState.otherCharge || "");
+      setBankCharge(oneCalcData.data.otherChargeState.bankCharge || '');
+      setOtherCharge(oneCalcData.data.otherChargeState.otherCharge || '');
       setRegularBillentryValue(
         oneCalcData.data.otherChargeState.regularBillentryValue || {}
       );
@@ -1101,16 +1089,16 @@ const Calc = () => {
 
   const resetToDefault = () => {
     setRows([]);
-    setCalcId("");
-    setDescription("");
+    setCalcId('');
+    setDescription('');
     setIsEdited(false);
 
     /// weight
     setQty({});
     setDimensions({});
-    setUnit("cm");
-    setWeightUnit("gm");
-    setCourier("cargo");
+    setUnit('cm');
+    setWeightUnit('gm');
+    setCourier('cargo');
     setVolumeWeight({});
     setActualWeight({});
     setWeightCompare({});
@@ -1119,7 +1107,7 @@ const Calc = () => {
     setTotalVolumeWeight(null);
     setTotalActualWeight(null);
     setVolumeWeightRatio({});
-    setExtraWeight("");
+    setExtraWeight('');
     setExtraWeightIntoRatio({});
     setFinalWeight({});
     setSubTotalFinalWeight(null);
@@ -1130,28 +1118,28 @@ const Calc = () => {
     setTotalUsdPrice({});
     setSubTotalUsdPrice(null);
     setUsdPriceRatio({});
-    setConversionRateBOE("");
-    setConversionRatePayment("");
+    setConversionRateBOE('');
+    setConversionRatePayment('');
     setIndianRateBoe({});
     setSubTotalIndianRateBoe(null);
     setIndianRatePayment({});
     setSubTotalIndianRatePayment(null);
-    setPaymentTermCommon("fob");
-    setInsuranceCommon("");
+    setPaymentTermCommon('fob');
+    setInsuranceCommon('');
     setSubTotalInsurance(null);
-    setFrieghtCommon("");
-    setFrieghtValueCommon("");
+    setFrieghtCommon('');
+    setFrieghtValueCommon('');
     setFrieght({});
     setSubTotalFrieght(null);
     setInsurance({});
     setBasicDutyPer({});
     setBasicDutyValue({});
     setSubTotalBasicDuty(null);
-    setSwChargeCommon("");
+    setSwChargeCommon('');
     setSwCharge({});
-    setLandingForOtherValueCommon("");
+    setLandingForOtherValueCommon('');
     setLandingForOtherValue({});
-    setLateFee("");
+    setLateFee('');
     setLateFeeValue({});
     setSubTotalAssesable(null);
     setGstPer({});
@@ -1161,18 +1149,18 @@ const Calc = () => {
     setSubCdTotal(null);
 
     /// Shipping
-    setShippingFee("");
-    setGstOnShipping("");
+    setShippingFee('');
+    setGstOnShipping('');
     setShippingValue({});
     setShippingGstValue({});
     setTotalShipping({});
     setSubtotalShipping(null);
 
     // other charges
-    setRegularBillentry("");
-    setWarehouseCharge("");
-    setBankCharge("");
-    setOtherCharge("");
+    setRegularBillentry('');
+    setWarehouseCharge('');
+    setBankCharge('');
+    setOtherCharge('');
     setRegularBillentryValue({});
     setWarehouseChargeValue({});
     setBankChargeValue({});
@@ -1202,7 +1190,7 @@ const Calc = () => {
     const newActualWeight = {};
     rows.forEach((row) => {
       newActualWeight[row.SKU] =
-        WeightUnit === "kg"
+        WeightUnit === 'kg'
           ? (actualWeight[row.SKU] / 1000).toFixed(3)
           : actualWeight[row.SKU] * 1000;
     });
@@ -1215,17 +1203,17 @@ const Calc = () => {
 
     let volumetricFactor;
 
-    if (Courier === "cargo") {
-      volumetricFactor = unit === "cm" ? 6000 : 6000000;
+    if (Courier === 'cargo') {
+      volumetricFactor = unit === 'cm' ? 6000 : 6000000;
     } else {
-      volumetricFactor = unit === "cm" ? 5000 : 5000000;
+      volumetricFactor = unit === 'cm' ? 5000 : 5000000;
     }
 
     rows.forEach((row) => {
       const { L = 0, W = 0, H = 0 } = dimensions[row.SKU] || {}; // Use an empty object as default if dimensions[row.SKU] is undefined
       const weight = (L * W * H) / volumetricFactor;
 
-      newVolumeWeight[row.SKU] = WeightUnit === "kg" ? weight : weight * 1000;
+      newVolumeWeight[row.SKU] = WeightUnit === 'kg' ? weight : weight * 1000;
     });
     setVolumeWeight(newVolumeWeight);
   };
@@ -1630,7 +1618,7 @@ const Calc = () => {
 
     rows.forEach((row) => {
       let finalWeightWithUnit =
-        WeightUnit === "gm"
+        WeightUnit === 'gm'
           ? finalWeight[row.SKU] / 1000
           : finalWeight[row.SKU];
 
@@ -1888,8 +1876,8 @@ const Calc = () => {
 
   //Calculate GST
   function calculateValueWithGST(value, gstPercentage) {
-    if (typeof value !== "number" || typeof gstPercentage !== "number") {
-      throw new Error("Both value and gstPercentage should be numbers");
+    if (typeof value !== 'number' || typeof gstPercentage !== 'number') {
+      throw new Error('Both value and gstPercentage should be numbers');
     }
 
     const gstAmount = (value * gstPercentage) / 100;
@@ -1898,7 +1886,7 @@ const Calc = () => {
   }
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%" }}>
+    <Box component='main' sx={{ flexGrow: 1, p: 0, width: '100%' }}>
       <DrawerHeader />
       {/* <Header
         Name={"Price Calculator"}
@@ -1908,28 +1896,28 @@ const Calc = () => {
 
       <Loading loading={oneCalcLoading} />
 
-      <Grid container display="flex" spacing={1}>
+      <Grid container display='flex' spacing={1}>
         <Box
           sx={{
-            width: "100%",
+            width: '100%',
             // marginTop: "1rem",
-            display: "flex",
-            justifyContent: "center",
+            display: 'flex',
+            justifyContent: 'center',
             // border: '2px solid aqua',
           }}
         >
           {/* save buttons  */}
           {id ? (
             <Button
-              sx={{ height: "3rem", marginTop: "1rem", marginRight: ".5rem" }}
-              variant="contained"
+              sx={{ height: '3rem', marginTop: '1rem', marginRight: '.5rem' }}
+              variant='contained'
               onClick={handleSaveCalcData}
-              color="primary"
+              color='primary'
             >
               {updateLoading ? (
-                <CircularProgress size={24} color="inherit" /> // Show loading indicator
+                <CircularProgress size={24} color='inherit' /> // Show loading indicator
               ) : (
-                "Save Changes"
+                'Save Changes'
               )}
             </Button>
           ) : (
@@ -1947,31 +1935,31 @@ const Calc = () => {
 
           {id ? (
             <Button
-              sx={{ height: "3rem", marginTop: "1rem" }}
-              variant="contained"
+              sx={{ height: '3rem', marginTop: '1rem' }}
+              variant='contained'
               onClick={handleSyncLandingCost}
             >
               {updateProductLoading ? (
-                <CircularProgress size={24} color="inherit" /> // Show loading indicator
+                <CircularProgress size={24} color='inherit' /> // Show loading indicator
               ) : (
-                "Sync Landing Cost"
+                'Sync Landing Cost'
               )}
             </Button>
           ) : (
-            ""
+            ''
           )}
           <Box
             sx={{
-              width: "60%",
-              borderRadius: "10px",
+              width: '60%',
+              borderRadius: '10px',
               // border: '2px solid black',
-              margin: "20px",
-              boxShadow: "0px 8px 11px 3px #00000024",
+              margin: '20px',
+              boxShadow: '0px 8px 11px 3px #00000024',
             }}
           >
             <StyledInputbase
               onClick={handleToggle}
-              placeholder="Search"
+              placeholder='Search'
               value={testSearch}
               onChange={(e) => {
                 setTestSearch(e.target.value);
@@ -1980,9 +1968,9 @@ const Calc = () => {
                 }
               }}
               startAdornment={
-                <InputAdornment position="start">
+                <InputAdornment position='start'>
                   <IconButton>
-                    <SearchOutlinedIcon sx={{ color: "black" }} />
+                    <SearchOutlinedIcon sx={{ color: 'black' }} />
                   </IconButton>
                 </InputAdornment>
               }
@@ -1997,25 +1985,25 @@ const Calc = () => {
           </Button> */}
         </Box>
 
-        <Box sx={{ height: "72vh", overflowX: "auto" }}>
+        <Box sx={{ height: '72vh', overflowX: 'auto' }}>
           <Box
             sx={{
-              width: "100%",
-              position: "relative",
-              display: "flex",
-              justifyContent: "center",
+              width: '100%',
+              position: 'relative',
+              display: 'flex',
+              justifyContent: 'center',
             }}
             onClick={handleToggle}
           >
             <StyleCollapse in={openSearchBox}>
               <Box
                 sx={{
-                  display: "flex",
-                  justifyContent: "end",
+                  display: 'flex',
+                  justifyContent: 'end',
                   // position: "relative",
                 }}
               >
-                <Button sx={{ position: "fixed" }} variant="contained">
+                <Button sx={{ position: 'fixed' }} variant='contained'>
                   Close
                 </Button>
               </Box>
@@ -2026,9 +2014,9 @@ const Calc = () => {
                     <Box
                       key={index}
                       sx={{
-                        padding: ".5rem",
-                        "&:hover": { backgroundColor: "#3377FF" },
-                        transition: ".3s",
+                        padding: '.5rem',
+                        '&:hover': { backgroundColor: '#3377FF' },
+                        transition: '.3s',
                         // marginTop: "25px",
                       }}
                       onClick={() => handleItemClick(item)}
@@ -2039,7 +2027,7 @@ const Calc = () => {
                 })
               ) : (
                 <div>
-                  <li style={{ listStyle: "none", padding: ".5rem" }}>
+                  <li style={{ listStyle: 'none', padding: '.5rem' }}>
                     Item not found
                   </li>
                 </div>
@@ -2049,18 +2037,18 @@ const Calc = () => {
           <Loading loading={updateProductLoading || addCalcLoading} />
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: "1rem",
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '1rem',
             }}
           >
-            <Box sx={{ flexBasis: "90%" }}>
+            <Box sx={{ flexBasis: '90%' }}>
               <Box
                 sx={{
-                  height: "70vh",
-                  overflowY: "auto",
+                  height: '70vh',
+                  overflowY: 'auto',
                   // border: '2px solid aqua',
-                  width: "100%",
+                  width: '100%',
                   // padding:"1rem"
                 }}
               >
@@ -2068,62 +2056,62 @@ const Calc = () => {
                   <Accordion
                     key={row.SKU}
                     sx={{
-                      border: "2px solid #3385ff",
+                      border: '2px solid #3385ff',
                       backgroundImage:
-                        "linear-gradient(to right top, #dae5ff , #e8f0ff)",
+                        'linear-gradient(to right top, #dae5ff , #e8f0ff)',
                       // marginBottom: "4px",
-                      "& .MuiAccordionSummary-content": {
-                        margin: "3px 0px",
+                      '& .MuiAccordionSummary-content': {
+                        margin: '3px 0px',
                       },
                     }}
                     // expanded={true}
                   >
                     <AccordionSummary
-                      expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
+                      expandIcon={<ExpandMoreIcon style={{ color: 'black' }} />}
                       sx={{
-                        padding: "0",
-                        margin: "0px",
+                        padding: '0',
+                        margin: '0px',
                       }}
                     >
                       <Box
                         sx={{
-                          width: "100%",
+                          width: '100%',
                           // marginBottom: "4px",
-                          paddingLeft: "5px",
+                          paddingLeft: '5px',
                         }}
                       >
                         <Box
                           sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            width: "100%",
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            width: '100%',
                             // border: '2px solid purple',
                           }}
                         >
                           <Typography
                             sx={{
-                              fontSize: ".666rem",
-                              color: "#fff",
-                              backgroundColor: " #000",
-                              paddingX: "1rem",
-                              border: "2px solid #3385ff",
-                              borderRadius: ".4rem",
-                              boxShadow: "-3px 3px 4px 0px #404040",
+                              fontSize: '.666rem',
+                              color: '#fff',
+                              backgroundColor: ' #000',
+                              paddingX: '1rem',
+                              border: '2px solid #3385ff',
+                              borderRadius: '.4rem',
+                              boxShadow: '-3px 3px 4px 0px #404040',
                             }}
                           >
                             {row.SKU}
                           </Typography>
                           <Typography
                             sx={{
-                              fontSize: ".666rem",
-                              color: "#fff",
-                              backgroundColor: " #000",
-                              paddingX: "1rem",
-                              border: "2px solid #3385ff",
-                              borderRadius: ".4rem",
-                              boxShadow: "-3px 3px 4px 0px #404040",
-                              whiteSpace: "nowrap",
+                              fontSize: '.666rem',
+                              color: '#fff',
+                              backgroundColor: ' #000',
+                              paddingX: '1rem',
+                              border: '2px solid #3385ff',
+                              borderRadius: '.4rem',
+                              boxShadow: '-3px 3px 4px 0px #404040',
+                              whiteSpace: 'nowrap',
                             }}
                           >
                             {row.Name}
@@ -2131,46 +2119,46 @@ const Calc = () => {
 
                           <Typography
                             sx={{
-                              fontSize: ".666rem",
-                              color: "#fff",
-                              backgroundColor: " #000",
-                              paddingX: "1rem",
-                              border: "2px solid #3385ff",
-                              borderRadius: ".4rem",
-                              boxShadow: "-3px 3px 4px 0px #404040",
-                              whiteSpace: "nowrap",
+                              fontSize: '.666rem',
+                              color: '#fff',
+                              backgroundColor: ' #000',
+                              paddingX: '1rem',
+                              border: '2px solid #3385ff',
+                              borderRadius: '.4rem',
+                              boxShadow: '-3px 3px 4px 0px #404040',
+                              whiteSpace: 'nowrap',
                             }}
                           >
-                            Old LC without GST :{" "}
+                            Old LC without GST :{' '}
                             {formatIndianPrice(row.LandingCost)}
                           </Typography>
 
                           <Typography
                             sx={{
-                              fontSize: ".666rem",
-                              color: "#fff",
-                              backgroundColor: " #000",
-                              paddingX: "1rem",
-                              border: "2px solid #3385ff",
-                              borderRadius: ".4rem",
-                              boxShadow: "-3px 3px 4px 0px #404040",
-                              whiteSpace: "nowrap",
+                              fontSize: '.666rem',
+                              color: '#fff',
+                              backgroundColor: ' #000',
+                              paddingX: '1rem',
+                              border: '2px solid #3385ff',
+                              borderRadius: '.4rem',
+                              boxShadow: '-3px 3px 4px 0px #404040',
+                              whiteSpace: 'nowrap',
                             }}
                           >
-                            New LC without GST :{" "}
+                            New LC without GST :{' '}
                             {formatIndianPrice(landingCostExGst[row.SKU])}
                           </Typography>
 
                           {id ? (
                             <Button
                               sx={{
-                                textTransform: "uppercase",
-                                border: "2px solid #3385ff",
-                                borderRadius: ".4rem",
-                                boxShadow: "-3px 3px 4px 0px #404040",
-                                fontSize: ".666rem",
-                                padding: "0",
-                                marginLeft: "5px",
+                                textTransform: 'uppercase',
+                                border: '2px solid #3385ff',
+                                borderRadius: '.4rem',
+                                boxShadow: '-3px 3px 4px 0px #404040',
+                                fontSize: '.666rem',
+                                padding: '0',
+                                marginLeft: '5px',
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -2187,7 +2175,7 @@ const Calc = () => {
                               Sync
                             </Button>
                           ) : (
-                            ""
+                            ''
                           )}
                           <Button
                             onClick={() => {
@@ -2200,45 +2188,45 @@ const Calc = () => {
 
                         <Box
                           sx={{
-                            display: "flex",
-                            justifyContent: "",
-                            marginTop: ".4rem",
+                            display: 'flex',
+                            justifyContent: '',
+                            marginTop: '.4rem',
                             // marginBottom: ".4rem",
                             // border: '2px solid yellow',
-                            padding: ".2rem",
-                            border: "2px solid #3385ff",
-                            justifyContent: "space-between",
-                            borderRadius: ".4rem",
-                            boxShadow: "-3px 3px 4px 0px #404040",
+                            padding: '.2rem',
+                            border: '2px solid #3385ff',
+                            justifyContent: 'space-between',
+                            borderRadius: '.4rem',
+                            boxShadow: '-3px 3px 4px 0px #404040',
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
                           }}
                         >
-                          <Box display={"flex"}>
+                          <Box display={'flex'}>
                             <Typography
                               sx={{
-                                fontSize: ".6rem",
-                                fontWeight: "600",
-                                marginTop: "3px",
-                                marginRight: "3px",
+                                fontSize: '.6rem',
+                                fontWeight: '600',
+                                marginTop: '3px',
+                                marginRight: '3px',
                               }}
                             >
                               QTY
                             </Typography>
                             <input
-                              type="number"
+                              type='number'
                               style={{
-                                border: "1px solid #9999ff",
-                                borderRadius: ".2rem",
-                                boxShadow: "0px 8px 4px -4px #00000024",
-                                width: "4rem",
-                                height: "20px",
+                                border: '1px solid #9999ff',
+                                borderRadius: '.2rem',
+                                boxShadow: '0px 8px 4px -4px #00000024',
+                                width: '4rem',
+                                height: '20px',
                               }}
-                              value={qty[row.SKU] ? qty[row.SKU] : ""}
+                              value={qty[row.SKU] ? qty[row.SKU] : ''}
                               onChange={(e) => {
                                 handleValueChange(
-                                  "qty",
+                                  'qty',
                                   row.SKU,
                                   +e.target.value
                                 );
@@ -2246,60 +2234,60 @@ const Calc = () => {
                             />
                           </Box>
 
-                          <Box display={"flex"}>
+                          <Box display={'flex'}>
                             <Typography
                               sx={{
-                                fontWeight: "bold",
-                                fontSize: ".7rem",
-                                marginTop: "3px",
-                                marginRight: "3px",
+                                fontWeight: 'bold',
+                                fontSize: '.7rem',
+                                marginTop: '3px',
+                                marginRight: '3px',
                               }}
                             >
                               USD $
                             </Typography>
                             <input
-                              type="number"
+                              type='number'
                               style={{
-                                border: "1px solid #9999ff",
-                                borderRadius: ".2rem",
-                                boxShadow: "0px 8px 4px -4px #00000024",
-                                width: "4rem",
-                                height: "20px",
+                                border: '1px solid #9999ff',
+                                borderRadius: '.2rem',
+                                boxShadow: '0px 8px 4px -4px #00000024',
+                                width: '4rem',
+                                height: '20px',
                               }}
-                              value={usdPrice[row.SKU] ? usdPrice[row.SKU] : ""}
+                              value={usdPrice[row.SKU] ? usdPrice[row.SKU] : ''}
                               onChange={(e) => {
                                 handleValueChange(
-                                  "usdPrice",
+                                  'usdPrice',
                                   row.SKU,
                                   +e.target.value
                                 );
                               }}
                             />
                           </Box>
-                          <Box display={"flex"}>
+                          <Box display={'flex'}>
                             <Typography
                               sx={{
-                                fontWeight: "bold",
-                                fontSize: ".7rem",
-                                marginTop: "3px",
-                                marginRight: "3px",
+                                fontWeight: 'bold',
+                                fontSize: '.7rem',
+                                marginTop: '3px',
+                                marginRight: '3px',
                               }}
                             >
                               RMB ¥
                             </Typography>
                             <input
-                              type="number"
+                              type='number'
                               style={{
-                                border: "1px solid #9999ff",
-                                borderRadius: ".2rem",
-                                boxShadow: "0px 8px 4px -4px #00000024",
-                                width: "4rem",
-                                height: "20px",
+                                border: '1px solid #9999ff',
+                                borderRadius: '.2rem',
+                                boxShadow: '0px 8px 4px -4px #00000024',
+                                width: '4rem',
+                                height: '20px',
                               }}
-                              value={rmbPrice[row.SKU] ? rmbPrice[row.SKU] : ""}
+                              value={rmbPrice[row.SKU] ? rmbPrice[row.SKU] : ''}
                               onChange={(e) => {
                                 handleValueChange(
-                                  "rmbPrice",
+                                  'rmbPrice',
                                   row.SKU,
                                   +e.target.value
                                 );
@@ -2307,129 +2295,128 @@ const Calc = () => {
                             />
                           </Box>
 
-                          <Box display={"flex"}>
+                          <Box display={'flex'}>
                             <Typography
                               sx={{
-                                fontWeight: "bold",
-                                fontSize: ".7rem",
-                                marginTop: "3px",
-                                marginRight: "3px",
+                                fontWeight: 'bold',
+                                fontSize: '.7rem',
+                                marginTop: '3px',
+                                marginRight: '3px',
                               }}
                             >
                               Basic Duty %
                             </Typography>
                             <input
-                              type="number"
+                              type='number'
                               style={{
-                                border: "1px solid #9999ff",
-                                borderRadius: ".2rem",
-                                boxShadow: "0px 8px 4px -4px #00000024",
-                                width: "4rem",
-                                height: "20px",
+                                border: '1px solid #9999ff',
+                                borderRadius: '.2rem',
+                                boxShadow: '0px 8px 4px -4px #00000024',
+                                width: '4rem',
+                                height: '20px',
                               }}
                               value={
                                 basicDutyPer[row.SKU]
                                   ? basicDutyPer[row.SKU]
-                                  : ""
+                                  : ''
                               }
                               onChange={(e) => {
                                 handleValueChange(
-                                  "basicDutyPer",
+                                  'basicDutyPer',
                                   row.SKU,
                                   +e.target.value
                                 );
                               }}
                             />
                           </Box>
-                          <Box display={"flex"}>
+                          <Box display={'flex'}>
                             <Typography
                               sx={{
-                                fontWeight: "bold",
-                                fontSize: ".7rem",
-                                marginTop: "3px",
-                                marginRight: "3px",
+                                fontWeight: 'bold',
+                                fontSize: '.7rem',
+                                marginTop: '3px',
+                                marginRight: '3px',
                               }}
                             >
                               GST %
                             </Typography>
                             <input
-                              type="number"
+                              type='number'
                               style={{
-                                border: "1px solid #9999ff",
-                                borderRadius: ".2rem",
-                                boxShadow: "0px 8px 4px -4px #00000024",
-                                width: "4rem",
-                                height: "20px",
+                                border: '1px solid #9999ff',
+                                borderRadius: '.2rem',
+                                boxShadow: '0px 8px 4px -4px #00000024',
+                                width: '4rem',
+                                height: '20px',
                               }}
-                              value={gstPer[row.SKU] ? gstPer[row.SKU] : ""}
+                              value={gstPer[row.SKU] ? gstPer[row.SKU] : ''}
                               onChange={(e) => {
                                 handleValueChange(
-                                  "gstPer",
+                                  'gstPer',
                                   row.SKU,
                                   +e.target.value
                                 );
                               }}
                             />
                           </Box>
-                          <Box display={"flex"}>
+                          <Box display={'flex'}>
                             <Typography
                               sx={{
-                                fontWeight: "bold",
-                                fontSize: ".7rem",
-                                marginTop: "3px",
-                                marginRight: "3px",
+                                fontWeight: 'bold',
+                                fontSize: '.7rem',
+                                marginTop: '3px',
+                                marginRight: '3px',
                               }}
                             >
-                              Old LC with({" "}
-                              {gstPer[row.SKU] ? gstPer[row.SKU] : ""} % GST)
+                              Old LC with({' '}
+                              {gstPer[row.SKU] ? gstPer[row.SKU] : ''} % GST)
                             </Typography>
                             <Typography
                               sx={{
-                                fontSize: ".666rem",
-                                color: "black",
-                                backgroundColor: "#fff",
-                                paddingX: "1rem",
-                                border: "1px solid black",
-                                borderRadius: ".2rem",
-                                whiteSpace: "nowrap",
+                                fontSize: '.666rem',
+                                color: 'black',
+                                backgroundColor: '#fff',
+                                paddingX: '1rem',
+                                border: '1px solid black',
+                                borderRadius: '.2rem',
+                                whiteSpace: 'nowrap',
                               }}
                             >
-                              {" "}
-                              {row.LandingCost ||
-                              gstPer[row.SKU]
+                              {' '}
+                              {row.LandingCost || gstPer[row.SKU]
                                 ? formatIndianPrice(
                                     calculateValueWithGST(
                                       row.LandingCost,
                                       gstPer[row.SKU]
                                     )
                                   )
-                                : ""}
+                                : ''}
                             </Typography>
                           </Box>
-                          <Box display={"flex"}>
+                          <Box display={'flex'}>
                             <Typography
                               sx={{
-                                fontWeight: "bold",
-                                fontSize: ".7rem",
-                                marginTop: "3px",
-                                marginRight: "3px",
+                                fontWeight: 'bold',
+                                fontSize: '.7rem',
+                                marginTop: '3px',
+                                marginRight: '3px',
                               }}
                             >
-                              New LC with({" "}
-                              {gstPer[row.SKU] ? gstPer[row.SKU] : ""} % GST)
+                              New LC with({' '}
+                              {gstPer[row.SKU] ? gstPer[row.SKU] : ''} % GST)
                             </Typography>
                             <Typography
                               sx={{
-                                fontSize: ".666rem",
-                                color: "black",
-                                backgroundColor: "#fff",
-                                paddingX: "1rem",
-                                border: "1px solid black",
-                                borderRadius: ".2rem",
-                                whiteSpace: "nowrap",
+                                fontSize: '.666rem',
+                                color: 'black',
+                                backgroundColor: '#fff',
+                                paddingX: '1rem',
+                                border: '1px solid black',
+                                borderRadius: '.2rem',
+                                whiteSpace: 'nowrap',
                               }}
                             >
-                              {" "}
+                              {' '}
                               {formatIndianPrice(landingCost[row.SKU])}
                             </Typography>
                           </Box>
@@ -2441,16 +2428,16 @@ const Calc = () => {
                       <Box
                         sx={{
                           // border: '2px solid green',
-                          display: "flex",
-                          width: "100%",
-                          gap: ".2rem",
+                          display: 'flex',
+                          width: '100%',
+                          gap: '.2rem',
                           // paddingBottom:"1rem"
                         }}
                       >
                         {/* first flex parent */}
                         <Box
                           sx={{
-                            flexBasis: "10%",
+                            flexBasis: '10%',
                             // border: '2px solid brown',
                           }}
                         >
@@ -2478,7 +2465,7 @@ const Calc = () => {
                           </Box>
                         </Box>
                         {/* second flex parent */}
-                        <Box sx={{ flexBasis: "90%" }}>
+                        <Box sx={{ flexBasis: '90%' }}>
                           <Box>
                             <PriceTable
                               product={row}
@@ -2539,11 +2526,11 @@ const Calc = () => {
                 ))}
               </Box>
             </Box>
-            <Box sx={{ flexBasis: "25%" }}>
+            <Box sx={{ flexBasis: '25%' }}>
               <Box
                 sx={{
-                  boxShadow: "0px 10px 10px -2px #00000024",
-                  borderRadius: ".7rem",
+                  boxShadow: '0px 10px 10px -2px #00000024',
+                  borderRadius: '.7rem',
                 }}
               >
                 <CommonInput
@@ -2574,9 +2561,9 @@ const Calc = () => {
               {/* second Box  */}
               <Box
                 sx={{
-                  boxShadow: "0px 10px 10px 2px #00000024",
-                  marginTop: "1rem",
-                  borderRadius: ".7rem",
+                  boxShadow: '0px 10px 10px 2px #00000024',
+                  marginTop: '1rem',
+                  borderRadius: '.7rem',
                   // border:"2px solid blue"
                 }}
               >
@@ -2617,9 +2604,9 @@ const Calc = () => {
       >
         <DialogTitle
           sx={{
-            backgroundColor: "#3f51b5",
-            display: "flex",
-            justifyContent: "center",
+            backgroundColor: '#3f51b5',
+            display: 'flex',
+            justifyContent: 'center',
           }}
         >
           Saving Calc Data
@@ -2627,17 +2614,17 @@ const Calc = () => {
         <DialogContent>
           <TextField
             autoFocus
-            margin="dense"
-            label="Enter Reference Id"
-            type="text"
+            margin='dense'
+            label='Enter Reference Id'
+            type='text'
             fullWidth
             value={calcId}
             onChange={(e) => setCalcId(e.target.value)}
           />
           <TextField
-            margin="dense"
-            label="Enter Description"
-            type="text"
+            margin='dense'
+            label='Enter Description'
+            type='text'
             fullWidth
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -2649,24 +2636,24 @@ const Calc = () => {
             onClick={() => {
               setOpenSave(false);
             }}
-            color="primary"
+            color='primary'
           >
             Cancel
           </Button>
-          <Button onClick={handleSaveCalcData} color="primary">
+          <Button onClick={handleSaveCalcData} color='primary'>
             {addCalcLoading ? (
-              <CircularProgress size={24} color="inherit" />
+              <CircularProgress size={24} color='inherit' />
             ) : (
-              "Save"
+              'Save'
             )}
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={open}>
-        <DialogTitle sx={{ textAlign: "center" }}>Sub-Total</DialogTitle>
+        <DialogTitle sx={{ textAlign: 'center' }}>Sub-Total</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
+          <DialogContentText id='alert-dialog-slide-description'>
             <SubtotalCalc
               open={open}
               close={handleClose}
