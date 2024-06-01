@@ -302,6 +302,7 @@ const WhatsappEvent = () => {
           close={handleClose}
         />
       </Box>
+
       {openDial && (
         <WhastsAppDial
           open={openDial}
