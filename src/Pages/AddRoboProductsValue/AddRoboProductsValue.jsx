@@ -21,7 +21,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'Select Type of value for the product',
   },
   {
     name: 'Add Button',
@@ -32,7 +32,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'Add Value for the product after selecting type of value',
   },
   {
     name: 'Save',
@@ -43,7 +43,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'Save the product after adding values',
   },
   {
     name: 'Search Brand',
@@ -54,7 +54,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'User can search brand from the list and Delete brand from the list',
   },
   {
     name: 'Search Category',
@@ -65,7 +65,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'User can search category from the list and Delete category from the list',
   },
   {
     name: 'Search Sub Category',
@@ -76,7 +76,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'User can search sub category from the list and Delete sub category from the list',
   },
   {
     name: 'Delete Icon',
@@ -87,7 +87,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'User can delete the product from the list',
   },
   {
     name: 'Gallery',
@@ -98,7 +98,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'User can add gallery for the product',
   },
 ];
 const AddRoboProductsValue = () => {
