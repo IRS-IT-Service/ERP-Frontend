@@ -31,57 +31,76 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: "Add Parts",
+    name: "Sort By Brand",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
       />
     ),
-    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
+    instruction:
+      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
   },
-
   {
-    name: "Discount Card",
+    name: "Sort By Category",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        height={"60%"}
+        width={"90%"}
       />
     ),
-    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
+    instruction:
+      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
   },
-
   {
-    name: "Shipment Detail Tracking",
+    name: "Search",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
+        height={"60%"}
+        width={"90%"}
       />
     ),
-    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+    instruction:
+      "If you click the search box, you can search for any product or brand here",
+  },
+  {
+    name: "Fetching R&D Data",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(4).png?updatedAt=1717228601186"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "To fetch updated Research & Development quantities, click the FETCH R&D button at the bottom of the table.",
+  },
+  {
+    name: "New Qty in R&D",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(5).png?updatedAt=1717228601184"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      " Newly added quantity in Research & Development.",
+  },
+  {
+    name: "Old Qty in R&D",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Previous quantity in Research & Development",
   },
 ];
 

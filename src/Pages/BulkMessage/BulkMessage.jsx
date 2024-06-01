@@ -15,7 +15,7 @@ const infoDetail = [
     name: "Add Customer",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(3).png?updatedAt=1717227366237"
         height={"60%"}
         width={"90%"}
       />
@@ -27,7 +27,7 @@ const infoDetail = [
     name: "Send Text Message with Media",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717227410216"
         height={"60%"}
         width={"90%"}
       />
@@ -39,7 +39,7 @@ const infoDetail = [
     name: "Cusormer Details",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717227468953"
         height={"60%"}
         width={"90%"}
       />

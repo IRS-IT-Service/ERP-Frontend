@@ -15,7 +15,7 @@ const infoDetail = [
     name: "Register Wholesale",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(1).png?updatedAt=1717227575758"
         height={"60%"}
         width={"90%"}
       />
@@ -27,7 +27,7 @@ const infoDetail = [
     name: "Login Wholesale",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(3).png?updatedAt=1717227575817"
         height={"60%"}
         width={"90%"}
       />
@@ -39,7 +39,7 @@ const infoDetail = [
     name: "OTP Wholesale",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(2).png?updatedAt=1717227575835"
         height={"60%"}
         width={"90%"}
       />

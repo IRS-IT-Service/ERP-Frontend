@@ -505,7 +505,7 @@ const Dropup = () => {
                           }}
                         >
                           <span style={{ fontWeight: "bold" }}>
-                            {items.name[0].toUpperCase()}
+                            {items.name?.[0].toUpperCase()}
                           </span>
                         </Box>
                         <Typography
