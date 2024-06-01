@@ -1,64 +1,49 @@
-import { React, useEffect } from "react";
-import { Box, styled, Button } from "@mui/material";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import AddProductBoxesDetails from "./component/AddProductBoxesDetails";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { React, useEffect } from 'react';
+import { Box, styled, Button } from '@mui/material';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import AddProductBoxesDetails from './component/AddProductBoxesDetails';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Add Brand",
+    name: 'Bulk Upload Products',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addBrand_addproduct.png?updatedAt=1703133562580"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(2).png?updatedAt=1717240113347'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click 'Add Brand,' you can add brands and provide a custom name",
+    instruction: '',
   },
   {
-    name: "Upload Excel File",
+    name: 'Add Alternate Name',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/uploadExcelFile_addproduct.png?updatedAt=1703133562583"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(1).png?updatedAt=1717240113316'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click 'Upload Excel File,' you can upload an Excel file here",
+    instruction: '',
   },
   {
-    name: "Add Image",
+    name: 'Upload Image',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addImage_addproduct.png?updatedAt=1703133562600"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717240113416'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click 'Add Image,' you can upload the product image here",
-  },
-  {
-    name: "Download Sample",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/downloadSample_addproduct.png?updatedAt=1703133562554"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click 'Download Sample,' you can download product sample details",
+    instruction: '',
   },
 ];
 
@@ -69,7 +54,7 @@ const AddRoboProducts = () => {
   const { themeColor } = useSelector((state) => state.ui);
 
   // infodialog state
-  const description = "This is to add a product. You can add a product here";
+  const description = 'This is to add a product. You can add a product here';
 
   const dispatch = useDispatch();
 
@@ -79,48 +64,48 @@ const AddRoboProducts = () => {
   };
 
   useEffect(() => {
-    dispatch(setHeader("Add Product"));
+    dispatch(setHeader('Add Product'));
   }, []);
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
       {/* <Header Name={"Add Product"} info={true} customOnClick={handleOpen} /> */}
       <Box
         sx={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-around",
-          alignItems: "center",
-          marginTop: "5px",
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          marginTop: '5px',
         }}
       >
         <Button
-          variant="contained"
+          variant='contained'
           sx={{
             backgroundColor: themeColor.sideBarColor1,
-            "&hover": {
-              backgroundColor: "black",
+            '&hover': {
+              backgroundColor: 'black',
             },
           }}
           onClick={() => {
-            navigate("/bulkAddProduct/addProduct");
+            navigate('/bulkAddProduct/addProduct');
           }}
         >
           Bulk Upload Product
         </Button>
         <Button
-          variant="contained"
+          variant='contained'
           sx={{
             backgroundColor: themeColor.sideBarColor1,
-            "&hover": {
-              backgroundColor: "black",
+            '&hover': {
+              backgroundColor: 'black',
             },
           }}
           onClick={() => {
-            navigate("/bulkAddProduct/addName");
+            navigate('/bulkAddProduct/addName');
           }}
         >
           Add Alternate Name
@@ -128,13 +113,13 @@ const AddRoboProducts = () => {
         <Button
           sx={{
             backgroundColor: themeColor.sideBarColor1,
-            "&hover": {
-              backgroundColor: "black",
+            '&hover': {
+              backgroundColor: 'black',
             },
           }}
-          variant="contained"
+          variant='contained'
           onClick={() => {
-            navigate("/uploadimage");
+            navigate('/uploadimage');
           }}
         >
           Upload Image
