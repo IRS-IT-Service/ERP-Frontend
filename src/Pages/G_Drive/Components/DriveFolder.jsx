@@ -265,7 +265,7 @@ const DriveFolder = () => {
           width={'90%'}
         />
       ),
-      instruction: '',
+      instruction: 'Add Folder for your files linked with Google Drive and Manage it',
     },
 
     {
@@ -277,7 +277,7 @@ const DriveFolder = () => {
           width={'40%'}
         />
       ),
-      instruction: '',
+      instruction: 'All Your Folders Details can be seen here and you can manage it',
     },
     {
       name: 'Upload Files',
@@ -288,7 +288,7 @@ const DriveFolder = () => {
           width={'40%'}
         />
       ),
-      instruction: '',
+      instruction: 'Upload files to your Google Drive in specific folder',
     },
   ];
 

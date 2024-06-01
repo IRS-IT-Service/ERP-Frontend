@@ -82,7 +82,7 @@ const infoDetail = [
         width={'100%'}
       />
     ),
-    instruction: '',
+    instruction: 'In the top, you can add a new product by clicking this icon to redirect to the add product page',
   },
 
   {

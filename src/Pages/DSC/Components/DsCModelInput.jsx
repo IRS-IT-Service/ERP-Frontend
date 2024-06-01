@@ -16,7 +16,7 @@ const infoDetail = [
     name: "Drone Brand",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/DroneModel.png?updatedAt=1717241920607"
         height={"60%"}
         width={"90%"}
       />
@@ -31,11 +31,7 @@ const DsCModelInput = () => {
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
 
-  const description = `The Barcode Generation function is  designed to create barcodes for
-          products. This is accomplished by selecting the product, clicking on
-          the "Generate" button, which will yield a new barcode. To obtain the
-          barcode, click on "Download." If you wish to view the barcode, you can
-          do so by clicking on "View."`;
+  const description = `You Can Add New Drone Model Here and Save in Database`;
 
   const dispatch = useDispatch();
 

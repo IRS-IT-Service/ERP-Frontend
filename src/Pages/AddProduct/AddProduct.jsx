@@ -21,7 +21,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'In Bulk Upload Products, you can upload product here with Excel ',
   },
   {
     name: 'Add Alternate Name',
@@ -32,7 +32,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'In Add Alternate Name, you can add alternate name here for the product',
   },
   {
     name: 'Upload Image',
@@ -43,7 +43,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'In Upload Image, you can upload image here for the product',
   },
 ];
 
