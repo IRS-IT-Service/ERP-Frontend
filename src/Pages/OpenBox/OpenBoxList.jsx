@@ -22,7 +22,7 @@ const infoDetail = [
     name: "Barcode",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(7).png?updatedAt=1717234207113"
         height={"60%"}
         width={"90%"}
       />

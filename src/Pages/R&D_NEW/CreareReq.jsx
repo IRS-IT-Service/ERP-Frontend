@@ -82,7 +82,7 @@ const infoDetail = [
     name: "New Qty in R&D",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(5).png?updatedAt=1717228601184"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(6).png?updatedAt=1717228601217"
         height={"60%"}
         width={"90%"}
       />
@@ -94,7 +94,7 @@ const infoDetail = [
     name: "Old Qty in R&D",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(5).png?updatedAt=1717228601184"
         height={"60%"}
         width={"90%"}
       />
