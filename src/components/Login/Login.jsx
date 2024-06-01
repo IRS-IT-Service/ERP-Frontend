@@ -1,46 +1,46 @@
-import { useEffect, useState, useRef } from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import LinearProgress from "@mui/material/LinearProgress";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState, useRef } from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import LinearProgress from '@mui/material/LinearProgress';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   useLoginMutation,
   useOtpLoginMutation,
   useLogoutMutation,
   useClickTologoutMutation,
-} from "../../features/api/usersApiSlice";
+} from '../../features/api/usersApiSlice';
 import {
   logout,
   removeError,
   setCredentials,
-} from "../../features/slice/authSlice";
-import droneWallpaoer from "../../assets/drone-wall-2.jpg";
-import irsLogo from "../../assets/irs.png";
-import logo2 from "../../assets/IRSLOGO.png";
-import { toast } from "react-toastify";
+} from '../../features/slice/authSlice';
+import droneWallpaoer from '../../assets/drone-wall-2.jpg';
+import irsLogo from '../../assets/irs.png';
+import logo2 from '../../assets/IRSLOGO.png';
+import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 function Copyright(props) {
   return (
     <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
+      variant='body2'
+      color='text.secondary'
+      align='center'
       {...props}
     >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
+      {'Copyright © '}
+      <Link color='inherit' href='https://mui.com/'>
         Indian Robotics Solution
       </Link>
       {new Date().getFullYear()}
@@ -52,13 +52,13 @@ const theme = createTheme();
 export default function Login({ registrationToken }) {
   //  show password
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const [isShowOtp, setIsShowOtp] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [userId, setUserId] = useState("");
+  const [otp, setOtp] = useState('');
+  const [userId, setUserId] = useState('');
   const [remainingTime, setRemainingTime] = useState(5 * 60);
   const [timerExpired, setTimerExpired] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const errorToastShown = useRef(false);
   const [ButtonDisable, setButtonDisable] = useState(true);
   const [Location, setLocation] = useState({
@@ -71,7 +71,7 @@ export default function Login({ registrationToken }) {
   };
 
   const [clickTologout, { isLoading: logoutLoading }] =
-  useClickTologoutMutation();
+    useClickTologoutMutation();
 
   /// isLocalServer Check
 
@@ -89,6 +89,7 @@ export default function Login({ registrationToken }) {
       }
     });
   };
+
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -130,13 +131,13 @@ export default function Login({ registrationToken }) {
   //useEffect
   useEffect(() => {
     if (userInfo) {
-      navigate("/");
+      navigate('/');
     }
   }, [navigate, userInfo]);
 
   useEffect(() => {
     if (error && !errorToastShown.current) {
-      console.log("isUse");
+      console.log('isUse');
       toast.error(error);
       dispatch(removeError());
       errorToastShown.current = true;
@@ -152,11 +153,11 @@ export default function Login({ registrationToken }) {
       console.log(err);
     }
   };
-////
+  ////
 
   const handleError = (e, id) => {
     // Set loading state or show loading spinner here
-  
+
     Swal.fire({
       title: 'Are you sure?',
       text: `${e}`,
@@ -169,7 +170,7 @@ export default function Login({ registrationToken }) {
       if (result.isConfirmed) {
         // Disable the button while the logout process is ongoing
         Swal.showLoading(); // Show loading spinner
-  
+
         try {
           handleToClickLogout(id);
           Swal.fire({
@@ -195,9 +196,6 @@ export default function Login({ registrationToken }) {
       }
     });
   };
-  
-
-
 
   /// Handlers
   const handleSubmit = async (event) => {
@@ -205,28 +203,28 @@ export default function Login({ registrationToken }) {
     const data = new FormData(event.currentTarget);
 
     try {
-      const uniqueId = localStorage.getItem("unique") || null;
+      const uniqueId = localStorage.getItem('unique') || null;
       const res = await login({
-        email: data.get("email"),
-        password: data.get("password"),
+        email: data.get('email'),
+        password: data.get('password'),
         Location,
         unique: uniqueId,
         fcmAdminToken: registrationToken,
       }).unwrap();
-    
+
       if (res.data.isOtp) {
         setIsShowOtp(true);
         setUserId(res.data?.adminId);
-        setMessage(res?.message)
+        setMessage(res?.message);
 
         return;
       }
 
       dispatch(setCredentials(res.data));
-      navigate("/");
+      navigate('/');
     } catch (error) {
       // console.error("An error occurred during login:", error);
-      console.log(error.data.id)
+      console.log(error.data.id);
       if (error.data.id) {
         handleError(error.data.message, error.data.id);
       }
@@ -247,12 +245,11 @@ export default function Login({ registrationToken }) {
         adminId: userId,
       }).unwrap();
 
-      localStorage.setItem("unique", res.data.unique);
+      localStorage.setItem('unique', res.data.unique);
 
       dispatch(setCredentials(res.data));
-      navigate("/");
+      navigate('/');
     } catch (error) {
-    
       console.log(error.data.message);
     }
   };
@@ -260,7 +257,7 @@ export default function Login({ registrationToken }) {
   useEffect(() => {
     const handleLogout = async () => {
       if (timerExpired) {
-        navigate("/");
+        navigate('/');
         dispatch(logout());
         await logoutApi();
       }
@@ -269,49 +266,45 @@ export default function Login({ registrationToken }) {
     handleLogout(); // Call the async function
   }, [timerExpired]);
 
-
-
-
-
   return (
     <ThemeProvider theme={theme}>
       <Box
         sx={{
-          height: "100vh",
-          display: "grid",
-          gridTemplateColumns: "60% 40%",
+          height: '100vh',
+          display: 'grid',
+          gridTemplateColumns: '60% 40%',
           // gridGap:"2rem",
-          overflowY: "hidden",
+          overflowY: 'hidden',
         }}
       >
         <Box
           sx={{
             // border: '2px solid',
-            clipPath: "polygon(0 1%, 100% 0%, 73% 100%, 0% 100%)",
+            clipPath: 'polygon(0 1%, 100% 0%, 73% 100%, 0% 100%)',
             boxShadow:
-              "rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px",
+              'rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px',
           }}
         >
           <img
             src={droneWallpaoer}
-            alt=""
+            alt=''
             style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              clipPath: "polygon(0 1%, 100% 0%, 73% 100%, 0% 100%)",
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              clipPath: 'polygon(0 1%, 100% 0%, 73% 100%, 0% 100%)',
               boxShadow:
-                "rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px",
+                'rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px',
             }}
           />
         </Box>
         <Container
-          component="main"
-          maxWidth="xs"
+          component='main'
+          maxWidth='xs'
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
           }}
         >
           <CssBaseline />
@@ -319,36 +312,36 @@ export default function Login({ registrationToken }) {
             <Box
               sx={{
                 marginTop: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: ".5rem",
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '.5rem',
                 boxShadow:
-                  "rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px",
+                  'rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px',
               }}
             >
-                          <Avatar
-              variant="square"
-  alt="IRS"
-  src={logo2}
-  sx={{ width: 100, height: 60 }}
-/>
-              <Typography component="h1" variant="h5" fontWeight="bold">
+              <Avatar
+                variant='square'
+                alt='IRS'
+                src={logo2}
+                sx={{ width: 100, height: 60 }}
+              />
+              <Typography component='h1' variant='h5' fontWeight='bold'>
                 Enter OTP to Login
               </Typography>
               <Box noValidate sx={{ mt: 1 }}>
                 <TextField
-                  margin="normal"
+                  margin='normal'
                   required
                   value={otp}
                   onChange={(event) => {
                     setOtp(event.target.value);
                   }}
                   fullWidth
-                  id="email"
-                  label="Enter OTP"
-                  name="email"
-                  autoComplete="email"
+                  id='email'
+                  label='Enter OTP'
+                  name='email'
+                  autoComplete='email'
                   autoFocus
                 />
 
@@ -357,13 +350,13 @@ export default function Login({ registrationToken }) {
                 ) : (
                   <div>
                     <p>
-                      Time remaining: {minutes}:{seconds < 10 ? "0" : ""}
+                      Time remaining: {minutes}:{seconds < 10 ? '0' : ''}
                       {seconds}
                     </p>
                     <Button
-                      type="submit"
+                      type='submit'
                       fullWidth
-                      variant="contained"
+                      variant='contained'
                       sx={{ mt: 3, mb: 2 }}
                       onClick={handleOtpSubmit}
                     >
@@ -372,26 +365,28 @@ export default function Login({ registrationToken }) {
                   </div>
                 )}
               </Box>
-              <Box sx={{textAlign:"center" , color:"green"}}><p>{message}</p></Box>
+              <Box sx={{ textAlign: 'center', color: 'green' }}>
+                <p>{message}</p>
+              </Box>
             </Box>
           ) : (
             <Box
               sx={{
                 marginTop: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: ".5rem",
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '.5rem',
                 boxShadow:
-                  "rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px",
+                  'rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px',
               }}
             >
               <Avatar
-              variant="square"
-  alt="IRS"
-  src={logo2}
-  sx={{ width: 100, height: 60 }}
-/>
+                variant='square'
+                alt='IRS'
+                src={logo2}
+                sx={{ width: 100, height: 60 }}
+              />
               {/* <Avatar sx={{ m: 1, bgcolor: "transparent" }}>
                 <img
                   src={logo2}
@@ -403,34 +398,34 @@ export default function Login({ registrationToken }) {
                   }}
                 />
               </Avatar> */}
-              <Typography component="h1" variant="h5" fontWeight="bold">
+              <Typography component='h1' variant='h5' fontWeight='bold'>
                 Sign in
               </Typography>
               <Box
-                component="form"
+                component='form'
                 onSubmit={handleSubmit}
                 noValidate
                 sx={{ mt: 1 }}
               >
                 <TextField
-                  margin="normal"
+                  margin='normal'
                   required
                   fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
+                  id='email'
+                  label='Email Address'
+                  name='email'
+                  autoComplete='email'
                   autoFocus
                 />
                 <TextField
-                  margin="normal"
+                  margin='normal'
                   required
                   fullWidth
-                  name="password"
-                  label="Password"
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  autoComplete="current-password"
+                  name='password'
+                  label='Password'
+                  type={showPassword ? 'text' : 'password'}
+                  id='password'
+                  autoComplete='current-password'
                   value={password}
                   onChange={handlePasswordChange}
                 />
@@ -440,18 +435,18 @@ export default function Login({ registrationToken }) {
                     <Checkbox
                       checked={showPassword}
                       onChange={() => setShowPassword((prev) => !prev)}
-                      value="remember"
-                      color="primary"
+                      value='remember'
+                      color='primary'
                     />
                   }
-                  label="Show password"
+                  label='Show password'
                 />
 
                 {isLocalServer ? (
                   <Button
-                    type="submit"
+                    type='submit'
                     fullWidth
-                    variant="contained"
+                    variant='contained'
                     sx={{ mt: 3, mb: 2 }}
                     // disabled={ButtonDisable}
                   >
@@ -459,9 +454,9 @@ export default function Login({ registrationToken }) {
                   </Button>
                 ) : (
                   <Button
-                    type="submit"
+                    type='submit'
                     fullWidth
-                    variant="contained"
+                    variant='contained'
                     sx={{ mt: 3, mb: 2 }}
                     disabled={ButtonDisable}
                   >
@@ -471,17 +466,16 @@ export default function Login({ registrationToken }) {
 
                 <Grid container>
                   <Grid item xs>
-                    <Link to="/forgetPassword" variant="body2">
+                    <Link to='/forgetPassword' variant='body2'>
                       Forgot password?
                     </Link>
                   </Grid>
                 </Grid>
               </Box>
-       
             </Box>
           )}
 
-          {isLoading ? <LinearProgress color="success" /> : ""}
+          {isLoading ? <LinearProgress color='success' /> : ''}
           <Copyright sx={{ mt: 8, mb: 4 }} />
         </Container>
       </Box>
