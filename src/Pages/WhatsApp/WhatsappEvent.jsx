@@ -1,207 +1,219 @@
-import { Box, Button, Grid, styled, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import WhastsAppDial from "./components/WhastsAppDial";
-import Header from "../../components/Common/Header";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-const DrawerHeader = styled("div")(({ theme }) => ({
+import { Box, Button, Grid, styled, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import WhastsAppDial from './components/WhastsAppDial';
+import Header from '../../components/Common/Header';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const approvalItems = [
   {
-    name: "Inventory Approval",
-    icon: "fa-solid fa-warehouse",
+    name: 'Inventory Approval',
+    icon: 'fa-solid fa-warehouse',
   },
   {
-    name: "MRP Approval",
-    icon: "fa-solid fa-dollar-sign",
+    name: 'MRP Approval',
+    icon: 'fa-solid fa-dollar-sign',
   },
   {
-    name: "SalesPrice Approval",
-    icon: "fa-solid fa-universal-access",
+    name: 'SalesPrice Approval',
+    icon: 'fa-solid fa-universal-access',
   },
   {
-    name: "SellerPrice Approval",
-    icon: "fa-solid fa-hand-holding-dollar",
+    name: 'SellerPrice Approval',
+    icon: 'fa-solid fa-hand-holding-dollar',
   },
   {
-    name: "Cost Approval",
-    icon: "fa-solid fa-check-to-slot",
+    name: 'Cost Approval',
+    icon: 'fa-solid fa-check-to-slot',
   },
   {
-    name: "Open Box Approval",
-    icon: "fa-solid fa-box-open",
+    name: 'Open Box Approval',
+    icon: 'fa-solid fa-box-open',
   },
   {
-    name: "New Product Approval",
-    icon: "fa-brands fa-product-hunt",
+    name: 'New Product Approval',
+    icon: 'fa-brands fa-product-hunt',
   },
   {
-    name: "Product Changes Approval",
-    icon: "fa-solid fa-fa-solid fa-arrow-right-arrow-left",
+    name: 'Product Changes Approval',
+    icon: 'fa-solid fa-fa-solid fa-arrow-right-arrow-left',
   },
   {
-    name: "Stock Approval",
-    icon: "fa-solid fa-fa-solid fa-arrow-right-arrow-left",
+    name: 'Stock Approval',
+    icon: 'fa-solid fa-fa-solid fa-arrow-right-arrow-left',
   },
   {
-    name: "Whole Sale Signup",
-    icon: "fa-solid fa-right-to-bracket",
+    name: 'Whole Sale Signup',
+    icon: 'fa-solid fa-right-to-bracket',
   },
   {
-    name: "Whole Sale Registration Form",
-    icon: "fa-solid fa-address-card",
+    name: 'Whole Sale Registration Form',
+    icon: 'fa-solid fa-address-card',
   },
   {
-    name: "Whole Sale Otp",
-    icon: "fa-solid fa-key",
+    name: 'Whole Sale Otp',
+    icon: 'fa-solid fa-key',
   },
   {
-    name: "Shipment Event",
-    icon: "fa-solid fa-key",
+    name: 'Shipment Event',
+    icon: 'fa-solid fa-key',
   },
 ];
 
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Inventory Approval",
+    name: 'Inventory Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addassets_companyassets.png?updatedAt=1703058228325"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(12).png?updatedAt=1717236400231'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click to add assets so you can add product with all the information for that If you click to add assets, you can easily input all the necessary information for the product, streamlining the process of adding a new asset to your inventory",
+    instruction: '',
   },
   {
-    name: "MRP Approval",
+    name: 'MRP Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/downloadCode_CompanyAssets.png?updatedAt=1703226924367"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(11).png?updatedAt=1717236399528'
+        height={'100%'}
+        width={'100%'}
       />
     ),
-    instruction: "If you click 'Download Code,' you can download an Excel file",
+    instruction: '',
   },
   {
-    name: "SalesPrice Approval",
+    name: 'SalesPrice Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/receipt_companyassets.png?updatedAt=1703058228260"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717236511929'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click on the receipt logo, you can effortlessly view the product receipt in PDF format and download it for your convenience",
+    instruction: '',
   },
   {
-    name: "SellerPrice Approval",
+    name: 'SellerPrice Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/product-image_Companyassets.png?updatedAt=1703058228441"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(10).png?updatedAt=1717236397627'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click on the product-image logo, you can view the product PDF and download it for your convenience",
+    instruction: '',
   },
   {
-    name: "Cost Approval",
+    name: 'Cost Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_CompanyAssets.png?updatedAt=1703226924568"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(9).png?updatedAt=1717236397838'
+        height={'40%'}
+        width={'40%'}
       />
     ),
-    instruction:
-      "If you click 'Delete Logo,' you can delete that particular list",
+    instruction: '',
   },
   {
-    name: "OpenBox Approval",
+    name: 'OpenBox Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_CompanyAssets.png?updatedAt=1703226924568"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(8).png?updatedAt=1717236397739'
+        height={'40%'}
+        width={'40%'}
       />
     ),
-    instruction:
-      "If you click 'Delete Logo,' you can delete that particular list",
+    instruction: '',
   },
   {
-    name: "New Product Approval",
+    name: 'New Product Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_CompanyAssets.png?updatedAt=1703226924568"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(7).png?updatedAt=1717236397601'
+        height={'40%'}
+        width={'40%'}
       />
     ),
-    instruction:
-      "If you click 'Delete Logo,' you can delete that particular list",
+    instruction: '',
   },
   {
-    name: "Product Changes Approval",
+    name: 'Product Changes Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_CompanyAssets.png?updatedAt=1703226924568"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(6).png?updatedAt=1717236397690'
+        height={'40%'}
+        width={'40%'}
       />
     ),
-    instruction:
-      "If you click 'Delete Logo,' you can delete that particular list",
+    instruction: '',
   },
   {
-    name: "WholeSale SignUp",
+    name: 'Stock Approval',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_CompanyAssets.png?updatedAt=1703226924568"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(5).png?updatedAt=1717236397619'
+        height={'40%'}
+        width={'40%'}
       />
     ),
-    instruction:
-      "If you click 'Delete Logo,' you can delete that particular list",
+    instruction: '',
   },
   {
-    name: "WholeSale Registration Form",
+    name: 'WholeSale SignUp',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_CompanyAssets.png?updatedAt=1703226924568"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(4).png?updatedAt=1717236397586'
+        height={'40%'}
+        width={'40%'}
       />
     ),
-    instruction:
-      "If you click 'Delete Logo,' you can delete that particular list",
+    instruction: '',
   },
   {
-    name: "WholeSale OTP",
+    name: 'WholeSale Registration Form',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_CompanyAssets.png?updatedAt=1703226924568"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(3).png?updatedAt=1717236397612'
+        height={'40%'}
+        width={'40%'}
       />
     ),
-    instruction:
-      "If you click 'Delete Logo,' you can delete that particular list",
+    instruction: '',
+  },
+  {
+    name: 'WholeSale OTP',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(1).png?updatedAt=1717236396983'
+        height={'40%'}
+        width={'40%'}
+      />
+    ),
+    instruction: '',
+  },
+  {
+    name: 'Shipment Event',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717236992292'
+        height={'40%'}
+        width={'40%'}
+      />
+    ),
+    instruction: '',
   },
 ];
 const WhatsappEvent = () => {
   // local state
   const [openDial, setOpenDial] = useState(false);
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor2;
 
@@ -212,7 +224,7 @@ const WhatsappEvent = () => {
 
   // infodialog state
   const description =
-    "This is Company Assets you can add assets and download assets details";
+    'This is Company Assets you can add assets and download assets details';
 
   const dispatch = useDispatch();
 
@@ -227,26 +239,26 @@ const WhatsappEvent = () => {
 
   return (
     <Box
-      component="main"
+      component='main'
       sx={{
         flexGrow: 1,
         p: 0,
-        width: "100%",
-        overflowY: "auto",
+        width: '100%',
+        overflowY: 'auto',
 
         // border: "2px solid red",
       }}
     >
       <DrawerHeader />
       {/* <Header Name={"WhatsApp Event"} info={true} customOnClick={handleOpen} /> */}
-      <Box sx={{ marginTop: "2rem" }}>
+      <Box sx={{ marginTop: '2rem' }}>
         <Grid
           container
           spacing={2}
           sx={{
             // border: "2px solid green",
-            display: "flex",
-            justifyContent: "center",
+            display: 'flex',
+            justifyContent: 'center',
           }}
         >
           {approvalItems.map((item, index) => (
@@ -257,24 +269,24 @@ const WhatsappEvent = () => {
               sx={{
                 // marginTop: "15px",
                 background: color,
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                margin: "20px",
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                margin: '20px',
                 paddingBottom: 1,
                 boxShadow:
-                  "-6px -6px 14px rgba(255, 255, 255, 0.7), -6px -6px 10px rgba(255, 255, 255, 0.5), 6px 6px 8px rgba(255, 255, 255, 0.075), 6px 6px 10px rgba(0, 0, 0, 0.15)",
-                borderRadius: "10px",
-                "&:hover": {
+                  '-6px -6px 14px rgba(255, 255, 255, 0.7), -6px -6px 10px rgba(255, 255, 255, 0.5), 6px 6px 8px rgba(255, 255, 255, 0.075), 6px 6px 10px rgba(0, 0, 0, 0.15)',
+                borderRadius: '10px',
+                '&:hover': {
                   boxShadow:
-                    "inset -2px -2px 6px rgba(255, 255, 255, .7),inset -2px -2px 4px rgba(255, 255, 255, .5),inset 2px 2px 2px rgba(255, 255, 255, .075),inset 2px 2px 4px rgba(0, 0, 0, .15)",
+                    'inset -2px -2px 6px rgba(255, 255, 255, .7),inset -2px -2px 4px rgba(255, 255, 255, .5),inset 2px 2px 2px rgba(255, 255, 255, .075),inset 2px 2px 4px rgba(0, 0, 0, .15)',
                 },
               }}
             >
               <i className={`${item.icon}`} />
               <Button
-                sx={{ borderRadius: "8px" }}
+                sx={{ borderRadius: '8px' }}
                 onClick={() => handleOnclickButton({ item, index })}
               >
                 {item.name}

@@ -51,7 +51,7 @@ const infoDetail = [
       />
     ),
     instruction:
-      "instruction about If the toggle is on, the user is considered active and can log in to the portal at any time else user can't",
+      "If the toggle is on, the user is considered active and can log in to the portal at any time else user can't",
   },
   {
     name: "User Rights",
