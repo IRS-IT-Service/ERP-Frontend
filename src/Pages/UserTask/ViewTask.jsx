@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Paper,
   Table,
@@ -15,36 +15,64 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from "@mui/material";
-import { useGetTaskUpdateQuery } from "../../features/api/usersApiSlice";
-import Loading from "../../components/Common/Loading";
-import Header from "../../components/Common/Header";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useDispatch, useSelector } from "react-redux";
-import { formatDate, formatTime, formateDateAndTime } from "../../commonFunctions/commonFunctions";
-import axios from "axios";
-import { USERS_URL } from "../../constants/ApiEndpoints";
-import BASEURL from "../../constants/BaseApi";
-import { flushSync } from "react-dom";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
+} from '@mui/material';
+import { useGetTaskUpdateQuery } from '../../features/api/usersApiSlice';
+import Loading from '../../components/Common/Loading';
+import Header from '../../components/Common/Header';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  formatDate,
+  formatTime,
+  formateDateAndTime,
+} from '../../commonFunctions/commonFunctions';
+import axios from 'axios';
+import { USERS_URL } from '../../constants/ApiEndpoints';
+import BASEURL from '../../constants/BaseApi';
+import { flushSync } from 'react-dom';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Date",
+    name: 'Date',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/date_png.png?updatedAt=1703056945657"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/date_png.png?updatedAt=1703056945657'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "The employee task date feature enables you to easily check all tasks assigned to employees in a date-wise manner",
+      'The employee task date feature enables you to easily check all tasks assigned to employees in a date-wise manner',
+  },
+  {
+    name: 'Download',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717224967722'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      'If you click on Download-Excel you can download an Excel file',
+  },
+  {
+    name: 'View',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065319338'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      "If you click View you can access the task information",
   },
 ];
 const ViewTask = () => {
@@ -55,7 +83,6 @@ const ViewTask = () => {
   //Global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
-
 
   /// rtk query
   const { data, isLoading, isFetching } = useGetTaskUpdateQuery(
@@ -77,7 +104,7 @@ const ViewTask = () => {
   const handleDownloadClick = async () => {
     try {
       if (!selectedDate?.start || !selectedDate?.end) {
-        window.alert("Please select date first");
+        window.alert('Please select date first');
         return;
       }
       setLoading(true);
@@ -86,23 +113,23 @@ const ViewTask = () => {
           ?.toISOString()
           .substr(0, 10)}&to=${selectedDate?.end?.toISOString().substr(0, 10)}`,
         {
-          responseType: "blob",
+          responseType: 'blob',
         }
       );
 
       const blob = new Blob([response.data], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
 
-      saveAs(blob, "Tasks.xlsx");
+      saveAs(blob, 'Tasks.xlsx');
 
-      toast.success("Download Started...", {
+      toast.success('Download Started...', {
         position: toast.POSITION.TOP_CENTER,
       });
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.error("An error occurred during download:", error);
+      console.error('An error occurred during download:', error);
     }
   };
 
@@ -110,7 +137,6 @@ const ViewTask = () => {
   const description =
     "This is Employee Task where you can view the employee's daily tasks";
 
-  
   /// use effect
   useEffect(() => {
     let startDate = new Date();
@@ -125,20 +151,20 @@ const ViewTask = () => {
   const handleClose = () => {
     dispatch(setInfo(false));
   };
- 
+
   useEffect(() => {
     dispatch(setHeader(`Employee Tasks`));
   }, []);
 
   return (
     <Box
-      component="main"
+      component='main'
       sx={{
         flexGrow: 1,
         p: 0,
-        width: "100%",
-        overflow: "hidden",
-        height: "96vh",
+        width: '100%',
+        overflow: 'hidden',
+        height: '96vh',
       }}
     >
       <DrawerHeader />
@@ -199,21 +225,21 @@ const ViewTask = () => {
       </Box> */}
       <Box
         sx={{
-          display: "flex",
-          marginLeft: "8rem",
-          alignItems: "center",
-          justifyContent: "space-evenly",
-          gap: "10px",
-          fontWeight: "bold",
+          display: 'flex',
+          marginLeft: '8rem',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          gap: '10px',
+          fontWeight: 'bold',
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <span style={{ marginRight: "12px" }}>From:</span>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ marginRight: '12px' }}>From:</span>
           <input
-            placeholder="Date"
-            type="date"
-            id="date"
-            label="From"
+            placeholder='Date'
+            type='date'
+            id='date'
+            label='From'
             value={selectedDate?.start?.toISOString().substr(0, 10)}
             onChange={(e) => {
               setSelectedDate({
@@ -222,21 +248,21 @@ const ViewTask = () => {
               });
             }}
             style={{
-              width: "10rem",
-              padding: "10px 25px",
-              margin: "2px 0",
-              borderRadius: "5px",
-              fontSize: "16px",
+              width: '10rem',
+              padding: '10px 25px',
+              margin: '2px 0',
+              borderRadius: '5px',
+              fontSize: '16px',
             }}
           />
         </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <span style={{ marginRight: "12px" }}>To:</span>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ marginRight: '12px' }}>To:</span>
           <input
-            placeholder="Date"
-            type="date"
-            id="date"
-            label="To"
+            placeholder='Date'
+            type='date'
+            id='date'
+            label='To'
             value={selectedDate?.end?.toISOString().substr(0, 10)}
             onChange={(e) => {
               setSelectedDate({
@@ -245,11 +271,11 @@ const ViewTask = () => {
               });
             }}
             style={{
-              width: "10rem",
-              padding: "10px 25px",
-              margin: "2px 0",
-              borderRadius: "5px",
-              fontSize: "16px",
+              width: '10rem',
+              padding: '10px 25px',
+              margin: '2px 0',
+              borderRadius: '5px',
+              fontSize: '16px',
             }}
           />
         </Box>
@@ -258,12 +284,12 @@ const ViewTask = () => {
           <Button
             onClick={handleDownloadClick}
             disabled={loading}
-            variant="outlined"
+            variant='outlined'
             sx={{
-              color: "white",
+              color: 'white',
               background: color,
-              "&:hover": {
-                color: "black",
+              '&:hover': {
+                color: 'black',
               },
             }}
           >
@@ -275,30 +301,30 @@ const ViewTask = () => {
         {data?.data?.length ? (
           <TableContainer
             component={Paper}
-            sx={{ overflow: "auto", height: "76vh" }}
+            sx={{ overflow: 'auto', height: '76vh' }}
           >
             <Table>
               <TableHead
                 sx={{
                   backgroundColor: themeColor.sideBarColor1,
-                  color: "white",
-                  position: "sticky",
+                  color: 'white',
+                  position: 'sticky',
                   top: 0,
                   zIndex: 10,
                 }}
               >
                 <TableRow>
-                  <TableCell sx={{ color: "white" }}>Sno</TableCell>
-                  <TableCell sx={{ color: "white" }}>Name</TableCell>
-                  <TableCell sx={{ color: "white", widht: "50px" }}>
+                  <TableCell sx={{ color: 'white' }}>Sno</TableCell>
+                  <TableCell sx={{ color: 'white' }}>Name</TableCell>
+                  <TableCell sx={{ color: 'white', widht: '50px' }}>
                     Date
                   </TableCell>
-                  <TableCell sx={{ color: "white" }}>Task Hour</TableCell>
-                  <TableCell sx={{ color: "white" }}>Create Time</TableCell>
-                  <TableCell sx={{ color: "white" }}>
+                  <TableCell sx={{ color: 'white' }}>Task Hour</TableCell>
+                  <TableCell sx={{ color: 'white' }}>Create Time</TableCell>
+                  <TableCell sx={{ color: 'white' }}>
                     Task Description
                   </TableCell>
-                  <TableCell sx={{ color: "white" }}>Action</TableCell>
+                  <TableCell sx={{ color: 'white' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -332,7 +358,7 @@ const ViewTask = () => {
             <h1
               style={{
                 backgroundColor: color,
-                color: "white",
+                color: 'white',
               }}
             >
               No Task Update For Today

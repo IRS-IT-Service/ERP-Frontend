@@ -22,7 +22,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: "Add Issue",
+    name: "Add Hardware Issue",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
@@ -31,7 +31,29 @@ const infoDetail = [
       />
     ),
     instruction:
-      "If you Put Any Issue in 'Add Issue' Field and Click Plus Button Value set for particular Input Category",
+      "Here You Can Add Hardware Issue for Products",
+  },{
+    name: "Add Software Issue",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction: 'Here You Can Add Software Issue for Products',
+  },
+  {
+    name: "Add Part",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here You Can Add Part for Products",
   },
   {
     name: "Delete",

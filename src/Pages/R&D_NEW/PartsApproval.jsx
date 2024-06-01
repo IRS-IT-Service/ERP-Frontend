@@ -34,10 +34,10 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: "Add Parts",
+    name: "Received Parts",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717236644148"
         height={"100%"}
         width={"100%"}
         style={
@@ -48,48 +48,12 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
-  },
-
-  {
-    name: "Discount Card",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
-      />
-    ),
-    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
-  },
-
-  {
-    name: "Shipment Detail Tracking",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
-      />
-    ),
-    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+    instruction: 'R&D Approved Received Part which is getting From Logistics',
   },
 ];
 
 const PartsApproval = () => {
-  const description = `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`;
+  const description = `Parts Approval here R&D Approved Received Part which is getting From Dispatch`;
   /// initialize
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();

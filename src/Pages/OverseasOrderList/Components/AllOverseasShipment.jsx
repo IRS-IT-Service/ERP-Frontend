@@ -41,27 +41,27 @@ const useStyles = makeStyles((theme) => ({
 //Todo
 const infoDetail = [
   {
-    name: "Status",
+    name: 'Status',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065319338"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717246052254'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: 'Here You Can See Status of Your all Overseas Shipment',
+  },
+  {
+    name: 'Details',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065319338'
+        height={'100%'}
+        width={'100%'}
       />
     ),
     instruction:
-      "Here You Can See Status of Your all Overseas Shipment",
-  },
-  {
-    name: "Details",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065319338"
-        height={"100%"}
-        width={"100%"}
-      />
-    ),
-    instruction: "If you click to View Button Under Details so you can see One overseas Shipment with all the Shipment Details",
+      'If you click to View Button Under Details so you can see One overseas Shipment with all the Shipment Details',
   },
 ];
 

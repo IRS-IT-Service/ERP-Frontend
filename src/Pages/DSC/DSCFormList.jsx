@@ -44,7 +44,7 @@ const infoDetail = [
     name: "Status",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/generated%20button.png?updatedAt=1717243245190"
         height={"60%"}
         width={"90%"}
       />
@@ -56,7 +56,7 @@ const infoDetail = [
     name: "WebStatus",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065320224"
         height={"60%"}
         width={"90%"}
       />
@@ -68,7 +68,7 @@ const infoDetail = [
     name: "View",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/details_wholesale%20order.png?updatedAt=1703064824324"
         height={"60%"}
         width={"90%"}
       />
@@ -80,13 +80,24 @@ const infoDetail = [
     name: "Signature",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/submit%20button.png?updatedAt=1717243245103"
         height={"60%"}
         width={"90%"}
       />
     ),
     instruction:
       "Here You Can Put Your Signature",
+  },{
+    name: "Download PDF",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/dwonload%20icon.png?updatedAt=1717243245134"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here You Can Service Receipt PDF",
   },
 ];
 
