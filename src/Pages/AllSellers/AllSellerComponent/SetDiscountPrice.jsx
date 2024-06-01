@@ -53,7 +53,7 @@ const infoDetail = [
     name: 'Sort By GST',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717226676944'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortByGst.png?updatedAt=1717242547125'
         height={'60%'}
         width={'90%'}
       />
@@ -65,7 +65,7 @@ const infoDetail = [
     name: 'Clear All Filter',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717226862387'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
         height={'60%'}
         width={'90%'}
       />

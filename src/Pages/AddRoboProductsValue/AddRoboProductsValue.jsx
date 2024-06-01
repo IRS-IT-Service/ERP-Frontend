@@ -90,7 +90,7 @@ const infoDetail = [
     instruction: 'User can delete the product from the list',
   },
   {
-    name: 'Gallery',
+    name: 'Image',
     screenshot: (
       <img
         src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/galleryIcon.png?updatedAt=1717244062686'
@@ -98,7 +98,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: 'User can add gallery for the product',
+    instruction: 'User can add image for the brand',
   },
 ];
 const AddRoboProductsValue = () => {
