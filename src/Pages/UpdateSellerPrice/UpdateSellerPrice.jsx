@@ -54,7 +54,7 @@ const infoDetail = [
     name: 'Clear All Filter',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717226862387'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717240595434'
         height={'60%'}
         width={'90%'}
       />
