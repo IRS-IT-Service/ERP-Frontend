@@ -16,7 +16,7 @@ const infoDetail = [
     name: 'Bulk Upload Products',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(2).png?updatedAt=1717240113347'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/bulk.png?updatedAt=1717241372076'
         height={'60%'}
         width={'90%'}
       />
@@ -27,7 +27,7 @@ const infoDetail = [
     name: 'Add Alternate Name',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(1).png?updatedAt=1717240113316'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/add.png?updatedAt=1717241330237'
         height={'60%'}
         width={'90%'}
       />
@@ -38,7 +38,7 @@ const infoDetail = [
     name: 'Upload Image',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717240113416'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/uploadImage.png?updatedAt=1717242246860'
         height={'60%'}
         width={'90%'}
       />

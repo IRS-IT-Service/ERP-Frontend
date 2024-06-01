@@ -13,74 +13,92 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Select Value",
+    name: 'Select Value',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/brandFilter.png?updatedAt=1717243576733'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click 'Select Value' and select a particular Value, you can add Data listings for that specific value",
+    instruction: '',
   },
   {
-    name: "Add Value",
+    name: 'Add Button',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addButton.png?updatedAt=1717243525476'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you Put Any Value in 'Add Value' Field and Click Add Button Value set for particular Selected Category",
+    instruction: '',
   },
   {
-    name: "TextArea",
+    name: 'Save',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/save.png?updatedAt=1717243500118'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "Here you Can see All Value and Click on Save Button for Bulk Save in Database",
+    instruction: '',
   },
   {
-    name: "Search Field",
+    name: 'Search Brand',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/right_productStatus.png?updatedAt=1703142361021"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/brand.png?updatedAt=1717243462272'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "Here you can Enter Keyword for What you want to Search in Specific Section",
+    instruction: '',
   },
   {
-    name: "Delete",
+    name: 'Search Category',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/cross_productStatus.png?updatedAt=1703142361005"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/category.png?updatedAt=1717243438672'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction: "If Click Delete Icon You Can Delete Specific Data",
+    instruction: '',
   },
   {
-    name: "Upload",
+    name: 'Search Sub Category',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/value_productStatus.png?updatedAt=1703142731023"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/subCategoryFilter.png?updatedAt=1717243415440'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction: "Upload Logo for Related Brand",
+    instruction: '',
+  },
+  {
+    name: 'Delete Icon',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/deleteIcon.png?updatedAt=1717243287098'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: '',
+  },
+  {
+    name: 'Gallery',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/galleryIcon.png?updatedAt=1717244062686'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: '',
   },
 ];
 const AddRoboProductsValue = () => {
