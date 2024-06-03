@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { Box, styled } from "@mui/material";
-import InwardLogistics from "./Components/InwardLogistics";
-import Header from "../../components/Common/Header";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import React, { useEffect, useState } from 'react';
+import { Box, styled } from '@mui/material';
+import InwardLogistics from './Components/InwardLogistics';
+import Header from '../../components/Common/Header';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: "Submit details",
+    name: 'Submit details',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/inwardLSubmit.png?updatedAt=1703224578665"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/inwardLSubmit.png?updatedAt=1703224578665'
+        height={'100%'}
+        width={'100%'}
         style={
           {
             // width: '10vw',
@@ -30,12 +30,12 @@ const infoDetail = [
   },
 
   {
-    name: "Details Button",
+    name: 'Details Button',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/detailsGui.png?updatedAt=1703224870009"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/detailsGui.png?updatedAt=1703224870009'
+        height={'100%'}
+        width={'100%'}
         style={
           {
             // width: '10vw',
@@ -48,12 +48,12 @@ const infoDetail = [
   },
 
   {
-    name: "Details Button",
+    name: 'View Button',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/boxView.png?updatedAt=1703225162573"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/boxView.png?updatedAt=1703225162573'
+        height={'100%'}
+        width={'100%'}
         style={
           {
             // width: '10vw',
@@ -82,8 +82,8 @@ const Logistics = () => {
 
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
       {/* <Header

@@ -1,73 +1,71 @@
-import React, { useEffect } from "react";
-import { Box, styled, Button, Dialog } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import { useGetAllBoxOpenHistoryQuery } from "../../features/api/barcodeApiSlice";
-import { useState } from "react";
-import Checkbox from "@mui/material/Checkbox";
-import Header from "../../components/Common/Header";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import { useDispatch, useSelector } from "react-redux";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import React, { useEffect } from 'react';
+import { Box, styled, Button, Dialog } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { useGetAllBoxOpenHistoryQuery } from '../../features/api/barcodeApiSlice';
+import { useState } from 'react';
+import Checkbox from '@mui/material/Checkbox';
+import Header from '../../components/Common/Header';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: 'History',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/historyBoxOpened.png?updatedAt=1717397815396'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+      "",
   },
-  {
-    name: "Sort By Category",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
-  },
-  {
-    name: "Search-Product",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click the search product, you can search for any product or brand here",
-  },
-  {
-    name: "Search-SKU",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click search SKU, you can search for any product or brand by SKU number here ",
-  },
+  // {
+  //   name: "Sort By Category",
+  //   screenshot: (
+  //     <img
+  //       src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+  //       height={"60%"}
+  //       width={"90%"}
+  //     />
+  //   ),
+  //   instruction:
+  //     "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
+  // },
+  // {
+  //   name: "Search-Product",
+  //   screenshot: (
+  //     <img
+  //       src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
+  //       height={"60%"}
+  //       width={"90%"}
+  //     />
+  //   ),
+  //   instruction:
+  //     "If you click the search product, you can search for any product or brand here",
+  // },
+  // {
+  //   name: "Search-SKU",
+  //   screenshot: (
+  //     <img
+  //       src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
+  //       height={"60%"}
+  //       width={"90%"}
+  //     />
+  //   ),
+  //   instruction:
+  //     "If you click search SKU, you can search for any product or brand by SKU number here ",
+  // },
 ];
 
 const OpenBoxHistory = () => {
-
-  const description =
-    "This is Opened Box History you Can See All History of Opened Box";
+  const description = 'Opened Box History';
   /// rtk query
   const { data, isLoading, refetch } = useGetAllBoxOpenHistoryQuery();
 
@@ -78,66 +76,66 @@ const OpenBoxHistory = () => {
   /// columns
   const columns = [
     {
-      field: "sno",
-      headerName: "Sno",
+      field: 'sno',
+      headerName: 'Sno',
       flex: 0.3,
       width: 70,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "SKU",
-      headerName: "SKU",
+      field: 'SKU',
+      headerName: 'SKU',
       flex: 0.3,
       width: 130,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "name",
-      headerName: "Name",
+      field: 'name',
+      headerName: 'Name',
       flex: 0.3,
       minWidth: 300,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "barcodeNo",
-      headerName: "Barcode",
+      field: 'barcodeNo',
+      headerName: 'Barcode',
       flex: 0.3,
       minWidth: 230,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "date",
-      headerName: "Date",
+      field: 'date',
+      headerName: 'Date',
       flex: 0.3,
       minWidth: 90,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "status",
-      headerName: "status",
+      field: 'status',
+      headerName: 'status',
       flex: 0.3,
       minWidth: 90,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
-        let color = params.row.type === "removed" ? "red" : "green";
-        let text = params.row.type === "removed" ? "Opened" : "Closed";
+        let color = params.row.type === 'removed' ? 'red' : 'green';
+        let text = params.row.type === 'removed' ? 'Opened' : 'Closed';
         return <p style={{ color: color }}>{text}</p>;
       },
     },
 
     {
-      field: "action",
-      headerName: "View Items",
+      field: 'action',
+      headerName: 'View Items',
       minWidth: 90,
       flex: 0.3,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         return (
           <Button
@@ -168,34 +166,32 @@ const OpenBoxHistory = () => {
 
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
       {/* <Header Name={"Opened Box History"}/> */}
       <Box>
-
-
         <Box
           sx={{
-            width: "100%",
-            height: "82vh",
-            "& .super-app-theme--header": {
-              background: "#eee",
-              color: "black",
-              textAlign: "center",
+            width: '100%',
+            height: '82vh',
+            '& .super-app-theme--header': {
+              background: '#eee',
+              color: 'black',
+              textAlign: 'center',
             },
-            "& .vertical-lines .MuiDataGrid-cell": {
-              borderRight: "1px solid #e0e0e0",
+            '& .vertical-lines .MuiDataGrid-cell': {
+              borderRight: '1px solid #e0e0e0',
             },
-            "& .supercursor-app-theme--cell:hover": {
+            '& .supercursor-app-theme--cell:hover': {
               background:
-                "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-              color: "white",
-              cursor: "pointer",
+                'linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)',
+              color: 'white',
+              cursor: 'pointer',
             },
-            "& .MuiDataGrid-columnHeaderTitleContainer": {
-              background: "#eee",
+            '& .MuiDataGrid-columnHeaderTitleContainer': {
+              background: '#eee',
             },
           }}
         >
@@ -217,9 +213,9 @@ const OpenBoxHistory = () => {
         {selectedItem ? (
           <Box sx={{}}>
             <h3>
-              {selectedItem.type === "removed"
-                ? "Previous Took Items"
-                : "Items Added Back To The Box"}
+              {selectedItem.type === 'removed'
+                ? 'Previous Took Items'
+                : 'Items Added Back To The Box'}
             </h3>
             <div>
               <p>SKU: {selectedItem.SKU} </p>
@@ -232,29 +228,29 @@ const OpenBoxHistory = () => {
                 <Box
                   key={index}
                   sx={{
-                    fontSize: ".666rem",
-                    color: "#000",
-                    backgroundColor: " #80bfff",
-                    paddingX: "1rem",
-                    paddingY: ".4rem",
-                    border: "2px solid black",
-                    borderRadius: ".4rem",
-                    boxShadow: "-3px 3px 4px 0px #404040",
-                    marginTop: "1rem",
+                    fontSize: '.666rem',
+                    color: '#000',
+                    backgroundColor: ' #80bfff',
+                    paddingX: '1rem',
+                    paddingY: '.4rem',
+                    border: '2px solid black',
+                    borderRadius: '.4rem',
+                    boxShadow: '-3px 3px 4px 0px #404040',
+                    marginTop: '1rem',
                   }}
                 >
-                  <p style={{ fontSize: "1rem", fontWeight: "600" }}>{item}</p>
+                  <p style={{ fontSize: '1rem', fontWeight: '600' }}>{item}</p>
                 </Box>
               );
             })}
           </Box>
         ) : (
-          ""
+          ''
         )}
         <Box>
           <Button
-            sx={{ backgroundColor: "red", marginX: ".5rem" }}
-            variant="contained"
+            sx={{ backgroundColor: 'red', marginX: '.5rem' }}
+            variant='contained'
             onClick={() => {
               setOpenItems(false);
               setSeletedItem(null);

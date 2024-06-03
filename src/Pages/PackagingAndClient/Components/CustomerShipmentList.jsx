@@ -2,30 +2,82 @@ import {
   DataGrid,
   GridToolbarQuickFilter,
   GridToolbar,
-} from "@mui/x-data-grid";
+} from '@mui/x-data-grid';
 import {
   Box,
   Button,
   ToggleButton,
   ToggleButtonGroup,
   collapseClasses,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useGetAllPackagesQuery  } from "../../../features/api/clientAndShipmentApiSlice";
-import { useNavigate } from "react-router-dom";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import PackingAndCourierDial from "./PackingAndCourierDial";
-import InvoiceDial from "./InvoiceDial";
-import { Margin, OpenInBrowser } from "@mui/icons-material";
-import OrderDetailsDialog from "./OrderDetailsDialog";
-import { formatDate } from "../../../commonFunctions/commonFunctions";
-import { Portal } from "@mui/base/Portal";
-import Grid from "@mui/material/Grid";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useGetAllPackagesQuery } from '../../../features/api/clientAndShipmentApiSlice';
+import { useNavigate } from 'react-router-dom';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import PackingAndCourierDial from './PackingAndCourierDial';
+import InvoiceDial from './InvoiceDial';
+import { Margin, OpenInBrowser } from '@mui/icons-material';
+import OrderDetailsDialog from './OrderDetailsDialog';
+import { formatDate } from '../../../commonFunctions/commonFunctions';
+import { Portal } from '@mui/base/Portal';
+import Grid from '@mui/material/Grid';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import { setHeader, setInfo } from '../../../features/slice/uiSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import InfoDialogBox from '../../../components/Common/InfoDialogBox';
+
+// infoDialog box data
+const infoDetail = [
+  {
+    name: 'Search',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/shipmentSearch.png?updatedAt=1717392741690'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction:
+      "If you click 'View,' you can save the price for that particular price list",
+  },
+  {
+    name: 'Rate Comparision',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/shipmentRateComparision.png?updatedAt=1717392675683'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: '',
+  },
+  {
+    name: 'Packaging',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/inPackingBtn.png?updatedAt=1717392956878'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: '',
+  },
+  {
+    name: 'Delivered',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/deliveredBtn.png?updatedAt=1717392931517'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: '',
+  },
+];
 
 const CustomerShipmentList = () => {
   // local state variables
-  const [queryParams, setQueryParams] = useState("InPackaging");
+  const [queryParams, setQueryParams] = useState('InPackaging');
   const [rows, setRows] = useState([]);
   const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [courierOpen, setCourierOpen] = useState(false);
@@ -34,16 +86,17 @@ const CustomerShipmentList = () => {
   const [items, setItems] = useState({});
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const formatShippingAddress = (obj, keyOrder = []) => {
-    if (!obj || typeof obj !== "object") return "";
+    if (!obj || typeof obj !== 'object') return '';
 
     const keys = keyOrder.length ? keyOrder : Object.keys(obj);
 
     const formattedString = keys
-      .map((key) => obj[key] || "")
+      .map((key) => obj[key] || '')
       .filter((value) => value)
-      .join(", ");
+      .join(', ');
 
     return formattedString;
   };
@@ -62,19 +115,22 @@ const CustomerShipmentList = () => {
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {
       const result = getAllShipments.client.map((item, index) => {
-        const keyOrder = ["Address", "District", "State", "Country", "Pincode"];
+        const keyOrder = ['Address', 'District', 'State', 'Country', 'Pincode'];
         const shippingAddress = formatShippingAddress(
           item.ShippingAddress,
           keyOrder
         );
-  
+
         return {
           ...item,
           Sno: index + 1,
           id: item._id,
           ShipmentId: item.OrderShipmentId,
           CustomerName: item.ContactPerson,
-          CustomerContact: ( item.AlternateNumber && item.AlternateNumber !== "undefined") ? item.AlternateNumber : item.Contact ,
+          CustomerContact:
+            item.AlternateNumber && item.AlternateNumber !== 'undefined'
+              ? item.AlternateNumber
+              : item.Contact,
           ShipAddress: shippingAddress,
           PackingDetails: item.IsPacked,
           CourierDetails: item.HasCourierId,
@@ -115,10 +171,15 @@ const CustomerShipmentList = () => {
     setDetails(data);
   };
 
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose1 = () => {
+    dispatch(setInfo(false));
+  };
+
   function MyCustomToolbar(prop) {
     return (
       <React.Fragment>
-        <Portal container={() => document.getElementById("filter-panel")}>
+        <Portal container={() => document.getElementById('filter-panel')}>
           <GridToolbarQuickFilter />
         </Portal>
         {/* <GridToolbar {...prop} /> */}
@@ -128,76 +189,76 @@ const CustomerShipmentList = () => {
 
   const columns = [
     {
-      field: "Sno",
-      headerName: "Sno",
+      field: 'Sno',
+      headerName: 'Sno',
       flex: 0.1,
       minWidth: 50,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "ShipmentId",
-      headerName: "ShipmentId",
+      field: 'ShipmentId',
+      headerName: 'ShipmentId',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "OrderDate",
-      headerName: "Order-Date",
+      field: 'OrderDate',
+      headerName: 'Order-Date',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "CustomerName",
-      headerName: "Customer-Name",
+      field: 'CustomerName',
+      headerName: 'Customer-Name',
       flex: 0.3,
       minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "CustomerContact",
-      headerName: "Contact-No",
+      field: 'CustomerContact',
+      headerName: 'Contact-No',
       flex: 0.3,
       minWidth: 150,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
 
     {
-      field: "ShipAddress",
-      headerName: "Ship-Address",
+      field: 'ShipAddress',
+      headerName: 'Ship-Address',
       flex: 0.3,
       minWidth: 250,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
 
     {
-      field: "PackageDispatch",
-      headerName: "Package-Dispatch",
+      field: 'PackageDispatch',
+      headerName: 'Package-Dispatch',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         const dispatched = !params.value;
         const id = params.row.ShipmentId;
@@ -205,33 +266,33 @@ const CustomerShipmentList = () => {
           <Box onClick={() => navigate(`/ItemsAprroval/${id}`)}>
             <Box
               sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                cursor: "pointer",
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
               }}
             >
               <Box
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
+                  display: 'flex',
+                  alignItems: 'center',
                 }}
               >
                 <Box
                   sx={{
-                    color: "#fff",
+                    color: '#fff',
                     background:
                       params.row.Dispatched && !params.row.IsPacked
-                        ? "#ccc"
-                        : "green",
-                    borderRadius: "50%",
+                        ? '#ccc'
+                        : 'green',
+                    borderRadius: '50%',
 
-                    width: "30px",
-                    height: "30px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    width: '30px',
+                    height: '30px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   1
@@ -241,20 +302,20 @@ const CustomerShipmentList = () => {
           </Box>
         ) : (
           <Box>
-            <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
+            <VerifiedIcon sx={{ color: 'green', fontSize: '35px' }} />
           </Box>
         );
       },
     },
     {
-      field: "PackingDetails",
-      headerName: "Packing-Details",
+      field: 'PackingDetails',
+      headerName: 'Packing-Details',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         const packed = !params.value;
         const orderId = params.row.ShipmentId;
@@ -262,10 +323,10 @@ const CustomerShipmentList = () => {
         const CustomerName = params.row.CustomerName;
         const Weight = params.row.Weight;
         const Dimension = params.row.Dimension;
-        const openFor = "Packing";
+        const openFor = 'Packing';
         return (
           <Button
-          disabled={!params.row.Dispatched && !params.row.IsPacked}
+            disabled={!params.row.Dispatched && !params.row.IsPacked}
             onClick={() =>
               handlePackageOpen({
                 OpenFor: openFor,
@@ -277,37 +338,36 @@ const CustomerShipmentList = () => {
               })
             }
           >
-
             {packed ? (
               <Box
                 sx={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  cursor: "pointer",
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  cursor: 'pointer',
                 }}
               >
                 <Box
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
+                    display: 'flex',
+                    alignItems: 'center',
                   }}
                 >
                   <Box
                     sx={{
-                      color: "#fff",
+                      color: '#fff',
                       background:
                         !params.row.Dispatched && !params.row.IsPacked
-                          ? "#ccc"
-                          : "green",
-                      borderRadius: "50%",
+                          ? '#ccc'
+                          : 'green',
+                      borderRadius: '50%',
 
-                      width: "30px",
-                      height: "30px",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      width: '30px',
+                      height: '30px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}
                   >
                     2
@@ -316,7 +376,7 @@ const CustomerShipmentList = () => {
               </Box>
             ) : (
               <Box>
-                <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
+                <VerifiedIcon sx={{ color: 'green', fontSize: '35px' }} />
               </Box>
             )}
           </Button>
@@ -324,14 +384,14 @@ const CustomerShipmentList = () => {
       },
     },
     {
-      field: "CourierDetails",
-      headerName: "Courier-Details",
+      field: 'CourierDetails',
+      headerName: 'Courier-Details',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         const packed = !params.value;
         const orderId = params.row.ShipmentId;
@@ -339,7 +399,7 @@ const CustomerShipmentList = () => {
         const CourierName = params.row.CourierName;
         const TrackingId = params.row.TrackingId;
         const Link = params.row.CourierLink;
-        const openFor = "Courier";
+        const openFor = 'Courier';
         return (
           <Button
             disabled={!params.row.IsPacked && !params.row.HasCourierId}
@@ -357,47 +417,46 @@ const CustomerShipmentList = () => {
             {packed ? (
               <Box
                 sx={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <Box
                   sx={{
-                    color: "#fff",
+                    color: '#fff',
                     background:
                       !params.row.IsPacked && !params.row.HasCourierId
-                        ? "#ccc"
-                        : "green",
-                    borderRadius: "50%",
-
-                    width: "30px",
-                    height: "30px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                        ? '#ccc'
+                        : 'green',
+                    borderRadius: '50%',
+                    width: '30px',
+                    height: '30px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   3
                 </Box>
               </Box>
             ) : (
-              <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
+              <VerifiedIcon sx={{ color: 'green', fontSize: '35px' }} />
             )}
           </Button>
         );
       },
     },
     {
-      field: "OrderCompleted",
-      headerName: "Completed",
+      field: 'OrderCompleted',
+      headerName: 'Completed',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         const IsCompletedOrder = params.row.IsCompletedOrder;
         const packed = !params.value;
@@ -414,47 +473,50 @@ const CustomerShipmentList = () => {
             {packed ? (
               <Box
                 sx={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <Box
                   sx={{
-                    color: "#fff",
+                    color: '#fff',
                     background:
-                     !params.row.Dispatched || !params.row.IsPacked || params.row.IsCompletedOrder || !params.row.HasCourierId
-                        ? "#ccc"
-                        : "green",
-                    borderRadius: "50%",
+                      !params.row.Dispatched ||
+                      !params.row.IsPacked ||
+                      params.row.IsCompletedOrder ||
+                      !params.row.HasCourierId
+                        ? '#ccc'
+                        : 'green',
+                    borderRadius: '50%',
 
-                    width: "30px",
-                    height: "30px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    width: '30px',
+                    height: '30px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   4
                 </Box>
               </Box>
             ) : (
-              <VerifiedIcon sx={{ color: "green", fontSize: "35px" }} />
+              <VerifiedIcon sx={{ color: 'green', fontSize: '35px' }} />
             )}
           </Button>
         );
       },
     },
     {
-      field: "Invoice",
-      headerName: "Invoice",
+      field: 'Invoice',
+      headerName: 'Invoice',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         const invoice = params.value;
         const orderId = params.row.ShipmentId;
@@ -469,139 +531,142 @@ const CustomerShipmentList = () => {
               })
             }
           >
-            {invoice ? "View" : "Upload"}
+            {invoice ? 'View' : 'Upload'}
           </Button>
         );
       },
     },
-//     {
-//       field: "status",
-//       headerName: "Status",
-//       flex: 0.2,
-//       minWidth: 100,
-//       maxWidth: 250,
-//       headerClassName: "super-app-theme--header",
-//       cellClassName: "super-app-theme--cell",
-//       headerAlign: "center",
-//       align: "center",
-//       renderCell: (params) => {
-//         const data = params.row;
+    //     {
+    //       field: "status",
+    //       headerName: "Status",
+    //       flex: 0.2,
+    //       minWidth: 100,
+    //       maxWidth: 250,
+    //       headerClassName: "super-app-theme--header",
+    //       cellClassName: "super-app-theme--cell",
+    //       headerAlign: "center",
+    //       align: "center",
+    //       renderCell: (params) => {
+    //         const data = params.row;
 
-//         function getOrderStatus(row) {
-//           switch (true) {
-//               case row.IsCompletedOrder  :
-//                   return "Delivered";
-              
-//               case row.Items.length > 0 && !row.CourierDetails :
-//                   return "Dispatched";
-              
-//               case row.CourierDetails:
-//                   return "Packed";
-              
-//               case row.Items.length > 0 && row.CourierDetails:
-//                   return "In Transit";
-              
-//               default:
-//                   return "Initialized";
-//           }
-//       }
+    //         function getOrderStatus(row) {
+    //           switch (true) {
+    //               case row.IsCompletedOrder  :
+    //                   return "Delivered";
 
-//         const color =  params.row.IsCompletedOrder
-//         ? "Green"
-//         : params.row.Dispatched || !params.row.IsPacked
-//             ? "#663300"
-//             : params.row.IsPacked || params.row.Dispatched
-//                 ? "#003300"
-//                 : params.row.HasCourierId ||  params.row.IsPacked || params.row.Dispatched
-//                     ? " #cc9900"
-//                     : " #cc0000";
+    //               case row.Items.length > 0 && !row.CourierDetails :
+    //                   return "Dispatched";
 
-//      const status = getOrderStatus(params.row);
-// console.log(status);
+    //               case row.CourierDetails:
+    //                   return "Packed";
 
-//         // const status = params.row.IsPacked
-//         //   ? params.row.HasCourierId
-//         //     ? "In transit"
-//         //     : "Packed"
-//         //   : params.row.IsCompletedOrder
-//         //   ? "delivered"
-//         //   : "Intialized";
+    //               case row.Items.length > 0 && row.CourierDetails:
+    //                   return "In Transit";
 
-//         return (
-//           <div
-//             style={{
-//               color: color,
-//             }}
-//           >
-//             <Button sx={{ color: `${color}` }}>{status}</Button>
-//           </div>
-//         );
-//       },
-//     },
-   
+    //               default:
+    //                   return "Initialized";
+    //           }
+    //       }
+
+    //         const color =  params.row.IsCompletedOrder
+    //         ? "Green"
+    //         : params.row.Dispatched || !params.row.IsPacked
+    //             ? "#663300"
+    //             : params.row.IsPacked || params.row.Dispatched
+    //                 ? "#003300"
+    //                 : params.row.HasCourierId ||  params.row.IsPacked || params.row.Dispatched
+    //                     ? " #cc9900"
+    //                     : " #cc0000";
+
+    //      const status = getOrderStatus(params.row);
+    // console.log(status);
+
+    //         // const status = params.row.IsPacked
+    //         //   ? params.row.HasCourierId
+    //         //     ? "In transit"
+    //         //     : "Packed"
+    //         //   : params.row.IsCompletedOrder
+    //         //   ? "delivered"
+    //         //   : "Intialized";
+
+    //         return (
+    //           <div
+    //             style={{
+    //               color: color,
+    //             }}
+    //           >
+    //             <Button sx={{ color: `${color}` }}>{status}</Button>
+    //           </div>
+    //         );
+    //       },
+    //     },
   ];
 
   const CustomToolbar = () => {
     return (
       <Box
         style={{
-          display: "flex",
-          justifyContent: "end",
-          gap: "20px",
-          marginTop: "5px",
+          display: 'flex',
+          justifyContent: 'end',
+          gap: '20px',
+          marginTop: '5px',
         }}
       >
         <Button
-          size="small"
-          variant="contained"
+          size='small'
+          variant='contained'
           sx={{
-            background: "purple",
+            background: 'purple',
           }}
-          onClick={() => navigate("/shipRocket")}
+          onClick={() => navigate('/shipRocket')}
         >
           Shipment rate Comparision
         </Button>
         <ToggleButtonGroup
-          color="primary"
+          color='primary'
           value={queryParams}
           exclusive
           onChange={handleChange}
-          aria-label="Platform"
+          aria-label='Platform'
         >
-          <ToggleButton value="InPackaging">In-Packaging</ToggleButton>
-          <ToggleButton value="Dispatched">Delivered</ToggleButton>
+          <ToggleButton value='InPackaging'>In-Packaging</ToggleButton>
+          <ToggleButton value='Dispatched'>Delivered</ToggleButton>
         </ToggleButtonGroup>
       </Box>
     );
   };
 
+  useEffect(() => {
+    dispatch(setHeader(`Shipment List`));
+  }, []);
+
   return (
     <Box>
       <CustomToolbar />
       <Grid item>
-        <Box id="filter-panel" />
+        <Box id='filter-panel' />
       </Grid>
       <Box
         sx={{
-          height: "84vh",
-          "& .super-app-theme--header": {
-            background: "#eee",
-            color: "black",
-            textAlign: "center",
+          height: '84vh',
+          '& .super-app-theme--header': {
+            background: '#eee',
+            color: 'black',
+            textAlign: 'center',
           },
-          "& .vertical-lines .MuiDataGrid-cell": {
-            borderRight: "1px solid #e0e0e0",
+          '& .vertical-lines .MuiDataGrid-cell': {
+            borderRight: '1px solid #e0e0e0',
           },
-          "& .supercursor-app-theme--cell:hover": {
+          '& .supercursor-app-theme--cell:hover': {
             background:
-              "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-            color: "white",
-            cursor: "pointer",
+              'linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)',
+            color: 'white',
+            cursor: 'pointer',
           },
-          "& .MuiDataGrid-columnHeaderTitleContainer": {
-            background: "#eee",
+          '& .MuiDataGrid-columnHeaderTitleContainer': {
+            background: '#eee',
           },
-          position: "relative",
+          position: 'relative',
         }}
       >
         <DataGrid
@@ -614,7 +679,7 @@ const CustomerShipmentList = () => {
           initialState={{
             filter: {
               filterModel: {
-                items: ["OrderDate"],
+                items: ['OrderDate'],
                 quickFilterExcludeHiddenColumns: true,
               },
             },
@@ -646,6 +711,12 @@ const CustomerShipmentList = () => {
           refetch={refetch}
         />
       )}
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        // description={description1}
+        open={isInfoOpen}
+        close={handleClose1}
+      />
     </Box>
   );
 };

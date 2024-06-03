@@ -1,80 +1,135 @@
-import React, { useEffect, useState } from "react";
-import { Box, styled } from "@mui/material";
-import BarcodeGenerateGrid from "./component/BarcodeGenerateGrid";
-import Header from "../../components/Common/Header";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import React, { useEffect, useState } from 'react';
+import { Box, styled } from '@mui/material';
+import BarcodeGenerateGrid from './component/BarcodeGenerateGrid';
+import Header from '../../components/Common/Header';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: "Generate Barcode",
+    name: 'Sort By Brand',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/generateBarcode.png?updatedAt=1702978365135"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      'The "Generate" button will generate a new barcode for the selected products.',
+      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
   },
-
   {
-    name: "Buttons for Generate & Download Barcode",
+    name: 'Sort By Category',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/downloadBarcode.png?updatedAt=1702978364929"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "When you click on the download button, it will download the generated barcode in Excel format.",
+      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
   },
-
   {
-    name: "View Button",
+    name: 'Sort By GST',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/barcodeView.png?updatedAt=1703134934128"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortByGst.png?updatedAt=1717242547125'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "When you click on the View Button, it will show you barcode for specific selected product.",
+      "If you click 'Sort by GST' and select a particular category, you can view listings for that specific product",
+  },
+  {
+    name: 'Clear All Filter',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      "The 'Clear all filters' button removes all applied filters, resetting the view to display all available data without any filtering criteria applied",
+  },
+  {
+    name: 'Search',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      'If you click the search box, you can search for any product or brand here',
+  },
+  {
+    name: 'CheckBox',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/checkBox.png?updatedAt=1717248300834'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: '',
+  },
+  {
+    name: 'Download',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/downloadBlue.png?updatedAt=1717395221560'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: '',
+  },
+  {
+    name: 'View Red',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/viewRed.png?updatedAt=1717395200137'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: '',
+  },
+  {
+    name: 'View Green',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/viewGreen.png?updatedAt=1717395177517'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: '',
+  },
+  {
+    name: 'View Blue',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/viewBlue.png?updatedAt=1717395158199'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: '',
   },
 ];
 
 function BarcodeGenerate() {
-  const description = `The Barcode Generation function is  designed to create barcodes for
-          products. This is accomplished by selecting the product, clicking on
-          the "Generate" button, which will yield a new barcode. To obtain the
-          barcode, click on "Download." If you wish to view the barcode, you can
-          do so by clicking on "View."`;
+  const description = `Barcode Generate`;
 
   const dispatch = useDispatch();
 
@@ -89,8 +144,8 @@ function BarcodeGenerate() {
 
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
     >
       <DrawerHeader />
       {/* <Header

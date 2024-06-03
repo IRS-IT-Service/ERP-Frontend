@@ -32,7 +32,7 @@ const infoDetail = [
 
 const OpenBox = () => {
 
-  const description = `In the Box Open section, you are required to scan the barcode of the product component. Afterward, you need to fill in data such as status and action.`;
+  const description = `Box Open`;
 
   const dispatch = useDispatch();
 

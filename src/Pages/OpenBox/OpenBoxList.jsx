@@ -1,64 +1,38 @@
-import React, { useEffect } from "react";
-import { Box, styled, Button, Dialog, CircularProgress } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useEffect } from 'react';
+import { Box, styled, Button, Dialog, CircularProgress } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import {
   useGetAllOpenedBoxQuery,
   useCreateBoxOpenMutation,
-} from "../../features/api/barcodeApiSlice";
-import { useState } from "react";
-import Checkbox from "@mui/material/Checkbox";
-import { toast } from "react-toastify";
-import Header from "../../components/Common/Header";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import { useDispatch, useSelector } from "react-redux";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
+} from '../../features/api/barcodeApiSlice';
+import { useState } from 'react';
+import Checkbox from '@mui/material/Checkbox';
+import { toast } from 'react-toastify';
+import Header from '../../components/Common/Header';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: "Barcode",
+    name: 'opened Boxes',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(7).png?updatedAt=1717234207113"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/openedBox.png?updatedAt=1717397740906'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click the Barcode  to filter trough",
-  },
-  {
-    name: "View Items",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "Here You Can see List of Items in Box",
-  },
-  {
-    name: "Close Box",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "Here you Can see all items in Closed Box",
+    instruction: '',
   },
 ];
 
 const OpenBoxList = () => {
-  const description =
-    "This is the OpenBox List, We Can See Lsit of Open Box for Individual Item";
+  const description = 'Opened Boxes List';
   /// rtk query
   const { data, isLoading, refetch } = useGetAllOpenedBoxQuery(null, {
     refetchOnMountOrArgChange: true,
@@ -76,22 +50,22 @@ const OpenBoxList = () => {
   const handleSubmit = async () => {
     try {
       if (selectedItem?.openItems?.length !== chechkedItems.length) {
-        toast.error("Cant process Please return All items from the box");
+        toast.error('Cant process Please return All items from the box');
         return;
       }
       const params = {
         sno: selectedItem.barcode,
         items: chechkedItems,
-        type: "close",
+        type: 'close',
       };
 
       const res = await createBoxOpenApi(params).unwrap();
-      toast.success("Box Closed SuccessFully");
+      toast.success('Box Closed SuccessFully');
       setCloseBoxOpen(false);
       setCheckedItems([]);
       refetch();
     } catch (e) {
-      console.log("Error at Box Open");
+      console.log('Error at Box Open');
       console.log(e);
     }
   };
@@ -99,52 +73,52 @@ const OpenBoxList = () => {
   /// columns
   const columns = [
     {
-      field: "Sno",
+      field: 'Sno',
       flex: 0.3,
-      headerName: "Sno",
+      headerName: 'Sno',
       minWidth: 70,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "SKU",
+      field: 'SKU',
       flex: 0.3,
-      headerName: "SKU",
+      headerName: 'SKU',
       width: 130,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "name",
+      field: 'name',
       flex: 0.3,
-      headerName: "Name",
+      headerName: 'Name',
       minWidth: 300,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "barcode",
+      field: 'barcode',
       flex: 0.3,
-      headerName: "Barcode",
+      headerName: 'Barcode',
       minWidth: 230,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "date",
+      field: 'date',
       flex: 0.3,
-      headerName: "Date",
+      headerName: 'Date',
       minWidth: 90,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "action",
+      field: 'action',
       flex: 0.3,
-      headerName: "View Items",
+      headerName: 'View Items',
       minWidth: 90,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         return (
           <Button
@@ -159,12 +133,12 @@ const OpenBoxList = () => {
       },
     },
     {
-      field: "action2",
+      field: 'action2',
       flex: 0.3,
-      headerName: "Close Box",
+      headerName: 'Close Box',
       minWidth: 90,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         return (
           <Button
@@ -195,37 +169,36 @@ const OpenBoxList = () => {
 
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
       {/* <Header Name={"Opened Boxes"}/> */}
       <Box>
-    
         <Box
           sx={{
-            width: "100%",
-            height: "83vh",
-            "& .super-app-theme--header": {
-              background: "#eee",
-              color: "black",
-              textAlign: "center",
+            width: '100%',
+            height: '83vh',
+            '& .super-app-theme--header': {
+              background: '#eee',
+              color: 'black',
+              textAlign: 'center',
             },
-            "& .vertical-lines .MuiDataGrid-cell": {
-              borderRight: "1px solid #e0e0e0",
+            '& .vertical-lines .MuiDataGrid-cell': {
+              borderRight: '1px solid #e0e0e0',
             },
-            "& .supercursor-app-theme--cell:hover": {
+            '& .supercursor-app-theme--cell:hover': {
               background:
-                "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-              color: "white",
-              cursor: "pointer",
+                'linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)',
+              color: 'white',
+              cursor: 'pointer',
             },
-            "& .MuiDataGrid-columnHeaderTitleContainer": {
-              background: "#eee",
+            '& .MuiDataGrid-columnHeaderTitleContainer': {
+              background: '#eee',
             },
           }}
         >
-          {" "}
+          {' '}
           <DataGrid
             rows={data?.data || []}
             columns={columns}
@@ -235,7 +208,7 @@ const OpenBoxList = () => {
         </Box>
       </Box>
       <Dialog
-        maxWidth="lg"
+        maxWidth='lg'
         open={openItems}
         onClose={() => {
           setOpenItems(false);
@@ -243,67 +216,67 @@ const OpenBoxList = () => {
         }}
       >
         {selectedItem ? (
-          <Box sx={{ padding: ".8rem" }}>
+          <Box sx={{ padding: '.8rem' }}>
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                margin: ".5rem",
-                alignItems: "start",
+                display: 'flex',
+                flexDirection: 'column',
+                margin: '.5rem',
+                alignItems: 'start',
               }}
             >
               <p
                 style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  backgroundColor: " #000",
+                  fontSize: '1rem',
+                  color: '#fff',
+                  backgroundColor: ' #000',
                   // paddingX: '1rem',
-                  padding: ".4rem",
-                  border: "2px solid #3385ff",
-                  borderRadius: ".4rem",
-                  boxShadow: "-3px 3px 4px 0px #404040",
-                  marginTop: ".5rem",
+                  padding: '.4rem',
+                  border: '2px solid #3385ff',
+                  borderRadius: '.4rem',
+                  boxShadow: '-3px 3px 4px 0px #404040',
+                  marginTop: '.5rem',
                 }}
               >
-                SKU: {selectedItem.SKU}{" "}
+                SKU: {selectedItem.SKU}{' '}
               </p>
               <p
                 style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  backgroundColor: " #000",
+                  fontSize: '1rem',
+                  color: '#fff',
+                  backgroundColor: ' #000',
                   // paddingX: '1rem',
-                  padding: ".4rem",
-                  border: "2px solid #3385ff",
-                  borderRadius: ".4rem",
-                  boxShadow: "-3px 3px 4px 0px #404040",
-                  marginTop: ".5rem",
+                  padding: '.4rem',
+                  border: '2px solid #3385ff',
+                  borderRadius: '.4rem',
+                  boxShadow: '-3px 3px 4px 0px #404040',
+                  marginTop: '.5rem',
                 }}
               >
-                Name: {selectedItem.name}{" "}
+                Name: {selectedItem.name}{' '}
               </p>
               <p
                 style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  backgroundColor: " #000",
+                  fontSize: '1rem',
+                  color: '#fff',
+                  backgroundColor: ' #000',
                   // paddingX: '1rem',
-                  padding: ".4rem",
-                  border: "2px solid #3385ff",
-                  borderRadius: ".4rem",
-                  boxShadow: "-3px 3px 4px 0px #404040",
-                  marginTop: ".5rem",
+                  padding: '.4rem',
+                  border: '2px solid #3385ff',
+                  borderRadius: '.4rem',
+                  boxShadow: '-3px 3px 4px 0px #404040',
+                  marginTop: '.5rem',
                 }}
               >
-                barcode: {selectedItem.barcode}{" "}
+                barcode: {selectedItem.barcode}{' '}
               </p>
             </div>
 
             <Box
               sx={{
-                marginY: "1rem",
-                textAlign: "center",
-                textTransform: "uppercase",
+                marginY: '1rem',
+                textAlign: 'center',
+                textTransform: 'uppercase',
               }}
             >
               <h3>Items Taken From Box</h3>
@@ -313,30 +286,30 @@ const OpenBoxList = () => {
                 <Box
                   key={index}
                   sx={{
-                    fontSize: ".666rem",
-                    color: "#000",
-                    backgroundColor: " #80bfff",
-                    paddingX: "1rem",
-                    paddingY: ".4rem",
-                    border: "2px solid black",
-                    borderRadius: ".4rem",
-                    boxShadow: "-3px 3px 4px 0px #404040",
-                    marginBottom: "1rem",
+                    fontSize: '.666rem',
+                    color: '#000',
+                    backgroundColor: ' #80bfff',
+                    paddingX: '1rem',
+                    paddingY: '.4rem',
+                    border: '2px solid black',
+                    borderRadius: '.4rem',
+                    boxShadow: '-3px 3px 4px 0px #404040',
+                    marginBottom: '1rem',
                   }}
                 >
-                  <p style={{ fontSize: "1rem", fontWeight: "600" }}>{item}</p>
+                  <p style={{ fontSize: '1rem', fontWeight: '600' }}>{item}</p>
                 </Box>
               );
             })}
           </Box>
         ) : (
-          ""
+          ''
         )}
-        <Box sx={{ padding: "1rem" }}>
+        <Box sx={{ padding: '1rem' }}>
           <Button
-            sx={{ marginX: ".5rem", float: "right" }}
-            variant="contained"
-            color="error"
+            sx={{ marginX: '.5rem', float: 'right' }}
+            variant='contained'
+            color='error'
             onClick={() => {
               setOpenItems(false);
               setSeletedItem(null);
@@ -348,7 +321,7 @@ const OpenBoxList = () => {
       </Dialog>
       {/* Close box dialog */}
       <Dialog
-        maxWidth="lg"
+        maxWidth='lg'
         open={closeBoxOpen}
         onClose={() => {
           setCloseBoxOpen(false);
@@ -357,69 +330,69 @@ const OpenBoxList = () => {
         }}
       >
         {selectedItem ? (
-          <Box sx={{ padding: ".9rem" }}>
+          <Box sx={{ padding: '.9rem' }}>
             <h3
               style={{
-                width: "30rem",
-                backgroundColor: "#80bfff",
-                padding: "1rem",
+                width: '30rem',
+                backgroundColor: '#80bfff',
+                padding: '1rem',
               }}
             >
               Closing box
             </h3>
             <div
               style={{
-                display: "flex",
-                alignItems: "start",
-                flexDirection: "column",
-                marginTop: "3rem",
-                marginBottom: "3rem",
+                display: 'flex',
+                alignItems: 'start',
+                flexDirection: 'column',
+                marginTop: '3rem',
+                marginBottom: '3rem',
               }}
             >
               <p
                 style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  backgroundColor: " #000",
+                  fontSize: '1rem',
+                  color: '#fff',
+                  backgroundColor: ' #000',
                   // paddingX: '1rem',
-                  padding: ".4rem",
-                  border: "2px solid #3385ff",
-                  borderRadius: ".4rem",
-                  boxShadow: "-3px 3px 4px 0px #404040",
-                  marginTop: ".5rem",
+                  padding: '.4rem',
+                  border: '2px solid #3385ff',
+                  borderRadius: '.4rem',
+                  boxShadow: '-3px 3px 4px 0px #404040',
+                  marginTop: '.5rem',
                 }}
               >
-                SKU: {selectedItem.SKU}{" "}
+                SKU: {selectedItem.SKU}{' '}
               </p>
               <p
                 style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  backgroundColor: " #000",
+                  fontSize: '1rem',
+                  color: '#fff',
+                  backgroundColor: ' #000',
                   // paddingX: '1rem',
-                  padding: ".4rem",
-                  border: "2px solid #3385ff",
-                  borderRadius: ".4rem",
-                  boxShadow: "-3px 3px 4px 0px #404040",
-                  marginTop: ".5rem",
+                  padding: '.4rem',
+                  border: '2px solid #3385ff',
+                  borderRadius: '.4rem',
+                  boxShadow: '-3px 3px 4px 0px #404040',
+                  marginTop: '.5rem',
                 }}
               >
-                Name: {selectedItem.name}{" "}
+                Name: {selectedItem.name}{' '}
               </p>
               <p
                 style={{
-                  fontSize: "1rem",
-                  color: "#fff",
-                  backgroundColor: " #000",
+                  fontSize: '1rem',
+                  color: '#fff',
+                  backgroundColor: ' #000',
                   // paddingX: '1rem',
-                  padding: ".4rem",
-                  border: "2px solid #3385ff",
-                  borderRadius: ".4rem",
-                  boxShadow: "-3px 3px 4px 0px #404040",
-                  marginTop: ".5rem",
+                  padding: '.4rem',
+                  border: '2px solid #3385ff',
+                  borderRadius: '.4rem',
+                  boxShadow: '-3px 3px 4px 0px #404040',
+                  marginTop: '.5rem',
                 }}
               >
-                barcode: {selectedItem.barcode}{" "}
+                barcode: {selectedItem.barcode}{' '}
               </p>
             </div>
             <p>
@@ -432,20 +405,20 @@ const OpenBoxList = () => {
                 <Box
                   key={index}
                   sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    fontSize: ".666rem",
-                    color: "#000",
-                    backgroundColor: " #80bfff",
-                    paddingX: "1rem",
-                    border: "2px solid black",
-                    borderRadius: ".4rem",
-                    boxShadow: "-3px 3px 4px 0px #404040",
-                    marginTop: "1rem",
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    fontSize: '.666rem',
+                    color: '#000',
+                    backgroundColor: ' #80bfff',
+                    paddingX: '1rem',
+                    border: '2px solid black',
+                    borderRadius: '.4rem',
+                    boxShadow: '-3px 3px 4px 0px #404040',
+                    marginTop: '1rem',
                   }}
                 >
-                  <p style={{ fontSize: "1rem", fontWeight: "600", flex: "1" }}>
+                  <p style={{ fontSize: '1rem', fontWeight: '600', flex: '1' }}>
                     {item}
                   </p>
                   <Checkbox
@@ -469,16 +442,16 @@ const OpenBoxList = () => {
             })}
           </Box>
         ) : (
-          ""
+          ''
         )}
-        <Box sx={{ display: "flex", justifyContent: "end", padding: ".7rem" }}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            {boxOpenLoading ? <CircularProgress /> : "Submit"}
+        <Box sx={{ display: 'flex', justifyContent: 'end', padding: '.7rem' }}>
+          <Button variant='contained' color='primary' onClick={handleSubmit}>
+            {boxOpenLoading ? <CircularProgress /> : 'Submit'}
           </Button>
           <Button
-            color="error"
-            sx={{ marginX: ".5rem" }}
-            variant="contained"
+            color='error'
+            sx={{ marginX: '.5rem' }}
+            variant='contained'
             onClick={() => {
               setCloseBoxOpen(false);
               setSeletedItem(null);
@@ -488,7 +461,6 @@ const OpenBoxList = () => {
             Close
           </Button>
         </Box>
-        
       </Dialog>
       <InfoDialogBox
         infoDetails={infoDetail}

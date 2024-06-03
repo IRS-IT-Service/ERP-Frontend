@@ -1,78 +1,81 @@
-import { React, useEffect, useState } from "react";
-import { Box, styled } from "@mui/material";
-import DiscountQueryGrid from "./Components/DiscountQueryGrid";
-import DiscountInfoDialogue from "./Components/DiscountInfoDialog";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { React, useEffect, useState } from 'react';
+import { Box, styled } from '@mui/material';
+import DiscountQueryGrid from './Components/DiscountQueryGrid';
+import DiscountInfoDialogue from './Components/DiscountInfoDialog';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
-import Header from "../../components/Common/Header";
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import Header from '../../components/Common/Header';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
 const infoDetail = [
   {
-    name: "Create Query",
+    name: 'Sort By Brand',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
+    instruction:
+      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
   },
-
   {
-    name: "Discount Card",
+    name: 'Sort By Category',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
+    instruction:
+      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
   },
-
   {
-    name: "Shipment Detail Tracking",
+    name: 'Sort By GST',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortByGst.png?updatedAt=1717242547125'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+    instruction:
+      "If you click 'Sort by GST' and select a particular category, you can view listings for that specific product",
+  },
+  {
+    name: 'Clear All Filter',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      "The 'Clear all filters' button removes all applied filters, resetting the view to display all available data without any filtering criteria applied",
+  },
+  {
+    name: 'Search',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582'
+        height={'100%'}
+        width={'100%'}
+      />
+    ),
+    instruction:
+      'If you click the search box, you can search for any product or brand here',
   },
 ];
 
 const DiscountQuery = () => {
-  const description = `The "Create Sales Query" functionality is utilized to compute
-            discounts when a client requests a discount for multiple products.
-            Additionally, you can save these discounts for future reference.
-            Please note that you can only select products with recorded sales or
-            MRP prices.`;
+  const description = `Create Sales Query`;
 
   const dispatch = useDispatch();
 
@@ -86,8 +89,8 @@ const DiscountQuery = () => {
   }, []);
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
 
