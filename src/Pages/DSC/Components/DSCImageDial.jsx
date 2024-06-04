@@ -33,7 +33,7 @@ const DSCImageDial = ({ open, close, refetch, data }) => {
       });
 
       formData.append("id", data?.id);
-      await updateRepairImage(formData);
+      await updateRepairImage(formData).unwrap();
       toast.success("Images uploaded successfully.");
       refetch();
       close();
@@ -147,6 +147,7 @@ const DSCImageDial = ({ open, close, refetch, data }) => {
               style={{ display: "none" }}
               onChange={handleFileChange}
               multiple
+              accept=".jpeg, .png, .jpg"
             />
           </label>
         )}
