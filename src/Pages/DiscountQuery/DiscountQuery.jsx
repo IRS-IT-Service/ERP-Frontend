@@ -72,6 +72,40 @@ const infoDetail = [
     instruction:
       'If you click the search box, you can search for any product or brand here',
   },
+  {
+    name: 'CheckBox',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/checkBox.png?updatedAt=1717248300834'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: ``,
+  },
+  {
+    name: 'Create Query',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/btnCreate.png?updatedAt=1717396267381'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: ``,
+  },
 ];
 
 const DiscountQuery = () => {
