@@ -1,55 +1,73 @@
-import React from "react";
-import { Box, styled } from "@mui/material";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import DeleteIcon from "@mui/icons-material/Delete";
+import React from 'react';
+import { Box, styled } from '@mui/material';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   useGetCommonDroneRepairDataQuery,
   useAddCommonDroneRepairDataMutation,
   useDeleteCommonRepairDataMutation,
-} from "../../features/api/dscApiSlice";
-import Loading from "../../components/Common/Loading";
-import { useState } from "react";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
+} from '../../features/api/dscApiSlice';
+import Loading from '../../components/Common/Loading';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-
 const infoDetail = [
   {
-    name: "Add Issue",
+    name: 'Add Hardware Issue',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addHardwareIssue.png?updatedAt=1717400480736'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you Put Any Issue in 'Add Issue' Field and Click Plus Button Value set for particular Input Category",
+    instruction: 'Here You Can Add Hardware Issue for Products',
   },
   {
-    name: "Delete",
+    name: 'Add Software Issue',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addSoftwareIssue.png?updatedAt=1717400455705'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If Click Delete Icon You Can Delete Specific Data",
+    instruction: 'Here You Can Add Software Issue for Products',
+  },
+  {
+    name: 'Add Part',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addPartsReceiveWithDrone.png?updatedAt=1717400429980'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: 'Here You Can Add Part for Products',
+  },
+  {
+    name: 'Delete',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/iconDelete.png?updatedAt=1717400402216'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: 'If Click Delete Icon You Can Delete Specific Data',
   },
 ];
 const AddCommonRepair = () => {
-
   const description =
-    "This is the Add Common Repair Issues, Here You Can Add Repair Issues";
+    'This is the Add Common Repair Issues, Here You Can Add Repair Issues';
   /// global state
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
@@ -57,9 +75,9 @@ const AddCommonRepair = () => {
   const [hardware, setHardware] = useState([]);
   const [software, setSoftware] = useState([]);
   const [part, setPart] = useState([]);
-  const [hardwareInput, setHardwareInput] = useState("");
-  const [softwareInput, setSoftwareInput] = useState("");
-  const [partInput, setPartInput] = useState("");
+  const [hardwareInput, setHardwareInput] = useState('');
+  const [softwareInput, setSoftwareInput] = useState('');
+  const [partInput, setPartInput] = useState('');
 
   /// rtk query
   const { data, isLoading, refetch, isFetching } =
@@ -81,8 +99,8 @@ const AddCommonRepair = () => {
   /// handler
 
   const handleChange = (value, type) => {
-    const regex = new RegExp(value, "i");
-    if (type === "hardware") {
+    const regex = new RegExp(value, 'i');
+    if (type === 'hardware') {
       setHardwareInput(value);
 
       const sortedArray = [...hardware].sort((a, b) => {
@@ -100,7 +118,7 @@ const AddCommonRepair = () => {
       // Update the state with the sorted array
       setHardware(sortedArray);
     }
-    if (type === "software") {
+    if (type === 'software') {
       setSoftwareInput(value);
 
       const sortedArray = [...software].sort((a, b) => {
@@ -118,7 +136,7 @@ const AddCommonRepair = () => {
       // Update the state with the sorted array
       setSoftware(sortedArray);
     }
-    if (type === "part") {
+    if (type === 'part') {
       setPartInput(value);
 
       const sortedArray = [...part].sort((a, b) => {
@@ -141,30 +159,30 @@ const AddCommonRepair = () => {
   const handleSubmit = async (name, type) => {
     try {
       if (!name) {
-        toast.error("Please enter Issue First");
+        toast.error('Please enter Issue First');
         return;
       }
       const params = {
-        name: name.split(",").map((item) => item.trim()),
+        name: name.split(',').map((item) => item.trim()),
         type,
       };
 
       const res = await addCommonApi(params).unwrap();
-      toast.success("Success");
-      setHardwareInput("");
-      setSoftwareInput("");
-      setPartInput("");
+      toast.success('Success');
+      setHardwareInput('');
+      setSoftwareInput('');
+      setPartInput('');
       refetch();
     } catch (err) {
       console.log(err);
-      console.log("Error at Add Common Repair");
+      console.log('Error at Add Common Repair');
     }
   };
 
   const handleDelete = async (id) => {
     try {
       const res = await deleteCommonApi(id).unwrap();
-      toast.success("Success Fully Deleted");
+      toast.success('Success Fully Deleted');
       refetch();
     } catch (err) {
       console.log(err);
@@ -181,11 +199,11 @@ const AddCommonRepair = () => {
   useEffect(() => {
     dispatch(setHeader(`Add Common Repair Issues`));
   }, []);
-  
+
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
     >
       <DrawerHeader />
       <Loading
@@ -198,115 +216,115 @@ const AddCommonRepair = () => {
 
       <Box
         sx={{
-          width: "100%",
-          height: "84vh",
-          marginTop: "10px",
+          width: '100%',
+          height: '84vh',
+          marginTop: '10px',
         }}
       >
         <Box
           sx={{
-            width: "99%",
-            display: "flex",
-            justifyContent: "space-between",
-            margin: "8px 2px 0 4px",
-            gap: "30px",
+            width: '99%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            margin: '8px 2px 0 4px',
+            gap: '30px',
           }}
         >
           <Box
             sx={{
-              width: "33%",
-              height: "82vh",
-              m: "5px",
-              padding: "4px",
-              border: "2px solid",
+              width: '33%',
+              height: '82vh',
+              m: '5px',
+              padding: '4px',
+              border: '2px solid',
               borderColor: color,
-              borderRadius: "8px",
-              boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
-              background: "#E7F1FD",
+              borderRadius: '8px',
+              boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
+              background: '#E7F1FD',
               scrollbarColor: color,
             }}
           >
             <div
               style={{
-                padding: "10px",
+                padding: '10px',
                 background: color,
-                border: "2px solid #fff",
-                borderRadius: "7px",
-                boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                border: '2px solid #fff',
+                borderRadius: '7px',
+                boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
               }}
             >
               <div
                 style={{
-                  padding: "2px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  background: "white",
-                  border: "2px solid #fff",
-                  borderRadius: "7px",
-                  boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                  padding: '2px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  background: 'white',
+                  border: '2px solid #fff',
+                  borderRadius: '7px',
+                  boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                 }}
               >
                 <input
-                  type="text"
-                  placeholder="Add Hardware Issue"
+                  type='text'
+                  placeholder='Add Hardware Issue'
                   value={hardwareInput}
                   onChange={(e) => {
-                    handleChange(e.target.value, "hardware");
+                    handleChange(e.target.value, 'hardware');
                   }}
-                  className="custom-input"
+                  className='custom-input'
                   style={{
-                    width: "85%",
-                    border: "none",
-                    outline: "none",
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    "::placeholder": {
-                      fontSize: "20px",
-                      fontWeight: "bolder",
+                    width: '85%',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    '::placeholder': {
+                      fontSize: '20px',
+                      fontWeight: 'bolder',
                     },
                   }}
-                />{" "}
+                />{' '}
                 <div
-                  onClick={() => handleSubmit(hardwareInput, "hardware")}
+                  onClick={() => handleSubmit(hardwareInput, 'hardware')}
                   style={{
-                    color: "white",
+                    color: 'white',
                     background: color,
-                    marginRight: "10px",
+                    marginRight: '10px',
                     // padding: "2px",
-                    cursor: "pointer",
-                    border: "1px solid #fff",
-                    borderRadius: "4px",
-                    boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                    cursor: 'pointer',
+                    border: '1px solid #fff',
+                    borderRadius: '4px',
+                    boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                   }}
                 >
-                  <AddOutlinedIcon sx={{}} />{" "}
+                  <AddOutlinedIcon sx={{}} />{' '}
                 </div>
               </div>
             </div>
-            <div style={{ overflowY: "scroll", height: "72vh" }}>
+            <div style={{ overflowY: 'scroll', height: '72vh' }}>
               {hardware.map((item, index) => (
                 <div
                   key={index}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "8px",
-                    border: "1px solid",
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '8px',
+                    border: '1px solid',
                     borderColor: color,
-                    background: "#fff",
-                    margin: "20px 10px",
-                    borderRadius: "7px",
-                    lineHeight: "30px",
-                    boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                    background: '#fff',
+                    margin: '20px 10px',
+                    borderRadius: '7px',
+                    lineHeight: '30px',
+                    boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                   }}
                 >
                   <span
                     style={{
                       color: color,
-                      fontFamily: "inherit",
-                      fontWeight: "bolder",
-                      fontSize: "22px",
-                      marginLeft: "6px",
+                      fontFamily: 'inherit',
+                      fontWeight: 'bolder',
+                      fontSize: '22px',
+                      marginLeft: '6px',
                     }}
                   >
                     {item.name}
@@ -317,14 +335,14 @@ const AddCommonRepair = () => {
                     }}
                     sx={{
                       background: color,
-                      color: "white",
-                      padding: "2px",
-                      marginRight: "4px",
-                      width: "7%",
-                      border: "1px solid",
-                      borderRadius: "4px",
-                      boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
-                      cursor: "pointer",
+                      color: 'white',
+                      padding: '2px',
+                      marginRight: '4px',
+                      width: '7%',
+                      border: '1px solid',
+                      borderRadius: '4px',
+                      boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
+                      cursor: 'pointer',
                     }}
                   />
                 </div>
@@ -334,88 +352,88 @@ const AddCommonRepair = () => {
 
           <Box
             sx={{
-              width: "33%",
-              height: "82vh",
-              m: "5px",
-              padding: "4px",
-              border: "2px solid ",
+              width: '33%',
+              height: '82vh',
+              m: '5px',
+              padding: '4px',
+              border: '2px solid ',
               borderColor: color,
-              borderRadius: "8px",
-              boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
-              background: "#E7F1FD",
+              borderRadius: '8px',
+              boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
+              background: '#E7F1FD',
             }}
           >
             <div
               style={{
-                padding: "10px",
+                padding: '10px',
                 background: color,
-                border: "2px solid #fff",
-                borderRadius: "7px",
-                boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                border: '2px solid #fff',
+                borderRadius: '7px',
+                boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
               }}
             >
               <div
                 style={{
-                  padding: "2px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  background: "white",
-                  border: "2px solid #fff",
-                  borderRadius: "7px",
-                  boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                  padding: '2px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  background: 'white',
+                  border: '2px solid #fff',
+                  borderRadius: '7px',
+                  boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                 }}
               >
                 <input
-                  type="text"
-                  className="custom-input"
+                  type='text'
+                  className='custom-input'
                   value={softwareInput}
                   onChange={(e) => {
-                    handleChange(e.target.value, "software");
+                    handleChange(e.target.value, 'software');
                   }}
-                  placeholder="Add Software Issue"
-                  style={{ width: "85%", border: "none", outline: "none" }}
-                />{" "}
+                  placeholder='Add Software Issue'
+                  style={{ width: '85%', border: 'none', outline: 'none' }}
+                />{' '}
                 <div
-                  onClick={() => handleSubmit(softwareInput, "software")}
+                  onClick={() => handleSubmit(softwareInput, 'software')}
                   style={{
-                    color: "white",
+                    color: 'white',
                     background: color,
-                    marginRight: "10px",
+                    marginRight: '10px',
                     // padding: "2px",
-                    cursor: "pointer",
-                    border: "1px solid #fff",
-                    borderRadius: "4px",
-                    boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                    cursor: 'pointer',
+                    border: '1px solid #fff',
+                    borderRadius: '4px',
+                    boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                   }}
                 >
-                  <AddOutlinedIcon sx={{}} />{" "}
-                </div>{" "}
+                  <AddOutlinedIcon sx={{}} />{' '}
+                </div>{' '}
               </div>
             </div>
-            <div style={{ overflowY: "scroll", height: "72vh" }}>
+            <div style={{ overflowY: 'scroll', height: '72vh' }}>
               {software.map((item, index) => (
                 <div
                   key={index}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "8px",
-                    border: "1px solid ",
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '8px',
+                    border: '1px solid ',
                     borderColor: color,
-                    background: "#fff",
-                    margin: "20px 10px",
-                    borderRadius: "7px",
-                    lineHeight: "30px",
-                    boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                    background: '#fff',
+                    margin: '20px 10px',
+                    borderRadius: '7px',
+                    lineHeight: '30px',
+                    boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                   }}
                 >
                   <span
                     style={{
                       color: color,
-                      fontFamily: "inherit",
-                      fontWeight: "bolder",
-                      fontSize: "22px",
-                      marginLeft: "6px",
+                      fontFamily: 'inherit',
+                      fontWeight: 'bolder',
+                      fontSize: '22px',
+                      marginLeft: '6px',
                     }}
                   >
                     {item.name}
@@ -426,14 +444,14 @@ const AddCommonRepair = () => {
                     }}
                     sx={{
                       background: color,
-                      color: "white",
-                      padding: "2px",
-                      marginRight: "4px",
-                      width: "7%",
-                      border: "1px solid",
-                      borderRadius: "4px",
-                      boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
-                      cursor: "pointer",
+                      color: 'white',
+                      padding: '2px',
+                      marginRight: '4px',
+                      width: '7%',
+                      border: '1px solid',
+                      borderRadius: '4px',
+                      boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
+                      cursor: 'pointer',
                     }}
                   />
                 </div>
@@ -442,88 +460,88 @@ const AddCommonRepair = () => {
           </Box>
           <Box
             sx={{
-              width: "33%",
-              height: "82vh",
-              m: "5px",
-              padding: "4px",
-              border: "2px solid ",
+              width: '33%',
+              height: '82vh',
+              m: '5px',
+              padding: '4px',
+              border: '2px solid ',
               borderColor: color,
-              borderRadius: "8px",
-              boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
-              background: "#E7F1FD",
+              borderRadius: '8px',
+              boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
+              background: '#E7F1FD',
             }}
           >
             <div
               style={{
-                padding: "10px",
+                padding: '10px',
                 background: color,
-                border: "2px solid #fff",
-                borderRadius: "7px",
-                boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                border: '2px solid #fff',
+                borderRadius: '7px',
+                boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
               }}
             >
               <div
                 style={{
-                  padding: "2px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  background: "white",
-                  border: "2px solid #fff",
-                  borderRadius: "7px",
-                  boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                  padding: '2px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  background: 'white',
+                  border: '2px solid #fff',
+                  borderRadius: '7px',
+                  boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                 }}
               >
                 <input
-                  type="text"
-                  className="custom-input"
+                  type='text'
+                  className='custom-input'
                   value={partInput}
                   onChange={(e) => {
-                    handleChange(e.target.value, "part");
+                    handleChange(e.target.value, 'part');
                   }}
-                  placeholder="Add Parts Received with drone"
-                  style={{ width: "85%", border: "none", outline: "none" }}
-                />{" "}
+                  placeholder='Add Parts Received with drone'
+                  style={{ width: '85%', border: 'none', outline: 'none' }}
+                />{' '}
                 <div
-                  onClick={() => handleSubmit(partInput, "part")}
+                  onClick={() => handleSubmit(partInput, 'part')}
                   style={{
-                    color: "white",
+                    color: 'white',
                     background: color,
-                    marginRight: "10px",
+                    marginRight: '10px',
                     // padding: "2px",
-                    cursor: "pointer",
-                    border: "1px solid #fff",
-                    borderRadius: "4px",
-                    boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                    cursor: 'pointer',
+                    border: '1px solid #fff',
+                    borderRadius: '4px',
+                    boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                   }}
                 >
-                  <AddOutlinedIcon sx={{}} />{" "}
-                </div>{" "}
+                  <AddOutlinedIcon sx={{}} />{' '}
+                </div>{' '}
               </div>
             </div>
-            <div style={{ overflowY: "scroll", height: "72vh" }}>
+            <div style={{ overflowY: 'scroll', height: '72vh' }}>
               {part?.map((item, index) => (
                 <div
                   key={index}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "8px",
-                    border: "1px solid ",
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '8px',
+                    border: '1px solid ',
                     borderColor: color,
-                    background: "#fff",
-                    margin: "20px 10px",
-                    borderRadius: "7px",
-                    lineHeight: "30px",
-                    boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
+                    background: '#fff',
+                    margin: '20px 10px',
+                    borderRadius: '7px',
+                    lineHeight: '30px',
+                    boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
                   }}
                 >
                   <span
                     style={{
                       color: color,
-                      fontFamily: "inherit",
-                      fontWeight: "bolder",
-                      fontSize: "22px",
-                      marginLeft: "6px",
+                      fontFamily: 'inherit',
+                      fontWeight: 'bolder',
+                      fontSize: '22px',
+                      marginLeft: '6px',
                     }}
                   >
                     {item.name}
@@ -534,14 +552,14 @@ const AddCommonRepair = () => {
                     }}
                     sx={{
                       background: color,
-                      color: "white",
-                      padding: "2px",
-                      marginRight: "4px",
-                      width: "7%",
-                      border: "1px solid",
-                      borderRadius: "4px",
-                      boxShadow: "-4px 4px 4px 0 rgba(0, 0, 0, 0.4)",
-                      cursor: "pointer",
+                      color: 'white',
+                      padding: '2px',
+                      marginRight: '4px',
+                      width: '7%',
+                      border: '1px solid',
+                      borderRadius: '4px',
+                      boxShadow: '-4px 4px 4px 0 rgba(0, 0, 0, 0.4)',
+                      cursor: 'pointer',
                     }}
                   />
                 </div>
@@ -550,7 +568,7 @@ const AddCommonRepair = () => {
           </Box>
         </Box>
       </Box>
-      
+
       <InfoDialogBox
         infoDetails={infoDetail}
         description={description}

@@ -13,89 +13,113 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: 'Sort By Brand',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
       "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
   },
   {
-    name: "Sort By Category",
+    name: 'Sort By Category',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
       "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
   },
   {
-    name: "Search",
+    name: 'Sort By GST',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortByGst.png?updatedAt=1717242547125'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If you click the search box, you can search for any product or brand here",
+      "If you click 'Sort by GST' and select a particular category, you can view listings for that specific product",
   },
   {
-    name: "Check",
+    name: 'Clear All Filter',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/right_productStatus.png?updatedAt=1703142361021"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If the checkbox is check like this , It  indicates that there is a value in this particular list",
+      "The 'Clear all filters' button removes all applied filters, resetting the view to display all available data without any filtering criteria applied",
   },
   {
-    name: "Uncheck",
+    name: 'Search',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/cross_productStatus.png?updatedAt=1703142361005"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If the checkbox is unchecked like this, it indicates that there is no value in this particular list",
+      'If you click the search box, you can search for any product or brand here',
   },
   {
-    name: "Download With Valuer",
+    name: 'Check',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/value_productStatus.png?updatedAt=1703142731023"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/right_productStatus.png?updatedAt=1703142361021'
+        height={'40%'}
+        width={'40%'}
       />
     ),
     instruction:
-      "If you have selected a particular list and want to download the values in Excel format, you can click this button",
+      'If the checkbox is check like this , It  indicates that there is a value in this particular list',
   },
   {
-    name: "Download With True/False",
+    name: 'Uncheck',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/True-false_ProductStatus.png?updatedAt=1703142731003"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/cross_productStatus.png?updatedAt=1703142361005'
+        height={'40%'}
+        width={'40%'}
       />
     ),
     instruction:
-      "If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button",
+      'If the checkbox is unchecked like this, it indicates that there is no value in this particular list',
   },
+  // {
+  //   name: 'Download With Valuer',
+  //   screenshot: (
+  //     <img
+  //       src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/value_productStatus.png?updatedAt=1703142731023'
+  //       height={'100%'}
+  //       width={'100%'}
+  //     />
+  //   ),
+  //   instruction:
+  //     'If you have selected a particular list and want to download the values in Excel format, you can click this button',
+  // },
+  // {
+  //   name: 'Download With True/False',
+  //   screenshot: (
+  //     <img
+  //       src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/True-false_ProductStatus.png?updatedAt=1703142731003'
+  //       height={'100%'}
+  //       width={'100%'}
+  //     />
+  //   ),
+  //   instruction:
+  //     'If you have selected a particular list and want to download information about which items have values or are empty in Excel format, you can click this button',
+  // },
 ];
 const CompetitorComparsion = () => {
   // infodialog state

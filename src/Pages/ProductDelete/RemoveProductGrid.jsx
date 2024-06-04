@@ -1,12 +1,12 @@
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useState } from 'react';
 import {
   DataGrid,
   useGridApiRef,
   GridToolbarContainer,
   GridPagination,
-} from "@mui/x-data-grid";
-import FilterBar from "../../components/Common/FilterBar";
-import ReplayIcon from "@mui/icons-material/Replay";
+} from '@mui/x-data-grid';
+import FilterBar from '../../components/Common/FilterBar';
+import ReplayIcon from '@mui/icons-material/Replay';
 import {
   Grid,
   Box,
@@ -18,87 +18,100 @@ import {
   DialogContent,
   TextField,
   CircularProgress,
-} from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { setAllProducts } from "../../features/slice/productSlice";
+} from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAllProducts } from '../../features/slice/productSlice';
 import {
   useGetAllProductQuery,
   useSendOtpForDeleteProductMutation,
-} from "../../features/api/productApiSlice";
-import Loading from "../../components/Common/Loading";
-import CachedIcon from "@mui/icons-material/Cached";
-import Header from "../../components/Common/Header";
-import generateUniqueId from "generate-unique-id";
-import { Delete, Spa } from "@mui/icons-material";
-import { toast } from "react-toastify";
-import { useDeleteProductMutation } from "../../features/api/productApiSlice";
-import { useSocket } from "../../CustomProvider/useWebSocket";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
-const DrawerHeader = styled("div")(({ theme }) => ({
+} from '../../features/api/productApiSlice';
+import Loading from '../../components/Common/Loading';
+import CachedIcon from '@mui/icons-material/Cached';
+import Header from '../../components/Common/Header';
+import generateUniqueId from 'generate-unique-id';
+import { Delete, Spa } from '@mui/icons-material';
+import { toast } from 'react-toastify';
+import { useDeleteProductMutation } from '../../features/api/productApiSlice';
+import { useSocket } from '../../CustomProvider/useWebSocket';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: 'Sort By Brand',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
       "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
   },
   {
-    name: "Sort By Category",
+    name: 'Sort By Category',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
       "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
   },
+
   {
-    name: "Search-Product",
+    name: 'Clear All Filter',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If you click the search product, you can search for any product or brand here",
+      "The 'Clear all filters' button removes all applied filters, resetting the view to display all available data without any filtering criteria applied",
   },
   {
-    name: "Search-SKU",
+    name: 'Search-Product',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If you click search SKU, you can search for any product or brand by SKU number here ",
+      'If you click the search product, you can search for any product or brand here',
   },
   {
-    name: "Remove",
+    name: 'Search-SKU',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_ProductRemoval.png?updatedAt=1703143893564"
-        height={"40%"}
-        width={"40%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If you click this button you can remove that particular product",
+      'If you click search SKU, you can search for any product or brand by SKU number here ',
+  },
+  {
+    name: 'Remove',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/delete_ProductRemoval.png?updatedAt=1703143893564'
+        height={'40%'}
+        width={'40%'}
+      />
+    ),
+    instruction:
+      'If you click this button you can remove that particular product',
   },
 ];
 
@@ -107,8 +120,8 @@ function CustomFooter(props) {
   const { status } = props;
   return (
     <GridToolbarContainer>
-      <Box display="flex" justifyContent="space-between" width="100%">
-        <Button size="small" onClick={() => status()}>
+      <Box display='flex' justifyContent='space-between' width='100%'>
+        <Button size='small' onClick={() => status()}>
           <CachedIcon />
         </Button>
         <GridPagination />
@@ -120,7 +133,7 @@ function CustomFooter(props) {
 const RemoveProductGrid = () => {
   // infodialog state
   const description =
-    "This is Product Removal you can delete  here any product ";
+    'This is Product Removal you can delete  here any product ';
 
   /// initialization
   const apiRef = useGridApiRef();
@@ -145,7 +158,7 @@ const RemoveProductGrid = () => {
     isLoading,
     isFetching,
     refetch,
-  } = useGetAllProductQuery({ searchTerm: searchTerm, type: "restock" });
+  } = useGetAllProductQuery({ searchTerm: searchTerm, type: 'restock' });
 
   const [deleteApi, { isLoading: deleteLoading }] = useDeleteProductMutation();
   const [sendOtpForDelete, { isLoading: otoLoading }] =
@@ -155,7 +168,7 @@ const RemoveProductGrid = () => {
 
   /// useEffect
   useEffect(() => {
-    if (allProductData?.status === "success") {
+    if (allProductData?.status === 'success') {
       const data = allProductData?.data.map((item, index) => {
         return {
           id: index + 1,
@@ -193,7 +206,7 @@ const RemoveProductGrid = () => {
       const data = { user: name, name: selectedRow.Name, sku: selectedRow.SKU };
       const result = await sendOtpForDelete(data).unwrap();
       setCaptchaInput();
-      toast.success("Otp sent successfully to admin");
+      toast.success('Otp sent successfully to admin');
     } catch (error) {}
   };
 
@@ -204,17 +217,17 @@ const RemoveProductGrid = () => {
       return (
         <Box
           sx={{
-            paddingTop: "7px",
-            paddingBottom: "9px",
+            paddingTop: '7px',
+            paddingBottom: '9px',
             // margin: "5px",
-            letterSpacing: "6px",
-            width: "200px",
-            height: "40px",
-            backgroundColor: "grey",
-            borderRadius: "5px",
-            textAlign: "center",
-            marginBottom: "10px",
-            display: "inline-block",
+            letterSpacing: '6px',
+            width: '200px',
+            height: '40px',
+            backgroundColor: 'grey',
+            borderRadius: '5px',
+            textAlign: 'center',
+            marginBottom: '10px',
+            display: 'inline-block',
           }}
         ></Box>
       );
@@ -223,20 +236,20 @@ const RemoveProductGrid = () => {
     return (
       <Box
         sx={{
-          paddingTop: "7px",
-          paddingBottom: "9px",
+          paddingTop: '7px',
+          paddingBottom: '9px',
           // margin: "5px",
-          letterSpacing: "6px",
-          width: "200px",
-          height: "40px",
-          backgroundColor: "grey",
-          borderRadius: "5px",
-          textAlign: "center",
-          marginBottom: "10px",
-          display: "inline-block",
+          letterSpacing: '6px',
+          width: '200px',
+          height: '40px',
+          backgroundColor: 'grey',
+          borderRadius: '5px',
+          textAlign: 'center',
+          marginBottom: '10px',
+          display: 'inline-block',
         }}
       >
-        {captcha.split("").map((item, index) => {
+        {captcha.split('').map((item, index) => {
           const min = 1;
           const max = 25;
 
@@ -248,8 +261,8 @@ const RemoveProductGrid = () => {
             <Typography
               key={index}
               sx={{
-                display: "inline-block",
-                margin: "5px",
+                display: 'inline-block',
+                margin: '5px',
                 transform: transformValue,
               }}
             >
@@ -279,132 +292,132 @@ const RemoveProductGrid = () => {
           message: `${userInfo.name} Deleted The Product With SKU  ${selectedRow.SKU}`,
           time: new Date(),
         };
-        socket.emit("liveStatusServer", liveStatusData);
+        socket.emit('liveStatusServer', liveStatusData);
         toast.success(res.message);
-        setCaptchaInput("");
+        setCaptchaInput('');
         setSelectedRow(null);
         setOpenCaptcha(false);
         refetch();
       }
     } catch (e) {
-      console.log("Error at Product Removal section");
+      console.log('Error at Product Removal section');
       console.log(e);
     }
   };
   /// Columns
   const columns = [
     {
-      field: "Sno",
-      headerName: "Sno",
+      field: 'Sno',
+      headerName: 'Sno',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "SKU",
-      headerName: "SKU",
+      field: 'SKU',
+      headerName: 'SKU',
       flex: 0.3,
       minWidth: 100,
       maxWidth: 130,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Name",
-      headerName: "Product ",
+      field: 'Name',
+      headerName: 'Product ',
       flex: 0.3,
       minWidth: 300,
       //    maxWidth: 290,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Brand",
-      headerName: "Brand",
+      field: 'Brand',
+      headerName: 'Brand',
       flex: 0.3,
       minWidth: 120,
       maxWidth: 150,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Category",
-      headerName: "Category",
+      field: 'Category',
+      headerName: 'Category',
       flex: 0.3,
       minWidth: 120,
       maxWidth: 140,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "GST",
-      headerName: "GST",
+      field: 'GST',
+      headerName: 'GST',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 90,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       valueFormatter: (params) => `${params.value} %`,
     },
     {
-      field: "Quantity",
-      headerName: "Quantity",
+      field: 'Quantity',
+      headerName: 'Quantity',
       flex: 0.3,
       minWidth: 120,
       maxWidth: 130,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "soldCount",
-      headerName: "Sold Count",
+      field: 'soldCount',
+      headerName: 'Sold Count',
       flex: 0.3,
       minWidth: 100,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      type: "number",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
+      type: 'number',
     },
     {
-      field: "oldSoldCount",
-      headerName: "Old Sold Count",
+      field: 'oldSoldCount',
+      headerName: 'Old Sold Count',
       flex: 0.3,
       minWidth: 100,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      type: "number",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
+      type: 'number',
     },
     {
-      field: "Action",
-      headerName: "Remove",
+      field: 'Action',
+      headerName: 'Remove',
       flex: 0.3,
       minWidth: 100,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         return (
           <Button
@@ -427,35 +440,35 @@ const RemoveProductGrid = () => {
   ];
 
   return (
-    <Box sx={{ width: "100%", height: "100%" }}>
+    <Box sx={{ width: '100%', height: '100%' }}>
       <DrawerHeader />
       <Loading loading={isLoading || isFetching} />
       {/* <Header Name="Product Removal"  info={true} customOnClick={handleOpen}/> */}
       <FilterBar apiRef={apiRef} />
       <Grid container>
-        <Grid item xs={12} sx={{ mt: "5px" }}>
+        <Grid item xs={12} sx={{ mt: '5px' }}>
           <Box
             sx={{
-              width: "100%",
-              height: "83vh",
-              "& .super-app-theme--header": {
-                background: "#eee",
-                color: "black",
-                textAlign: "center",
+              width: '100%',
+              height: '83vh',
+              '& .super-app-theme--header': {
+                background: '#eee',
+                color: 'black',
+                textAlign: 'center',
               },
-              "& .vertical-lines .MuiDataGrid-cell": {
-                borderRight: "1px solid #e0e0e0",
+              '& .vertical-lines .MuiDataGrid-cell': {
+                borderRight: '1px solid #e0e0e0',
               },
-              "& .supercursor-app-theme--cell:hover": {
+              '& .supercursor-app-theme--cell:hover': {
                 background:
-                  "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-                color: "white",
-                cursor: "pointer",
+                  'linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)',
+                color: 'white',
+                cursor: 'pointer',
               },
-              "& .MuiDataGrid-columnHeaderTitleContainer": {
-                background: "#eee",
+              '& .MuiDataGrid-columnHeaderTitleContainer': {
+                background: '#eee',
               },
-              position: "relative",
+              position: 'relative',
             }}
           >
             <DataGrid
@@ -475,36 +488,36 @@ const RemoveProductGrid = () => {
       </Grid>
       <Dialog
         open={openCaptcha}
-        maxWidth="xl"
+        maxWidth='xl'
         onClose={() => {
           setOpenCaptcha(false);
-          setCaptcha("");
-          setCaptchaInput("");
+          setCaptcha('');
+          setCaptchaInput('');
           setSelectedRow(null);
         }}
       >
         <DialogTitle
           sx={{
-            justifyContent: "space-between",
-            display: "flex",
+            justifyContent: 'space-between',
+            display: 'flex',
 
-            backgroundColor: "#040678",
-            color: "#fff",
+            backgroundColor: '#040678',
+            color: '#fff',
           }}
         >
-          <span style={{ marginLeft: "30%" }}> Otp Verification</span>
+          <span style={{ marginLeft: '30%' }}> Otp Verification</span>
           <div>
             <i
-              className="fa-solid fa-circle-xmark"
+              className='fa-solid fa-circle-xmark'
               style={{
-                marginLeft: "20%",
-                cursor: "pointer",
-                color: "white", // Initial color
+                marginLeft: '20%',
+                cursor: 'pointer',
+                color: 'white', // Initial color
               }}
               onClick={() => {
                 setOpenCaptcha(false);
-                setCaptcha("");
-                setCaptchaInput("");
+                setCaptcha('');
+                setCaptchaInput('');
                 setSelectedRow(null);
               }}
             ></i>
@@ -512,31 +525,31 @@ const RemoveProductGrid = () => {
         </DialogTitle>
         <DialogContent
           sx={{
-            padding: "0",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "10px",
+            padding: '0',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '10px',
             // textAlign: "center", // Add this line to center the content
           }}
         >
           <Box
             sx={{
-              backgroundColor: "#80bfff",
-              padding: "5px",
-              fontWeight: "bold",
+              backgroundColor: '#80bfff',
+              padding: '5px',
+              fontWeight: 'bold',
             }}
           >
             <Typography
               sx={{
-                fontWeight: "bold",
+                fontWeight: 'bold',
               }}
             >
               SKU : {selectedRow?.SKU}
             </Typography>
             <Typography
               sx={{
-                fontWeight: "bold",
-                width: "100%",
+                fontWeight: 'bold',
+                width: '100%',
               }}
             >
               Name : {selectedRow?.Name}
@@ -544,11 +557,11 @@ const RemoveProductGrid = () => {
           </Box>
           <Box
             sx={{
-              marginTop: "10px",
-              marginBottom: "10px",
-              padding: "20px",
-              display:"flex",
-              gap:"10px"
+              marginTop: '10px',
+              marginBottom: '10px',
+              padding: '20px',
+              display: 'flex',
+              gap: '10px',
             }}
           >
             {/* {CaptchaElementGenerator()} */}
@@ -561,22 +574,26 @@ const RemoveProductGrid = () => {
             >
               <ReplayIcon />
             </Button> */}
-            <Button variant="outlined" disabled={otoLoading} onClick={() => handleSendOtp()}>
-              {otoLoading ? <CircularProgress /> : "Click To Send Otp"}
+            <Button
+              variant='outlined'
+              disabled={otoLoading}
+              onClick={() => handleSendOtp()}
+            >
+              {otoLoading ? <CircularProgress /> : 'Click To Send Otp'}
             </Button>
 
             <TextField
-              placeholder="Enter otp"
-              sx={{ display: "block" }}
+              placeholder='Enter otp'
+              sx={{ display: 'block' }}
               value={captchaInput}
               onChange={(e) => {
                 setCaptchaInput(e.target.value);
               }}
             />
           </Box>
-          <Box display="flex" justifyContent="space-around">
-            <Button onClick={handleSubmit} variant="contained">
-              {deleteLoading ? <CircularProgress /> : "Delete"}
+          <Box display='flex' justifyContent='space-around'>
+            <Button onClick={handleSubmit} variant='contained'>
+              {deleteLoading ? <CircularProgress /> : 'Delete'}
             </Button>
           </Box>
         </DialogContent>

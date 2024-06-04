@@ -34,6 +34,7 @@ import WebStatusDial from "./Components/WebStatusDial";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { DataGrid } from "@mui/x-data-grid";
+import DSCImageDial from "./Components/DSCImageDial";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -44,7 +45,7 @@ const infoDetail = [
     name: "Status",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/generated%20button.png?updatedAt=1717243245190"
         height={"60%"}
         width={"90%"}
       />
@@ -56,7 +57,7 @@ const infoDetail = [
     name: "WebStatus",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065320224"
         height={"60%"}
         width={"90%"}
       />
@@ -68,25 +69,34 @@ const infoDetail = [
     name: "View",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/details_wholesale%20order.png?updatedAt=1703064824324"
         height={"60%"}
         width={"90%"}
       />
     ),
-    instruction:
-      "If you click the Details, you can see Repairing Form Details",
+    instruction: "If you click the Details, you can see Repairing Form Details",
   },
   {
     name: "Signature",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/submit%20button.png?updatedAt=1717243245103"
         height={"60%"}
         width={"90%"}
       />
     ),
-    instruction:
-      "Here You Can Put Your Signature",
+    instruction: "Here You Can Put Your Signature",
+  },
+  {
+    name: "Download PDF",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/dwonload%20icon.png?updatedAt=1717243245134"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction: "Here You Can Service Receipt PDF",
   },
 ];
 
@@ -108,11 +118,12 @@ const DSCFormList = () => {
   const [open, setOpen] = useState(false);
   const [openDial, setOpenDial] = useState(false);
   const [opneWebDial, setOpenWebDial] = useState(false);
+  const [openImageDial, setOpenImageDial] = useState(false);
   const [dscData, setDscData] = useState({});
   const [selectedData, setSelectedData] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
-  const [rejectRemark, setRejectRemark] = useState('');
+  const [rejectRemark, setRejectRemark] = useState("");
   const [selectOptions, setSelectOptions] = useState([
     {
       value: "Completed",
@@ -149,9 +160,10 @@ const DSCFormList = () => {
 
   /// useEffects
   useEffect(() => {
+    console.log(getAllRepairingForm);
     if (getAllRepairingForm && getAllRepairingForm?.data) {
       const rowss = getAllRepairingForm?.data.map((item, index) => ({
-        id: index + 1,
+        id: item._id,
         Sno: index + 1,
         CustomerName: item.CustomerName,
         MobileNo: item.MobileNo,
@@ -160,6 +172,7 @@ const DSCFormList = () => {
         CustomerAcknowledgment: item.CustomerAcknowledgment,
         DroneModel: item.DroneModel,
         RejectRemark: item.rejectRemark,
+        Images: item.defectItemImages,
       }));
       setRows(rowss);
     }
@@ -215,6 +228,16 @@ const DSCFormList = () => {
     setOpenDial(!openDial);
   };
 
+  const handleOpenImageDial = (data) => {
+    setOpenImageDial(!openImageDial);
+    setDscData(data);
+  };
+
+  const handleCloseImageDial = () => {
+    setOpenImageDial(false);
+    setDscData({});
+  };
+
   const description =
     "This is the Product Status you can check product details  ";
 
@@ -222,7 +245,6 @@ const DSCFormList = () => {
   const handleClosed = () => {
     dispatch(setInfo(false));
   };
-
 
   useEffect(() => {
     dispatch(setHeader(`DSC Form View`));
@@ -393,6 +415,34 @@ const DSCFormList = () => {
         );
       },
     },
+
+    {
+      field: "Images",
+      headerName: "Images",
+      flex: 0.2,
+      minWidth: 140,
+      maxWidth: 450,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const data = {
+          id: params.row.id,
+          Images: params.row.Images,
+        };
+        return (
+          <Button
+            onClick={() => {
+              console.log(data);
+              handleOpenImageDial(data)
+            }}
+          >
+            {params.row.Images.length ? "View" : "Upload"}
+          </Button>
+        );
+      },
+    },
     {
       field: "view",
       headerName: "View",
@@ -508,7 +558,6 @@ const DSCFormList = () => {
           columns={columns}
           rows={rows}
           rowHeight={40}
-      
           pagination={pagination}
           filterString={filterString}
           setFilterString={setFilterString}
@@ -605,6 +654,14 @@ const DSCFormList = () => {
         open={isInfoOpen}
         close={handleClosed}
       />
+      {openImageDial && (
+        <DSCImageDial
+          open={openImageDial}
+          refetch={refetch}
+          close={handleCloseImageDial}
+          data={dscData}
+        />
+      )}
     </Box>
   );
 };

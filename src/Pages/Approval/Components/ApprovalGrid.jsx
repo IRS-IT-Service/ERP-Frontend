@@ -22,9 +22,23 @@ import { useSendMessageMutation } from "../../../features/api/whatsAppApiSlice";
 import { DataSaverOff } from "@mui/icons-material";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
+// infoDialog box data
+const infoDetail = [
+  {
+    name: "Status Quantity Approval",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/StatusQualityApproval.png?updatedAt=1717398469919"
+        height={"50%"}
+        width={"50%"}
+      />
+    ),
+    instruction: "Here you can see Stock Quantity Update and Approve or Reject,  Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions.",
+  },
+];
+
 const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
-  const description = `"This is an Approval Module for mutual functionalities such as Stock, MRP, Sales Price, Seller Price, and Cost. In this module, you grant permission by selecting the products. Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions."`;
-  
+  const description = `This is an Approval Module for mutual functionalities such as Stock. In this module, you grant permission by selecting the products.`;
 
   /// initialization
   const socket = useSocket();
@@ -33,7 +47,6 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
   // get query from url
   const { query } = useParams();
-
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
@@ -111,7 +124,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
         message: `${userInfo.name}   ${
           bool ? "Approved" : "Rejected"
         } ${query}  Update for ${params.row.Name}`,
-        time: new Date()
+        time: new Date(),
       };
 
       const addProductHistory = {
@@ -148,17 +161,17 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
         return { SKU: item, value: bool, name: findName.Name };
       });
       let approvalName =
-      query === "Quantity"
-        ? "Stock Approval"
-        : query === "MRP"
-        ? "MRP Approval"
-        : query === "SalesPrice"
-        ? "SalesPrice Approval"
-        : query === "SellerPrice"
-        ? "SellerPrice Approval"
-        : query === "LandingCost"
-        ? "Cost Approval"
-        : null;
+        query === "Quantity"
+          ? "Stock Approval"
+          : query === "MRP"
+          ? "MRP Approval"
+          : query === "SalesPrice"
+          ? "SalesPrice Approval"
+          : query === "SellerPrice"
+          ? "SellerPrice Approval"
+          : query === "LandingCost"
+          ? "Cost Approval"
+          : null;
       const param = { query: query, body: { products: products } };
       const res = await approveProductApi(param).unwrap();
       const liveStatusData = {
@@ -204,7 +217,6 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
         socket.emit("liveStatusServer", liveStatusData);
       });
       await sendWhatsAppmessage(datas).unwrap();
-
     } catch (error) {
       console.error(`An error occurred ${query} Approval:`, error);
     }
@@ -244,7 +256,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
                     item.LandingCost) *
                   100
                 ).toFixed(2),
-                ProfitSales:
+          ProfitSales:
             query === "SellerPrice"
               ? (
                   ((item.SalesPrice - item.LandingCost) /
@@ -272,7 +284,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
                     item.LandingCost) *
                   100
                 ).toFixed(2),
-                ProfitSeller: (
+          ProfitSeller: (
             ((item[`Pending${query}`] - item.LandingCost) /
               (item.LandingCost * (1 + item.SellerTax / 100))) *
             100
@@ -735,7 +747,6 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     },
   ];
 
-
   const dispatch = useDispatch();
 
   const { isInfoOpen } = useSelector((state) => state.ui);
@@ -757,7 +768,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
       {/* Dialog info Box */}
       <InfoDialogBox
-        // infoDetails={infoDetail}
+        infoDetails={infoDetail}
         description={description}
         open={isInfoOpen}
         close={handleClose}

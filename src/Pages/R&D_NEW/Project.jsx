@@ -49,10 +49,10 @@ const useStyles = makeStyles((theme) => ({
 
 const infoDetail = [
   {
-    name: "Approval Status Button",
+    name: "Start Project",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvalStatus.png?updatedAt=1703075709896"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(9).png?updatedAt=1717234878191"
         height={"100%"}
         width={"100%"}
         style={
@@ -63,13 +63,13 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `All three are status buttons through which you can check the status of the product component.`,
+    instruction: `After clicking on "START PROJECT" button a switch Page and See All Start Project`,
   },
   {
-    name: "Approval Status View",
+    name: "Fullfilled",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvalStatus.png?updatedAt=1703075709896"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(9).png?updatedAt=1717234878191"
         height={"100%"}
         width={"100%"}
         style={
@@ -80,7 +80,59 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `After clicking on View button a dialog box of approval status pop-up `,
+    instruction: `After clicking on "FULLFILLED" button a switch Page and See All Fullfilled Project`,
+  },
+
+  {
+    name: "Processing Project",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(9).png?updatedAt=1717234878191"
+        height={"100%"}
+        width={"100%"}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `After clicking on "PROCESSING PROJECT" button a switch Page and See All Processing Project`,
+  },
+  {
+    name: "Closed Project",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(9).png?updatedAt=1717234878191"
+        height={"100%"}
+        width={"100%"}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `After clicking on "CLOSED PROJECT" button a switch Page and See All Closed Project`,
+  },
+  {
+    name: "Add New Project",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(8).png?updatedAt=1717234758513"
+        height={"100%"}
+        width={"100%"}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `After clicking on "ADD PROJECT" button a dialog box of Project Add for R&D `,
   },
 ];
 

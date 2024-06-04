@@ -1,100 +1,84 @@
-import React, { useEffect, useState } from "react";
-import { Grid, Button, Box, styled, Typography } from "@mui/material";
-import { useGetPriceComparisionQuery } from "../../../features/api/RestockOrderApiSlice";
-import { useNavigate } from "react-router-dom";
-import Nodata from "../../../assets/error.gif";
-import { DataGrid } from "@mui/x-data-grid";
-import CompareAssignDialog from "../../RestockOrderList/component/CompareAssignDialog";
-import Loading from "../../../components/Common/Loading";
-import { formatDate } from "../../../commonFunctions/commonFunctions";
-import Header from "../../../components/Common/Header";
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../../features/slice/uiSlice";
-import InfoDialogBox from "../../../components/Common/InfoDialogBox";
+import React, { useEffect, useState } from 'react';
+import { Grid, Button, Box, styled, Typography } from '@mui/material';
+import { useGetPriceComparisionQuery } from '../../../features/api/RestockOrderApiSlice';
+import { useNavigate } from 'react-router-dom';
+import Nodata from '../../../assets/error.gif';
+import { DataGrid } from '@mui/x-data-grid';
+import CompareAssignDialog from '../../RestockOrderList/component/CompareAssignDialog';
+import Loading from '../../../components/Common/Loading';
+import { formatDate } from '../../../commonFunctions/commonFunctions';
+import Header from '../../../components/Common/Header';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../../features/slice/uiSlice';
+import InfoDialogBox from '../../../components/Common/InfoDialogBox';
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
 
-  width: "100%",
-  height: "82vh",
-  "& .super-app-theme--header": {
-    background: "#eee",
-    color: "black",
-    textAlign: "center",
+  width: '100%',
+  height: '82vh',
+  '& .super-app-theme--header': {
+    background: '#eee',
+    color: 'black',
+    textAlign: 'center',
   },
-  "& .vertical-lines .MuiDataGrid-cell": {
-    borderRight: "1px solid #e0e0e0",
+  '& .vertical-lines .MuiDataGrid-cell': {
+    borderRight: '1px solid #e0e0e0',
   },
-  "& .supercursor-app-theme--cell:hover": {
-    background: "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-    color: "white",
-    cursor: "pointer",
+  '& .supercursor-app-theme--cell:hover': {
+    background: 'linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)',
+    color: 'white',
+    cursor: 'pointer',
   },
-  "& .MuiDataGrid-columnHeaderTitleContainer": {
-    background: "#eee",
+  '& .MuiDataGrid-columnHeaderTitleContainer': {
+    background: '#eee',
   },
 }));
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: 'Status',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/pendingBtn.png?updatedAt=1717246373901'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+    instruction: `Here we can see List of all Compare Id with their Status, Description and product Count `,
   },
   {
-    name: "Sort By Category",
+    name: 'Compare',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/pricesBtn.png?updatedAt=1717246347358'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
+    instruction: `If We Click "PRICES" we can see all Different Vendor Price List of the Product`,
   },
   {
-    name: "Search-Product",
+    name: 'Action',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/assignBtn.png?updatedAt=1717246325266'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction:
-      "If you click the search product, you can search for any product or brand here",
-  },
-  {
-    name: "Search-SKU",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Sku_productRemoval.png?updatedAt=1703144412883"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click search SKU, you can search for any product or brand by SKU number here ",
+    instruction: `Here We Customer Price list Assign it to the Different Customer`,
   },
 ];
 
 const PriceComparisonOrder = () => {
   // show button when we click on checkbox
-  const description =
-    "This is the Example Needs to be Updated";
+  const description = 'This is the Example Needs to be Updated';
   const [selectedRows, setSelectedRows] = useState([]);
-  const [compareId, setCompareId] = useState("");
+  const [compareId, setCompareId] = useState('');
 
   const handleRowSelection = (selection) => {
     setSelectedRows(selection);
@@ -130,7 +114,7 @@ const PriceComparisonOrder = () => {
   // useEffect to handle data after fetching
 
   useEffect(() => {
-    if (allComparisionData?.status === "success") {
+    if (allComparisionData?.status === 'success') {
       const data = allComparisionData?.data?.map((item, index) => {
         return {
           Sno: index + 1,
@@ -140,7 +124,7 @@ const PriceComparisonOrder = () => {
           totalProduct: item.products.length,
           status: item.status,
           isAssigned: item.isAssigned,
-          description: item?.description || " No description",
+          description: item?.description || ' No description',
           // ... other fields you want to display
         };
       });
@@ -152,73 +136,73 @@ const PriceComparisonOrder = () => {
   // Define the columns
   const columns = [
     {
-      field: "Sno",
-      headerName: "Sno",
+      field: 'Sno',
+      headerName: 'Sno',
       flex: 0.1,
       minWidth: 10,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "compareId",
-      headerName: "Compare Id",
+      field: 'compareId',
+      headerName: 'Compare Id',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "description",
-      headerName: "Description",
+      field: 'description',
+      headerName: 'Description',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "date",
-      headerName: "Date",
+      field: 'date',
+      headerName: 'Date',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "totalProduct",
-      headerName: "Total Product",
+      field: 'totalProduct',
+      headerName: 'Total Product',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "status",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      headerName: "Status",
-      align: "center",
-      headerAlign: "center",
+      field: 'status',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
+      headerName: 'Status',
+      align: 'center',
+      headerAlign: 'center',
       minWidth: 100,
     },
     {
-      field: "compare",
-      headerName: "Compare",
+      field: 'compare',
+      headerName: 'Compare',
       sortable: false,
       minWidth: 130,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => (
         <Button
           disabled={!params.row.isAssigned}
@@ -231,18 +215,18 @@ const PriceComparisonOrder = () => {
       ),
     },
     {
-      field: "action",
-      headerName: "Action",
+      field: 'action',
+      headerName: 'Action',
       sortable: false,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => (
         <Button
           onClick={() => handleOpenDialog(params.row.compareId)}
-          variant="contained"
+          variant='contained'
         >
           Assign
         </Button>
@@ -264,8 +248,8 @@ const PriceComparisonOrder = () => {
   return (
     <>
       <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+        component='main'
+        sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'auto' }}
       >
         <DrawerHeader />
         {/* <Header Name={"Price Comparison"} /> */}
@@ -277,7 +261,7 @@ const PriceComparisonOrder = () => {
             compareId={compareId} // Pass the selected restockId if available
           />
         ) : (
-          ""
+          ''
         )}
 
         <StyledBox sx={{}}>
@@ -287,32 +271,32 @@ const PriceComparisonOrder = () => {
               NoRowsOverlay: () => (
                 <Box
                   sx={{
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   <Box
                     sx={{
                       // border: '2px solid blue',
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      width: "200px",
-                      height: "200px",
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      width: '200px',
+                      height: '200px',
                     }}
                   >
                     <img
                       src={Nodata}
-                      alt=""
-                      style={{ width: "100px", height: "100px" }}
+                      alt=''
+                      style={{ width: '100px', height: '100px' }}
                     />
 
                     <Typography
-                      variant="body2"
-                      sx={{ fontWeight: "bold", fontSize: "1rem" }}
+                      variant='body2'
+                      sx={{ fontWeight: 'bold', fontSize: '1rem' }}
                     >
                       No data found !
                     </Typography>
@@ -326,11 +310,11 @@ const PriceComparisonOrder = () => {
           />
         </StyledBox>
         <InfoDialogBox
-        infoDetails={infoDetail}
-        description={description}
-        open={isInfoOpen}
-        close={handleClose}
-      />
+          infoDetails={infoDetail}
+          description={description}
+          open={isInfoOpen}
+          close={handleClose}
+        />
       </Box>
     </>
   );

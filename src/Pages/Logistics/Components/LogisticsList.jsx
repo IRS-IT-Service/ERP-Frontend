@@ -18,7 +18,7 @@ const infoDetail = [
     name: "Details Query",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/logisticBoxDetails.png?updatedAt=1703227469327"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Courier%20Type.png?updatedAt=1717245477227"
         height={"100%"}
         width={"100%"}
         style={
@@ -29,25 +29,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When you click on Details Button, it will show you the GUI where you enter the Box Data`,
-  },
-
-  {
-    name: "Add Box Details",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addBoGUI.png?updatedAt=1703227656338"
-        height={"100%"}
-        width={"100%"}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
-      />
-    ),
-    instruction: `Enter data with respect to number if box after that clicking on sumbit button will save the box details and status will change from pending to the `,
+    instruction: `Here you can see the details of the logistic box, it will show you the GUI where you enter the Box Data and check Status and Courier Type`,
   },
 ];
 

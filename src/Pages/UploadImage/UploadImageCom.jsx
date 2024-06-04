@@ -1,12 +1,12 @@
-import { React, useEffect, useState } from "react";
-import { Box, styled } from "@mui/material";
-import UploadImageGrid from "./component/UploadImageGrid";
-import Header from "../../components/Common/Header";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { React, useEffect, useState } from 'react';
+import { Box, styled } from '@mui/material';
+import UploadImageGrid from './component/UploadImageGrid';
+import Header from '../../components/Common/Header';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
@@ -14,85 +14,130 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: 'Sort By Brand',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416'
+        height={'100%'}
+        width={'100%'}
       />
     ),
     instruction:
       "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
   },
   {
-    name: "Sort By Category",
+    name: 'Sort By Category',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428'
+        height={'100%'}
+        width={'100%'}
       />
     ),
     instruction:
       "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
   },
   {
-    name: "Search",
+    name: 'Sort By GST',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
-        height={"100%"}
-        width={"100%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortByGst.png?updatedAt=1717242547125'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If you click the search box, you can search for any product or brand here",
-  },{
+      "If you click 'Sort by GST' and select a particular category, you can view listings for that specific product",
+  },
+  {
+    name: 'Clear All Filter',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      "The 'Clear all filters' button removes all applied filters, resetting the view to display all available data without any filtering criteria applied",
+  },
+  {
+    name: 'Search',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582'
+        height={'100%'}
+        width={'100%'}
+      />
+    ),
+    instruction:
+      'If you click the search box, you can search for any product or brand here',
+  },
+  {
+    name: 'Add Product',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717240305941'
+        height={'100%'}
+        width={'100%'}
+      />
+    ),
+    instruction: 'In the top, you can add a new product by clicking this icon to redirect to the add product page',
+  },
 
- 
-  name: 'Preview', 
-  screenshot: (<img
-    src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/preview_uploadImage.png?updatedAt=1703134399991"
-    height={"60%"}
-    width={"90%"}
-  />), 
-  instruction: "If you click 'preview' you can preview the product image and set the default image to be displayed first", 
- 
-},{
- 
-  name: 'Upload', 
-  screenshot: (<img
-    src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/upload_uploadImage.png?updatedAt=1703134400162"
-    height={"60%"}
-    width={"60%"}
-  />),
-  instruction:"If you click the 'Upload Image' icon you can upload new images for that product",
-  
-},{
- 
-  name: 'Product Edit', 
-  screenshot: (<img
-    src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/productedit_uploadImage.png?updatedAt=1703134400011"
-    height={"60%"}
-    width={"60%"}
-  />),
-  instruction: "If you click the edit icon, you can edit your fot that product", 
-  
-},{
- 
-  name: 'Orange Color', 
-  screenshot: (<img
-    src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/orangecolor_uploadImage.png?updatedAt=1703135092187"
-    height={"60%"}
-    width={"40%"}
-  />),
-  instruction: "If this section has any background color orange for listed content, it denotes that the product is edited and pending approval. Further edits are not allowed in this state", 
-  
-}]
+  {
+    name: 'Preview',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/preview_uploadImage.png?updatedAt=1703134399991'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      "If you click 'preview' you can preview the product image and set the default image to be displayed first",
+  },
+  {
+    name: 'Upload',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/upload_uploadImage.png?updatedAt=1703134400162'
+        height={'60%'}
+        width={'60%'}
+      />
+    ),
+    instruction:
+      "If you click the 'Upload Image' icon you can upload new images for that product",
+  },
+  {
+    name: 'Product Edit',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/productedit_uploadImage.png?updatedAt=1703134400011'
+        height={'60%'}
+        width={'60%'}
+      />
+    ),
+    instruction:
+      'If you click the edit icon, you can edit your fot that product',
+  },
+  {
+    name: 'Orange Color',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/orangecolor_uploadImage.png?updatedAt=1703135092187'
+        height={'60%'}
+        width={'40%'}
+      />
+    ),
+    instruction:
+      'If this section has any background color orange for listed content, it denotes that the product is edited and pending approval. Further edits are not allowed in this state',
+  },
+];
 
 const UploadImageCom = () => {
-  const description = 'This is for uploading and editing products. You can upload images and edit product details'
+  const description =
+    'This is for uploading and editing products. You can upload images and edit product details';
   const dispatch = useDispatch();
 
   const { isInfoOpen } = useSelector((state) => state.ui);
@@ -101,13 +146,13 @@ const UploadImageCom = () => {
   };
 
   useEffect(() => {
-    dispatch(setHeader("Upload Image / Edit Product"));
+    dispatch(setHeader('Upload Image / Edit Product'));
   }, []);
 
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflow: 'hidden' }}
     >
       <DrawerHeader />
 
@@ -115,12 +160,12 @@ const UploadImageCom = () => {
        info={true}
        customOnClick={handleOpen} /> */}
       <InfoDialogBox
-       infoDetails={infoDetail}
-       description={description}
+        infoDetails={infoDetail}
+        description={description}
         open={isInfoOpen}
         close={handleClose}
       />
-      
+
       <UploadImageGrid />
     </Box>
   );

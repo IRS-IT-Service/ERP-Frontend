@@ -18,7 +18,7 @@ const infoDetail = [
     name: "Search",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/dronesearchs.png?updatedAt=1717245921317"
         height={"100%"}
         width={"100%"}
         style={
@@ -29,14 +29,14 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `You Can Find Shipment History, When you enter Customer Name `,
+    instruction: `You Can Find Shipment History, When you enter Customer Name`,
   },
 
   {
     name: "Date",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/data%20and%20filter.png?updatedAt=1717245921418"
         height={"100%"}
         width={"100%"}
         style={
@@ -54,7 +54,7 @@ const infoDetail = [
     name: "Shipment Detail Tracking",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/details_wholesale%20order.png?updatedAt=1703064824324"
         height={"100%"}
         width={"100%"}
         style={

@@ -68,11 +68,7 @@ const infoDetail = [
 ];
 
 const SellerDetails = () => {
-  const description = `In the Sales Details Module Description, you can access comprehensive
-          information related to sales, such as customer name, mobile number,
-          purchase date, and more. Clicking on the "View" option in the Barcode
-          Number column allows you to retrieve all product details associated
-          with the respective barcode.`;
+  const description = `Sales Details`;
 
   const dispatch = useDispatch();
 

@@ -20,45 +20,22 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: "Student Listing",
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/details_wholesale%20order.png?updatedAt=1703064824324"
         height={"60%"}
         width={"90%"}
       />
     ),
     instruction:
-      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+      "This table helps in tracking and managing student or Event data details efficiently",
   },
-  {
-    name: "Sort By Category",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
-  },
-  {
-    name: "Search",
-    screenshot: (
-      <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
-        height={"60%"}
-        width={"90%"}
-      />
-    ),
-    instruction:
-      "If you click the search box, you can search for any product or brand here",
-  },
+
 ];
 
 const Studentinfo = ({ autoHeight, text }) => {
-  const description = "This is Student Info";
+  const description = "Student Submissions Table is designed to provide a comprehensive and organized view of the information submitted by students";
   const dispatch = useDispatch();
 
   /// local state
