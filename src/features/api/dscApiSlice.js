@@ -124,6 +124,16 @@ export const dscApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    updateRepairImage: builder.mutation({
+      query: (data) => {
+        console.log(data);
+        return {
+          url: `${DSC_URL}/UpdateDefectedItemImage`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
     addWebsiteStatus: builder.mutation({
       query: (data) => {
         return {
@@ -167,6 +177,7 @@ export const {
   useUpdateCustomerAknowledgementMutation,
   useUpdateRepairStatusMutation,
   useUpdateRepairFormMutation,
+  useUpdateRepairImageMutation,
   useGetWebsiteStatusQuery,
   useAddWebsiteStatusMutation,
   useDeleteWebsiteStatusMutation,
