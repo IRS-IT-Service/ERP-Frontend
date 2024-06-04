@@ -26,6 +26,112 @@ import MoodIcon from '@mui/icons-material/Mood';
 import EmojiPicker from 'emoji-picker-react';
 // import ToolbarItem from '@mui/material/ToolbarItem';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InfoDialogBox from '../../../components/Common/InfoDialogBox';
+import { setHeader, setInfo } from '../../../features/slice/uiSlice';
+
+// infoDialog box data
+const infoDetail = [
+  {
+    name: 'Chat Icon',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/chatMessagebtn.png?updatedAt=1717480417886'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'By clicking on this icon, our WhatsApp chat will open.',
+  },
+  {
+    name: 'Online',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/onlineStatus.png?updatedAt=1717480201174'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'When the status is online, it means the user is active.',
+  },
+  {
+    name: 'Offline',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/offlineStatus.png?updatedAt=1717480176124'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'When the status is offline, it means the user is not active.',
+  },
+  {
+    name: 'Send emoji',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sendEmoji.png?updatedAt=1717480949084'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'Allows you to send an emoji.',
+  },
+  {
+    name: 'Send File',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sendFile.png?updatedAt=1717480925133'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'Allows you to send a file.',
+  },
+
+  {
+    name: 'Send button',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/messageSend.png?updatedAt=1717480045516'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'Click this button to send your message.',
+  },
+  {
+    name: 'Top to bottom',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/topToBottom.png?updatedAt=1717480012803'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'Scroll through the chat from top to bottom.',
+  },
+  {
+    name: 'Green Status',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/onlineGreenBtn.png?updatedAt=1717480267478'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'If the status is green, the user is online.',
+  },
+  {
+    name: 'Red Status',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/offlineRedBtn.png?updatedAt=1717480239382'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'If the status is red, the user is offline.',
+  },
+];
 
 const CreateChat = () => {
   // using react hooks
@@ -34,6 +140,9 @@ const CreateChat = () => {
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
   const [showButton, setShowButton] = useState(true);
+
+  const description1 =
+    'This is a Price Calculator where you can calculate the price ';
 
   // gettting data from usePeer context
   // const {
@@ -477,6 +586,15 @@ const CreateChat = () => {
   useEffect(() => {
     scrollToBottom();
   }, [groupedMessages]); // Trigger scroll to bottom when messages change
+
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose1 = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`What's App`));
+  }, []);
 
   return (
     <Box
@@ -1072,6 +1190,13 @@ const CreateChat = () => {
           remoteStream={remoteStream}
         />
       )}
+
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description1}
+        open={isInfoOpen}
+        close={handleClose1}
+      />
     </Box>
   );
 };
