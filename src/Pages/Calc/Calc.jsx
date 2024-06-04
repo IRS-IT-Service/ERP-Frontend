@@ -45,7 +45,7 @@ import { useSocket } from '../../CustomProvider/useWebSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../../components/Common/Loading';
 import Header from '../../components/Common/Header';
-import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import InfoDialogBox from '../../components/Common/InfoDialogBox'; 
 import { setHeader, setInfo } from '../../features/slice/uiSlice';
 import { useAddPriceHistoryMutation } from '../../features/api/PriceHistoryApiSlice';
 
