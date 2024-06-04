@@ -112,7 +112,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: ``,
+    instruction: `Here we can see Customer Billing Address  `,
   },
 
   {
@@ -130,7 +130,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: ``,
+    instruction: `Here we can see Customer Shipping Address `,
   },
 
   {
@@ -148,7 +148,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: ``,
+    instruction: `Here we can see Customer Upload Invoice`,
   },
 ];
 

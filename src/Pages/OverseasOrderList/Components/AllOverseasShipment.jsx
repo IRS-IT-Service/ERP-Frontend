@@ -59,7 +59,7 @@ const infoDetail = [
         width={'100%'}
       />
     ),
-    instruction: '',
+    instruction: `Here You Can See Details of Your all Overseas Shipment`,
   },
 ];
 

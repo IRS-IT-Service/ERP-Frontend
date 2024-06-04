@@ -76,7 +76,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: `Here you can Search Product by Name and Calculate Price`,
   },
 ];
 

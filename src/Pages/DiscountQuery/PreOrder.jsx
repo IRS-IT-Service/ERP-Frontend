@@ -49,7 +49,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: ``,
+    instruction: `Here we Can See PreOrder Detail with QTY and SKU`,
   },
 
   // {

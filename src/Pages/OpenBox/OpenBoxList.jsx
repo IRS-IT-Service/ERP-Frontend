@@ -27,7 +27,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: `Here you can see list of Opened Box Details`,
   },
 ];
 

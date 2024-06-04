@@ -63,7 +63,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: `You Can Selected Multiple Items for Approval of Open Box`,
   },
 
   {
@@ -75,7 +75,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'Here You can Create Box Open Approval Permission of Selected Product',
   },
 
   {

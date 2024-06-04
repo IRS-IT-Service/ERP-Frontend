@@ -80,7 +80,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: "If you click the checkbox, it will be selected or deselected for the particular product and download the selected products",
   },
   {
     name: 'Download',
@@ -91,7 +91,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'If you click the download button, it will download the selected products',
   },
   {
     name: 'View Red',
@@ -102,7 +102,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: 'If you click the view red button, it will show you the selected products in red color which is show Less than 50% Sticked',
   },
   {
     name: 'View Green',
@@ -113,7 +113,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: "If you click the view green button, it will show you the selected products in green color which is show More than 100% Sticked",
   },
   {
     name: 'View Blue',
@@ -124,7 +124,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: "If you click the view blue button, it will show you the selected products in blue color which is show No Barcode",
   },
 ];
 

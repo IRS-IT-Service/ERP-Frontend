@@ -23,8 +23,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction:
-      "",
+    instruction: "Here you can view all the opened boxes history",
   },
   // {
   //   name: "Sort By Category",

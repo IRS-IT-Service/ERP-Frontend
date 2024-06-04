@@ -32,7 +32,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: 'Here you can see the details of the New product added',
   },
   {
     name: 'Approve',
@@ -43,7 +43,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: 'Here you can approve or reject the New Added product',
   },
 ];
 

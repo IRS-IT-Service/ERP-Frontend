@@ -20,7 +20,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: `Search by Company Name`,
   },
   {
     name: 'Single Add',
@@ -31,7 +31,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: ` Here you can add single client details`,
   },
   {
     name: 'Bulk Add',
@@ -42,7 +42,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: ` Here you can add bulk client details`,
   },
 ];
 

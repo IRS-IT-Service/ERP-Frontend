@@ -44,7 +44,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: "Here See the product details and it's status",
   },
   {
     name: 'Approve',
@@ -55,7 +55,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: 'Here you can approve or reject the product',
   },
 ];
 

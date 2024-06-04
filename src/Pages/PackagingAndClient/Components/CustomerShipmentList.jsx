@@ -49,7 +49,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: `Here we Can see Different Rates for Delivery Company and Compare them`,
   },
   {
     name: 'Packaging',
@@ -60,7 +60,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: 'Here we can see Status of Shipment',
   },
   {
     name: 'Delivered',
@@ -71,7 +71,7 @@ const infoDetail = [
         width={'50%'}
       />
     ),
-    instruction: '',
+    instruction: 'Here we can see Status of Shipment for Succesfully Delivered',
   },
 ];
 

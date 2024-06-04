@@ -87,7 +87,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: ``,
+    instruction: `We Can Select Multiple Prodcut or Brand Items By Check Box and Create a Query`,
   },
   {
     name: 'Create Query',
@@ -104,7 +104,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: ``,
+    instruction: `If Click "Create Query" Button, You Can Create a Query of selected product or brand`,
   },
 ];
 

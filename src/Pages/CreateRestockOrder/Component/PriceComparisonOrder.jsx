@@ -48,7 +48,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: `Here we can see List of all Compare Id with their Status, Description and product Count `,
   },
   {
     name: 'Compare',
@@ -59,7 +59,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: `If We Click "PRICES" we can see all Different Vendor Price List of the Product`,
   },
   {
     name: 'Action',
@@ -70,7 +70,7 @@ const infoDetail = [
         width={'90%'}
       />
     ),
-    instruction: '',
+    instruction: `Here We Customer Price list Assign it to the Different Customer`,
   },
 ];
 

@@ -29,7 +29,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: ``,
+    instruction: `Here You Can add Customer with their Details  `,
   },
 
   {
@@ -47,7 +47,7 @@ const infoDetail = [
         }
       />
     ),
-    instruction: ` `,
+    instruction: `Here You Can Filter Customer Details and Find the Customer Details and Direct Dispatch the Products`,
   },
 ];
 
