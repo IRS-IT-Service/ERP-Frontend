@@ -142,7 +142,7 @@ const CreateChat = () => {
   const [showButton, setShowButton] = useState(true);
 
   const description1 =
-    'This is a Price Calculator where you can calculate the price ';
+    'WhatsApp offers a user-friendly chat interface with various icons and status to help you communicate efficiently. This guide explains the meaning and function of each element, ensuring you can easily navigate and utilize all the features WhatsApp provides for a seamless messaging experience.';
 
   // gettting data from usePeer context
   // const {
@@ -153,6 +153,7 @@ const CreateChat = () => {
   //   sendStream,
   //   remoteStream,
   // } = usePeerContext();
+
   // redux data
   const { adminId } = useSelector((state) => state.auth.userInfo);
   const datas = useSelector((state) => state.auth);
@@ -423,7 +424,7 @@ const CreateChat = () => {
     setEmoji(false);
   };
 
-  // this are the webrtc methods and functions for calls which is getting shutdown because of microphone problems
+  // this are the web rtc methods and functions for calls which is getting shutdown because of microphone problems
   // call dialog box open
   // const handleOpenCallDial = (data) => {
   //   console.log(data);
