@@ -51,8 +51,7 @@ This select dropdown offers options, and upon making a selection, it will displa
 ];
 
 const Dispatch_Return = () => {
-  const description = `
-In the barcode dispatch/return feature, you can add dispatched or returned products by scanning them. Additionally, you can check and filter them using the select option.`;
+  const description = `Barcode Dispatch Return`;
 
   const dispatch = useDispatch();
 

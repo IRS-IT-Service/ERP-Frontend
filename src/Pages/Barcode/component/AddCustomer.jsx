@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { Box, TextField, Button, Typography, styled } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { Box, TextField, Button, Typography, styled } from '@mui/material';
 import {
   useAddCustomerMutation,
   useGetCustomerQuery,
-} from "../../../features/api/barcodeApiSlice";
-import { toast } from "react-toastify";
-import { DataGrid, useGridApiRef } from "@mui/x-data-grid"; // Import DataGrid
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { setCustomerInfo } from "../../../features/slice/productSlice";
-import Header from "../../../components/Common/Header";
-import InfoDialogBox from "../../../components/Common/InfoDialogBox";
-import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+} from '../../../features/api/barcodeApiSlice';
+import { toast } from 'react-toastify';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid'; // Import DataGrid
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCustomerInfo } from '../../../features/slice/productSlice';
+import Header from '../../../components/Common/Header';
+import InfoDialogBox from '../../../components/Common/InfoDialogBox';
+import { setHeader, setInfo } from '../../../features/slice/uiSlice';
 
 const infoDetail = [
   {
-    name: 'Create Query',
+    name: 'Add Details',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesQuery.png?updatedAt=1702899124072'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/detailsAdd.png?updatedAt=1717395706359'
         height={'100%'}
         width={'100%'}
         style={
@@ -29,14 +29,14 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When you click on Create Query, it will show you the selected product discount GUI`,
+    instruction: `Here You Can add Customer with their Details  `,
   },
 
   {
-    name: 'Discount Card',
+    name: 'Filter Details',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/discountGUI.png?updatedAt=1702900067460'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/filterDetails.png?updatedAt=1717395763987'
         height={'100%'}
         width={'100%'}
         style={
@@ -47,34 +47,12 @@ const infoDetail = [
         }
       />
     ),
-    instruction: `When we click on create query Discount GUI open and you can save all customize discount detail for future `,
-  },
-
-  {
-    name: 'Shipment Detail Tracking',
-    screenshot: (
-      <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/descriptionModule.png?updatedAt=1702965703590'
-        height={'100%'}
-        width={'100%'}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
-      />
-    ),
-    instruction: `This is a tracking details section where we monitor products using their tracking ID, select the courier name, etc.`,
+    instruction: `Here You Can Filter Customer Details and Find the Customer Details and Direct Dispatch the Products`,
   },
 ];
 
-
 const AddCustomer = () => {
-
-  const description = `
-Adding customer details is the fundamental purpose of the "Add Customer Detail" feature.`;
-
+  const description = `Adding Customer Details`;
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
@@ -91,10 +69,10 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
 
   /// local state
   const [value, setValue] = useState({
-    name: "",
-    company: "",
-    email: "",
-    mobile: "",
+    name: '',
+    company: '',
+    email: '',
+    mobile: '',
   });
   const [rows, setRows] = useState([]);
 
@@ -104,7 +82,7 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
 
   /// useEffects
   useEffect(() => {
-    if (getAllCustomer?.status === "success") {
+    if (getAllCustomer?.status === 'success') {
       const newRows = (getAllCustomer?.data || []).map((item, index) => ({
         id: item._id,
         ...item,
@@ -122,39 +100,39 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
   const handleSubmit = async () => {
     try {
       if (!value.name || !value.mobile) {
-        return toast.error("Please complete the form");
+        return toast.error('Please complete the form');
       }
       const result = await addCustomer(value);
-      if (result.data.status === "success") {
-        toast.success("Customer added successfully");
+      if (result.data.status === 'success') {
+        toast.success('Customer added successfully');
         setValue({
-          name: "",
-          company: "",
-          email: "",
-          mobile: "",
+          name: '',
+          company: '',
+          email: '',
+          mobile: '',
         });
         refetch();
       }
       setValue({
-        name: "",
-        company: "",
-        email: "",
-        mobile: "",
+        name: '',
+        company: '',
+        email: '',
+        mobile: '',
       });
     } catch (error) {
       toast.error(error.message);
       setValue({
-        name: "",
-        company: "",
-        email: "",
-        mobile: "",
+        name: '',
+        company: '',
+        email: '',
+        mobile: '',
       });
     }
   };
 
   const handleDispatchClick = (result) => {
     dispatch(setCustomerInfo(result));
-    navigate("/dispatch_Return");
+    navigate('/dispatch_Return');
   };
 
   const handleFilterChange = (field, operator, value) => {
@@ -165,55 +143,55 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
   /// columns
   const columns = [
     {
-      field: "name",
-      headerName: "Name",
+      field: 'name',
+      headerName: 'Name',
       flex: 1,
-      align: "center",
-      headerAlign: "center", // Center header text
+      align: 'center',
+      headerAlign: 'center', // Center header text
       renderCell: (params) => (
-        <div style={{ textAlign: "center" }}>{params.row.name}</div>
+        <div style={{ textAlign: 'center' }}>{params.row.name}</div>
       ),
     },
     {
-      field: "company",
-      headerName: "Company",
+      field: 'company',
+      headerName: 'Company',
       flex: 1,
-      align: "center",
-      headerAlign: "center", // Center header text
+      align: 'center',
+      headerAlign: 'center', // Center header text
       renderCell: (params) => (
-        <div style={{ textAlign: "center" }}>{params.row.company}</div>
+        <div style={{ textAlign: 'center' }}>{params.row.company}</div>
       ),
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: 'email',
+      headerName: 'Email',
       flex: 1,
-      align: "center",
-      headerAlign: "center", // Center header text
+      align: 'center',
+      headerAlign: 'center', // Center header text
       renderCell: (params) => (
-        <div style={{ textAlign: "center" }}>{params.row.email}</div>
+        <div style={{ textAlign: 'center' }}>{params.row.email}</div>
       ),
     },
     {
-      field: "mobileNo",
-      headerName: "Mobile",
+      field: 'mobileNo',
+      headerName: 'Mobile',
       flex: 1,
-      align: "center",
-      headerAlign: "center", // Center header text
+      align: 'center',
+      headerAlign: 'center', // Center header text
       renderCell: (params) => (
-        <div style={{ textAlign: "center" }}>{params.row.mobileNo}</div>
+        <div style={{ textAlign: 'center' }}>{params.row.mobileNo}</div>
       ),
     },
     {
-      field: "dispatch",
-      headerName: "Dispatch",
+      field: 'dispatch',
+      headerName: 'Dispatch',
       flex: 1,
-      align: "center",
-      headerAlign: "center", // Center header text
+      align: 'center',
+      headerAlign: 'center', // Center header text
       renderCell: (params) => (
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: 'center' }}>
           <i
-            className="fa-solid fa-share-from-square"
+            className='fa-solid fa-share-from-square'
             onClick={() => {
               const result = {
                 CustomerName: params.row.name,
@@ -253,7 +231,7 @@ Adding customer details is the fundamental purpose of the "Add Customer Detail" 
           open={isInfoOpen}
           close={handleClose}
         />
-       
+
         <Box
           sx={{
             display: 'flex',

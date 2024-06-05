@@ -15,117 +15,147 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 // infoDialog box data
 const infoDetail = [
   {
-    name: "Sort By Brand",
+    name: 'Sort By Brand',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
       "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
   },
   {
-    name: "Sort By Category",
+    name: 'Sort By Category',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
       "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
   },
   {
-    name: "Search",
+    name: 'Sort By GST',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortByGst.png?updatedAt=1717242547125'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If you click the search box, you can search for any product or brand here",
-  },  {
-    name: "Bulk Update",
+      "If you click 'Sort by GST' and select a particular category, you can view listings for that specific product",
+  },
+  {
+    name: 'Clear All Filter',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/bulkupdate_updateproduct.png?updatedAt=17031364375822"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
-      "If you click 'Bulk Update,' you can update products in bulk",
-  },  {
-    name: "Hiddin Column",
+      "The 'Clear all filters' button removes all applied filters, resetting the view to display all available data without any filtering criteria applied",
+  },
+  {
+    name: 'Search',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Hiddincol_updateProduct.png?updatedAt=1703136437592"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search_productList.png?updatedAt=1703135461582'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      'If you click the search box, you can search for any product or brand here',
+  },
+  {
+    name: 'Bulk Update',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/bulkupdate_updateproduct.png?updatedAt=17031364375822'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: "If you click 'Bulk Update,' you can update products in bulk",
+  },
+  {
+    name: 'Hiddin Column',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/Hiddincol_updateProduct.png?updatedAt=1703136437592'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
       "If you click the 'Hidden' button, you can select what you want to hide from the list",
-  }, {
-    name: "Column summary",
+  },
+  {
+    name: 'Column summary',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/colsummery_updateproduct.png?updatedAt=1703141954319"
-        height={"60%"}
-        width={"90%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/colsummery_updateproduct.png?updatedAt=1703141954319'
+        height={'60%'}
+        width={'90%'}
       />
     ),
     instruction:
       "If you click the 'Column Summary' button, you can view details about the columns",
-  },  {
-    name: "Orange color",
+  },
+  {
+    name: 'Orange color',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/orangeclr_updateproduct.png?updatedAt=17031364377602"
-        height={"10%"}
-        width={"10%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/orangeclr_updateproduct.png?updatedAt=17031364377602'
+        height={'10%'}
+        width={'10%'}
       />
     ),
     instruction:
-      "If any content in the list has an orange background color, it means it is awaiting approval",
-  },  {
-    name: "Red color",
+      'If any content in the list has an orange background color, it means it is awaiting approval',
+  },
+  {
+    name: 'Red color',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/redclr_updateproduct.png?updatedAt=1703136437653"
-        height={"10%"}
-        width={"10%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/redclr_updateproduct.png?updatedAt=1703136437653'
+        height={'10%'}
+        width={'10%'}
       />
     ),
     instruction:
-      "If any content in the list has a red background color, it means the update has been rejected",
-  },  {
-    name: "Green color",
+      'If any content in the list has a red background color, it means the update has been rejected',
+  },
+  {
+    name: 'Green color',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/greenclr_updateproduct.png?updatedAt=1703136437783"
-        height={"10%"}
-        width={"10%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/greenclr_updateproduct.png?updatedAt=1703136437783'
+        height={'10%'}
+        width={'10%'}
       />
     ),
     instruction:
-      "If any content in the list has a green background color, it indicates an issue in the Sales Columns",
-  },  {
-    name: "Purple color",
+      'If any content in the list has a green background color, it indicates an issue in the Sales Columns',
+  },
+  {
+    name: 'Purple color',
     screenshot: (
       <img
-        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/purpleclr_updateproduct.png?updatedAt=1703136437796"
-        height={"10%"}
-        width={"10%"}
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/purpleclr_updateproduct.png?updatedAt=1703136437796'
+        height={'10%'}
+        width={'10%'}
       />
     ),
     instruction:
-      "If any content in the list has a purple background color, it indicates an issue in the Seller Columns",
+      'If any content in the list has a purple background color, it indicates an issue in the Seller Columns',
   },
 ];
 

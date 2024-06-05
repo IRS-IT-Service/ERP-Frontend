@@ -1,26 +1,51 @@
-import React from "react";
-import { Box, styled, Button } from "@mui/material";
-import { DataGrid, GridToolbarContainer } from "@mui/x-data-grid";
-import Header from "../../components/Common/Header";
+import React from 'react';
+import { Box, styled, Button } from '@mui/material';
+import { DataGrid, GridToolbarContainer } from '@mui/x-data-grid';
+import Header from '../../components/Common/Header';
 import {
   useGetPendingProductQuery,
   usePendingProductApprovalMutation,
   useGetUnApprovedCountQuery,
-} from "../../features/api/productApiSlice";
-import { useState } from "react";
-import { useEffect } from "react";
-import Loading from "../../components/Common/Loading";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import { toast } from "react-toastify";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { useSendMessageMutation } from "../../features/api/whatsAppApiSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
+} from '../../features/api/productApiSlice';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import Loading from '../../components/Common/Loading';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import { toast } from 'react-toastify';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { useSendMessageMutation } from '../../features/api/whatsAppApiSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
+
+const infoDetail = [
+  {
+    name: 'Details',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/newProductapprovalDetails.png?updatedAt=1717399660876'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'Here you can see the details of the New product added',
+  },
+  {
+    name: 'Approve',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/acceptReject.png?updatedAt=1717399607866'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: 'Here you can approve or reject the New Added product',
+  },
+];
 
 const NewProductApproval = () => {
   const description = `This is an Approval Module for New Product Approval. In this module, you grant permission by selecting the products. Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions.`;
@@ -45,7 +70,7 @@ const NewProductApproval = () => {
   const [sendWhatsAppmessage] = useSendMessageMutation();
   /// rtk query
   const { data, isLoading, refetch, isFetching } =
-    useGetPendingProductQuery("NewProduct");
+    useGetPendingProductQuery('NewProduct');
 
   const [approvalApi, { isLoading: approvalLoading }] =
     usePendingProductApprovalMutation();
@@ -79,27 +104,27 @@ const NewProductApproval = () => {
       const params = {
         SKU: [SKU],
         status,
-        type: "newProduct",
+        type: 'newProduct',
       };
       const liveStatusData = {
         message: `${userInfo.name}  ${
-          status ? "Approved" : "Rejected"
+          status ? 'Approved' : 'Rejected'
         } ${name} `,
         time: new Date(),
       };
 
       const datas = {
         message: liveStatusData.message,
-        approvalName: "New Product Approval",
+        approvalName: 'New Product Approval',
       };
       const res = await approvalApi(params).unwrap();
-      toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
+      toast.success(`Product ${status ? 'Accepted' : 'Rejected'} successfully`);
       await sendWhatsAppmessage(datas).unwrap();
       refetch();
       refetchUnApprovedCount();
     } catch (e) {
       console.log(e);
-      console.log("Error at New Product Appproval");
+      console.log('Error at New Product Appproval');
     }
     setSkip(true);
   };
@@ -108,36 +133,36 @@ const NewProductApproval = () => {
     try {
       setSkip(false);
       if (!selectedItems.length) {
-        toast.error("Please Select a Product First");
+        toast.error('Please Select a Product First');
         return;
       }
       const liveStatusData = {
         message: `${userInfo.name}  ${
-          status ? "Approved" : "Rejected"
+          status ? 'Approved' : 'Rejected'
         } ${selectedItemsData} `,
-        time: new Date()
+        time: new Date(),
       };
 
       const datas = {
         message: liveStatusData.message,
-        approvalName: "New Product Approval",
+        approvalName: 'New Product Approval',
       };
 
       const params = {
         SKU: selectedItems,
         status: status,
-        type: "newProduct",
+        type: 'newProduct',
       };
 
       const res = await approvalApi(params).unwrap();
 
-      toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
+      toast.success(`Product ${status ? 'Accepted' : 'Rejected'} successfully`);
       await sendWhatsAppmessage(datas).unwrap();
       refetch();
       refetchUnApprovedCount();
     } catch (e) {
       console.log(e);
-      console.log("Error at New Product Appproval");
+      console.log('Error at New Product Appproval');
     }
     setSkip(true);
   };
@@ -155,69 +180,69 @@ const NewProductApproval = () => {
   // Column
   const columns = [
     {
-      field: "Sno",
-      headerName: "Sno",
+      field: 'Sno',
+      headerName: 'Sno',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 90,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "SKU",
-      headerName: "SKU",
+      field: 'SKU',
+      headerName: 'SKU',
       flex: 0.3,
       minWidth: 130,
       maxWidth: 130,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Name",
-      headerName: "Product ",
+      field: 'Name',
+      headerName: 'Product ',
       flex: 0.3,
       minWidth: 400,
       maxWidth: 800,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "GST",
-      headerName: "GST ",
+      field: 'GST',
+      headerName: 'GST ',
       flex: 0.3,
       minWidth: 60,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       valueFormatter: (params) => `${params.value} %`,
     },
     {
-      field: "Weight",
-      headerName: "Weight",
+      field: 'Weight',
+      headerName: 'Weight',
       flex: 0.3,
       minWidth: 100,
       //  maxWidth: 600,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Dimensions",
-      headerName: "Dimension (L x W x H)",
+      field: 'Dimensions',
+      headerName: 'Dimension (L x W x H)',
       flex: 0.3,
       minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       value: (params) => {
         console.log(params.row);
         const dimensions = params.row.Dimensions;
@@ -227,47 +252,47 @@ const NewProductApproval = () => {
       },
     },
     {
-      field: "Brand",
-      headerName: "Brand",
+      field: 'Brand',
+      headerName: 'Brand',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Category",
-      headerName: "Category",
+      field: 'Category',
+      headerName: 'Category',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "accept",
-      headerName: "Accept",
+      field: 'accept',
+      headerName: 'Accept',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         return (
           <div
             style={{
-              color: "green",
-              fontSize: "32px", // Adjust the size as needed
-              cursor: "pointer", // Show pointer cursor on hover
+              color: 'green',
+              fontSize: '32px', // Adjust the size as needed
+              cursor: 'pointer', // Show pointer cursor on hover
             }}
           >
-            {" "}
+            {' '}
             <ThumbUpIcon
               onClick={() => {
                 handleSubmit(params.row.SKU, true, params.row.Name);
@@ -278,22 +303,22 @@ const NewProductApproval = () => {
       },
     },
     {
-      field: "Reject",
-      headerName: "Reject",
+      field: 'Reject',
+      headerName: 'Reject',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         return (
           <div
             style={{
-              color: "red",
-              fontSize: "32px", // Adjust the size as needed
-              cursor: "pointer", // Show pointer cursor on hover
+              color: 'red',
+              fontSize: '32px', // Adjust the size as needed
+              cursor: 'pointer', // Show pointer cursor on hover
             }}
           >
             <ThumbDownIcon
@@ -313,11 +338,11 @@ const NewProductApproval = () => {
       <GridToolbarContainer>
         <Button
           sx={{
-            marginBottom: "5px",
-            backgroundColor: "#166534",
+            marginBottom: '5px',
+            backgroundColor: '#166534',
           }}
-          variant="contained"
-          size="small"
+          variant='contained'
+          size='small'
           onClick={() => {
             handleSubmitBulk(true);
           }}
@@ -326,11 +351,11 @@ const NewProductApproval = () => {
         </Button>
         <Button
           sx={{
-            marginBottom: "5px",
-            backgroundColor: "#dc2626",
+            marginBottom: '5px',
+            backgroundColor: '#dc2626',
           }}
-          variant="contained"
-          size="small"
+          variant='contained'
+          size='small'
           onClick={() => {
             handleSubmitBulk(false);
           }}
@@ -343,8 +368,8 @@ const NewProductApproval = () => {
 
   return (
     <Box
-      component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
+      component='main'
+      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'hidden' }}
     >
       <DrawerHeader />
       <Loading loading={isLoading || isFetching || approvalLoading} />
@@ -357,7 +382,7 @@ const NewProductApproval = () => {
 
       {/* Dialog info Box */}
       <InfoDialogBox
-        // infoDetails={infoDetail}
+        infoDetails={infoDetail}
         description={description}
         open={isInfoOpen}
         close={handleClose}
@@ -365,7 +390,7 @@ const NewProductApproval = () => {
 
       <Box
         sx={{
-          height: "86vh",
+          height: '86vh',
         }}
       >
         <DataGrid
