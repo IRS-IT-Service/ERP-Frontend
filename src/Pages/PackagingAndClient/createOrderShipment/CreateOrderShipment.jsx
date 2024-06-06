@@ -564,6 +564,8 @@ const handleSelectType = (e) =>{
     }
   };
 
+
+
   return (
     <div>
       <InfoDialogBox
@@ -942,7 +944,7 @@ const handleSelectType = (e) =>{
                         {item.GST} %
                       </StyleTable>
                       <StyleTable align="center" sx={{ fontSize: ".8rem" }}>
-                        {item.Quantity}
+                        {item.ActualQuantity}
                       </StyleTable>
 
                       <StyleTable align="center"> 

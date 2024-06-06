@@ -237,6 +237,14 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getSingleOrder: builder.query({
+      query: (id) => {
+        return {
+          url: `${RESTOCK_URL}/getSingleOrder/${id}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -269,4 +277,5 @@ export const {
   useGetAllOverseasShipmentQuery,
   useGetOneOverseasShipmentQuery,
   useGetAllCreatedOrderQuery,
+  useGetSingleOrderQuery,
 } = restockApiSlice;
