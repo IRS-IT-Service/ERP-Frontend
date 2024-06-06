@@ -261,6 +261,13 @@ const userRolesData = [
         path: '/ComparisionOrder',
         icon: 'fa fa-usd',
       },
+      {
+
+        id: 81,
+        name: 'Overseas Order List',
+        path: '/OverseasorderList',
+        icon: 'fa fa-clipboard-list',
+      },
     ],
   },
 
@@ -579,6 +586,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 80
+// last routes is 81
 
 export default userRolesData;

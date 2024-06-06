@@ -142,9 +142,11 @@ import ShiproketMain from "./Pages/PackagingAndClient/Shiprocket/ShiproketMain";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase";
 import useVisibilityChange from "./commonFunctions/useVisibilityChange";
+import OverseasorderList from "./Pages/OverseasOrderList/Components/OverseasorderList";
 import {
   toastNotification,
 } from "./commonFunctions/notificationHelpers";
+import SubPIList from "./Pages/OverseasOrderList/Components/SubPIList";
 
 
 function App() {
@@ -809,7 +811,8 @@ function App() {
                   element={<AddCustomerForMarketing />}
                 />
                 <Route path="/Chat" element={<ChatMessage />} />
-
+                <Route path="/OverseasorderList" element={<OverseasorderList />} />
+                <Route path="/SubPIList/:id" element={<SubPIList />} />
                 {/* Careers */}
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
