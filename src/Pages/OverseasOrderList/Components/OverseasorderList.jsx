@@ -18,8 +18,6 @@ import Loading from "../../../components/Common/Loading";
 import { makeStyles } from "@mui/styles";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
 import { useGetAllCreatedOrderQuery } from "../../../features/api/RestockOrderApiSlice";
-
-import Header from "../../../components/Common/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
@@ -83,12 +81,12 @@ const OverseasorderList = () => {
   const [rows, setRows] = useState([]);
   const [OpenAction, setOpenAction] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState(null);
-  const [slectedInfo, setSelectedInfo] = useState(null);
+  const [selectedInfo, setSelectedInfo] = useState(null);
 
   const handleOpen = (e) => {
-    console.log(e)
     setOpenAction(true);
-    setSelectedDetails(e);
+    setSelectedDetails({ name: e.name, orderId: e.orderId });
+    setSelectedInfo(e);
   };
 
   /// RTK query
@@ -105,18 +103,15 @@ const OverseasorderList = () => {
         paymentDate: formatDate(item.paymentDate),
         id: item._id,
         Sno: index + 1,
+        orderId: item.overseaseOrderId,
       }));
 
       setRows(data);
     }
   }, [overseasShipment, toggleValue]);
 
-  console.log(overseasShipment);
-
   /// handler
-  const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
-  };
+
 
   // Define the columns
   const columns = [
@@ -191,7 +186,10 @@ const OverseasorderList = () => {
           <Button
             size="small"
             onClick={() => {
-              handleOpen({piCopy,swiftCopy
+              handleOpen({
+                piCopy,
+                swiftCopy,
+                name: "Document View",
               });
             }}
           >
@@ -216,7 +214,10 @@ const OverseasorderList = () => {
             variant="contained"
             size="small"
             onClick={(e) => {
-              handleOpen("Add Amount");
+              handleOpen({
+                name: "Add Amount",
+                orderId: params.row.overseaseOrderId,
+              });
             }}
           >
             Add Amount
@@ -474,6 +475,8 @@ const OverseasorderList = () => {
           open={OpenAction}
           close={() => setOpenAction(false)}
           selectedDetails={selectedDetails}
+          selectedInfo={selectedInfo}
+          refetch={refetch}
         />
       )}
     </Box>
