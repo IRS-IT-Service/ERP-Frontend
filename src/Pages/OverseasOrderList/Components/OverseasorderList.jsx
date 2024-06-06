@@ -86,6 +86,7 @@ const OverseasorderList = () => {
   const [slectedInfo, setSelectedInfo] = useState(null);
 
   const handleOpen = (e) => {
+    console.log(e)
     setOpenAction(true);
     setSelectedDetails(e);
   };
@@ -101,7 +102,7 @@ const OverseasorderList = () => {
     if (overseasShipment?.status) {
       const data = overseasShipment.data?.map((item, index) => ({
         ...item,
-        shipmentDate: formatDate(item.shipmentDate),
+        paymentDate: formatDate(item.paymentDate),
         id: item._id,
         Sno: index + 1,
       }));
@@ -151,30 +152,32 @@ const OverseasorderList = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "shipmentDate",
-      headerName: "Swift copy",
+      field: "paymentDate",
+      headerName: "Payement Date",
       flex: 0.3,
       minWidth: 50,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        return (
-          <Button
-            size="small"
-            onClick={(e) => {
-              handleOpen("Swift copy");
-            }}
-          >
-            View
-          </Button>
-        );
-      },
+      // renderCell: (params) => {
+      //   const swiftCopy = params.row.swiftCopy;
+      //   const piCopy = params.row.piCopy;
+      //   return (
+      //     <Button
+      //       size="small"
+      //       onClick={(e) => {
+      //         handleOpen({piCopy:piCopy,swiftCopy:swiftCopy});
+      //       }}
+      //     >
+      //       View
+      //     </Button>
+      //   );
+      // },
     },
     {
-      field: "forwarder",
-      headerName: "PI copy",
+      field: "Documents",
+      headerName: "Documents",
       flex: 0.2,
       minWidth: 50,
       align: "center",
@@ -182,11 +185,14 @@ const OverseasorderList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        const piCopy = params.row.piCopy;
+        const swiftCopy = params.row.swiftCopy;
         return (
           <Button
             size="small"
-            onClick={(e) => {
-              handleOpen("PI copy");
+            onClick={() => {
+              handleOpen({piCopy,swiftCopy
+              });
             }}
           >
             View
@@ -265,7 +271,7 @@ const OverseasorderList = () => {
         return (
           <Button
             onClick={() => {
-              navigate(`/SubPIList/${params.row.PI}`);
+              navigate(`/SubPIList/${params.row.overseaseOrderId}`);
             }}
           >
             View
