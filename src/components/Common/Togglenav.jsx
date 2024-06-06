@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { styled, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import { toggleShowNav } from '../../features/slice/uiSlice';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Navbar from './Navbar';
-import { useDispatch, useSelector } from 'react-redux';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
-import CheckCircleOutlineTwoToneIcon from '@mui/icons-material/CheckCircleOutlineTwoTone';
-import AddIcCallIcon from '@mui/icons-material/AddIcCall';
-import CallIcon from '@mui/icons-material/Call';
+import React, { useEffect, useState } from "react";
+import { styled, useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import { toggleShowNav } from "../../features/slice/uiSlice";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import Navbar from "./Navbar";
+import { useDispatch, useSelector } from "react-redux";
+import ColorLensIcon from "@mui/icons-material/ColorLens";
+import CheckCircleOutlineTwoToneIcon from "@mui/icons-material/CheckCircleOutlineTwoTone";
+import AddIcCallIcon from "@mui/icons-material/AddIcCall";
+import CallIcon from "@mui/icons-material/Call";
 import {
   Avatar,
   Typography,
@@ -23,59 +23,64 @@ import {
   Link,
   Button,
   Fade,
-} from '@mui/material';
-import userRolesData from '../../constants/UserRolesItems';
-import ToggleMenu from './ToogleMenu';
-import { setTheme } from '../../features/slice/uiSlice';
-import { useGetUnApprovedCountQuery } from '../../features/api/productApiSlice';
-import { useGetPendingRequestCountQuery } from '../../features/api/barcodeApiSlice';
-import { logout as dispatchLogout } from '../../features/slice/authSlice';
-import logo2 from '../../assets/IRSLOGOR.png';
-import { useLogoutMutation } from '../../features/api/usersApiSlice';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import { useNavigate } from 'react-router-dom';
-import themeColors from '../../constants/ThemeColor';
-import Header from './Header';
-import { setHeader, setInfo } from '../../features/slice/uiSlice';
+} from "@mui/material";
+import userRolesData from "../../constants/UserRolesItems";
+import ToggleMenu from "./ToogleMenu";
+import { setTheme } from "../../features/slice/uiSlice";
+import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
+import { useGetPendingRequestCountQuery } from "../../features/api/barcodeApiSlice";
+import { logout as dispatchLogout } from "../../features/slice/authSlice";
+import logo2 from "../../assets/IRSLOGOR.png";
+import { useLogoutMutation } from "../../features/api/usersApiSlice";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import { useNavigate } from "react-router-dom";
+import themeColors from "../../constants/ThemeColor";
+import Header from "./Header";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import {
   useGetPreOrderCountQuery,
   useAllDispatchAprovalCountQuery,
-} from '../../features/api/RnDSlice';
-import ChatIcon from '@mui/icons-material/Chat';
+} from "../../features/api/RnDSlice";
+import ChatIcon from "@mui/icons-material/Chat";
+import {
+  useGetNotificationTokenQuery,
+  useSendSingleNotificationMutation,
+} from "../../features/api/otherSlice";
+import { toast } from "react-toastify";
 
 const drawerWidth = 220;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
-  transition: theme.transitions.create('width', {
+  transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
-  overflowX: 'hidden',
+  overflowX: "hidden",
 });
 
 const closedMixin = (theme) => ({
-  transition: theme.transitions.create('width', {
+  transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  overflowX: 'hidden',
+  overflowX: "hidden",
   width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up("sm")]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 });
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  outline: '2px solid rgba(145, 152, 161,0.2)',
+const DrawerHeader = styled("div")(({ theme }) => ({
+  outline: "2px solid rgba(145, 152, 161,0.2)",
   background:
-    theme.palette.mode === 'dark'
-      ? 'Black'
-      : 'linear-gradient(0deg, #01127D, #04012F)',
-  color: 'blue',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+    theme.palette.mode === "dark"
+      ? "Black"
+      : "linear-gradient(0deg, #01127D, #04012F)",
+  color: "blue",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   padding: theme.spacing(0, 1),
 
   // necessary for content to be below app bar
@@ -84,11 +89,11 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const AppBarWrapper = styled(AppBar)(({ theme, open }) => ({
   background:
-    theme.palette.mode === 'dark'
-      ? 'Black'
-      : 'linear-gradient(0deg, #01127D, #04012F)',
+    theme.palette.mode === "dark"
+      ? "Black"
+      : "linear-gradient(0deg, #01127D, #04012F)",
   zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
+  transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
@@ -96,7 +101,7 @@ const AppBarWrapper = styled(AppBar)(({ theme, open }) => ({
     marginLeft: drawerWidth,
     // width: `calc(100% - ${drawerWidth}px)`,
     // zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
+    transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -105,16 +110,16 @@ const AppBarWrapper = styled(AppBar)(({ theme, open }) => ({
 
 const DrawerWrapper = styled(Drawer)(({ theme, open }) => ({
   flexShrink: 0,
-  whiteSpace: 'nowrap',
-  boxSizing: 'border-box',
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
 
   ...(open && {
     ...openedMixin(theme),
-    '& .MuiDrawer-paper': openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
   }),
   ...(!open && {
     ...closedMixin(theme),
-    '& .MuiDrawer-paper': closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
   }),
 }));
 
@@ -127,12 +132,7 @@ const ToggleNav = () => {
   const [toggleNavData, setToggleNavData] = useState(userRolesData);
 
   // This code is to change the color of the Call Icon
-  const [colorStates, setColorStates] = useState([
-    'green',
-    'green',
-    'green',
-    'green',
-  ]);
+  const [colorStates, setColorStates] = useState(["black"]);
 
   /// global state
   const toggleShowNav2 = useSelector((state) => state.ui.ShowSide_nav);
@@ -142,7 +142,7 @@ const ToggleNav = () => {
   );
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
   const unApprovedData = useSelector(
-    (state) => state.api.queries['getUnApprovedCount(null)']?.data?.data
+    (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
   );
 
   /// Local State
@@ -182,6 +182,13 @@ const ToggleNav = () => {
       pollingInterval: 1000 * 300,
     });
 
+  const { data: getUserForNotification, refetch: getNotificationRefetch } =
+    useGetNotificationTokenQuery();
+
+  const [sendNotification] = useSendSingleNotificationMutation();
+
+  /// handler
+
   const [logout] = useLogoutMutation();
 
   /// handler
@@ -220,10 +227,10 @@ const ToggleNav = () => {
   const handleLogout = async () => {
     try {
       dispatch(dispatchLogout());
-      navigate('/login');
+      navigate("/login");
       const res = await logout().unwrap();
     } catch (error) {
-      console.error('An error occurred during Navbar:', error);
+      console.error("An error occurred during Navbar:", error);
     }
   };
 
@@ -256,6 +263,7 @@ const ToggleNav = () => {
   //   console.log(chatNotificationData.length)
   // }, [chatNotificationData, chatNotificationData.length > 0,useSelector]);
   /// function
+
   const sumObjectValues = (obj) => {
     let total = 0;
     const userRoles = userInfo.userRoles;
@@ -293,30 +301,30 @@ const ToggleNav = () => {
             <MenuItem
               key={key}
               sx={{
-                '&:hover': {
-                  backgroundColor: '#d1d5db',
+                "&:hover": {
+                  backgroundColor: "#d1d5db",
                 },
               }}
               onClick={() => {
                 setAnchorEl(null);
                 setNotificationOpen(false);
 
-                if (key === 'New Product Approval') {
-                  navigate('/NewProductApproval');
-                } else if (key === 'Product Changes Approval') {
-                  navigate('/changeProductApproval');
-                } else if (key === 'Open Box Approval') {
-                  navigate('/boxapprovalstatus?true');
-                } else if (key === 'Cost Approval') {
-                  navigate('Approval/LandingCost');
-                } else if (key === 'Stock Approval') {
-                  navigate('/Approval/Quantity');
-                } else if (key === 'MRP Approval') {
-                  navigate('/Approval/MRP');
-                } else if (key === 'SalesPrice Approval') {
-                  navigate('/Approval/SalesPrice');
-                } else if (key === 'SellerPrice Approval') {
-                  navigate('/Approval/SellerPrice');
+                if (key === "New Product Approval") {
+                  navigate("/NewProductApproval");
+                } else if (key === "Product Changes Approval") {
+                  navigate("/changeProductApproval");
+                } else if (key === "Open Box Approval") {
+                  navigate("/boxapprovalstatus?true");
+                } else if (key === "Cost Approval") {
+                  navigate("Approval/LandingCost");
+                } else if (key === "Stock Approval") {
+                  navigate("/Approval/Quantity");
+                } else if (key === "MRP Approval") {
+                  navigate("/Approval/MRP");
+                } else if (key === "SalesPrice Approval") {
+                  navigate("/Approval/SalesPrice");
+                } else if (key === "SellerPrice Approval") {
+                  navigate("/Approval/SellerPrice");
                 }
               }}
             >
@@ -330,22 +338,22 @@ const ToggleNav = () => {
               onClick={() => {
                 handleClose();
 
-                if (key === 'New Product Approval') {
-                  navigate('/NewProductApproval');
-                } else if (key === 'Product Changes Approval') {
-                  navigate('/changeProductApproval');
-                } else if (key === 'Open Box Approval') {
-                  navigate('/boxapprovalstatus?true');
-                } else if (key === 'Cost Approval') {
-                  navigate('Approval/LandingCost');
-                } else if (key === 'Stock Approval') {
-                  navigate('/Approval/Quantity');
-                } else if (key === 'MRP Approval') {
-                  navigate('/Approval/MRP');
-                } else if (key === 'SalesPrice Approval') {
-                  navigate('/Approval/SalesPrice');
-                } else if (key === 'SellerPrice Approval') {
-                  navigate('/Approval/SellerPrice');
+                if (key === "New Product Approval") {
+                  navigate("/NewProductApproval");
+                } else if (key === "Product Changes Approval") {
+                  navigate("/changeProductApproval");
+                } else if (key === "Open Box Approval") {
+                  navigate("/boxapprovalstatus?true");
+                } else if (key === "Cost Approval") {
+                  navigate("Approval/LandingCost");
+                } else if (key === "Stock Approval") {
+                  navigate("/Approval/Quantity");
+                } else if (key === "MRP Approval") {
+                  navigate("/Approval/MRP");
+                } else if (key === "SalesPrice Approval") {
+                  navigate("/Approval/SalesPrice");
+                } else if (key === "SellerPrice Approval") {
+                  navigate("/Approval/SellerPrice");
                 }
               }}
             >
@@ -358,14 +366,18 @@ const ToggleNav = () => {
   const newUnapprovedData = sumObjectValues(unApprovedData);
   const notificationCount = newUnapprovedData;
   // MUI Breakpoints
-  const isSmOrDown = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmOrDown = useMediaQuery(theme.breakpoints.down("sm"));
 
   // This is the code to change the color of
-  const handleClickClr = (index) => {
+  const handleClickClr = async (index, adminId, name) => {
+    const title = `Hi ${name}`;
+    const desc = "Sagar Sir is calling you to the Cabin";
+    const url = "https://erp.indianrobostore.com";
+
     // Change the color to red immediately
     setColorStates((prevColorStates) => {
       const newColorStates = [...prevColorStates];
-      newColorStates[index] = 'red';
+      newColorStates[index] = "green";
       return newColorStates;
     });
 
@@ -373,37 +385,49 @@ const ToggleNav = () => {
     setTimeout(() => {
       setColorStates((prevColorStates) => {
         const updatedColorStates = [...prevColorStates];
-        updatedColorStates[index] = 'green';
+        updatedColorStates[index] = "black";
         return updatedColorStates;
       });
     }, 10000);
+
+    try {
+      const result = await sendNotification({
+        adminId,
+        title,
+        desc,
+        url,
+      }).unwrap();
+      toast.success("Notification Sent");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <Box>
       <AppBarWrapper
-        position='fixed'
+        position="fixed"
         sx={{
           background: themeColor.themeColor1,
         }}
       >
         <Toolbar
           sx={{
-            marginLeft: '1.5rem',
-            display: 'flex',
-            justifyContent: 'space-between',
+            marginLeft: "1.5rem",
+            display: "flex",
+            justifyContent: "space-between",
           }}
         >
           <Box>
             <IconButton
-              color='inherit'
-              aria-label='open drawer'
+              color="inherit"
+              aria-label="open drawer"
               onClick={() => {
                 handleDrawer();
               }}
-              edge='start'
+              edge="start"
               sx={{
-                position: 'absolute',
+                position: "absolute",
                 top: 15,
                 left: 0,
               }}
@@ -413,104 +437,105 @@ const ToggleNav = () => {
 
             <Box
               sx={{
-                marginLeft: '1rem',
-                width: '6.5rem',
-                cursor: 'pointer',
+                marginLeft: "1rem",
+                width: "6.5rem",
+                cursor: "pointer",
               }}
             >
-              {' '}
+              {" "}
               <img
                 src={logo2}
-                alt='Arrow'
+                alt="Arrow"
                 style={{
-                  objectFit: 'cover',
-                  objectPosition: 'center',
-                  width: '100%',
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  width: "100%",
                 }}
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
               />
             </Box>
           </Box>
           {HeaderName && <Header Name={HeaderName} info={true} />}
           <Box
             sx={{
-              display: 'flex',
-              gap: '50px',
-              justifyContent: 'center',
-              alignItems: 'center',
+              display: "flex",
+              gap: "50px",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             {/* Calling Icon */}
             <Box
               sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: '8px',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "8px",
               }}
             >
               <AddIcCallIcon
-                src={profileImage?.url || ''}
+                src={profileImage?.url || ""}
                 sx={{
-                  width: '30px',
-                  height: '30px',
-                  '& .MuiAvatar-img': {
-                    objectFit: 'fill',
-                    objectPosition: 'center',
+                  width: "30px",
+                  height: "30px",
+                  "& .MuiAvatar-img": {
+                    objectFit: "fill",
+                    objectPosition: "center",
                   },
                 }}
                 onClick={handleClickBtn}
               />
               <Menu
-                id='basic-menu'
+                id="basic-menu"
                 anchorEl={anchorElCall}
                 open={CallMenuOpen}
                 onClose={handleCloseBtn}
                 MenuListProps={{
-                  'aria-labelledby': 'basic-button',
+                  "aria-labelledby": "basic-button",
                 }}
+                sx={{ height: "400px"}}
               >
-                {['Tanweer Sir', 'Saket Sir', 'Akash Sir'].map(
-                  (name, index) => (
-                    <MenuItem
-                      key={index}
-                      // onClick={handleCloseBtn}
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        gap: '20px',
-                      }}
-                    >
-                      <Avatar />
-                      {name}
-                      <CallIcon
-                        sx={{ color: colorStates[index] }}
-                        onClick={() => handleClickClr(index)}
-                      />
-                    </MenuItem>
-                  )
-                )}
+                {getUserForNotification?.data.map((name, index) => (
+                  <MenuItem
+                    key={index}
+                    // onClick={handleCloseBtn}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "20px",
+                    }}
+                  >
+                    <Avatar />
+                    {name?.name}
+                    <CallIcon
+                      sx={{ color: colorStates[index] }}
+                      onClick={() =>
+                        handleClickClr(index, name?.adminId, name?.name)
+                      }
+                    />
+                  </MenuItem>
+                ))}
               </Menu>
             </Box>
 
             <div
-              style={{ cursor: 'pointer' }}
-              onClick={() => navigate('/chat')}
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/chat")}
             >
               <Badge
                 badgeContent={chatNotificationData?.length}
-                color={chatNotificationData?.length > 0 ? 'error' : 'default'}
-                overlap='circular'
+                color={chatNotificationData?.length > 0 ? "error" : "default"}
+                overlap="circular"
                 anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                  vertical: "top",
+                  horizontal: "right",
                 }}
                 onClick={() => {
-                  navigate('/chat');
+                  navigate("/chat");
                 }}
-                className={2 ? 'notificationBell' : ''}
+                className={2 ? "notificationBell" : ""}
                 sx={{
-                  cursor: 'pointer',
+                  cursor: "pointer",
                 }}
               >
                 <ChatIcon />
@@ -520,11 +545,11 @@ const ToggleNav = () => {
             <div>
               <Badge
                 badgeContent={notificationCount}
-                color={notificationCount > 0 ? 'error' : 'default'}
-                overlap='circular'
+                color={notificationCount > 0 ? "error" : "default"}
+                overlap="circular"
                 anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                  vertical: "top",
+                  horizontal: "right",
                 }}
                 onClick={(event) => {
                   if (notificationCount > 0) {
@@ -532,15 +557,15 @@ const ToggleNav = () => {
                     setNotificationOpen(true);
                   }
                 }}
-                className={notificationCount ? 'notificationBell' : ''}
+                className={notificationCount ? "notificationBell" : ""}
                 sx={{
-                  cursor: notificationCount > 0 ? 'pointer' : 'default',
+                  cursor: notificationCount > 0 ? "pointer" : "default",
                 }}
               >
-                <NotificationsNoneIcon color='#fff' />
+                <NotificationsNoneIcon color="#fff" />
               </Badge>
               <Menu
-                id='demo-positioned-menu'
+                id="demo-positioned-menu"
                 anchorEl={anchorEl}
                 open={notificationOpen}
                 onClose={() => {
@@ -548,7 +573,7 @@ const ToggleNav = () => {
                   setNotificationOpen(false);
                 }}
                 MenuListProps={{
-                  'aria-labelledby': 'basic-button',
+                  "aria-labelledby": "basic-button",
                 }}
               >
                 {renderMenuItems(unApprovedData)}
@@ -558,26 +583,26 @@ const ToggleNav = () => {
               <ColorLensIcon
                 onClick={handleClickThemeSelector}
                 sx={{
-                  cursor: 'pointer',
+                  cursor: "pointer",
                 }}
               />
               <Menu
-                id='basic-menu'
+                id="basic-menu"
                 anchorEl={anchorEl}
                 open={themeSelector}
                 onClose={handleCloseThemeSelector}
                 MenuListProps={{
-                  'aria-labelledby': 'basic-button',
+                  "aria-labelledby": "basic-button",
                 }}
               >
                 <Box
                   sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'center',
-                    padding: '2px',
-                    gap: '2px',
-                    width: '100px',
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    padding: "2px",
+                    gap: "2px",
+                    width: "100px",
                   }}
                 >
                   {themeColors.map((item) => (
@@ -587,20 +612,20 @@ const ToggleNav = () => {
                         handleThemeSelector(item);
                       }}
                       sx={{
-                        flex: '0 0 calc(33.33% - 4px)', // Set the width for each item to be one-third of the container's width
-                        height: '30px',
+                        flex: "0 0 calc(33.33% - 4px)", // Set the width for each item to be one-third of the container's width
+                        height: "30px",
                         background: item.themeColor1,
-                        borderRadius: '2px',
-                        alignItems: 'center',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
+                        borderRadius: "2px",
+                        alignItems: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                        cursor: "pointer",
                       }}
                     >
                       <CheckCircleOutlineTwoToneIcon
                         sx={{
-                          color: 'white',
-                          display: themeColor.name === item.name ? '' : 'none',
+                          color: "white",
+                          display: themeColor.name === item.name ? "" : "none",
                         }}
                       />
                     </Box>
@@ -611,35 +636,35 @@ const ToggleNav = () => {
 
             <Box
               sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: '8px',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "8px",
               }}
             >
               <Typography>{name}</Typography>
               <Avatar
-                src={profileImage?.url || ''}
+                src={profileImage?.url || ""}
                 sx={{
-                  width: '30px',
-                  height: '30px',
-                  '& .MuiAvatar-img': {
-                    objectFit: 'fill',
-                    objectPosition: 'center',
+                  width: "30px",
+                  height: "30px",
+                  "& .MuiAvatar-img": {
+                    objectFit: "fill",
+                    objectPosition: "center",
                   },
                 }}
                 onClick={handleClick}
               />
               <Menu
-                id='basic-menu'
+                id="basic-menu"
                 anchorEl={anchorEl}
                 open={profileMenuOpen}
                 onClose={handleClose}
                 MenuListProps={{
-                  'aria-labelledby': 'basic-button',
+                  "aria-labelledby": "basic-button",
                 }}
               >
-                <MenuItem onClick={() => navigate('/profile')}>
+                <MenuItem onClick={() => navigate("/profile")}>
                   Profile
                 </MenuItem>
 
@@ -652,17 +677,17 @@ const ToggleNav = () => {
 
       {/* {App Drawer} */}
       <DrawerWrapper
-        variant={isSmOrDown ? 'temporary' : 'permanent'}
+        variant={isSmOrDown ? "temporary" : "permanent"}
         open={toggleShowNav2}
       >
         <DrawerHeader />
 
         <Box
           sx={{
-            overflowY: 'auto',
-            height: '84vh',
-            overflowX: 'hidden',
-            marginTop: '0.3rem',
+            overflowY: "auto",
+            height: "84vh",
+            overflowX: "hidden",
+            marginTop: "0.3rem",
           }}
         >
           {isAdmin
