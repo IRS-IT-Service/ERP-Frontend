@@ -39,31 +39,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 //Todo
 const infoDetail = [
   {
-    name: 'Status',
+    name: "Status",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717246052254'
-        height={'60%'}
-        width={'90%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717246052254"
+        height={"60%"}
+        width={"90%"}
       />
     ),
-    instruction: 'Here You Can See Status of Your all Overseas Shipment',
+    instruction: "Here You Can See Status of Your all Overseas Shipment",
   },
   {
-    name: 'Details',
+    name: "Details",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065319338'
-        height={'100%'}
-        width={'100%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/view_wholesale%20request.png?updatedAt=1703065319338"
+        height={"100%"}
+        width={"100%"}
       />
     ),
     instruction:
-      'If you click to View Button Under Details so you can see One overseas Shipment with all the Shipment Details',
+      "If you click to View Button Under Details so you can see One overseas Shipment with all the Shipment Details",
   },
 ];
 
@@ -82,16 +81,14 @@ const OverseasorderList = () => {
   /// local state
   const [toggleValue, setToggleValue] = useState("pending");
   const [rows, setRows] = useState([]);
-  const [OpenAction, setOpenAction] = useState(false)
-  const [selectedDetails , setSelectedDetails] = useState(null)
-  const [slectedInfo, setSelectedInfo] = useState(null)
+  const [OpenAction, setOpenAction] = useState(false);
+  const [selectedDetails, setSelectedDetails] = useState(null);
+  const [slectedInfo, setSelectedInfo] = useState(null);
 
-  const handleOpen = (e,details) =>{
-    setOpenAction(true)
-    setSelectedDetails(details)
-    setSelectedInfo(e)
-
-  }
+  const handleOpen = (e) => {
+    setOpenAction(true);
+    setSelectedDetails(e);
+  };
 
   /// RTK query
   const {
@@ -105,7 +102,7 @@ const OverseasorderList = () => {
       const data = overseasShipment.data?.map((item, index) => ({
         ...item,
         shipmentDate: formatDate(item.shipmentDate),
-        id:item._id,
+        id: item._id,
         Sno: index + 1,
       }));
 
@@ -113,7 +110,7 @@ const OverseasorderList = () => {
     }
   }, [overseasShipment, toggleValue]);
 
-console.log(overseasShipment)
+  console.log(overseasShipment);
 
   /// handler
   const handleSelectionChange = (selectionModel) => {
@@ -134,15 +131,15 @@ console.log(overseasShipment)
     },
 
     {
-        field: "vendorName",
-        headerName: "Assigned To",
-        flex: 0.3,
-        minWidth: 100,
-        align: "center",
-        headerAlign: "center",
-        headerClassName: "super-app-theme--header",
-        cellClassName: "super-app-theme--cell",
-      },
+      field: "vendorName",
+      headerName: "Assigned To",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
     {
       field: "piNo",
       headerName: "PI No:",
@@ -163,12 +160,11 @@ console.log(overseasShipment)
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-        
         return (
           <Button
-
-          size="small"
-            onClick={(e) => { handleOpen(e,"Swift copy")
+            size="small"
+            onClick={(e) => {
+              handleOpen("Swift copy");
             }}
           >
             View
@@ -188,9 +184,9 @@ console.log(overseasShipment)
       renderCell: (params) => {
         return (
           <Button
-
-          size="small"
-            onClick={(e) => { handleOpen("PI copy")
+            size="small"
+            onClick={(e) => {
+              handleOpen("PI copy");
             }}
           >
             View
@@ -209,12 +205,12 @@ console.log(overseasShipment)
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-  
         return (
           <Button
-          variant="contained"
-          size="small"
-            onClick={(e) => { handleOpen("Add Amount")
+            variant="contained"
+            size="small"
+            onClick={(e) => {
+              handleOpen("Add Amount");
             }}
           >
             Add Amount
@@ -232,19 +228,19 @@ console.log(overseasShipment)
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `$ ${Number(params.value).toFixed(2)}`
+      valueFormatter: (params) => `$ ${Number(params.value).toFixed(2)}`,
     },
     {
-        field: "restUSDAmount",
-        headerName: "Shortfall",
-        flex: 0.2,
-        minWidth: 50, 
-        align: "center",
-        headerAlign: "center",
-        headerClassName: "super-app-theme--header",
-        cellClassName: "super-app-theme--cell",
-        valueFormatter: (params) => `$ ${Number(params.value).toFixed(2)}`
-      },
+      field: "restUSDAmount",
+      headerName: "Shortfall",
+      flex: 0.2,
+      minWidth: 50,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `$ ${Number(params.value).toFixed(2)}`,
+    },
     {
       field: "status",
       headerName: "Status",
@@ -255,7 +251,6 @@ console.log(overseasShipment)
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-   
 
     {
       field: "details",
@@ -270,9 +265,7 @@ console.log(overseasShipment)
         return (
           <Button
             onClick={() => {
-              navigate(
-                `/SubPIList/${params.row.PI}`
-              );
+              navigate(`/SubPIList/${params.row.PI}`);
             }}
           >
             View
@@ -468,17 +461,15 @@ console.log(overseasShipment)
           description={description}
           open={isInfoOpen}
           close={handleClose}
-        
         />
       </StyledBox>
-      {OpenAction &&
+      {OpenAction && (
         <OpenActionDial
-         open={OpenAction}
-          close={()=>setOpenAction(false)}
-          selectedDetails = {selectedDetails}
-           />
-
-      }
+          open={OpenAction}
+          close={() => setOpenAction(false)}
+          selectedDetails={selectedDetails}
+        />
+      )}
     </Box>
   );
 };
