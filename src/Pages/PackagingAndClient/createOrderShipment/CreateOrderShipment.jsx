@@ -538,6 +538,8 @@ const createOrderShipment = ({
     }
   };
 
+
+
   return (
     <div>
       <InfoDialogBox
@@ -902,8 +904,8 @@ const createOrderShipment = ({
                       >
                         {item.GST} %
                       </StyleTable>
-                      <StyleTable align='center' sx={{ fontSize: '.8rem' }}>
-                        {item.Quantity}
+                      <StyleTable align="center" sx={{ fontSize: ".8rem" }}>
+                        {item.ActualQuantity}
                       </StyleTable>
 
                       <StyleTable align='center'>
