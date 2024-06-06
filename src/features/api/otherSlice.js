@@ -38,6 +38,19 @@ export const otherApiSlice = apiSlice.injectEndpoints({
         body:data
       }),
     }),
+    getNotificationToken: builder.query({
+      query: (data) => ({
+        url: `/Notification/getAllFcmtoken`,
+        method: "GET",
+      }),
+    }),
+    sendSingleNotification: builder.mutation({
+      query: (data) => ({
+        url: `/Notification/sendNotification`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   
   }),
 });
@@ -46,5 +59,8 @@ export const {
   useGetStudentinfoQuery,
   useAddCareerMutation,
   useGetCareersQuery,
-  useGetApplicantsMutation,useGetShipRocketCourierMutation
+  useGetApplicantsMutation,
+  useGetShipRocketCourierMutation,
+  useGetNotificationTokenQuery,
+  useSendSingleNotificationMutation,
 } = otherApiSlice;

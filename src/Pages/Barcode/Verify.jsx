@@ -35,7 +35,7 @@ const infoDetail = [
 const Verify = () => {
   // InfoDialogBox
 
-  const description = `The "barcode stick module" is designed for products; when you scan a product's barcode, it provides details such as SKU, creation date, barcode number, and brand name.`;
+  const description = `Barcode Stick`;
 
   const dispatch = useDispatch();
 

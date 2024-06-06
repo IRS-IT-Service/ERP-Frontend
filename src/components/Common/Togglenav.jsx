@@ -11,6 +11,8 @@ import Navbar from "./Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 import CheckCircleOutlineTwoToneIcon from "@mui/icons-material/CheckCircleOutlineTwoTone";
+import AddIcCallIcon from "@mui/icons-material/AddIcCall";
+import CallIcon from "@mui/icons-material/Call";
 import {
   Avatar,
   Typography,
@@ -19,6 +21,8 @@ import {
   MenuItem,
   Badge,
   Link,
+  Button,
+  Fade,
 } from "@mui/material";
 import userRolesData from "../../constants/UserRolesItems";
 import ToggleMenu from "./ToogleMenu";
@@ -38,6 +42,11 @@ import {
   useAllDispatchAprovalCountQuery,
 } from "../../features/api/RnDSlice";
 import ChatIcon from "@mui/icons-material/Chat";
+import {
+  useGetNotificationTokenQuery,
+  useSendSingleNotificationMutation,
+} from "../../features/api/otherSlice";
+import { toast } from "react-toastify";
 
 const drawerWidth = 220;
 
@@ -122,6 +131,9 @@ const ToggleNav = () => {
   // open close sidebar
   const [toggleNavData, setToggleNavData] = useState(userRolesData);
 
+  // This code is to change the color of the Call Icon
+  const [colorStates, setColorStates] = useState(["black"]);
+
   /// global state
   const toggleShowNav2 = useSelector((state) => state.ui.ShowSide_nav);
   const { themeColor } = useSelector((state) => state.ui);
@@ -136,9 +148,13 @@ const ToggleNav = () => {
   /// Local State
   const [proRoles, setProRoles] = useState([]);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [CallMenuOpen, setCallMenuOpen] = useState(false);
+
   const [themeSelector, setThemeSelector] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorElCall, setAnchorElCall] = useState(null);
+
   const { HeaderName } = useSelector((state) => state.ui);
 
   /// rtk query
@@ -166,6 +182,13 @@ const ToggleNav = () => {
       pollingInterval: 1000 * 300,
     });
 
+  const { data: getUserForNotification, refetch: getNotificationRefetch } =
+    useGetNotificationTokenQuery();
+
+  const [sendNotification] = useSendSingleNotificationMutation();
+
+  /// handler
+
   const [logout] = useLogoutMutation();
 
   /// handler
@@ -180,6 +203,15 @@ const ToggleNav = () => {
   const handleClose = () => {
     setAnchorEl(null);
     setProfileMenuOpen(false);
+  };
+
+  const handleClickBtn = (event) => {
+    setAnchorElCall(event.currentTarget);
+    setCallMenuOpen(true);
+  };
+  const handleCloseBtn = () => {
+    setAnchorElCall(null);
+    setCallMenuOpen(false);
   };
 
   const handleClickThemeSelector = (event) => {
@@ -231,6 +263,7 @@ const ToggleNav = () => {
   //   console.log(chatNotificationData.length)
   // }, [chatNotificationData, chatNotificationData.length > 0,useSelector]);
   /// function
+
   const sumObjectValues = (obj) => {
     let total = 0;
     const userRoles = userInfo.userRoles;
@@ -332,8 +365,43 @@ const ToggleNav = () => {
   };
   const newUnapprovedData = sumObjectValues(unApprovedData);
   const notificationCount = newUnapprovedData;
-  /// MUI Breakpoints
+  // MUI Breakpoints
   const isSmOrDown = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // This is the code to change the color of
+  const handleClickClr = async (index, adminId, name) => {
+    const title = `Hi ${name}`;
+    const desc = "Sagar Sir is calling you to the Cabin";
+    const url = "https://erp.indianrobostore.com";
+
+    // Change the color to red immediately
+    setColorStates((prevColorStates) => {
+      const newColorStates = [...prevColorStates];
+      newColorStates[index] = "green";
+      return newColorStates;
+    });
+
+    // Set a timeout to change the color back to green after 10 seconds
+    setTimeout(() => {
+      setColorStates((prevColorStates) => {
+        const updatedColorStates = [...prevColorStates];
+        updatedColorStates[index] = "black";
+        return updatedColorStates;
+      });
+    }, 10000);
+
+    try {
+      const result = await sendNotification({
+        adminId,
+        title,
+        desc,
+        url,
+      }).unwrap();
+      toast.success("Notification Sent");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Box>
@@ -396,6 +464,60 @@ const ToggleNav = () => {
               alignItems: "center",
             }}
           >
+            {/* Calling Icon */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <AddIcCallIcon
+                src={profileImage?.url || ""}
+                sx={{
+                  width: "30px",
+                  height: "30px",
+                  "& .MuiAvatar-img": {
+                    objectFit: "fill",
+                    objectPosition: "center",
+                  },
+                }}
+                onClick={handleClickBtn}
+              />
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorElCall}
+                open={CallMenuOpen}
+                onClose={handleCloseBtn}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
+                }}
+                sx={{ height: "400px"}}
+              >
+                {getUserForNotification?.data.map((name, index) => (
+                  <MenuItem
+                    key={index}
+                    // onClick={handleCloseBtn}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "20px",
+                    }}
+                  >
+                    <Avatar />
+                    {name?.name}
+                    <CallIcon
+                      sx={{ color: colorStates[index] }}
+                      onClick={() =>
+                        handleClickClr(index, name?.adminId, name?.name)
+                      }
+                    />
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+
             <div
               style={{ cursor: "pointer" }}
               onClick={() => navigate("/chat")}
@@ -417,7 +539,7 @@ const ToggleNav = () => {
                 }}
               >
                 <ChatIcon />
-              </Badge>{" "}
+              </Badge>
             </div>
 
             <div>
@@ -511,6 +633,7 @@ const ToggleNav = () => {
                 </Box>
               </Menu>
             </Box>
+
             <Box
               sx={{
                 display: "flex",

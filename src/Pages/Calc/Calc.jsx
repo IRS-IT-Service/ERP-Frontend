@@ -45,7 +45,7 @@ import { useSocket } from '../../CustomProvider/useWebSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../../components/Common/Loading';
 import Header from '../../components/Common/Header';
-import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import InfoDialogBox from '../../components/Common/InfoDialogBox'; 
 import { setHeader, setInfo } from '../../features/slice/uiSlice';
 import { useAddPriceHistoryMutation } from '../../features/api/PriceHistoryApiSlice';
 
@@ -63,9 +63,20 @@ const infoDetail = [
         height={'50%'}
         width={'50%'}
       />
-    ),
+    ),   
     instruction:
       "If you click 'View,' you can save the price for that particular price list",
+  },
+  {
+    name: 'Search',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/calcSearch.png?updatedAt=1717389087947'
+        height={'50%'}
+        width={'50%'}
+      />
+    ),
+    instruction: `Here you can Search Product by Name and Calculate Price`,
   },
 ];
 

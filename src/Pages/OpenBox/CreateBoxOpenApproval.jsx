@@ -1,67 +1,111 @@
-import { React, useEffect, useState } from "react";
-import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
-import Nodata from "../../assets/empty-cart.png";
-import FilterBar from "../../components/Common/FilterBar";
-import { Grid, Box, Typography, styled } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { setAllProducts } from "../../features/slice/productSlice";
-import { useGetAllProductQuery } from "../../features/api/productApiSlice";
-import Loading from "../../components/Common/Loading";
-import { useNavigate } from "react-router-dom";
-import CreateBoxApprovalDialog from "./Components/CreateBoxApprovalDialog";
-import Header from "../../components/Common/Header";
-import InfoDialogBox from "../../components/Common/InfoDialogBox";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { React, useEffect, useState } from 'react';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
+import Nodata from '../../assets/empty-cart.png';
+import FilterBar from '../../components/Common/FilterBar';
+import { Grid, Box, Typography, styled } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAllProducts } from '../../features/slice/productSlice';
+import { useGetAllProductQuery } from '../../features/api/productApiSlice';
+import Loading from '../../components/Common/Loading';
+import { useNavigate } from 'react-router-dom';
+import CreateBoxApprovalDialog from './Components/CreateBoxApprovalDialog';
+import Header from '../../components/Common/Header';
+import InfoDialogBox from '../../components/Common/InfoDialogBox';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: 'Create Button',
+    name: 'Sort By Brand',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/createButton.png?updatedAt=1703073330447'
-        height={'100%'}
-        width={'100%'}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortBrand_productList.png?updatedAt=1703135461416'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction: `When you select the product's component and click on create button it will pop up the Box open Approval `,
+    instruction:
+      "If you click 'Sort by Brand' and select a particular brand, you can view listings for that specific brand",
+  },
+  {
+    name: 'Sort By Category',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sortcategory_productList.png?updatedAt=1703135461428'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      "If you click 'Sort by Category' and select a particular category, you can view listings for that specific product",
+  },
+  {
+    name: 'Clear All Filter',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/ClearAllFilter.png?updatedAt=1717242379859'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      "The 'Clear all filters' button removes all applied filters, resetting the view to display all available data without any filtering criteria applied",
+  },
+  {
+    name: 'CheckBox',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/checkBox.png?updatedAt=1717248300834'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction: `You Can Selected Multiple Items for Approval of Open Box`,
   },
 
   {
-    name: 'Box Open Approval ',
+    name: 'Create',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/boxOpenApproval.png?updatedAt=1703073537532'
-        height={'100%'}
-        width={'100%'}
-        style={
-          {
-            // width: '10vw',
-            // height: '10vh'
-          }
-        }
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/btnCreate.png?updatedAt=1717396267381'
+        height={'60%'}
+        width={'90%'}
       />
     ),
-    instruction: `
-This is a Box Open Approval pop-up form in which approval is required from the admin. `,
-  }
+    instruction: 'Here You can Create Box Open Approval Permission of Selected Product',
+  },
+
+  {
+    name: 'Search by SKU',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/SearchBySKU.png?updatedAt=1717396104896'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      'If you click the search box, you can search for any product by SKU',
+  },
+  {
+    name: 'Search by Brand Name',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/searchByProductName.png?updatedAt=1717396139090'
+        height={'60%'}
+        width={'90%'}
+      />
+    ),
+    instruction:
+      'If you click the search box, you can search for any product byproduct name',
+  },
 ];
 
-
 const CreateBoxOpenApproval = () => {
-  const description = `
-In the "Create Box Open Approval" you provide specific approval for the selected product components. When you click the create button, a dialog box will appear, holding the approval form.
-`;
-
+  const description = `Create Box Open Approval`;
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose = () => {
@@ -76,7 +120,6 @@ In the "Create Box Open Approval" you provide specific approval for the selected
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const apiRef = useGridApiRef();
-
 
   /// global state
   const { searchTerm, forceSearch } = useSelector((state) => state.product);
@@ -127,7 +170,7 @@ In the "Create Box Open Approval" you provide specific approval for the selected
   };
   /// useEffect
   useEffect(() => {
-    if (allProductData?.status === "success") {
+    if (allProductData?.status === 'success') {
       const data = allProductData?.data.map((item, index) => {
         return {
           id: item.SKU,
@@ -149,98 +192,96 @@ In the "Create Box Open Approval" you provide specific approval for the selected
     }
   }, [allProductData]);
 
- 
-
   //Columns*******************
   const columns = [
     {
-      field: "Sno",
-      headerName: "Sno",
+      field: 'Sno',
+      headerName: 'Sno',
       flex: 0.3,
       minWidth: 70,
       maxWidth: 80,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "SKU",
-      headerName: "SKU",
+      field: 'SKU',
+      headerName: 'SKU',
       flex: 0.1,
       minWidth: 80,
       maxWidth: 130,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Name",
-      headerName: "Product ",
+      field: 'Name',
+      headerName: 'Product ',
       flex: 0.3,
       minWidth: 300,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Brand",
-      headerName: "Brand",
+      field: 'Brand',
+      headerName: 'Brand',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 110,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Category",
-      headerName: "Category",
+      field: 'Category',
+      headerName: 'Category',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 110,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "GST",
-      headerName: "GST",
+      field: 'GST',
+      headerName: 'GST',
       flex: 0.3,
       minWidth: 60,
       maxWidth: 70,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       valueFormatter: (params) => ` ${(+params.value).toFixed(0)} %`,
     },
     {
-      field: "allowedBoxOpen",
-      headerName: "Box Open Qty",
-      type: "number",
+      field: 'allowedBoxOpen',
+      headerName: 'Box Open Qty',
+      type: 'number',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 140,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Quantity",
-      headerName: "QTY",
+      field: 'Quantity',
+      headerName: 'QTY',
       flex: 0.3,
       minWidth: 80,
       maxWidth: 90,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     // {
     //   field: "MRP",

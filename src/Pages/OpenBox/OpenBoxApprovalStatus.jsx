@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useState } from 'react';
+import { DataGrid } from '@mui/x-data-grid';
 import {
   Box,
   styled,
@@ -17,39 +17,39 @@ import {
   TableBody,
   tableCellClasses,
   CircularProgress,
-} from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import TableCell from "@mui/material/TableCell";
-import { useLocation } from "react-router-dom";
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import TableCell from '@mui/material/TableCell';
+import { useLocation } from 'react-router-dom';
 import {
   useUpdateBoxOpenApprovalMutation,
   useGetBoxOpenApprovalQuery,
-} from "../../features/api/barcodeApiSlice";
-import { useGetUnApprovedCountQuery } from "../../features/api/productApiSlice";
-import { useEffect } from "react";
-import { formatDate } from "../../commonFunctions/commonFunctions";
-import Loading from "../../components/Common/Loading";
-import { toast } from "react-toastify";
-import Header from "../../components/Common/Header";
+} from '../../features/api/barcodeApiSlice';
+import { useGetUnApprovedCountQuery } from '../../features/api/productApiSlice';
+import { useEffect } from 'react';
+import { formatDate } from '../../commonFunctions/commonFunctions';
+import Loading from '../../components/Common/Loading';
+import { toast } from 'react-toastify';
+import Header from '../../components/Common/Header';
 import InfoDialogBox from '../../components/Common/InfoDialogBox';
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../features/slice/uiSlice';
 
 /// styles
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const useStyles = makeStyles((theme) => ({
   selected: {
-    backgroundColor: "rgb(4,4,61) !important",
-    color: "white !important",
+    backgroundColor: 'rgb(4,4,61) !important',
+    color: 'white !important',
   },
 }));
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    background: "linear-gradient(0deg, #01127D, #04012F)",
+    background: 'linear-gradient(0deg, #01127D, #04012F)',
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
@@ -57,10 +57,9 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-
 const infoDetail = [
   {
-    name: 'Approval Status Button',
+    name: 'Pending Query',
     screenshot: (
       <img
         src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvalStatus.png?updatedAt=1703075709896'
@@ -77,10 +76,10 @@ const infoDetail = [
     instruction: `All three are status buttons through which you can check the status of the product component.`,
   },
   {
-    name: 'Approval Status View',
+    name: 'Approved Query',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvalStatus.png?updatedAt=1703075709896'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/approvedQuery.png?updatedAt=1717396784267'
         height={'100%'}
         width={'100%'}
         style={
@@ -93,15 +92,29 @@ const infoDetail = [
     ),
     instruction: `After clicking on View button a dialog box of approval status pop-up `,
   },
-];  
-    
-
+  {
+    name: 'Rejected Query',
+    screenshot: (
+      <img
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/rejectedQuery.png?updatedAt=1717396743659'
+        height={'100%'}
+        width={'100%'}
+        style={
+          {
+            // width: '10vw',
+            // height: '10vh'
+          }
+        }
+      />
+    ),
+    instruction: `After clicking on View button a dialog box of Rejected status pop-up `,
+  },
+];
 
 const OpenBoxApprovalStatus = () => {
+  const description = `Open Box Approval Status`;
 
-const description = `In the "Open Box Approval Status," you can check the approval status, whether it is pending, approved, or rejected. All three statuses have similar columns, such as "status" and "view," with a view button available to inspect the form.`;
-
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   const handleClose1 = () => {
@@ -112,13 +125,12 @@ const dispatch = useDispatch();
     dispatch(setHeader(`Open Box Approval Status`));
   }, []);
 
-
   /// initialize
   const classes = useStyles();
   const { search } = useLocation();
 
   /// local state
-  const [queryParams, setQueryParams] = useState("open");
+  const [queryParams, setQueryParams] = useState('open');
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState({});
   const [open, setOpen] = useState(false);
@@ -154,22 +166,22 @@ const dispatch = useDispatch();
     setSkip(false);
     try {
       const params = {
-        id: selected["_id"],
+        id: selected['_id'],
         status: status,
       };
 
       const res = await updateApprovalApi(params);
-      toast.success(`Successfully ${status ? "Accepted" : "Rejected"}`);
+      toast.success(`Successfully ${status ? 'Accepted' : 'Rejected'}`);
       setOpen(false);
       if (status) {
-        setQueryParams("accepted");
+        setQueryParams('accepted');
       } else {
-        setQueryParams("rejected");
+        setQueryParams('rejected');
       }
 
       refetchUnApprovedCount();
     } catch (e) {
-      console.log("Error at Open Box Approval Status");
+      console.log('Error at Open Box Approval Status');
       console.log(e);
     }
     setSkip(true);
@@ -191,46 +203,46 @@ const dispatch = useDispatch();
 
   const columns = [
     {
-      field: "id",
+      field: 'id',
       flex: 0.3,
-      headerName: "Sno",
+      headerName: 'Sno',
       width: 80,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "reason",
+      field: 'reason',
       flex: 0.3,
-      headerName: "Description",
+      headerName: 'Description',
       minWidth: 230,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "date",
+      field: 'date',
       flex: 0.3,
-      headerName: "Date",
+      headerName: 'Date',
       minWidth: 130,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "status",
+      field: 'status',
       flex: 0.3,
-      headerName: "Status",
+      headerName: 'Status',
       minWidth: 130,
 
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         const text =
-          params.row.status === "open" ? "pending" : params.row.status;
+          params.row.status === 'open' ? 'pending' : params.row.status;
         const color =
-          params.row.status === "open"
-            ? "blue"
-            : params.row.status === "rejected"
-            ? "red"
-            : "green";
+          params.row.status === 'open'
+            ? 'blue'
+            : params.row.status === 'rejected'
+            ? 'red'
+            : 'green';
         return (
           <div
             style={{
@@ -243,12 +255,12 @@ const dispatch = useDispatch();
       },
     },
     {
-      field: "action",
+      field: 'action',
       flex: 0.3,
-      headerName: "View",
+      headerName: 'View',
       minWidth: 130,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       renderCell: (params) => {
         return (
           <Button
@@ -271,26 +283,26 @@ const dispatch = useDispatch();
   /// Custom toolbar
   const CustomToolbar = () => {
     return (
-      <Box style={{ display: "flex", justifyContent: "end", gap: "10px" }}>
+      <Box style={{ display: 'flex', justifyContent: 'end', gap: '10px' }}>
         <ToggleButtonGroup
-          color="primary"
+          color='primary'
           value={queryParams}
           exclusive
           onChange={handleChange}
-          aria-label="Platform"
+          aria-label='Platform'
         >
-          <ToggleButton classes={{ selected: classes.selected }} value="open">
+          <ToggleButton classes={{ selected: classes.selected }} value='open'>
             Pending Query
           </ToggleButton>
           <ToggleButton
             classes={{ selected: classes.selected }}
-            value="accepted"
+            value='accepted'
           >
             Approved Query
           </ToggleButton>
           <ToggleButton
             classes={{ selected: classes.selected }}
-            value="rejected"
+            value='rejected'
           >
             Rejected Query
           </ToggleButton>

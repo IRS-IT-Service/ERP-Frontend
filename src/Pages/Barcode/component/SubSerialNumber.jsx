@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
-import TextField from "@mui/material/TextField";
-import { makeStyles } from "@mui/styles";
-import SearchIcon from "@mui/icons-material/Search";
-import { InputAdornment, Avatar } from "@mui/material";
-import noDataFound from "../../../assets/error.gif";
-import Swal from "sweetalert2";
-import noImage from "../../../assets/NoImage.jpg";
-import OneUpdateProductDial from "../../UpdateProduct/OneUpdateProductDial";
-import Header from "../../../components/Common/Header";
+import React, { useState, useEffect, useRef } from 'react';
+import TextField from '@mui/material/TextField';
+import { makeStyles } from '@mui/styles';
+import SearchIcon from '@mui/icons-material/Search';
+import { InputAdornment, Avatar } from '@mui/material';
+import noDataFound from '../../../assets/error.gif';
+import Swal from 'sweetalert2';
+import noImage from '../../../assets/NoImage.jpg';
+import OneUpdateProductDial from '../../UpdateProduct/OneUpdateProductDial';
+import Header from '../../../components/Common/Header';
 import {
   useGetAllProductBySkuMutation,
   useAddSubCategoryMutation,
-} from "../../../features/api/barcodeApiSlice";
+} from '../../../features/api/barcodeApiSlice';
 import {
   Table,
   TableContainer,
@@ -25,39 +25,39 @@ import {
   styled,
   Button,
   CircularProgress,
-} from "@mui/material";
-import { toast } from "react-toastify";
+} from '@mui/material';
+import { toast } from 'react-toastify';
 
 // custom styles
 const useStyles = makeStyles({
   tableContainer: {
-    maxWidth: "100%",
+    maxWidth: '100%',
   },
 });
 const StyleCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#fff" : "#eee",
+  backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#eee',
 
-  color: theme.palette.mode === "dark" ? "black" : "black",
-  textAlign: "center",
+  color: theme.palette.mode === 'dark' ? 'black' : 'black',
+  textAlign: 'center',
   padding: 3,
 }));
 
-const DrawerHeader = styled("div")(({ theme }) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const StyleTableCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#fff" : "#fff",
+  backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#fff',
 
-  color: theme.palette.mode === "dark" ? "black" : "black",
+  color: theme.palette.mode === 'dark' ? 'black' : 'black',
 
-  textAlign: "center",
+  textAlign: 'center',
   padding: 5,
 }));
 
-import InfoDialogBox from "../../../components/Common/InfoDialogBox";
-import { useDispatch, useSelector } from "react-redux";
-import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+import InfoDialogBox from '../../../components/Common/InfoDialogBox';
+import { useDispatch, useSelector } from 'react-redux';
+import { setHeader, setInfo } from '../../../features/slice/uiSlice';
 
 const infoDetail = [
   {
@@ -79,35 +79,32 @@ const infoDetail = [
   },
 ];
 
-
 const SubSerialNumber = () => {
-  const description = `
-Here, you can input the barcode numbers of product components, also known as sub-serial numbers.`;
+  const description = `Barcode Numbers`;
 
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-const { isInfoOpen } = useSelector((state) => state.ui);
-const handleClose = () => {
-  dispatch(setInfo(false));
-};
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
 
-useEffect(() => {
-  dispatch(setHeader(`Sub Serial No`));
-}, []);
-
+  useEffect(() => {
+    dispatch(setHeader(`Sub Serial No`));
+  }, []);
 
   /// initialization
   const classes = useStyles();
 
   const Errordisplay = (input) => {
     Swal.fire({
-      title: "No Sub Items found for Barcode !",
-      text: "Add SubItems to proceed ?",
-      icon: "warning",
+      title: 'No Sub Items found for Barcode !',
+      text: 'Add SubItems to proceed ?',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, for Add SubItems!",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, for Add SubItems!',
     }).then((result) => {
       if (result.isConfirmed) {
         onClose();
@@ -121,8 +118,8 @@ useEffect(() => {
   const [productInfo, setProductInfo] = useState({});
   const [subItems, setSubItems] = useState([]);
   const [subitemData, setSubItemData] = useState({});
-  const [input, setInput] = useState("");
-  const [SKU_input, setSKU_input] = useState("");
+  const [input, setInput] = useState('');
+  const [SKU_input, setSKU_input] = useState('');
   const textFieldRef = useRef(null);
   const [open, setOpen] = useState(false);
 
@@ -134,7 +131,7 @@ useEffect(() => {
 
   function createResultObject(arr1, arr2) {
     const result = {};
-    console.log("triger");
+    console.log('triger');
 
     try {
       for (const item of arr1) {
@@ -142,7 +139,7 @@ useEffect(() => {
 
         for (const key of arr2) {
           result[item.serialNumber][key] =
-            item.sub && item.sub[key] ? item.sub[key] : "";
+            item.sub && item.sub[key] ? item.sub[key] : '';
         }
       }
     } catch (e) {
@@ -167,7 +164,7 @@ useEffect(() => {
           const response = await getPrdouct({ SKU: input }).unwrap();
 
           if (
-            response?.status === "success" &&
+            response?.status === 'success' &&
             response?.data?.subItems?.length
           ) {
             setProductInfo({
@@ -185,14 +182,14 @@ useEffect(() => {
 
               setSubItemData(result);
             }
-            setInput("");
+            setInput('');
           } else {
             Errordisplay();
             setSKU_input(input);
-            setInput("");
+            setInput('');
           }
         } catch (error) {
-          setInput("");
+          setInput('');
         }
       }
     };
@@ -215,18 +212,18 @@ useEffect(() => {
   const handleGlobalSubmit = async () => {
     try {
       if (row.length <= 0) {
-        toast.error("Please provide a barcode before submitting");
+        toast.error('Please provide a barcode before submitting');
         return;
       }
       const body = { barcode: subitemData };
       const res = await addSubSerialApi(body);
-      toast.success("Successfully added SubItems");
+      toast.success('Successfully added SubItems');
       setRows([]);
       setProductInfo({});
       setSubItemData({});
       setSubItems([]);
     } catch (e) {
-      console.log("error at subItem barcode :" + e.message);
+      console.log('error at subItem barcode :' + e.message);
       toast.error(e.message);
     }
   };

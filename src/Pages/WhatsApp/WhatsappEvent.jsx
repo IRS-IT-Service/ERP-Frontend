@@ -70,144 +70,157 @@ const infoDetail = [
     name: 'Inventory Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(12).png?updatedAt=1717236400231'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/inventoryApproval.png?updatedAt=1717392413962'
         height={'60%'}
         width={'90%'}
       />
     ),
-    instruction: 'Whatsapp Event for Inventory Approval to assigned User getting Message',
+    instruction:
+      'Whatsapp Event for Inventory Approval to assigned User getting Message',
   },
   {
     name: 'MRP Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(11).png?updatedAt=1717236399528'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/mrpApproval.png?updatedAt=1717392379211'
         height={'100%'}
         width={'100%'}
       />
     ),
-    instruction: " Whatsapp Event for MRP Approval to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for MRP Approval to assigned User getting Message',
   },
   {
     name: 'SalesPrice Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717236511929'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/salesPrice.png?updatedAt=1717393847253'
         height={'60%'}
         width={'90%'}
       />
     ),
-    instruction: " Whatsapp Event for SalesPrice Approval to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for SalesPrice Approval to assigned User getting Message',
   },
   {
     name: 'SellerPrice Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(10).png?updatedAt=1717236397627'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/sellerPriceApproval.png?updatedAt=1717392452889'
         height={'60%'}
         width={'90%'}
       />
     ),
-    instruction: " Whatsapp Event for SellerPrice Approval to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for SellerPrice Approval to assigned User getting Message',
   },
   {
     name: 'Cost Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(9).png?updatedAt=1717236397838'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/costApproval.png?updatedAt=1717392483961'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: " Whatsapp Event for Cost Approval to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for Cost Approval to assigned User getting Message',
   },
   {
     name: 'OpenBox Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(8).png?updatedAt=1717236397739'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/openBoxApproval.png?updatedAt=1717392515068'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: " Whatsapp Event for OpenBox Approval to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for OpenBox Approval to assigned User getting Message',
   },
   {
     name: 'New Product Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(7).png?updatedAt=1717236397601'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/newProductApproval.png?updatedAt=1717392549370'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: 'Whatsapp Event for New Product Approval to assigned User getting Message',
+    instruction:
+      'Whatsapp Event for New Product Approval to assigned User getting Message',
   },
   {
     name: 'Product Changes Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(6).png?updatedAt=1717236397690'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/productChangesApproval.png?updatedAt=1717392590575'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: 'Whatsapp Event for Product Changes Approval to assigned User getting Message',
+    instruction:
+      'Whatsapp Event for Product Changes Approval to assigned User getting Message',
   },
   {
     name: 'Stock Approval',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(5).png?updatedAt=1717236397619'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/stockApproval.png?updatedAt=1717392625887'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: 'Whatsapp Event for Stock Approval to assigned User getting Message',
+    instruction:
+      'Whatsapp Event for Stock Approval to assigned User getting Message',
   },
   {
     name: 'WholeSale SignUp',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(4).png?updatedAt=1717236397586'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/wholeSaleSignUp.png?updatedAt=1717392345016'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: " Whatsapp Event for WholeSale SignUp to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for WholeSale SignUp to assigned User getting Message',
   },
   {
     name: 'WholeSale Registration Form',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(3).png?updatedAt=1717236397612'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/wholesaleRegistrationFrom.png?updatedAt=1717393908318'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: " Whatsapp Event for WholeSale Registration Form to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for WholeSale Registration Form to assigned User getting Message',
   },
   {
     name: 'WholeSale OTP',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image(1).png?updatedAt=1717236396983'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/wholeSaleOtp.png?updatedAt=1717393978714'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: " Whatsapp Event for WholeSale OTP to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for WholeSale OTP to assigned User getting Message',
   },
   {
     name: 'Shipment Event',
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/image.png?updatedAt=1717236992292'
+        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/shipmentEvent.png?updatedAt=1717394583791'
         height={'40%'}
         width={'40%'}
       />
     ),
-    instruction: " Whatsapp Event for Shipment Event to assigned User getting Message",
+    instruction:
+      ' Whatsapp Event for Shipment Event to assigned User getting Message',
   },
 ];
 const WhatsappEvent = () => {
