@@ -84,10 +84,12 @@ const OverseasorderList = () => {
   const [rows, setRows] = useState([]);
   const [OpenAction, setOpenAction] = useState(false)
   const [selectedDetails , setSelectedDetails] = useState(null)
+  const [slectedInfo, setSelectedInfo] = useState(null)
 
-  const handleOpen = (e) =>{
+  const handleOpen = (e,details) =>{
     setOpenAction(true)
-    setSelectedDetails(e)
+    setSelectedDetails(details)
+    setSelectedInfo(e)
 
   }
 
@@ -161,11 +163,12 @@ console.log(overseasShipment)
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        
         return (
           <Button
 
           size="small"
-            onClick={(e) => { handleOpen("Swift copy")
+            onClick={(e) => { handleOpen(e,"Swift copy")
             }}
           >
             View
