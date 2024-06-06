@@ -75,7 +75,7 @@ const infoDetail = [
   },
 ];
 
-const SubPiList = () => {
+const SubPIList = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
@@ -715,4 +715,4 @@ useEffect(()=>{
   );
 };
 
-export default SubPiList;
+export default SubPIList;
