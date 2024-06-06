@@ -32,6 +32,8 @@ const OpenActionDial = ({ open, close, selectedDetails }) => {
     PINO:"",
   });
 
+
+
   const handleOnChangeFile = (event, targetValue) => {
     const { name, value, files } = event.target;
     if (targetValue === "file") {
@@ -306,7 +308,7 @@ const OpenActionDial = ({ open, close, selectedDetails }) => {
           display: "flex",
           justifyContent: "space-around",
           alignItems: "center",
-       
+       border:"2px s"
         }}
       >
         <Button variant="contained" size="small" sx={{
