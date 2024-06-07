@@ -75,7 +75,7 @@ const infoDetail = [
   },
 ];
 
-const SubPIList = () => {
+const SubPIList1 = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
@@ -717,4 +717,4 @@ console.log(TotalValue)
   );
 };
 
-export default SubPIList;
+export default SubPIList1;

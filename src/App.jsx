@@ -145,7 +145,7 @@ import useVisibilityChange from "./commonFunctions/useVisibilityChange";
 import OverseasorderList from "./Pages/OverseasOrderList/Components/OverseasorderList";
 import { toastNotification } from "./commonFunctions/notificationHelpers";
 
-import SubPIList from "./Pages/OverseasOrderList/Components/SubPiList";
+import SubPIList1 from "./Pages/OverseasOrderList/Components/SubPiList1";
 
 function App() {
   /// initialize
@@ -808,7 +808,7 @@ function App() {
                   path="/OverseasorderList"
                   element={<OverseasorderList />}
                 />
-                <Route path="/SubPIList/:id" element={<SubPIList />} />
+                <Route path="/SubPIList/:id" element={<SubPIList1 />} />
                 {/* Careers */}
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
