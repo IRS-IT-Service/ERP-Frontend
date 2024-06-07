@@ -140,7 +140,7 @@ const ToggleNav = () => {
   const { isAdmin, userRole, userInfo, chatNotificationData } = useSelector(
     (state) => state.auth
   );
-
+  console.log(userInfo.adminId);
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
   const unApprovedData = useSelector(
     (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
@@ -494,28 +494,34 @@ const ToggleNav = () => {
                 MenuListProps={{
                   "aria-labelledby": "basic-button",
                 }}
-                sx={{ height: "400px"}}
+                sx={{ height: "400px" }}
               >
-                {getUserForNotification?.data.map((name, index) => (
-                  <MenuItem
-                    key={index}
-                    // onClick={handleCloseBtn}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      gap: "20px",
-                    }}
-                  >
-                    <Avatar />
-                    {name?.name}
-                    <CallIcon
-                      sx={{ color: colorStates[index] }}
-                      onClick={() =>
-                        handleClickClr(index, name?.adminId, name?.name)
-                      }
-                    />
-                  </MenuItem>
-                ))}
+                {getUserForNotification?.data
+                  .filter((item) => {
+                    return item.adminId !== userInfo.adminId;
+                  })
+                  .map((name, index) => {
+                    return (
+                      <MenuItem
+                        key={index}
+                        // onClick={handleCloseBtn}
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: "20px",
+                        }}
+                      >
+                        <Avatar />
+                        {name?.name}
+                        <CallIcon
+                          sx={{ color: colorStates[index] }}
+                          onClick={() =>
+                            handleClickClr(index, name?.adminId, name?.name)
+                          }
+                        />
+                      </MenuItem>
+                    );
+                  })}
               </Menu>
             </Box>
 
