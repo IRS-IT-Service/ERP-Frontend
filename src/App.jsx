@@ -808,7 +808,7 @@ function App() {
                   path="/OverseasorderList"
                   element={<OverseasorderList />}
                 />
-                <Route path="/SubPIList/:id" element={<SubPIList1 />} />
+                {/* <Route path="/SubPIList/:id" element={<SubPIList1 />} /> */}
                 {/* Careers */}
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/careers/details" element={<CareerDetails />} />
