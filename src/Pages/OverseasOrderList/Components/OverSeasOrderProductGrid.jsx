@@ -254,7 +254,7 @@ const OverSeasOrderProductGrid = () => {
       newFormData.append("products", JSON.stringify(processedProducts));
       newFormData.append("boxImage", formData.fileInput);
 
-      console.log(processedProducts);
+
 
       const res = await createBoxApi(newFormData).unwrap();
       setSelectedItems([]);
@@ -470,6 +470,9 @@ const OverSeasOrderProductGrid = () => {
           </ToggleButton>
           <ToggleButton classes={{ selected: classes.selected }} value="paid">
             Paid
+          </ToggleButton>
+          <ToggleButton classes={{ selected: classes.selected }} value="closed">
+            Closed
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
