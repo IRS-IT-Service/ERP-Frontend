@@ -81,6 +81,10 @@ const SubPIList = () => {
 
   const [ProductData, setProductData] = useState([]);
   const [ConversionRate, setConversionRate] = useState(null);
+  const [prevConversionRate, setPrevConversionRate] = useState(null);
+  const [totalAmount, setTotalamount] = useState(null);
+  const [totalQty, setTotalqty] = useState(null);
+  const [shortFall, setShortfall] = useState(null);
 
   const { data: getSingleData, isLoading } = useGetSingleOrderQuery(id);
 
@@ -93,22 +97,19 @@ const SubPIList = () => {
   useEffect(() => {
     if (getSingleData?.data?.products) {
       setProductData(
-        getSingleData.data.products.map(item => {
-     
+        getSingleData.data.products.map((item) => {
           if (item.RMB > 0) {
-            // setConversionRate(item.USD / item.RMB);
-          
-          return {
-            ...item,
-            originalRMB: item.RMB
-          };
-        }
+            setPrevConversionRate(item.USD / item.RMB);
+
+            return {
+              ...item,
+              originalRMB: item.RMB,
+            };
+          }
         })
       );
     }
   }, [getSingleData]);
-
-
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   useEffect(() => {
@@ -122,58 +123,64 @@ const SubPIList = () => {
 
   const handleInputChange = (e, SKU) => {
     const { name, value } = e.target;
-    
+
     if (name === "USD") {
       setProductData((prev) => {
         const newData = prev.map((item) => {
           if (item.SKU === SKU) {
             return {
               ...item,
-              USD: +value 
+              USD: +value,
+              
             };
-          } else  {
+          } else {
             return item;
           }
         });
-        return newData; 
+        return newData;
       });
-    }else if(name === "QTY"){
+    } else if (name === "QTY") {
       setProductData((prev) => {
         const newData = prev.map((item) => {
           if (item.SKU === SKU) {
             return {
               ...item,
-              Orderqty: +value 
+              Orderqty: +value,
             };
-          } else  {
+          } else {
             return item;
           }
         });
-        return newData; 
+        return newData;
       });
     }
   };
 
+  useEffect(()=>{
+    const TotalValue = ProductData.reduce((acc , cur)=>{
+return (+acc.Orderqty) + (+cur.USD)
+    },0)
+console.log(TotalValue)
+  },[setProductData])
 
-useEffect(()=>{
-
-  setProductData((prev) => {
-    const newData = prev.map((item) => {
-      if (item.RMB && item.RMB > 0) {
-        console.log(+item.originalRMB * +ConversionRate)
-        return {
-          ...item,
-          RMB: ConversionRate > 0 ? +item.originalRMB * +ConversionRate : +item.originalRMB 
-
-        };
-      } else  {
-        return item;
-      }
+  useEffect(() => {
+    setProductData((prev) => {
+      const newData = prev.map((item) => {
+        if (item.RMB && item.RMB > 0) {
+          return {
+            ...item,
+            RMB:
+              ConversionRate > 0
+                ? +item.originalRMB * +ConversionRate
+                : +item.originalRMB,
+          };
+        } else {
+          return item;
+        }
+      });
+      return newData;
     });
-    return newData; 
-  });
-  
-},[setConversionRate , ConversionRate])
+  }, [setConversionRate, ConversionRate]);
 
   return (
     <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%" }}>
@@ -390,13 +397,17 @@ useEffect(()=>{
                     >
                       Date:
                     </Typography>
-                <Typography     
-                sx={{
+                    <Typography
+                      sx={{
                         fontSize: ".6rem",
                         fontWeight: "600",
                         marginTop: "6px",
                         marginRight: "3px",
-                      }}>   {formatDate(getSingleData?.data?.paymentDate)}</Typography>
+                      }}
+                    >
+                      {" "}
+                      {formatDate(getSingleData?.data?.paymentDate)}
+                    </Typography>
                   </Box>
 
                   <Box display={"flex"}>
@@ -410,13 +421,17 @@ useEffect(()=>{
                     >
                       Sub PI :
                     </Typography>
-                    <Typography     
-                sx={{
+                    <Typography
+                      sx={{
                         fontSize: ".6rem",
                         fontWeight: "600",
                         marginTop: "6px",
                         marginRight: "3px",
-                      }}>   {getSingleData?.data?.piNo}</Typography>
+                      }}
+                    >
+                      {" "}
+                      {getSingleData?.data?.piNo}
+                    </Typography>
                   </Box>
                   <Box display={"flex"}>
                     <Typography
@@ -430,7 +445,6 @@ useEffect(()=>{
                       Product Amount
                     </Typography>
                   </Box>
-            
 
                   <Box display={"flex"}>
                     <Typography
@@ -444,39 +458,37 @@ useEffect(()=>{
                       QTY
                     </Typography>
                   </Box>
-                  
-              
                 </Box>
               </Box>
             </AccordionSummary>
 
             <AccordionDetails>
               <Box>
-              <Box display={"flex"}>
-                    <Typography
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: ".7rem",
-                        marginTop: "3px",
-                        marginRight: "3px",
-                      }}
-                    >
-                      RMB convertion rate
-                    </Typography>
-                    <input
-                      name="converion"
-                      placeholder="%"
-                      style={{
-                       background: "#fff",
-                        border: "none",
-                        padding: ""    ,
-                      width:"30px"  ,
-                    border: "none" ,              
-                   }}
-                        value={ConversionRate}
-                        onChange={(e)=>setConversionRate(e.target.value)}
-                    />
-                  </Box>
+                <Box display={"flex"}>
+                  <Typography
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: ".7rem",
+                      marginTop: "3px",
+                      marginRight: "3px",
+                    }}
+                  >
+                    RMB convertion rate
+                  </Typography>
+                  <input
+                    name="converion"
+                    placeholder="%"
+                    style={{
+                      background: "#fff",
+                      border: "none",
+                      textAlign: "center",
+                      width: "30px",
+                      border: "none",
+                    }}
+                    value={ConversionRate || prevConversionRate}
+                    onChange={(e) => setConversionRate(e.target.value)}
+                  />
+                </Box>
                 <TableContainer sx={{ maxHeight: 450 }}>
                   <Table stickyHeader aria-label="sticky table">
                     <TableHead>
@@ -488,8 +500,7 @@ useEffect(()=>{
                         <StyledCellHeader>RMB ¥</StyledCellHeader>
                         <StyledCellHeader>Order Quantity</StyledCellHeader>
                         <StyledCellHeader>Total Order amount</StyledCellHeader>
-                      
-                       
+
                         <StyledCellHeader>Delete</StyledCellHeader>
                       </TableRow>
                     </TableHead>
@@ -502,50 +513,42 @@ useEffect(()=>{
                           <StyledCell
                             sx={{ textAlign: "center", width: "150px" }}
                           >
-                                  <input
-                      name="USD"
-                      placeholder="$"
-                      value={item.USD}
-                      style={{
-                       background: "#fff",
-                        border: "none",
-                        padding: "5px"    ,
-                      width:"100px"  ,
-                    border: "none" ,
-                    textAlign:"center",
-           
-                      
-                   }}
-                     
-                        onChange={(e)=>handleInputChange(e,item.SKU)}
-                    />
-                        
+                            <input
+                              name="USD"
+                              placeholder="$"
+                              value={item.USD}
+                              style={{
+                                background: "#fff",
+                                border: "none",
+                                padding: "5px",
+                                width: "100px",
+                                border: "none",
+                                textAlign: "center",
+                              }}
+                              onChange={(e) => handleInputChange(e, item.SKU)}
+                            />
                           </StyledCell>
                           <StyledCell
                             sx={{ textAlign: "center", width: "150px" }}
                           >
                             ¥ {item.RMB}
                           </StyledCell>
-                          <StyledCell>                  
-                       <input
-                      name="QTY"
-                      value={item.Orderqty}
-                      style={{
-                       background: "#fff",
-                        border: "none",
-                        padding: "5px"    ,
-                      width:"50px"  ,
-                    border: "none" ,
-                    textAlign:"center",
-           
-                      
-                   }}
-                   
-                   onChange={(e)=>handleInputChange(e,item.SKU)}
-                    /></StyledCell>
+                          <StyledCell>
+                            <input
+                              name="QTY"
+                              value={item.Orderqty}
+                              style={{
+                                background: "#fff",
+                                border: "none",
+                                padding: "5px",
+                                width: "50px",
+                                border: "none",
+                                textAlign: "center",
+                              }}
+                              onChange={(e) => handleInputChange(e, item.SKU)}
+                            />
+                          </StyledCell>
                           <StyledCell>$ {item.Orderqty * item.USD}</StyledCell>
-                     
-
 
                           <StyledCell>
                             <DeleteIcon
@@ -599,7 +602,6 @@ useEffect(()=>{
                       //   onChange={handleInputChange}
                     />
 
-             
                     <Box
                       style={{
                         display: "flex",
