@@ -14,5 +14,8 @@ export const toastNotification = ({ title, description, status }) => {
       const audio = new Audio("https://ik.imagekit.io/z7h0zeety/Admin-Portal/hello/ringtone_call_phone.mp3?updatedAt=1717741773010");
       audio.play();
     },
+    didClose: () =>{
+      audio.pause();
+    }
   });
 };
