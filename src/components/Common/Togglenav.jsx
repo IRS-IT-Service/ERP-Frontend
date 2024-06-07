@@ -140,6 +140,7 @@ const ToggleNav = () => {
   const { isAdmin, userRole, userInfo, chatNotificationData } = useSelector(
     (state) => state.auth
   );
+
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
   const unApprovedData = useSelector(
     (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
@@ -371,7 +372,7 @@ const ToggleNav = () => {
   // This is the code to change the color of
   const handleClickClr = async (index, adminId, name) => {
     const title = `Hi ${name}`;
-    const desc = "Sagar Sir is calling you to the Cabin";
+    const desc = `is calling you....`;
     const url = "https://erp.indianrobostore.com";
 
     // Change the color to red immediately
