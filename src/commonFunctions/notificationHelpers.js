@@ -2,6 +2,8 @@ import Swal from "sweetalert2";
 import "../../src/App.css";
 
 export const toastNotification = ({ title, description, status }) => {
+  const Tone =
+    "https://ik.imagekit.io/z7h0zeety/Admin-Portal/hello/chatRingtone.mp3?updatedAt=1717744741084";
   // toast(`Toast Notification: ${title} - ${description} - ${status}`);
 
   Swal.fire({
@@ -11,9 +13,8 @@ export const toastNotification = ({ title, description, status }) => {
     <img src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/hello/call.gif?updatedAt=1717741713230" ></div>`,
     confirmButtonColor: "green",
     didOpen: () => {
-      const audio = new Audio("https://ik.imagekit.io/z7h0zeety/Admin-Portal/hello/chatRingtone.mp3?updatedAt=1717744741084");
+      const audio = new Audio(Tone);
       audio.play();
     },
-    
   });
 };
