@@ -26,7 +26,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   useCreateOverseasOrderMutation,
-  useAssignOrderToVendorMutation,
+  useAssignOrderVendorMutation,
 } from "../../../features/api/RestockOrderApiSlice";
 import { useSelector } from "react-redux";
 const Order2Vendor = ({
@@ -55,15 +55,13 @@ const Order2Vendor = ({
 
   /// rtk query
   const { data: allVendorData } = useGetAllVendorQuery();
-  const [assignOrderApi, { isLoading }] = useAssignOrderToVendorMutation();
-
-
+  const [assignOrderApi, { isLoading }] = useAssignOrderVendorMutation();
 
   const handleAsign = async (e) => {
     setDisable(true);
     if (items.length > 0) {
       const processedItems = items.map((item, index) => ({
-        Price: +prices[item.SKU] || 0,
+        USD: +prices[item.SKU] || 0,
         RMB: +rmbPrice[item.SKU] || 0,
         Orderqty: item.NewQuantity,
         Gst: item.GST,
@@ -79,11 +77,10 @@ const Order2Vendor = ({
           products: processedItems,
         };
 
-        console.log(data);
         const res = await assignOrderApi(data).unwrap();
         const liveStatusData = {
           message: `${userInfo.name} Created Overseas Order `,
-          time: new Date()
+          time: new Date(),
         };
         socket.emit("liveStatusServer", liveStatusData);
         toast.success("Restock order was successfully processed");
@@ -355,7 +352,7 @@ const Order2Vendor = ({
                           sx={{ width: "80px", height: "40px" }}
                           value={prices[index]} // Set the value from state
                           onChange={(e) => {
-                            const newRMBprice = {...rmbPrice};
+                            const newRMBprice = { ...rmbPrice };
                             newRMBprice[item.SKU] = e.target.value;
                             setRmbPrice(newRMBprice);
                           }}
