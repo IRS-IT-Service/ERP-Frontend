@@ -100,10 +100,14 @@ const OverseasorderList = () => {
     if (overseasShipment?.status) {
       const data = overseasShipment.data?.map((item, index) => ({
         ...item,
-        paymentDate: formatDate(item.paymentDate),
+        paymentDate: formatDate(item.paymentDate) || "N/A",
         id: item._id,
         Sno: index + 1,
         orderId: item.overseaseOrderId,
+        piNo: item.piNo || "N/A",
+        paymentAmount: item.paymentAmountUSD || 0,
+        restUSDAmount: item?.paymentAmountUSD  - item?.utilzedUSDAmount || 0,
+        totalUSDAmount: item.totalUSDAmount || 0,
       }));
 
       setRows(data);
@@ -111,7 +115,6 @@ const OverseasorderList = () => {
   }, [overseasShipment, toggleValue]);
 
   /// handler
-
 
   // Define the columns
   const columns = [
@@ -138,7 +141,7 @@ const OverseasorderList = () => {
     },
     {
       field: "piNo",
-      headerName: "PI No:",
+      headerName: "PI No",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -219,6 +222,7 @@ const OverseasorderList = () => {
                 orderId: params.row.overseaseOrderId,
               });
             }}
+            disabled={params.row.paymentAmount}
           >
             Add Amount
           </Button>
@@ -227,8 +231,19 @@ const OverseasorderList = () => {
     },
 
     {
-      field: "totalUSDAmount",
+      field: "paymentAmount",
       headerName: "Paid Amount",
+      flex: 0.2,
+      minWidth: 50,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `$ ${Number(params.value).toFixed(2)}`,
+    },
+    {
+      field: "totalUSDAmount",
+      headerName: "Product Value",
       flex: 0.2,
       minWidth: 50,
       align: "center",
@@ -257,6 +272,12 @@ const OverseasorderList = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const status = params.row.status;
+        return (
+         <Button style={{background:`${status == "paid" ? "green": "red"}`}}>{status}</Button>
+        );
+      },
     },
 
     {
@@ -384,7 +405,7 @@ const OverseasorderList = () => {
                 classes={{ selected: classes.selected }}
                 value="recieved"
               >
-                Recieved
+                Closed
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
