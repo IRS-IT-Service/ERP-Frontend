@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-
 import {
   Button,
   Box,
@@ -9,10 +8,11 @@ import {
   ToggleButtonGroup,
   Table,
   TableRow,
+  Grid,
   TableCell,
 } from "@mui/material";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import Nodata from "../../../assets/error.gif";
 import Loading from "../../../components/Common/Loading";
 import { makeStyles } from "@mui/styles";
@@ -21,7 +21,7 @@ import { useGetAllCreatedOrderQuery } from "../../../features/api/RestockOrderAp
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
-
+import { Portal } from "@mui/base/Portal";
 import OpenActionDial from "./OpenActionDial";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -106,13 +106,24 @@ const OverseasorderList = () => {
         orderId: item.overseaseOrderId,
         piNo: item.piNo || "N/A",
         paymentAmount: item.paymentAmountUSD || 0,
-        restUSDAmount: item?.paymentAmountUSD  - item?.utilzedUSDAmount || 0,
+        restUSDAmount: item?.paymentAmountUSD - item?.utilzedUSDAmount || 0,
         totalUSDAmount: item.totalUSDAmount || 0,
       }));
 
       setRows(data);
     }
   }, [overseasShipment, toggleValue]);
+
+  function MyCustomToolbar(prop) {
+    return (
+      <React.Fragment>
+        <Portal container={() => document.getElementById("filter-panel")}>
+          <GridToolbarQuickFilter />
+        </Portal>
+        {/* <GridToolbar {...prop} /> */}
+      </React.Fragment>
+    );
+  }
 
   /// handler
 
@@ -275,7 +286,14 @@ const OverseasorderList = () => {
       renderCell: (params) => {
         const status = params.row.status;
         return (
-         <Button style={{background:`${status == "paid" ? "green": "red"}`}}>{status}</Button>
+          <Button
+            style={{
+              background: `${status == "paid" ? "green" : "red"}`,
+              color: "#ddd",
+            }}
+          >
+            {status}
+          </Button>
         );
       },
     },
@@ -386,6 +404,10 @@ const OverseasorderList = () => {
               <Box> </Box>
             )}
 
+            <Grid item sx={{width:"100%",mt:"12px"}}>
+              <Box id="filter-panel" />
+            </Grid>
+
             <ToggleButtonGroup
               color="primary"
               value={toggleValue}
@@ -481,6 +503,9 @@ const OverseasorderList = () => {
             rows={rows}
             rowHeight={40}
             Height={"85vh"}
+            slots={{
+              toolbar: MyCustomToolbar,
+            }}
           />
         </Box>
 
