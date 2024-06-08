@@ -220,7 +220,7 @@ const SubPIList1 = () => {
                 marginRight: "3px",
               }}
             >
-              $ {getSingleData?.data.totalUSDAmount}
+              $ {getSingleData?.data.paymentAmountUSD}
             </Typography>
           </StyledBox>
           <StyledBox>

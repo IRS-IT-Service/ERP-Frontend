@@ -69,7 +69,7 @@ const AccordionComp = ({
   const dataMain = AccordFor === "SubPI" ? item : getSingleData?.data
 
   const shorFallamount = isSubItem ? getSingleData?.data.restUSDAmount - totalAmount :
-  dataMain?.totalUSDAmount - totalAmount
+  dataMain?.paymentAmountUSD - totalAmount
 
   const isNegative = checkNegative(shorFallamount)
 
