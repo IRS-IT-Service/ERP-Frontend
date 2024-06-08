@@ -281,6 +281,15 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    updateOrder: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/updateOrder`,
+          method: "PUT",
+          body:data
+        };
+      },
+    }),
   }),
 
 });
@@ -318,5 +327,6 @@ export const {
   useUpdatePaymentForOrderMutation,
   useAssignOrderVendorMutation,
   useCreateSubOrderMutation,
-  useUpdateSubOrderMutation
+  useUpdateSubOrderMutation,
+  useUpdateOrderMutation,
 } = restockApiSlice;

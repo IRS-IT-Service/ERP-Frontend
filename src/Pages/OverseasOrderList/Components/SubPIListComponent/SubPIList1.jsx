@@ -31,6 +31,7 @@ import { formatDate } from "../../../../commonFunctions/commonFunctions";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import AddshipmentDial from "../../../PackagingAndClient/createOrderShipment/AddshimentpartsDial";
+import { toast } from "react-toastify";
 
 import AccordionComp from "./AccordionComp";
 
@@ -83,7 +84,7 @@ const SubPIList1 = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  const { data: getSingleData, isLoading } = useGetSingleOrderQuery(id);
+  const { data: getSingleData, isLoading ,refetch} = useGetSingleOrderQuery(id);
 
   const { isInfoOpen } = useSelector((state) => state.ui);
   useEffect(() => {
@@ -257,26 +258,37 @@ const SubPIList1 = () => {
           padding: "10px",
       
         }}>
-        <AccordionComp getSingleData={getSingleData} />
+        <AccordionComp getSingleData={getSingleData} refetch ={refetch} />
         <Box
           sx={{
             marginTop: "10px",
             maxHeight: "40vh",
             textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            gap: "5px",
+            width: "100%",
+            overflowY: "auto",
+            overflowX: "hidden",
+            padding: "10px",
+           
           
           }}
         >
-          <Typography fontSize="12px" fontWeight="bold">
+         {getSingleData?.data?.subOrders && <Typography fontSize="12px" fontWeight="bold">
             Sub List
-          </Typography>
+          </Typography> }
           {getSingleData?.data?.subOrders?.map((item, index) => {
             return (
+           
               <AccordionComp
                 key={index}
                 getSingleData={getSingleData}
                 item={item}
                 AccordFor={"SubPI"}
+                refetch={refetch}
               />
+              
             );
           })}
         </Box>
