@@ -81,28 +81,33 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
           method: "PUT",
           body: data,
         };
-      }
+      },
     }),
     updateInvoice: builder.mutation({
       query: (data) => {
-        console.log(data)
+        console.log(data);
         return {
           url: `${clientAndShipmentApi}/updateInvoice`,
           method: "PUT",
           body: data,
         };
-        
       },
     }),
     changeStatusForDeliver: builder.mutation({
       query: (data) => {
-        console.log(data)
         return {
           url: `${clientAndShipmentApi}/changeStatusForDeliver/${data}`,
           method: "PUT",
           body: data,
         };
-        
+      },
+    }),
+    deleteShipment: builder.mutation({
+      query: (id) => {
+        return {
+          url: `${clientAndShipmentApi}/deleteShipment/${id}`,
+          method: "DELETE",
+        };
       },
     }),
   }),
@@ -116,8 +121,9 @@ export const {
   useCreateShipmentOrderMutation,
   useUpdateShipmentMutation,
   useGetCustomerOrderShipmentQuery,
-  useUpatePackagingMutation,useUpdateShipmentImageMutation,
+  useUpatePackagingMutation,
+  useUpdateShipmentImageMutation,
   useUpdateInvoiceMutation,
   useChangeStatusForDeliverMutation,
-
+  useDeleteShipmentMutation
 } = clientAndShipmentApiSlice;
