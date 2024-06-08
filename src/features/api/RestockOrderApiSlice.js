@@ -281,7 +281,7 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
-    updateOrder: builder.mutation({
+    updateOrderOverseas: builder.mutation({
       query: (data) => {
         return {
           url: `${RESTOCK_URL}/updateOrder`,
@@ -328,5 +328,5 @@ export const {
   useAssignOrderVendorMutation,
   useCreateSubOrderMutation,
   useUpdateSubOrderMutation,
-  useUpdateOrderMutation,
+  useUpdateOrderOverseasMutation,
 } = restockApiSlice;

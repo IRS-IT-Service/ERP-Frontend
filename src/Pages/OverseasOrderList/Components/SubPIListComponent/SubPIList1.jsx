@@ -262,7 +262,7 @@ const SubPIList1 = () => {
         <Box
           sx={{
             marginTop: "10px",
-            maxHeight: "40vh",
+            maxHeight: "100%",
             textAlign: "center",
             display: "flex",
             flexDirection: "column",
@@ -275,7 +275,7 @@ const SubPIList1 = () => {
           
           }}
         >
-         {getSingleData?.data?.subOrders && <Typography fontSize="12px" fontWeight="bold">
+         {getSingleData?.data?.subOrders?.length >= 0 && <Typography fontSize="12px" fontWeight="bold">
             Sub List
           </Typography> }
           {getSingleData?.data?.subOrders?.map((item, index) => {

@@ -106,7 +106,7 @@ const OverseasorderList = () => {
         orderId: item.overseaseOrderId,
         piNo: item.piNo || "N/A",
         paymentAmount: item.paymentAmountUSD || 0,
-        restUSDAmount: item?.paymentAmountUSD - item?.utilzedUSDAmount || 0,
+        restUSDAmount:  item?.paymentAmountUSD - item?.totalUSDAmount || 0 ,
         totalUSDAmount: item.totalUSDAmount || 0,
       }));
 

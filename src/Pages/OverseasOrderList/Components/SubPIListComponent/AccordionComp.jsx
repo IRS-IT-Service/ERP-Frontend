@@ -29,7 +29,7 @@ import AddshipmentDial from "../../../PackagingAndClient/createOrderShipment/Add
 import {
   useUpdateSubOrderMutation,
   useCreateSubOrderMutation,
-  useUpdateOrderMutation
+  useUpdateOrderOverseasMutation,
 } from "../../../../features/api/RestockOrderApiSlice";
 import { toast } from "react-toastify";
 
@@ -60,12 +60,12 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
   const [selectedData, setSelectedData] = useState([]);
   const [FinalData, setFinalData] = useState([]);
 
-  const [updateprodcuts, { isLoading: updateLoading }] =
-  useUpdateOrderMutation();
+  const [updateproducts, { isLoading: updateLoading }] =
+    useUpdateOrderOverseasMutation();
 
   const [createsuborder, { isLoading: suborderLoading }] =
     useCreateSubOrderMutation();
-    const [updatesuborder, { isLoading: updatesuborderLoading }] =
+  const [updatesuborder, { isLoading: updatesuborderLoading }] =
     useUpdateSubOrderMutation();
 
   function checkNegative(value) {
@@ -80,11 +80,11 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
   const dataMain = AccordFor === "SubPI" ? item : getSingleData?.data;
 
-  const shorFallamount = isSubItem
-    ? getSingleData?.data.restUSDAmount - totalAmount
+  const shortFallamount = isSubItem
+    ? (+getSingleData?.data.paymentAmountUSD - +getSingleData?.data.totalUSDAmount) - totalAmount
     : dataMain?.paymentAmountUSD - totalAmount;
 
-  const isNegative = checkNegative(shorFallamount);
+  const isNegative = checkNegative(shortFallamount);
 
   useEffect(() => {
     if (dataSub) {
@@ -217,18 +217,17 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
       const updateProduct = {
         orderId: getSingleData?.data?.overseaseOrderId,
-        piNo: getSingleData?.data?.overseaseOrderId,
+        piNo: getSingleData?.data?.piNo,
         products: finalValue,
         totalUSDAmount: totalAmount,
         totalRMBAmount: totalRMBAmount,
-     
       };
       const suborder = {
         orderId: getSingleData?.data?.overseaseOrderId,
-        piNo: getSingleData?.data?.overseaseOrderId,
+        piNo: getSingleData?.data?.piNo,
         products: finalValue,
       };
-      if (shorFallamount > 0) {
+      if (shortFallamount > 0) {
         const result = await createsuborder(suborder).unwrap();
         toast.success("Sub order created successfully");
       } else {
@@ -242,7 +241,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
     }
   };
 
-  const handleSubmitSubPI =async () => {
+  const handleSubmitSubPI = async () => {
     try {
       const finalValue = ProductData.map((item) => {
         return {
@@ -255,19 +254,19 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
       });
 
       const finalUpdate = {
-        id:item?.Orders,
+        id: item?._id,
         products: finalValue,
-   
       };
       const suborder = {
         orderId: getSingleData?.data?.overseaseOrderId,
-        piNo: getSingleData?.data?.overseaseOrderId,
+        piNo: item?.piNo,
         products: finalValue,
       };
-      if (shorFallamount > 0) {
+      if (shortFallamount > 0) {
         const result = await createsuborder(suborder).unwrap();
         toast.success("Sub order created successfully");
       } else {
+  
         const result = await updatesuborder(finalUpdate).unwrap();
         toast.success(" sub Order updated successfully");
       }
@@ -429,7 +428,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                     color: "#fff",
                   }}
                 >
-                  $ {shorFallamount}
+                  $ {shortFallamount}
                 </Typography>
               </Box>
 
@@ -747,10 +746,17 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
               background: "#067074",
               color: "#fff",
             }}
-            disabled={updateLoading || suborderLoading || updatesuborderLoading}
+            disabled={
+              updateLoading ||
+              suborderLoading ||
+              updatesuborderLoading ||
+              !isSubItem
+                ? getSingleData?.data?.subOrders?.length > 0
+                : false
+            }
             onClick={isSubItem ? handleSubmitSubPI : handleSubmitMain}
           >
-            {(updateLoading || suborderLoading || updatesuborderLoading )? (
+            {updateLoading || suborderLoading || updatesuborderLoading ? (
               <CircularProgress size="25px" sx={{ color: "#fff" }} />
             ) : (
               "Submit "
