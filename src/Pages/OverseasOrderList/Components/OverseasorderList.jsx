@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-
 import {
   Button,
   Box,
@@ -9,10 +8,11 @@ import {
   ToggleButtonGroup,
   Table,
   TableRow,
+  Grid,
   TableCell,
 } from "@mui/material";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import Nodata from "../../../assets/error.gif";
 import Loading from "../../../components/Common/Loading";
 import { makeStyles } from "@mui/styles";
@@ -21,7 +21,7 @@ import { useGetAllCreatedOrderQuery } from "../../../features/api/RestockOrderAp
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
-
+import { Portal } from "@mui/base/Portal";
 import OpenActionDial from "./OpenActionDial";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -100,18 +100,32 @@ const OverseasorderList = () => {
     if (overseasShipment?.status) {
       const data = overseasShipment.data?.map((item, index) => ({
         ...item,
-        paymentDate: formatDate(item.paymentDate),
+        paymentDate: formatDate(item.paymentDate) || "N/A",
         id: item._id,
         Sno: index + 1,
         orderId: item.overseaseOrderId,
+        piNo: item.piNo || "N/A",
+        paymentAmount: item.paymentAmountUSD || 0,
+        restUSDAmount:  item?.paymentAmountUSD - item?.totalUSDAmount || 0 ,
+        totalUSDAmount: item.totalUSDAmount || 0,
       }));
 
       setRows(data);
     }
   }, [overseasShipment, toggleValue]);
 
-  /// handler
+  function MyCustomToolbar(prop) {
+    return (
+      <React.Fragment>
+        <Portal container={() => document.getElementById("filter-panel")}>
+          <GridToolbarQuickFilter />
+        </Portal>
+        {/* <GridToolbar {...prop} /> */}
+      </React.Fragment>
+    );
+  }
 
+  /// handler
 
   // Define the columns
   const columns = [
@@ -138,7 +152,7 @@ const OverseasorderList = () => {
     },
     {
       field: "piNo",
-      headerName: "PI No:",
+      headerName: "PI No",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -219,6 +233,7 @@ const OverseasorderList = () => {
                 orderId: params.row.overseaseOrderId,
               });
             }}
+            disabled={params.row.paymentAmount}
           >
             Add Amount
           </Button>
@@ -227,8 +242,19 @@ const OverseasorderList = () => {
     },
 
     {
-      field: "totalUSDAmount",
+      field: "paymentAmount",
       headerName: "Paid Amount",
+      flex: 0.2,
+      minWidth: 50,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `$ ${Number(params.value).toFixed(2)}`,
+    },
+    {
+      field: "totalUSDAmount",
+      headerName: "Product Value",
       flex: 0.2,
       minWidth: 50,
       align: "center",
@@ -257,6 +283,19 @@ const OverseasorderList = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const status = params.row.status;
+        return (
+          <Button
+            style={{
+              background: `${status == "paid" ? "green" : "red"}`,
+              color: "#ddd",
+            }}
+          >
+            {status}
+          </Button>
+        );
+      },
     },
 
     {
@@ -365,6 +404,10 @@ const OverseasorderList = () => {
               <Box> </Box>
             )}
 
+            <Grid item sx={{width:"100%",mt:"12px"}}>
+              <Box id="filter-panel" />
+            </Grid>
+
             <ToggleButtonGroup
               color="primary"
               value={toggleValue}
@@ -384,7 +427,7 @@ const OverseasorderList = () => {
                 classes={{ selected: classes.selected }}
                 value="recieved"
               >
-                Recieved
+                Closed
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
@@ -460,6 +503,9 @@ const OverseasorderList = () => {
             rows={rows}
             rowHeight={40}
             Height={"85vh"}
+            slots={{
+              toolbar: MyCustomToolbar,
+            }}
           />
         </Box>
 

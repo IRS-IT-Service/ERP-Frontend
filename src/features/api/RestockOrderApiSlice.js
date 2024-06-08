@@ -254,7 +254,44 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    assignOrderVendor: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/assignOverseasOrder`,
+          method: "POST",
+          body:data
+        };
+      },
+    }),
+    createSubOrder: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/createSubOrder`,
+          method: "POST",
+          body:data
+        };
+      },
+    }),
+    updateSubOrder: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/updateSubOrder`,
+          method: "PUT",
+          body:data
+        };
+      },
+    }),
+    updateOrderOverseas: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/updateOrder`,
+          method: "PUT",
+          body:data
+        };
+      },
+    }),
   }),
+
 });
 
 export const {
@@ -288,4 +325,8 @@ export const {
   useGetAllCreatedOrderQuery,
   useGetSingleOrderQuery,
   useUpdatePaymentForOrderMutation,
+  useAssignOrderVendorMutation,
+  useCreateSubOrderMutation,
+  useUpdateSubOrderMutation,
+  useUpdateOrderOverseasMutation,
 } = restockApiSlice;
