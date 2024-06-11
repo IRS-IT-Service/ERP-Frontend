@@ -30,6 +30,7 @@ import {
   useUpdateSubOrderMutation,
   useCreateSubOrderMutation,
   useUpdateOrderOverseasMutation,
+  usePassPrevPriceMutation,
 } from "../../../../features/api/RestockOrderApiSlice";
 import { toast } from "react-toastify";
 
@@ -63,10 +64,11 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
   const [updateproducts, { isLoading: updateLoading }] =
     useUpdateOrderOverseasMutation();
 
-  const [createsuborder, { isLoading: suborderLoading }] =
-    useCreateSubOrderMutation();
   const [updatesuborder, { isLoading: updatesuborderLoading }] =
     useUpdateSubOrderMutation();
+
+  const [createsuborder, { isLoading: suborderLoading }] =
+    useCreateSubOrderMutation();
 
   function checkNegative(value) {
     if (value < 0) {
@@ -75,14 +77,11 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
     return true;
   }
 
-  const dataSub =
-    AccordFor === "SubPI" ? item?.finalProducts : getSingleData?.data?.products;
+  const dataSub = item?.finalProducts;
 
-  const dataMain = AccordFor === "SubPI" ? item : getSingleData?.data;
+  const dataMain = item;
 
-  const shortFallamount = isSubItem
-    ? (+getSingleData?.data.paymentAmountUSD - +getSingleData?.data.totalUSDAmount) - totalAmount
-    : dataMain?.paymentAmountUSD - totalAmount;
+  const shortFallamount = +item.finalValueUSD - totalAmount;
 
   const isNegative = checkNegative(shortFallamount);
 
@@ -94,6 +93,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
             return {
               ...item,
               originalRMB: item.RMB,
+              updatedQTY: "",
             };
           }
         })
@@ -115,6 +115,23 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
             return {
               ...item,
               USD: +value,
+              RMB: (ConversionRate * +value).toFixed(2),
+            };
+          } else {
+            return item;
+          }
+        });
+        return newData;
+      });
+    }
+    if (name === "RMB") {
+      setProductData((prev) => {
+        const newData = prev.map((item) => {
+          if (item.SKU === SKU) {
+            return {
+              ...item,
+              RMB: +value,
+              USD: (+value / ConversionRate).toFixed(2),
             };
           } else {
             return item;
@@ -136,18 +153,32 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
         });
         return newData;
       });
+    } else if (name === "updatedQTY") {
+      setProductData((prev) => {
+        const newData = prev.map((item) => {
+          if (item.SKU === SKU) {
+            return {
+              ...item,
+              updatedQTY: +value,
+            };
+          } else {
+            return item;
+          }
+        });
+        return newData;
+      });
     }
   };
 
   useEffect(() => {
     const TotalValue = ProductData.reduce((acc, cur) => {
-      return acc + +cur.Orderqty * +cur.USD;
+      return acc + +cur.updatedQTY * +cur.USD;
     }, 0);
     const TotalQuantity = ProductData.reduce((acc, cur) => {
-      return acc + +cur.Orderqty;
+      return acc + +cur.updatedQTY;
     }, 0);
     const TotalRMB = ProductData.reduce((acc, cur) => {
-      return acc + +cur.RMB;
+      return acc + +cur.updatedQTY * +cur.RMB;
     }, 0);
 
     setTotalamount(TotalValue);
@@ -191,8 +222,11 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
         Orderqty: "",
         USD: "",
         RMB: "",
+        prevRMB: item.prevRMB,
+        prevUSD: item.prevUSD,
         Name: item.Name,
         originalRMB: "",
+        updatedQTY: "",
       }));
 
       setProductData((prev) => [...prev, ...updatedData]);
@@ -205,34 +239,70 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
   const handleSubmitMain = async () => {
     try {
-      const finalValue = ProductData.map((item) => {
+      const UpdateOrder = [];
+      const order = getSingleData?.data?.subOrders;
+      const processedData = ProductData.map((item) => {
+        const remainingQty = item.Orderqty - item.updatedQTY;
+
         return {
-          SKU: item.SKU,
-          Orderqty: item.Orderqty,
-          USD: item.USD,
-          RMB: item.RMB,
-          Name: item.Name,
+          final:
+            remainingQty !== 0 && remainingQty > 0
+              ? {
+                  SKU: item.SKU,
+                  Orderqty: remainingQty,
+                  USD: item.USD,
+                  RMB: item.RMB,
+                  Name: item.Name,
+                  prevRMB:item.prevRMB,
+                  prevUSD:item.prevUSD,
+                }
+              : null,
+          updated:
+            {
+                  SKU: item.SKU,
+                  Orderqty: item.Orderqty,
+                  updateQTY:item.updatedQTY,
+                  USD: item.USD,
+                  RMB: item.RMB,
+                  Name: item.Name,
+                  prevRMB:item.prevRMB,
+                  prevUSD:item.prevUSD,
+                }
+            
         };
       });
+      const finalValue = processedData
+        .filter((data) => data.final !== null)
+        .map((data) => data.final);
+      const updateValue = processedData
+        .filter((data) => data.updated !== null)
+        .map((data) => data.updated);
+
 
       const updateProduct = {
+        id: order[order.length - 1]._id,
         orderId: getSingleData?.data?.overseaseOrderId,
         piNo: getSingleData?.data?.piNo,
-        products: finalValue,
+        products: updateValue,
         totalUSDAmount: totalAmount,
         totalRMBAmount: totalRMBAmount,
       };
+
       const suborder = {
         orderId: getSingleData?.data?.overseaseOrderId,
-        piNo: getSingleData?.data?.piNo,
         products: finalValue,
       };
       if (shortFallamount > 0) {
-        const result = await createsuborder(suborder).unwrap();
-        toast.success("Sub order created successfully");
+        // const result = await createsuborder(suborder).unwrap();
+        // toast.success("Sub order created successfully");
+        // const result1 = await updatesuborder(updateProduct).unwrap();
+        // toast.success("Order updated successfully");
+        console.log(updateProduct)
+        console.log(suborder)
       } else {
-        const result = await updateproducts(updateProduct).unwrap();
-        toast.success("Order updated successfully");
+        // const result = await updatesuborder(updateProduct).unwrap();
+        // toast.success("Order updated successfully");
+        console.log(updateProduct)
       }
 
       refetch();
@@ -241,41 +311,41 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
     }
   };
 
-  const handleSubmitSubPI = async () => {
-    try {
-      const finalValue = ProductData.map((item) => {
-        return {
-          SKU: item.SKU,
-          Orderqty: item.Orderqty,
-          USD: item.USD,
-          RMB: item.RMB,
-          Name: item.Name,
-        };
-      });
+  //   const handleSubmitSubPI = async () => {
+  //     try {
+  //       const finalValue = ProductData.map((item) => {
+  //         return {
+  //           SKU: item.SKU,
+  //           Orderqty: item.Orderqty,
+  //           USD: item.USD,
+  //           RMB: item.RMB,
+  //           Name: item.Name,
+  //         };
+  //       });
+  // console.log(finalValue)
+  //       const finalUpdate = {
+  //         id: item?._id,
+  //         products: finalValue,
+  //       };
+  //       const suborder = {
+  //         orderId: getSingleData?.data?.overseaseOrderId,
+  //         piNo: item?.piNo,
+  //         products: finalValue,
+  //       };
+  //       if (shortFallamount > 0) {
+  //         const result = await createsuborder(suborder).unwrap();
+  //         toast.success("Sub order created successfully");
 
-      const finalUpdate = {
-        id: item?._id,
-        products: finalValue,
-      };
-      const suborder = {
-        orderId: getSingleData?.data?.overseaseOrderId,
-        piNo: item?.piNo,
-        products: finalValue,
-      };
-      if (shortFallamount > 0) {
-        const result = await createsuborder(suborder).unwrap();
-        toast.success("Sub order created successfully");
-      } else {
-  
-        const result = await updatesuborder(finalUpdate).unwrap();
-        toast.success(" sub Order updated successfully");
-      }
+  //       } else {
+  //         const result = await updatesuborder(finalUpdate).unwrap();
+  //         toast.success(" sub Order updated successfully");
+  //       }
 
-      refetch();
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  //       refetch();
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
 
   return (
     <Box>
@@ -353,9 +423,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                   }}
                 >
                   {" "}
-                  {formatDate(
-                    isSubItem ? dataMain?.createdAt : dataMain?.paymentDate
-                  )}
+                  {formatDate(dataMain?.createdAt)}
                 </Typography>
               </Box>
 
@@ -368,7 +436,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                     marginRight: "3px",
                   }}
                 >
-                  {isSubItem ? "Sub PI :" : "PI :"}
+                  {dataMain?.piNo ? "Sub PI :" : "PI :"}
                 </Typography>
                 <Typography
                   sx={{
@@ -379,7 +447,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                   }}
                 >
                   {" "}
-                  {dataMain?.piNo}
+                  {dataMain?.piNo || getSingleData?.data.piNo}
                 </Typography>
               </Box>
               <Box display={"flex"}>
@@ -428,7 +496,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                     color: "#fff",
                   }}
                 >
-                  $ {shortFallamount}
+                  $ {shortFallamount.toFixed(2)}
                 </Typography>
               </Box>
 
@@ -505,9 +573,14 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                     <StyledCellHeader>Sno</StyledCellHeader>
                     <StyledCellHeader>SKU</StyledCellHeader>
                     <StyledCellHeader>Name</StyledCellHeader>
+
+                    <StyledCellHeader>Prev RMB</StyledCellHeader>
+                    <StyledCellHeader>Prev USD</StyledCellHeader>
+
                     <StyledCellHeader>USD $</StyledCellHeader>
                     <StyledCellHeader>RMB ¥</StyledCellHeader>
                     <StyledCellHeader>Order Quantity</StyledCellHeader>
+                    <StyledCellHeader>Updated Quantity</StyledCellHeader>
                     <StyledCellHeader>Total Order amount</StyledCellHeader>
 
                     <StyledCellHeader>Delete</StyledCellHeader>
@@ -521,10 +594,19 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                         <>
                           <StyledCell>{item.SKU}</StyledCell>
                           <StyledCell>{item.Name}</StyledCell>{" "}
+                          <StyledCell>
+                            {" "}
+                            {item.prevRMB !== "NA"
+                              ? "¥" + item.prevRMB
+                              : "N/A"}{" "}
+                          </StyledCell>
+                          <StyledCell>
+                            {" "}
+                            {item.prevUSD !== "NA" ? "$" + item.prevUSD : "N/A"}
+                          </StyledCell>
                         </>
                       ) : (
                         <>
-                          <StyledCell>{item.SKU}</StyledCell>
                           <StyledCell>
                             <input
                               name="USD"
@@ -547,6 +629,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                         <input
                           name="USD"
                           value={item.USD}
+                          type="number"
                           style={{
                             background: "#fff",
                             border: "none",
@@ -559,12 +642,26 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                         />
                       </StyledCell>
                       <StyledCell sx={{ textAlign: "center", width: "150px" }}>
-                        ¥ {item.RMB}
+                        <input
+                          name="RMB"
+                          value={item.RMB}
+                          type="number"
+                          style={{
+                            background: "#fff",
+                            border: "none",
+                            padding: "5px",
+                            width: "100px",
+                            border: "none",
+                            textAlign: "center",
+                          }}
+                          onChange={(e) => handleInputChange(e, item.SKU)}
+                        />
                       </StyledCell>
+                      <StyledCell>{item.Orderqty}</StyledCell>
                       <StyledCell>
                         <input
-                          name="QTY"
-                          value={item.Orderqty}
+                          name="updatedQTY"
+                          value={item.updatedQTY}
                           style={{
                             background: "#fff",
                             border: "none",
@@ -576,7 +673,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                           onChange={(e) => handleInputChange(e, item.SKU)}
                         />
                       </StyledCell>
-                      <StyledCell>$ {item.Orderqty * item.USD}</StyledCell>
+                      <StyledCell>$ {item.updatedQTY * item.USD}</StyledCell>
 
                       <StyledCell>
                         <DeleteIcon
@@ -754,7 +851,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                 ? getSingleData?.data?.subOrders?.length > 0
                 : false
             }
-            onClick={isSubItem ? handleSubmitSubPI : handleSubmitMain}
+            onClick={handleSubmitMain}
           >
             {updateLoading || suborderLoading || updatesuborderLoading ? (
               <CircularProgress size="25px" sx={{ color: "#fff" }} />
@@ -772,6 +869,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
           setOpen={setOpenDialog}
           setSelectedData={setSelectedData}
           FinalData={FinalData}
+          Query={"SubList"}
         />
       )}
     </Box>

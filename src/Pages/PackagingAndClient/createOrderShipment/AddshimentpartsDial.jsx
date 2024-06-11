@@ -58,6 +58,9 @@ import {
   GridToolbarContainer,
 } from "@mui/x-data-grid";
 
+import {
+ usePassPrevPriceMutation
+} from "../../../features/api/RestockOrderApiSlice";
 
 
 const myTheme = createTheme({
@@ -105,6 +108,7 @@ const AddshipmentDial = ({
   setOpen,
   setSelectedData,
   FinalData,
+  Query
 
 
 }) => {
@@ -137,6 +141,10 @@ const [filterString, setFilterString] = useState("page=1");
 const [page, setPage] = useState(1);
 const [rowPerPage, setRowPerPage] = useState(100);
 const [totalProductCount, setTotalProductCount] = useState(0);
+
+
+const [getprevprice, { isLoading: getLoading }] =
+usePassPrevPriceMutation();
 
 /// rtk query
 useEffect(() => {
@@ -184,6 +192,9 @@ setSelectedDiabled(disabled)
 }}, [open]);
 
 
+
+
+
 useEffect(() => {
  if (
    selectedItemsData.length > 0 &&
@@ -214,11 +225,37 @@ const realData = uniqueSKUsArray?.filter((item) =>
 
 
 
-const handleAdditems = () => {
-  setOpen(false)
+const handleAddItems = async () => {
+  if (Query === "SubList") {
+    try {
+      if (selectedItems.length > 0) {
+        const info = {
+          skus: selectedItems
+        };
+        const result = await getprevprice(info).unwrap();
 
-  setSelectedData(selectedItemsData);
+        const updatedData = selectedItemsData.map((data) => {
+          const filteredItem = result?.data.find((item) => item.SKU === data.SKU);
+          return filteredItem 
+            ? { ...data, prevRMB: filteredItem.PrevRMB || "NA", prevUSD: filteredItem.prevUSD || "NA" }
+            : data;
+        });
+
+        setSelectedData(updatedData);
+        console.log(updatedData)
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setOpen(false);
+    }
+  } else {
+    setSelectedData(selectedItemsData);
+    setOpen(false);
+  }
 };
+
+
 
 /// useEffect
 useEffect(() => {
@@ -489,7 +526,7 @@ const getRowClassName = (params) => {
                 },
               }}
             >
-              <DataGrid
+            { Query === "SubList" ? <DataGrid
                 columns={columns}
                 rows={rows}
                 rowHeight={40}
@@ -499,11 +536,6 @@ const getRowClassName = (params) => {
                 }}
                 checkboxSelection
                 disableRowSelectionOnClick
-                isRowSelectable={(params) =>
-                  !selectedDiabledItems.includes(params.row.SKU) &&
-                  params.row.ActualQuantity > 0
-                }
-                getCellClassName={getRowClassName}
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected
@@ -513,7 +545,31 @@ const getRowClassName = (params) => {
                 slotProps={{
                   footer: { status: refetch },
                 }}
-              />
+              /> : <DataGrid
+              columns={columns}
+              rows={rows}
+              rowHeight={40}
+              apiRef={apiRef}
+              columnVisibilityModel={{
+                Category: false,
+              }}
+              checkboxSelection
+              disableRowSelectionOnClick
+              isRowSelectable={(params) =>
+                !selectedDiabledItems.includes(params.row.SKU) &&
+                params.row.ActualQuantity > 0
+              }
+              getCellClassName={getRowClassName}
+              onRowSelectionModelChange={handleSelectionChange}
+              rowSelectionModel={selectedItems}
+              keepNonExistentRowsSelected
+              components={{
+                Footer: CustomFooter,
+              }}
+              slotProps={{
+                footer: { status: refetch },
+              }}
+            />  }
             </Box>
             </ThemeProvider>
           </Grid>
@@ -529,7 +585,9 @@ const getRowClassName = (params) => {
           justifyContent: "flex-end",
           padding:1
         }}>
-      <Button variant="contained" onClick={handleAdditems}>Add</Button>
+      <Button variant="contained" onClick={handleAddItems}>{getLoading ? <CircularProgress size="20px" sx={{
+        color:"#fff"
+      }} /> : "Add"}</Button>
       </Box>
       </Dialog>
   
