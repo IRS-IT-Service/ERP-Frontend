@@ -281,6 +281,24 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    updateOrderOverseas: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/updateOrder`,
+          method: "PUT",
+          body:data
+        };
+      },
+    }),
+    passPrevPrice: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/getpricehistorywitskus`,
+          method: "POST",
+          body:data
+        };
+      },
+    }),
   }),
 
 });
@@ -318,5 +336,7 @@ export const {
   useUpdatePaymentForOrderMutation,
   useAssignOrderVendorMutation,
   useCreateSubOrderMutation,
-  useUpdateSubOrderMutation
+  useUpdateSubOrderMutation,
+  useUpdateOrderOverseasMutation,
+  usePassPrevPriceMutation,
 } = restockApiSlice;

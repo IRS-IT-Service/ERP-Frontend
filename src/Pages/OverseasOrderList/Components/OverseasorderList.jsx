@@ -106,7 +106,7 @@ const OverseasorderList = () => {
         orderId: item.overseaseOrderId,
         piNo: item.piNo || "N/A",
         paymentAmount: item.paymentAmountUSD || 0,
-        restUSDAmount: item?.paymentAmountUSD - item?.utilzedUSDAmount || 0,
+        restUSDAmount:  item?.totalUSDAmount - item?.finalValueUSD || 0 ,
         totalUSDAmount: item.totalUSDAmount || 0,
       }));
 
@@ -223,6 +223,7 @@ const OverseasorderList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        const status = params.row.status
         return (
           <Button
             variant="contained"
@@ -231,9 +232,12 @@ const OverseasorderList = () => {
               handleOpen({
                 name: "Add Amount",
                 orderId: params.row.overseaseOrderId,
+                orderAmount: params.row.totalUSDAmount
+
+                
               });
             }}
-            disabled={params.row.paymentAmount}
+            disabled={status == "paid"}
           >
             Add Amount
           </Button>
@@ -241,17 +245,7 @@ const OverseasorderList = () => {
       },
     },
 
-    {
-      field: "paymentAmount",
-      headerName: "Paid Amount",
-      flex: 0.2,
-      minWidth: 50,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `$ ${Number(params.value).toFixed(2)}`,
-    },
+
     {
       field: "totalUSDAmount",
       headerName: "Product Value",
@@ -308,11 +302,13 @@ const OverseasorderList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        const status = params.row.status
         return (
           <Button
             onClick={() => {
               navigate(`/SubPIList/${params.row.overseaseOrderId}`);
             }}
+            disabled={status == "unpaid"}
           >
             View
           </Button>
