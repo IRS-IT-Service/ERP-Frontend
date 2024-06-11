@@ -19,7 +19,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { ref } from "firebase/storage";
 
 const OpenActionDial = ({ open, close, selectedDetails, selectedInfo ,refetch}) => {
-  console.log(selectedDetails)
+  console.log(selectedInfo)
   let piPdf =
     selectedInfo && selectedInfo?.piCopy?.url?.split("/").pop().includes("pdf");
   let swiftPdf =
@@ -140,12 +140,13 @@ const OpenActionDial = ({ open, close, selectedDetails, selectedInfo ,refetch}) 
                 />
                 <TextField
                   name="RemittanceAmount"
-                  label="Remittance Amount"
+                  label="Remittance Amount in USD"
                   type="number"
                   size="small"
-                  value={selectedData.RemittanceAmount}
-                  onChange={handleOnChangeFile}
-                  required
+                  value={selectedInfo?.orderAmount}
+                  // onChange={handleOnChangeFile}
+                  disabled
+             
                 />
                 <TextField
                   name="PINO"
