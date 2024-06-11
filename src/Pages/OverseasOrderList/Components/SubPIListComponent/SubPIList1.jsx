@@ -221,7 +221,7 @@ const SubPIList1 = () => {
                 marginRight: "3px",
               }}
             >
-              $ {getSingleData?.data.paymentAmountUSD}
+              $ {getSingleData?.data.totalUSDAmount}
             </Typography>
           </StyledBox>
           <StyledBox>
@@ -242,7 +242,7 @@ const SubPIList1 = () => {
                 marginRight: "3px",
               }}
             >
-              $ {getSingleData?.data.restUSDAmount}
+              $ {getSingleData?.data.totalUSDAmount - getSingleData?.data.utilzedUSDAmount}
             </Typography>
           </StyledBox>
         </Box>
@@ -258,8 +258,8 @@ const SubPIList1 = () => {
           padding: "10px",
       
         }}>
-        <AccordionComp getSingleData={getSingleData} refetch ={refetch} />
-        <Box
+        {/* <AccordionComp getSingleData={getSingleData} refetch ={refetch} /> */}
+        {/* <Box
           sx={{
             marginTop: "10px",
             maxHeight: "100%",
@@ -274,10 +274,8 @@ const SubPIList1 = () => {
            
           
           }}
-        >
-         {getSingleData?.data?.subOrders?.length >= 0 && <Typography fontSize="12px" fontWeight="bold">
-            Sub List
-          </Typography> }
+        > */}
+      
           {getSingleData?.data?.subOrders?.map((item, index) => {
             return (
            
@@ -291,7 +289,7 @@ const SubPIList1 = () => {
               
             );
           })}
-        </Box>
+        {/* </Box> */}
         </Box>
       </Box>
 

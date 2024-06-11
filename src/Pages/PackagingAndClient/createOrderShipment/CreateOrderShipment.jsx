@@ -332,7 +332,7 @@ const createOrderShipment = ({
     setRequireqty((prev) => {
       return prev.map((data) => {
         if (data.SKU === item.SKU) {
-          if (value > item.Quantity || value === '0') {
+          if (value > item.ActualQuantity || value === '0') {
             error = true;
           }
 

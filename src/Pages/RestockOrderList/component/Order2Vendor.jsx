@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbarQuickFilter,
+  GridToolbar,
+  useGridApiRef,
+} from "@mui/x-data-grid";
 import { toast } from "react-toastify";
 import {
   Dialog,
@@ -18,6 +23,7 @@ import {
   Typography,
   InputAdornment,
   CircularProgress,
+  styled,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -29,6 +35,20 @@ import {
   useAssignOrderVendorMutation,
 } from "../../../features/api/RestockOrderApiSlice";
 import { useSelector } from "react-redux";
+import { Portal } from "@mui/base/Portal";
+
+const StyledCell = styled(TableCell)(({ theme }) => ({
+  textAlign: "center",
+  padding: 1.5,
+}));
+
+const StyledCellHeader = styled(TableCell)(({ theme }) => ({
+  textAlign: "center",
+  background: "linear-gradient(0deg, #01127D, #04012F)",
+  color: "#fff",
+  padding: 1.5,
+}));
+
 const Order2Vendor = ({
   items,
   open,
@@ -52,22 +72,85 @@ const Order2Vendor = ({
   const [rmbPrice, setRmbPrice] = useState({});
   const [rows, setRows] = useState([]);
   const [disable, setDisable] = useState(false);
+  const [processItems, setProcessItems] = useState([]);
+  const [conversionRate, setConversionRate] = useState(null);
 
   /// rtk query
   const { data: allVendorData } = useGetAllVendorQuery();
   const [assignOrderApi, { isLoading }] = useAssignOrderVendorMutation();
 
+  useEffect(() => {
+    setProcessItems((prev) => {
+      return items.map((item, index) => ({
+        ...item,
+      }));
+    });
+  }, [items]);
+
+
+
+
+  const handleChange = (e, SKU) => {
+    const { name, value } = e.target;
+
+    if(name === "NewQuantity"){
+      setProcessItems((prev) => {
+        return prev.map((item) => {
+          if (item.SKU === SKU) {
+            return {
+             ...item,
+              [name]: +value,
+            };
+          } else {
+            return item;
+          }
+        });
+      });
+    }else if(name === "USD"){
+      setProcessItems((prev) => {
+        return prev.map((item) => {
+          if (item.SKU === SKU) {
+            return {
+             ...item,
+              USD: +value,
+              RMB : (conversionRate * +value).toFixed(2) || 0
+            };
+          } else {
+            return item;
+          }
+        });
+      });
+    }else if(name === "RMB"){
+      setProcessItems((prev) => {
+        return prev.map((item) => {
+          if (item.SKU === SKU) {
+            return {
+             ...item,
+              RMB: +value,
+              USD: (+value / conversionRate).toFixed(2) || 0
+            };
+          } else {
+            return item;
+          }
+        });
+      });
+    }
+  };
+
   const handleAsign = async (e) => {
     setDisable(true);
-    if (items.length > 0) {
-      const processedItems = items.map((item, index) => ({
-        USD: +prices[item.SKU] || 0,
-        RMB: +rmbPrice[item.SKU] || 0,
+    if (processItems.length > 0) {
+      const processedItems = processItems.map((item, index) => ({
+        USD: +item.USD || 0,
+        RMB: +item.RMB || 0,
         Orderqty: item.NewQuantity,
         Gst: item.GST,
         Name: item.Name,
         Brand: item.Brand,
         SKU: item.SKU,
+        prevRMB:item.prevRMB,
+        prevUSD:item.prevUSD
+        
       }));
 
       try {
@@ -82,12 +165,16 @@ const Order2Vendor = ({
           message: `${userInfo.name} Created Overseas Order `,
           time: new Date(),
         };
+
+
         socket.emit("liveStatusServer", liveStatusData);
         toast.success("Restock order was successfully processed");
         onClose();
         refetch();
         setSelectedItems([]);
         setPrices([]);
+        setConversionRate(null)
+        setProcessItems([])
       } catch (err) {
         console.error("Error at Creating Restock Order: " + err);
       }
@@ -176,6 +263,17 @@ const Order2Vendor = ({
     },
   ];
 
+  function MyCustomToolbar(prop) {
+    return (
+      <React.Fragment>
+        <Portal container={() => document.getElementById("filter-panel")}>
+          <GridToolbarQuickFilter />
+        </Portal>
+        {/* <GridToolbar {...prop} /> */}
+      </React.Fragment>
+    );
+  }
+
   return (
     <Dialog
       open={open}
@@ -209,237 +307,302 @@ const Order2Vendor = ({
             color: "#fff",
             borderRadius: "5rem",
             marginRight: "1rem",
+            cursor: "pointer",
           }}
         />
       </Box>
       <DialogContent sx={{ overflow: "hidden" }}>
-        <Grid container>
-          <Grid item xs={6}>
-            <Typography textAlign="center">Selected Product</Typography>
-            <TableContainer sx={{ height: 700 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box
+            sx={{
+              border: "0.5px solid #ccc",
+              height: "50%",
+              overflow: "auto",
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingX: "10px",
+                padding: "5px",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  width: "100%",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    width: "15%",
+                    gap: "10px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "0.878rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Conversion rate
+                  </Typography>{" "}
+                  <input
+                    value={conversionRate}
+                    style={{
+                      width: "30px",
+                    }}
+                    onChange={(e) => setConversionRate(e.target.value)}
+                  />
+                </Box>
+                <Box
+                  sx={{
+                    width: "100%",
+                  }}
+                >
+                  <Typography
+                    textAlign="center"
+                    sx={{
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Select product
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            <TableContainer
+              sx={{
+                height: "40vh",
+              }}
+            >
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      Sno
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      SKU
-                    </TableCell>
+                    <StyledCellHeader>Sno</StyledCellHeader>
+                    <StyledCellHeader>SKU</StyledCellHeader>
 
-                    <TableCell
-                      sx={{
-                        textAlign: "center",
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      Name
-                    </TableCell>
+                    <StyledCellHeader>Name</StyledCellHeader>
 
-                    <TableCell
-                      sx={{
-                        textAlign: "center",
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      Order QTY
-                    </TableCell>
+                    <StyledCellHeader>Order QTY</StyledCellHeader>
 
-                    <TableCell
-                      sx={{
-                        textAlign: "center",
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      Prev RMB
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        textAlign: "center",
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      Prev USD
-                    </TableCell>
+                    <StyledCellHeader>Prev RMB</StyledCellHeader>
+                    <StyledCellHeader>Prev USD</StyledCellHeader>
 
-                    <TableCell
-                      sx={{
-                        textAlign: "center",
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      USD $
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        textAlign: "center",
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      RMB ¥
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        textAlign: "center",
-                        background: "linear-gradient(0deg, #01127D, #04012F)",
-                        color: "#fff",
-                      }}
-                    >
-                      Delete
-                    </TableCell>
+                    <StyledCellHeader>USD $</StyledCellHeader>
+                    <StyledCellHeader>RMB ¥</StyledCellHeader>
+                    <StyledCellHeader>Delete</StyledCellHeader>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {items.map((item, index) => (
+                  {processItems.map((item, index) => (
                     <TableRow
                       key={item.id}
                       sx={{ fontSize: "12px", padding: "10px" }}
                     >
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell sx={{ textAlign: "center", fontSize: "12px" }}>
+                      <StyledCell>{index + 1}</StyledCell>
+                      <StyledCell
+                        sx={{ textAlign: "center", fontSize: "12px" }}
+                      >
                         {item.SKU}
-                      </TableCell>
+                      </StyledCell>
 
-                      <TableCell sx={{ textAlign: "center", fontSize: "12px" }}>
+                      <StyledCell
+                        sx={{ textAlign: "center", fontSize: "12px" }}
+                      >
                         {item.Name}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center", fontSize: "12px" }}>
-                        {item.NewQuantity}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center", fontSize: "12px" }}>
-                        ¥ {item.prevRMB}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center", fontSize: "12px" }}>
-                        $ {item.prevUSD}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center", fontSize: "12px" }}>
-                        <TextField
+                      </StyledCell>
+                      <StyledCell
+                        sx={{ textAlign: "center", fontSize: "12px" }}
+                      >
+                         <input
                           id={`price-${index}`}
                           variant="outlined"
+                          name="NewQuantity"
                           placeholder="$"
                           size="small"
-                          sx={{ width: "80px", height: "40px" }}
-                          value={prices[item.SKU]} // Set the value from state
-                          onChange={(e) => {
-                            const newPrices = { ...prices };
-                            newPrices[item.SKU] = e.target.value;
-                            setPrices(newPrices);
+                          style={{
+                            width: "50px",
+                            padding: "5px",
+                            border: "1px solid #ccc",
+                            borderRadius: "5px",
+                            textAlign: "center"
+                          }}
+                          value={item.NewQuantity} 
+                                               
+                          onChange={(e) =>{
+                            handleChange(e,item.SKU)
                           }}
                         />
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center", fontSize: "12px" }}>
-                        <TextField
+                      
+                      </StyledCell>
+                      <StyledCell
+                        sx={{ textAlign: "center", fontSize: "12px" }}
+                      >
+                        ¥ {item.prevRMB}
+                      </StyledCell>
+                      <StyledCell
+                        sx={{ textAlign: "center", fontSize: "12px" }}
+                      >
+                        $ {item.prevUSD}
+                      </StyledCell>
+                      <StyledCell
+                        sx={{ textAlign: "center", fontSize: "12px" }}
+                      >
+                        <input
                           id={`price-${index}`}
                           variant="outlined"
-                          placeholder="¥"
+                          name="USD"
+                          placeholder="$"
                           size="small"
-                          sx={{ width: "80px", height: "40px" }}
-                          value={prices[index]} // Set the value from state
-                          onChange={(e) => {
-                            const newRMBprice = { ...rmbPrice };
-                            newRMBprice[item.SKU] = e.target.value;
-                            setRmbPrice(newRMBprice);
+                          style={{
+                            width: "100px",
+                            padding: "5px",
+                            border: "1px solid #ccc",
+                            borderRadius: "5px",
+                          }}
+                          value={item.USD} // Set the value from state
+                          // onChange={(e) => {
+                          //   const newPrices = { ...prices };
+                          //   newPrices[item.SKU] = e.target.value;
+                          //   setPrices(newPrices);
+                          // }}
+                          
+                          onChange={(e) =>{
+                            handleChange(e,item.SKU)
                           }}
                         />
-                      </TableCell>
-                      <TableCell sx={{ textAlign: "center", fontSize: "12px" }}>
+                      </StyledCell>
+                      <StyledCell
+                        sx={{ textAlign: "center", fontSize: "12px" }}
+                      >
+                        <input
+                          id={`price-${index}`}
+                          variant="outlined"
+                          name="RMB"
+                          placeholder="¥"
+                          size="small"
+                          style={{
+                            width: "100px",
+                            padding: "5px",
+                            border: "1px solid #ccc",
+                            borderRadius: "5px",
+                          }}
+                          value={item.RMB} // Set the value from state
+                          // onChange={(e) => {
+                          //   const newRMBprice = { ...rmbPrice };
+                          //   newRMBprice[item.SKU] = e.target.value;
+                          //   setRmbPrice(newRMBprice);
+                          // }}
+
+                          onChange={(e) =>{
+                            handleChange(e,item.SKU)
+                          }}
+                        />
+                      </StyledCell>
+                      <StyledCell
+                        sx={{ textAlign: "center", fontSize: "12px" }}
+                      >
                         <DeleteIcon
                           onClick={() => handleDelete(item.id)}
                           sx={{ cursor: "pointer" }}
                         />
-                      </TableCell>
+                      </StyledCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              value={skuFilter}
-              placeholder="Enter Concern Person"
-              size="small"
-              color="secondary"
-              onChange={(e) => {
-                setSkuFilter(e.target.value);
-                handleFilterChange("concernPerson", "contains", e.target.value);
-              }}
-              sx={{
-                position: "absolute",
-                right: "2rem",
-                top: "3rem",
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Typography textAlign="center">Asign Vendor</Typography>
+          </Box>
+          <Box
+            sx={{
+              height: "50%",
+              border: "0.5px solid #ccc",
+              overflow: "auto",
+            }}
+          >
             <Box
               sx={{
-                height: "89%",
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingX: "10px",
+              }}
+            >
+              <Box id="filter-panel" />
+              <Box
+                sx={{
+                  width: "100%",
+                }}
+              >
+                {" "}
+                <Typography
+                  textAlign="center"
+                  sx={{
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Asign Vendor
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                height: "30vh",
+                overflow: "auto",
                 "& .super-app-theme--header": {
-                  background: "#eee",
+                  background: "#ccc",
                   color: "black",
                   textAlign: "center",
-                },
-                "& .vertical-lines .MuiDataGrid-cell": {
-                  borderRight: "1px solid #e0e0e0",
-                },
-                "& .supercursor-app-theme--cell:hover": {
-                  background:
-                    "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-                  color: "white",
-                  cursor: "pointer",
-                },
-                "& .MuiDataGrid-columnHeaderTitleContainer": {
-                  background: "#eee",
                 },
               }}
             >
               <DataGrid
                 columns={columns}
                 rows={rows}
-                rowHeight={40}
+                rowHeight={30}
                 initialState={{
                   columns: {
                     columnVisibilityModel: {
                       Category: false,
                     },
                   },
+                  filter: {
+                    filterModel: {
+                      items: ["OrderDate"],
+                      quickFilterExcludeHiddenColumns: true,
+                    },
+                  },
                 }}
-                editMode="row"
-                apiRef={apiRef}
+                slots={{
+                  toolbar: MyCustomToolbar,
+                }}
+                // editMode="row"
+                // apiRef={apiRef}
                 // checkboxSelection
                 disableRowSelectionOnClick
                 // onRowSelectionModelChange={handleSelectionChange}
                 // rowSelectionModel={selectedItems}
                 // processRowUpdate={handleRowUpdate}
                 onProcessRowUpdateError={(error) => {}}
-                autoPageSize
+                // autoPageSize
               />
             </Box>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </DialogContent>
       <Box
         sx={{
