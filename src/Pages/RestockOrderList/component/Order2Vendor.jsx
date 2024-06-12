@@ -346,15 +346,16 @@ const Order2Vendor = ({
                     display: "flex",
                     width: "15%",
                     gap: "10px",
+                    alignItems: "center",
                   }}
                 >
                   <Typography
                     sx={{
-                      fontSize: "0.878rem",
+                      fontSize: "0.7rem",
                       fontWeight: "bold",
                     }}
                   >
-                    Conversion rate
+                    USD to RMB Conversion Rate
                   </Typography>{" "}
                   <input
                     value={conversionRate}

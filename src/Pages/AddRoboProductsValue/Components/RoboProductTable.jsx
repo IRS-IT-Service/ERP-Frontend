@@ -9,7 +9,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import React, { useEffect, useState,useRef, } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 
 import { useAddDynamicValueMutation } from "../../../features/api/productApiSlice";
@@ -31,7 +31,7 @@ const RoboProductTable = () => {
   const [inputSearchBrand, setInputSearchBrand] = useState("");
   const [inputSearchCategory, setInputSearchCategory] = useState("");
   const [inputSearchSubCategory, setInputSearchSubCategory] = useState("");
-  const [error , setError] = useState(null)
+  const [error, setError] = useState(null);
 
   //rtk Querry
   const [addDynamicValue] = useAddDynamicValueMutation();
@@ -45,7 +45,7 @@ const RoboProductTable = () => {
     const selectedValue = event.target.value;
     if (values.length === 0) {
       setSelectValue(selectedValue);
-      setError(null)
+      setError(null);
     }
   };
 
@@ -56,16 +56,24 @@ const RoboProductTable = () => {
   };
 
   const handleInput = (event) => {
-    if (!selectValue){
-    setError("Select Value First")
-      return 
+    if (!selectValue) {
+      setError("Select Value First");
+      return;
     }
+
+    const regex = /^[a-zA-Z0-9\s]*$/;
+
+    if (!regex.test(event.target.value)) {
+      setError("Special characters are not allowed");
+      return;
+    }
+
     if (selectValue === "Brand") {
       setAddvalue(event.target.value.toUpperCase());
-      setError(null)
+      setError(null);
     } else {
       setAddvalue(event.target.value);
-      setError(null)
+      setError(null);
     }
   };
 
@@ -106,28 +114,26 @@ const RoboProductTable = () => {
   const handleClose = () => {
     setDel(false);
   };
-const handleSearch = (e) =>{
+  const handleSearch = (e) => {
+    const { name, value } = e.target;
 
-const {name,value} = e.target;
-
-if(name === "brand") {
-  setInputSearchBrand(value)
-  if (brandContainerRef.current) {
-    brandContainerRef.current.scrollTop = 0;
-  }
-}else if(name === "category"){
-  setInputSearchCategory(value)
-  if (categoryContainerRef.current) {
-    categoryContainerRef.current.scrollTop = 0;
-  }
-}else {
-  setInputSearchSubCategory(value)
-  if (subCategoryContainerRef.current) {
-    subCategoryContainerRef.current.scrollTop = 0;
-  }
-}
-}
-
+    if (name === "brand") {
+      setInputSearchBrand(value);
+      if (brandContainerRef.current) {
+        brandContainerRef.current.scrollTop = 0;
+      }
+    } else if (name === "category") {
+      setInputSearchCategory(value);
+      if (categoryContainerRef.current) {
+        categoryContainerRef.current.scrollTop = 0;
+      }
+    } else {
+      setInputSearchSubCategory(value);
+      if (subCategoryContainerRef.current) {
+        subCategoryContainerRef.current.scrollTop = 0;
+      }
+    }
+  };
 
   return (
     <Box
@@ -142,7 +148,6 @@ if(name === "brand") {
         sx={{
           display: "flex",
           width: "100%",
-   
         }}
       >
         <Box sx={{ width: "50%" }}>
@@ -151,7 +156,6 @@ if(name === "brand") {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              
             }}
           >
             <FormControl sx={{ m: 2, minWidth: 200 }} size="large">
@@ -175,9 +179,8 @@ if(name === "brand") {
                 <MenuItem value="GST">GST</MenuItem>
               </Select>
             </FormControl>
-            <Box sx={{width:400 ,padding:2}} >
+            <Box sx={{ width: 400, padding: 2 }}>
               <TextField
-           
                 id="outlined-basic"
                 label="Add Value"
                 variant="outlined"
@@ -253,7 +256,6 @@ if(name === "brand") {
 
       <Box sx={{ display: "flex", gap: 2, m: 1 }}>
         <Box
-      
           sx={{
             border: "1px solid black",
             display: "flex",
@@ -288,7 +290,7 @@ if(name === "brand") {
           </Box>
 
           <Box
-              ref={brandContainerRef}
+            ref={brandContainerRef}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -300,10 +302,15 @@ if(name === "brand") {
           >
             {[
               ...(getDyanmicValue?.data?.[0]?.Brand?.filter((item) =>
-                item.toLowerCase().includes(inputSearchBrand.toLocaleLowerCase())
+                item
+                  .toLowerCase()
+                  .includes(inputSearchBrand.toLocaleLowerCase())
               ) || []),
               ...(getDyanmicValue?.data?.[0]?.Brand?.filter(
-                (item) => !item.toLowerCase().includes(inputSearchBrand.toLocaleLowerCase())
+                (item) =>
+                  !item
+                    .toLowerCase()
+                    .includes(inputSearchBrand.toLocaleLowerCase())
               ) || []),
             ].map((item, index) => {
               const isBrandWithLogo =
@@ -391,7 +398,7 @@ if(name === "brand") {
             </Typography>
           </Box>
           <Box
-                ref={categoryContainerRef}
+            ref={categoryContainerRef}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -403,10 +410,15 @@ if(name === "brand") {
           >
             {[
               ...(getDyanmicValue?.data?.[0]?.Category?.filter((item) =>
-                item.toLowerCase().includes(inputSearchCategory.toLocaleLowerCase())
+                item
+                  .toLowerCase()
+                  .includes(inputSearchCategory.toLocaleLowerCase())
               ) || []),
               ...(getDyanmicValue?.data?.[0]?.Category?.filter(
-                (item) => !item.toLowerCase().includes(inputSearchCategory.toLocaleLowerCase())
+                (item) =>
+                  !item
+                    .toLowerCase()
+                    .includes(inputSearchCategory.toLocaleLowerCase())
               ) || []),
             ].map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>
@@ -473,7 +485,7 @@ if(name === "brand") {
             </Typography>
           </Box>
           <Box
-                ref={subCategoryContainerRef}
+            ref={subCategoryContainerRef}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -485,10 +497,15 @@ if(name === "brand") {
           >
             {[
               ...(getDyanmicValue?.data?.[0]?.SubCategory?.filter((item) =>
-                item.toLowerCase().includes(inputSearchSubCategory?.toLocaleLowerCase())
+                item
+                  .toLowerCase()
+                  .includes(inputSearchSubCategory?.toLocaleLowerCase())
               ) || []),
               ...(getDyanmicValue?.data?.[0]?.SubCategory?.filter(
-                (item) => !item.toLowerCase().includes(inputSearchSubCategory?.toLocaleLowerCase())
+                (item) =>
+                  !item
+                    .toLowerCase()
+                    .includes(inputSearchSubCategory?.toLocaleLowerCase())
               ) || []),
             ].map((item, index) => (
               <Box sx={{ display: "flex", gap: 1 }} key={index}>

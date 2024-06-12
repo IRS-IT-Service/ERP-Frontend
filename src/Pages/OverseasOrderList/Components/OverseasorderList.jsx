@@ -106,13 +106,20 @@ const OverseasorderList = () => {
         orderId: item.overseaseOrderId,
         piNo: item.piNo || "N/A",
         paymentAmount: item.paymentAmountUSD || 0,
-        restUSDAmount:  item?.totalUSDAmount - item?.finalValueUSD || 0 ,
+        restUSDAmount: item?.utilzedUSDAmount || 0,
         totalUSDAmount: item.totalUSDAmount || 0,
+        status: item.status
       }));
-
-      setRows(data);
+  
+      const filteredData = data.filter((item) => 
+        toggleValue === "closed" ? item.status === "closed" : item.status !== "closed"
+      );
+  
+      setRows(filteredData);
     }
   }, [overseasShipment, toggleValue]);
+
+
 
   function MyCustomToolbar(prop) {
     return (
@@ -237,7 +244,7 @@ const OverseasorderList = () => {
                 
               });
             }}
-            disabled={status == "paid"}
+            disabled={status == "paid" || status == "closed"}
           >
             Add Amount
           </Button>
@@ -282,8 +289,8 @@ const OverseasorderList = () => {
         return (
           <Button
             style={{
-              background: `${status == "paid" ? "green" : "red"}`,
-              color: "#ddd",
+              color: `${status == "paid" ? "green" : status == "unpaid" ?"red" : "blue"}`,
+           
             }}
           >
             {status}
@@ -421,7 +428,7 @@ const OverseasorderList = () => {
               </ToggleButton>
               <ToggleButton
                 classes={{ selected: classes.selected }}
-                value="recieved"
+                value="closed"
               >
                 Closed
               </ToggleButton>
