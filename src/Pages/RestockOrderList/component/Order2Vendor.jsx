@@ -75,7 +75,7 @@ const Order2Vendor = ({
   const [processItems, setProcessItems] = useState([]);
   const [conversionRate, setConversionRate] = useState(null);
 
-  console.log(processItems)
+
 
   /// rtk query
   const { data: allVendorData } = useGetAllVendorQuery();
@@ -85,12 +85,16 @@ const Order2Vendor = ({
     setProcessItems((prev) => {
       return items.map((item, index) => ({
         ...item,
+        NewQuantity:item.RestockQuantity
       }));
     });
   }, [items]);
 
 
-
+  const handleRemoveRestockItem = (SKU) => {
+    const newSelectedItems = processItems.filter((item) => item?.SKU !== SKU);
+    setProcessItems(newSelectedItems);
+  };
 
   const handleChange = (e, SKU) => {
     const { name, value } = e.target;
@@ -517,7 +521,7 @@ const Order2Vendor = ({
                         sx={{ textAlign: "center", fontSize: "12px" }}
                       >
                         <DeleteIcon
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => handleRemoveRestockItem(item.SKU)}
                           sx={{ cursor: "pointer" }}
                         />
                       </StyledCell>
