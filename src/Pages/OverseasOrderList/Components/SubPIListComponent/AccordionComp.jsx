@@ -80,16 +80,20 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const intailAmount = +getSingleData?.data?.totalUSDAmount;
   const intailUtilize = +getSingleData?.data?.utilzedUSDAmount;
 
-  // const shortFallamount = index === 0 ? +intailAmount - totalAmount : intailUtilize - totalAmount;
+
 
   const shortFallamount =
     index === 0 ? intailAmount - totalAmount : item?.shortFall - totalAmount;
   const isNegative = checkNegative(shortFallamount);
 
   useEffect(() => {
+    let prevConv = 0
     if (dataSub) {
       setProductData(
         dataSub.map((item) => {
+          if(item.USD || item.RMB || item.RMB > item.USD){
+            prevConv = item.RMB / item.USD
+          }
           return {
             ...item,
             originalRMB: item.RMB,
@@ -97,6 +101,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
           };
         })
       );
+      setConversionRate(prevConv.toFixed(2));
     }
   }, [item, getSingleData]);
 
@@ -182,34 +187,31 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       return acc + +cur?.updatedQTY * +cur?.RMB;
     }, 0);
 
-    setTotalamount(TotalValue);
+    setTotalamount(TotalValue?.toFixed(2));
     setTotalqty(TotalQuantity);
     setTotalRMBamount(TotalRMB);
   }, [ProductData]);
 
-  // useEffect(() => {
-  //   setProductData((prev) => {
-  //     const newData = prev.map((item) => {
-  //       if (item?.RMB && item?.RMB > 0) {
-  //         return {
-  //           ...item,
-  //           RMB:
-  //             ConversionRate > 0
-  //               ? +item.originalRMB * +ConversionRate
-  //               : +item.originalRMB,
-  //         };
-  //       } else if (item?.USD && item?.USD > 0) {
-  //         return {
-  //           ...item,
-  //           RMB: ConversionRate > 0 ? +item?.USD * +ConversionRate : "",
-  //         };
-  //       }
+  useEffect(() => {
+    setProductData((prev) => {
+      const newData = prev.map((item) => {
+        if (item?.USD && item?.USD > 0) {
+          return {
+            ...item,
+            RMB:ConversionRate > 0 ? (+item?.USD * +ConversionRate).toFixed(2) : "",
+          };
+        } else if (item?.RMB && item?.RMB > 0) {
+          return {
+            ...item,
+            USD: ConversionRate > 0 ? (+item?.RMB / +ConversionRate).toFixed(2) : "",
+          };
+        }
 
-  //       return item;
-  //     });
-  //     return newData;
-  //   });
-  // }, [ConversionRate]);
+        return item;
+      });
+      return newData;
+    });
+  }, [ConversionRate]);
 
   const handleRemoveRestockItem = (SKU) => {
     const newSelectedItems = ProductData.filter((item) => item?.SKU !== SKU);
@@ -241,7 +243,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const handleSubmitMain = async () => {
     try {
       if (!isNegative) {
-        return toast.error("please insert proper value");
+        return toast.error("The price should not exceed the shortfall value.");
       }
 
       const UpdateOrder = [];
@@ -538,7 +540,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   marginRight: "3px",
                 }}
               >
-                RMB convertion rate
+               USD to RMB Conversion Rate
               </Typography>
               <input
                 name="conversion"
