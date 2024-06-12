@@ -573,8 +573,8 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
         <StyledCellHeader>Sno</StyledCellHeader>
         <StyledCellHeader>SKU</StyledCellHeader>
         <StyledCellHeader>Name</StyledCellHeader>
-        <StyledCellHeader>Prev RMB</StyledCellHeader>
         <StyledCellHeader>Prev USD</StyledCellHeader>
+        <StyledCellHeader>Prev RMB</StyledCellHeader>
         <StyledCellHeader>USD $</StyledCellHeader>
         <StyledCellHeader>RMB ¥</StyledCellHeader>
         <StyledCellHeader>Order Quantity</StyledCellHeader>
@@ -592,10 +592,10 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
               <StyledCell>{item?.SKU}</StyledCell>
               <StyledCell>{item?.Name}</StyledCell>
               <StyledCell>
-                {item?.prevRMB !== "NA" ? "¥" + item?.prevRMB : "N/A"}
+                {item?.prevUSD !== "NA" ? "$" + item?.prevUSD : "N/A"}
               </StyledCell>
               <StyledCell>
-                {item?.prevUSD !== "NA" ? "$" + item?.prevUSD : "N/A"}
+                {item?.prevRMB !== "NA" ? "¥" + item?.prevRMB : "N/A"}
               </StyledCell>
             </>
           ) : (
