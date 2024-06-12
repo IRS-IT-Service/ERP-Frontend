@@ -299,6 +299,23 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    createNewRestock:builder.mutation({
+      query:(data) =>{
+        return {
+          url:`${RESTOCK_URL}/createnewrestock`,
+          method:"POST",
+          body:data
+        }
+      }
+    }),
+    getAllNewRestocks:builder.query({
+      query:(name) =>{
+        return {
+          url:`${RESTOCK_URL}/getallnewRestocks?name=${name}`,
+          method:"GET"
+        }
+      }
+    })
   }),
 
 });
@@ -339,4 +356,6 @@ export const {
   useUpdateSubOrderMutation,
   useUpdateOrderOverseasMutation,
   usePassPrevPriceMutation,
+  useCreateNewRestockMutation,
+  useGetAllNewRestocksQuery
 } = restockApiSlice;

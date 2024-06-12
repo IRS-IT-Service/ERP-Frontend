@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Button, Box, styled, Typography } from "@mui/material";
-import { useGetAllRestockQuery } from "../../../features/api/RestockOrderApiSlice";
+import { useGetAllNewRestocksQuery } from "../../../features/api/RestockOrderApiSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import Nodata from "../../../assets/error.gif";
 import { DataGrid } from "@mui/x-data-grid";
@@ -43,7 +43,7 @@ const RestockOrderListGrid = () => {
     refetch,
     data: allRestockData,
     isLoading: allRestock,
-  } = useGetAllRestockQuery();
+  } = useGetAllNewRestocksQuery("pending");
 
   /// handlers
   const handleRowSelection = (selection) => {
@@ -60,16 +60,10 @@ const RestockOrderListGrid = () => {
     if (allRestockData?.status === "success") {
       const data = allRestockData?.restock?.map((item, index) => {
         return {
-          id: item.restockId, // Use 'restockId' as the unique id for each row
+          id: item.restockId, 
           ...item,
           Sno: index + 1,
           date: formatDate(item.createdAt),
-          restockId: item.restockId,
-          description: item?.description || "No description",
-          totalProduct: item.totalProducts,
-          generated: item.totalProductGenerated,
-          inProcess: item.totalProductInProcess,
-          paid: item.totalProductPaid,
           status: item.status,
           isAssigned: item.isAssigned,
         };
@@ -92,8 +86,8 @@ const RestockOrderListGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "restockId",
-      headerName: "Restock Id",
+      field: "SKU",
+      headerName: "SKU",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -102,8 +96,8 @@ const RestockOrderListGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "description",
-      headerName: "Order Description",
+      field: "Name",
+      headerName: "Name",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -122,8 +116,8 @@ const RestockOrderListGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "totalProduct",
-      headerName: "Total Product",
+      field: "Brand",
+      headerName: "Brand",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -132,8 +126,8 @@ const RestockOrderListGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "generated",
-      headerName: "Generated",
+      field: "GST",
+      headerName: "GST",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       align: "center",
@@ -141,7 +135,18 @@ const RestockOrderListGrid = () => {
       minWidth: 120,
     },
     {
-      field: "inProcess",
+      field: "RestockQuantity",
+      headerName:"Ask-Quantity",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerName: "In-Process",
+      align: "center",
+      headerAlign: "center",
+      minWidth: 240,
+    },
+    {
+      field: "OrderedQuantity",
+      headerName:"Order-Quantity",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       headerName: "In-Process",
@@ -167,29 +172,29 @@ const RestockOrderListGrid = () => {
     //   headerAlign: "center",
     //   minWidth: 100,
     // },
-    {
-      field: "details",
-      headerName: "Details",
-      sortable: false,
-      minWidth: 130,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => (
-        <Button
-          onClick={() => {
-            if (location.pathname === "/RestockOrderView") {
-              navigate(`/OrderSelection/${params.row.restockId}?view`);
-            } else {
-              navigate(`/OrderSelection/${params.row.restockId}`);
-            }
-          }}
-        >
-          Details
-        </Button>
-      ),
-    },
+    // {
+    //   field: "details",
+    //   headerName: "Details",
+    //   sortable: false,
+    //   minWidth: 130,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    //   renderCell: (params) => (
+    //     <Button
+    //       onClick={() => {
+    //         if (location.pathname === "/RestockOrderView") {
+    //           navigate(`/OrderSelection/${params.row.restockId}?view`);
+    //         } else {
+    //           navigate(`/OrderSelection/${params.row.restockId}`);
+    //         }
+    //       }}
+    //     >
+    //       Details
+    //     </Button>
+    //   ),
+    // },
   ];
 
   return (
