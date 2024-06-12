@@ -536,6 +536,10 @@ const getRowClassName = (params) => {
                 }}
                 checkboxSelection
                 disableRowSelectionOnClick
+                isRowSelectable={(params) =>
+                  !data.includes(params.row.SKU) 
+              
+                }
                 onRowSelectionModelChange={handleSelectionChange}
                 rowSelectionModel={selectedItems}
                 keepNonExistentRowsSelected

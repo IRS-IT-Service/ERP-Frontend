@@ -88,32 +88,38 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
   // const shortFallamount = index === 0 ? +intailAmount - totalAmount : intailUtilize - totalAmount;
 
 
-  const shortFallamount = (index === 0) ? (intailAmount - totalAmount) :
-  (index === 1) ? (intailUtilize !== 0 ? intailUtilize - totalAmount : intailUtilize) :
-  intailUtilize;
+  const shortFallamount = (index === 0) ? (intailAmount - totalAmount) : item?.shortFall - totalAmount
+;
 
 
   const isNegative = checkNegative(shortFallamount);
-console.log()
+
   useEffect(() => {
     if (dataSub) {
       setProductData(
         dataSub.map((item) => {
-          if (item.RMB > 0) {
-            return {
+         return {
               ...item,
               originalRMB: item.RMB,
               updatedQTY: item.updateQTY || 0,
+           
             };
-          }
+          
+          
         })
       );
-      const selectedSKU = dataSub.map((item) => {
-        return item.SKU;
-      });
-      setFinalData(selectedSKU);
+    
     }
   }, [item, getSingleData]);
+
+  
+
+  useEffect(()=>{
+    const selectedSKU = ProductData.map((item) => {
+      return item.SKU;
+    });
+    setFinalData(selectedSKU);
+  },[setProductData , ProductData])
 
   const handleInputChange = (e, SKU) => {
     const { name, value } = e.target;
@@ -122,6 +128,7 @@ console.log()
       setProductData((prev) => {
         const newData = prev.map((item) => {
           if (item.SKU === SKU) {
+      
             return {
               ...item,
               USD: +value,
@@ -182,13 +189,13 @@ console.log()
 
   useEffect(() => {
     const TotalValue = ProductData.reduce((acc, cur) => {
-      return acc + +cur.updatedQTY * +cur.USD;
+      return acc + +cur?.updatedQTY * +cur?.USD;
     }, 0);
     const TotalQuantity = ProductData.reduce((acc, cur) => {
-      return acc + +cur.updatedQTY;
+      return acc + +cur?.updatedQTY;
     }, 0);
     const TotalRMB = ProductData.reduce((acc, cur) => {
-      return acc + +cur.updatedQTY * +cur.RMB;
+      return acc + +cur?.updatedQTY * +cur?.RMB;
     }, 0);
 
     setTotalamount(TotalValue);
@@ -196,33 +203,33 @@ console.log()
     setTotalRMBamount(TotalRMB);
   }, [ProductData]);
 
-  useEffect(() => {
-    setProductData((prev) => {
-      const newData = prev.map((item) => {
-        if (item.RMB && item.RMB > 0) {
-          return {
-            ...item,
-            RMB:
-              ConversionRate > 0
-                ? +item.originalRMB * +ConversionRate
-                : +item.originalRMB,
-          };
-        } else if (item.USD && item.USD > 0) {
-          return {
-            ...item,
-            RMB: ConversionRate > 0 ? +item.USD * +ConversionRate : "",
-          };
-        }
+  // useEffect(() => {
+  //   setProductData((prev) => {
+  //     const newData = prev.map((item) => {
+  //       if (item?.RMB && item?.RMB > 0) {
+  //         return {
+  //           ...item,
+  //           RMB:
+  //             ConversionRate > 0
+  //               ? +item.originalRMB * +ConversionRate
+  //               : +item.originalRMB,
+  //         };
+  //       } else if (item?.USD && item?.USD > 0) {
+  //         return {
+  //           ...item,
+  //           RMB: ConversionRate > 0 ? +item?.USD * +ConversionRate : "",
+  //         };
+  //       }
 
-        return item;
-      });
-      return newData;
-    });
-  }, [ConversionRate]);
+  //       return item;
+  //     });
+  //     return newData;
+  //   });
+  // }, [ConversionRate]);
 
   const handleRemoveRestockItem = (SKU) => {
 
-    const newSelectedItems = ProductData.filter((item) => item.SKU !== SKU);
+    const newSelectedItems = ProductData.filter((item) => item?.SKU !== SKU);
 
     setProductData(newSelectedItems);
   };
@@ -231,7 +238,7 @@ console.log()
     if (selectedData.length > 0) {
       const updatedData = selectedData.map((item) => ({
         SKU: item.SKU,
-        Orderqty: "",
+        Orderqty:"",
         USD: "",
         RMB: "",
         prevRMB: item.prevRMB,
@@ -260,7 +267,7 @@ console.log()
       const processedData = ProductData.map((item) => {
         const remainingQty = item.Orderqty - item.updatedQTY;
    
-        console.log(remainingQty)
+      
         return {
           final:
             remainingQty !== 0 && remainingQty > 0
@@ -311,7 +318,9 @@ console.log()
         totalUSDAmount: shortFallamount,
     
       };
+      console.log(finalValue);
       if (shortFallamount > 0) {
+    
         const result = await createsuborder(suborder).unwrap();
         toast.success("Sub order created successfully");
         const result1 = await updatesuborder(updateProduct).unwrap();
@@ -609,19 +618,19 @@ console.log()
                   {ProductData?.map((item, index) => (
                     <TableRow key={index}>
                       <StyledCell>{index + 1}</StyledCell>
-                      {item.SKU && item.Name ? (
+                      {item?.SKU && item?.Name ? (
                         <>
-                          <StyledCell>{item.SKU}</StyledCell>
-                          <StyledCell>{item.Name}</StyledCell>{" "}
+                          <StyledCell>{item?.SKU}</StyledCell>
+                          <StyledCell>{item?.Name}</StyledCell>{" "}
                           <StyledCell>
                             {" "}
-                            {item.prevRMB !== "NA"
-                              ? "¥" + item.prevRMB
+                            {item?.prevRMB !== "NA"
+                              ? "¥" + item?.prevRMB
                               : "N/A"}{" "}
                           </StyledCell>
                           <StyledCell>
                             {" "}
-                            {item.prevUSD !== "NA" ? "$" + item.prevUSD : "N/A"}
+                            {item?.prevUSD !== "NA" ? "$" + item?.prevUSD : "N/A"}
                           </StyledCell>
                         </>
                       ) : (
@@ -629,7 +638,7 @@ console.log()
                           <StyledCell>
                             <input
                               name="USD"
-                              value={item.USD}
+                              value={item?.USD}
                               style={{
                                 background: "#fff",
                                 border: "none",
@@ -638,7 +647,7 @@ console.log()
                                 border: "none",
                                 textAlign: "center",
                               }}
-                              onChange={(e) => handleInputChange(e, item.SKU)}
+                              onChange={(e) => handleInputChange(e, item?.SKU)}
                             />
                           </StyledCell>
                         </>
@@ -647,7 +656,7 @@ console.log()
                       <StyledCell sx={{ textAlign: "center", width: "150px" }}>
                         <input
                           name="USD"
-                          value={item.USD}
+                          value={item?.USD}
                           type="number"
                           style={{
                             background: "#fff",
@@ -657,13 +666,13 @@ console.log()
                             border: "none",
                             textAlign: "center",
                           }}
-                          onChange={(e) => handleInputChange(e, item.SKU)}
+                          onChange={(e) => handleInputChange(e, item?.SKU)}
                         />
                       </StyledCell>
                       <StyledCell sx={{ textAlign: "center", width: "150px" }}>
                         <input
                           name="RMB"
-                          value={item.RMB}
+                          value={item?.RMB}
                           type="number"
                           style={{
                             background: "#fff",
@@ -676,11 +685,11 @@ console.log()
                           onChange={(e) => handleInputChange(e, item.SKU)}
                         />
                       </StyledCell>
-                      <StyledCell>{item.Orderqty}</StyledCell>
+                      <StyledCell>{item?.Orderqty}</StyledCell>
                       <StyledCell>
                         <input
                           name="updatedQTY"
-                          value={item.updatedQTY}
+                          value={item?.updatedQTY}
                           style={{
                             background: "#fff",
                             border: "none",
@@ -689,15 +698,15 @@ console.log()
                             border: "none",
                             textAlign: "center",
                           }}
-                          onChange={(e) => handleInputChange(e, item.SKU)}
+                          onChange={(e) => handleInputChange(e, item?.SKU)}
                         />
                       </StyledCell>
-                      <StyledCell>$ {item.updatedQTY * item.USD}</StyledCell>
+                      <StyledCell>$ {item?.updatedQTY * item?.USD}</StyledCell>
 
                       <StyledCell>
                         <DeleteIcon
                           onClick={() => {
-                            handleRemoveRestockItem(item.SKU);
+                            handleRemoveRestockItem(item?.SKU);
                           }}
                           sx={{
                             textAlign: "center",
@@ -883,7 +892,7 @@ console.log()
       {openDialog && (
         <AddshipmentDial
           open={openDialog}
-          data={selectedData}
+          data={FinalData}
           setOpen={setOpenDialog}
           setSelectedData={setSelectedData}
           FinalData={FinalData}
