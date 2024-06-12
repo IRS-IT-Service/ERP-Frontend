@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Button, Box, styled, Typography } from "@mui/material";
-import { useGetAllNewRestocksQuery} from "../../../features/api/RestockOrderApiSlice";
+import {
+  Grid,
+  Button,
+  Box,
+  styled,
+  Typography,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
+import { useGetAllNewRestocksQuery } from "../../../features/api/RestockOrderApiSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import Nodata from "../../../assets/error.gif";
 import { DataGrid } from "@mui/x-data-grid";
@@ -37,32 +45,32 @@ const RestockOrderListGrid = () => {
   /// local state
   const [selectedRows, setSelectedRows] = useState([]);
   const [rows, setRows] = useState([]);
+  const [toggleValue, setToggleValue] = useState("pending");
 
   /// rtk query
   const {
     refetch,
     data: allRestockData,
     isLoading: allRestock,
-  } = useGetAllNewRestocksQuery("pending");
+  } = useGetAllNewRestocksQuery(toggleValue);
 
   /// handlers
   const handleRowSelection = (selection) => {
     setSelectedRows(selection);
   };
 
-useEffect(() => {
-  if (allRestockData && allRestockData.data) {
-    const data = allRestockData.data.map((item, index) => ({
-      ...item,
-      id: item._id,
-      Sno: index + 1,
-      date: formatDate(item.createdAt),
-      status: item.status,
-    }));
-    setRows(data);
-  }
-}, [allRestockData]); 
-
+  useEffect(() => {
+    if (allRestockData && allRestockData.data) {
+      const data = allRestockData.data.map((item, index) => ({
+        ...item,
+        id: item._id,
+        Sno: index + 1,
+        date: formatDate(item.createdAt),
+        status: item.status,
+      }));
+      setRows(data);
+    }
+  }, [allRestockData]);
 
   // Define the columns
   const columns = [
@@ -199,6 +207,30 @@ useEffect(() => {
 
   return (
     <>
+      <Box sx={{ display: "flex", justifyContent: "end" }}>
+        <ToggleButtonGroup
+          color="primary"
+          value={toggleValue}
+          exclusive
+          onChange={(e) => {
+            setToggleValue(e.target.value);
+          }}
+          aria-label="Platform"
+        >
+          <ToggleButton
+            // classes={{ selected: classes.selected }}
+            value="pending"
+          >
+            Pending
+          </ToggleButton>
+          <ToggleButton
+            // classes={{ selected: classes.selected }}
+            value="fullfilled"
+          >
+            Closed
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
       <StyledBox>
         <Loading loading={allRestock} />
         <DataGrid
