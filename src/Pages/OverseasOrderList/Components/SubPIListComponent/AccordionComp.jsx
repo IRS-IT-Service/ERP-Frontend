@@ -4,11 +4,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
-  Collapse,
-  InputAdornment,
   CircularProgress,
-  InputBase,
-  IconButton,
   Box,
   Button,
   styled,
@@ -47,7 +43,7 @@ const StyledCellHeader = styled(TableCell)(({ theme }) => ({
   fontSize: ".8rem",
 }));
 
-const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
+const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const [ProductData, setProductData] = useState([]);
   const [ConversionRate, setConversionRate] = useState(null);
   const [prevConversionRate, setPrevConversionRate] = useState(null);
@@ -81,54 +77,42 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
 
   const dataMain = item;
 
-  const intailAmount =+getSingleData?.data?.totalUSDAmount
-  const intailUtilize = +getSingleData?.data?.utilzedUSDAmount
-
+  const intailAmount = +getSingleData?.data?.totalUSDAmount;
+  const intailUtilize = +getSingleData?.data?.utilzedUSDAmount;
 
   // const shortFallamount = index === 0 ? +intailAmount - totalAmount : intailUtilize - totalAmount;
 
-
-  const shortFallamount = (index === 0) ? (intailAmount - totalAmount) : item?.shortFall - totalAmount
-;
-
-
+  const shortFallamount =
+    index === 0 ? intailAmount - totalAmount : item?.shortFall - totalAmount;
   const isNegative = checkNegative(shortFallamount);
 
   useEffect(() => {
     if (dataSub) {
       setProductData(
         dataSub.map((item) => {
-         return {
-              ...item,
-              originalRMB: item.RMB,
-              updatedQTY: item.updateQTY || 0,
-           
-            };
-          
-          
+          return {
+            ...item,
+            originalRMB: item.RMB,
+            updatedQTY: item.updateQTY || 0,
+          };
         })
       );
-    
     }
   }, [item, getSingleData]);
 
-  
-
-  useEffect(()=>{
+  useEffect(() => {
     const selectedSKU = ProductData.map((item) => {
       return item.SKU;
     });
     setFinalData(selectedSKU);
-  },[setProductData , ProductData])
+  }, [setProductData, ProductData]);
 
   const handleInputChange = (e, SKU) => {
     const { name, value } = e.target;
-
     if (name === "USD") {
       setProductData((prev) => {
         const newData = prev.map((item) => {
           if (item.SKU === SKU) {
-      
             return {
               ...item,
               USD: +value,
@@ -228,9 +212,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
   // }, [ConversionRate]);
 
   const handleRemoveRestockItem = (SKU) => {
-
     const newSelectedItems = ProductData.filter((item) => item?.SKU !== SKU);
-
     setProductData(newSelectedItems);
   };
 
@@ -238,7 +220,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
     if (selectedData.length > 0) {
       const updatedData = selectedData.map((item) => ({
         SKU: item.SKU,
-        Orderqty:"",
+        Orderqty: "",
         USD: "",
         RMB: "",
         prevRMB: item.prevRMB,
@@ -258,16 +240,15 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
 
   const handleSubmitMain = async () => {
     try {
-      if(!isNegative){
-        return toast.error("please insert proper value")
+      if (!isNegative) {
+        return toast.error("please insert proper value");
       }
-   
+
       const UpdateOrder = [];
       const order = getSingleData?.data?.subOrders;
       const processedData = ProductData.map((item) => {
         const remainingQty = item.Orderqty - item.updatedQTY;
-   
-      
+
         return {
           final:
             remainingQty !== 0 && remainingQty > 0
@@ -277,22 +258,20 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
                   USD: item.USD,
                   RMB: item.RMB,
                   Name: item.Name,
-                  prevRMB:item.prevRMB,
-                  prevUSD:item.prevUSD,
+                  prevRMB: item.prevRMB,
+                  prevUSD: item.prevUSD,
                 }
               : null,
-          updated:
-            {
-                  SKU: item.SKU,
-                  Orderqty: item.Orderqty,
-                  updateQTY:item.updatedQTY,
-                  USD: item.USD,
-                  RMB: item.RMB,
-                  Name: item.Name,
-                  prevRMB:item.prevRMB,
-                  prevUSD:item.prevUSD,
-                }
-            
+          updated: {
+            SKU: item.SKU,
+            Orderqty: item.Orderqty,
+            updateQTY: item.updatedQTY,
+            USD: item.USD,
+            RMB: item.RMB,
+            Name: item.Name,
+            prevRMB: item.prevRMB,
+            prevUSD: item.prevUSD,
+          },
         };
       });
       const finalValue = processedData
@@ -300,37 +279,30 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
         .map((data) => data.final);
       const updateValue = processedData
         .filter((data) => data.updated !== null)
-        .map((data) => data.updated);
-
-
+       .map((data) => data.updated);
       const updateProduct = {
         id: order[order.length - 1]._id,
         orderId: getSingleData?.data?.overseaseOrderId,
         piNo: getSingleData?.data?.piNo,
         products: updateValue,
         totalUSDAmount: shortFallamount,
-  
       };
-
       const suborder = {
         orderId: getSingleData?.data?.overseaseOrderId,
         products: finalValue,
         totalUSDAmount: shortFallamount,
-    
       };
-      console.log(finalValue);
       if (shortFallamount > 0) {
-    
         const result = await createsuborder(suborder).unwrap();
         toast.success("Sub order created successfully");
         const result1 = await updatesuborder(updateProduct).unwrap();
         toast.success("Order updated successfully");
-        console.log(updateProduct)
-        console.log(suborder)
+        // console.log(updateProduct)
+        // console.log(suborder)
       } else {
         const result = await updatesuborder(updateProduct).unwrap();
         toast.success("Order updated successfully");
-        console.log(updateProduct)
+        // console.log(updateProduct)
       }
 
       refetch();
@@ -569,7 +541,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
                 RMB convertion rate
               </Typography>
               <input
-                name="converion"
+                name="conversion"
                 placeholder="%"
                 style={{
                   background: "#fff",
@@ -578,7 +550,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
                   width: "30px",
                   border: "none",
                 }}
-                value={ConversionRate}
+                value={ConversionRate || ""}
                 onChange={(e) => setConversionRate(e.target.value)}
               />
               <Box>
@@ -595,130 +567,114 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
             </Box>
 
             <TableContainer sx={{ maxHeight: 450 }}>
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    <StyledCellHeader>Sno</StyledCellHeader>
-                    <StyledCellHeader>SKU</StyledCellHeader>
-                    <StyledCellHeader>Name</StyledCellHeader>
+  <Table stickyHeader aria-label="sticky table">
+    <TableHead>
+      <TableRow>
+        <StyledCellHeader>Sno</StyledCellHeader>
+        <StyledCellHeader>SKU</StyledCellHeader>
+        <StyledCellHeader>Name</StyledCellHeader>
+        <StyledCellHeader>Prev RMB</StyledCellHeader>
+        <StyledCellHeader>Prev USD</StyledCellHeader>
+        <StyledCellHeader>USD $</StyledCellHeader>
+        <StyledCellHeader>RMB ¥</StyledCellHeader>
+        <StyledCellHeader>Order Quantity</StyledCellHeader>
+        <StyledCellHeader>Updated Quantity</StyledCellHeader>
+        <StyledCellHeader>Total Order Amount</StyledCellHeader>
+        <StyledCellHeader>Delete</StyledCellHeader>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {ProductData?.map((item, index) => (
+        <TableRow key={index}>
+          <StyledCell>{index + 1}</StyledCell>
+          {item?.SKU && item?.Name ? (
+            <>
+              <StyledCell>{item?.SKU}</StyledCell>
+              <StyledCell>{item?.Name}</StyledCell>
+              <StyledCell>
+                {item?.prevRMB !== "NA" ? "¥" + item?.prevRMB : "N/A"}
+              </StyledCell>
+              <StyledCell>
+                {item?.prevUSD !== "NA" ? "$" + item?.prevUSD : "N/A"}
+              </StyledCell>
+            </>
+          ) : (
+            <StyledCell colSpan={4}>
+              <input
+                name="USD"
+                value={item?.USD || ""}
+                style={{
+                  background: "#fff",
+                  border: "none",
+                  padding: "5px",
+                  width: "100px",
+                  textAlign: "center",
+                }}
+                onChange={(e) => handleInputChange(e, item?.SKU)}
+              />
+            </StyledCell>
+          )}
+          <StyledCell sx={{ textAlign: "center", width: "150px" }}>
+            <input
+              name="USD"
+              value={item?.USD || ""}
+              type="number"
+              style={{
+                background: "#fff",
+                border: "none",
+                padding: "5px",
+                width: "100px",
+                textAlign: "center",
+              }}
+              onChange={(e) => handleInputChange(e, item?.SKU)}
+            />
+          </StyledCell>
+          <StyledCell sx={{ textAlign: "center", width: "150px" }}>
+            <input
+              name="RMB"
+              value={item?.RMB || ""}
+              type="number"
+              style={{
+                background: "#fff",
+                border: "none",
+                padding: "5px",
+                width: "100px",
+                textAlign: "center",
+              }}
+              onChange={(e) => handleInputChange(e, item.SKU)}
+            />
+          </StyledCell>
+          <StyledCell>{item?.Orderqty}</StyledCell>
+          <StyledCell>
+            <input
+              name="updatedQTY"
+              value={item?.updatedQTY || ""}
+              style={{
+                background: "#fff",
+                border: "none",
+                padding: "5px",
+                width: "50px",
+                textAlign: "center",
+              }}
+              onChange={(e) => handleInputChange(e, item?.SKU)}
+            />
+          </StyledCell>
+          <StyledCell>$ {item?.updatedQTY * item?.USD}</StyledCell>
+          <StyledCell>
+            <DeleteIcon
+              onClick={() => handleRemoveRestockItem(item?.SKU)}
+              sx={{
+                textAlign: "center",
+                cursor: "pointer",
+              }}
+            />
+          </StyledCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
 
-                    <StyledCellHeader>Prev RMB</StyledCellHeader>
-                    <StyledCellHeader>Prev USD</StyledCellHeader>
-
-                    <StyledCellHeader>USD $</StyledCellHeader>
-                    <StyledCellHeader>RMB ¥</StyledCellHeader>
-                    <StyledCellHeader>Order Quantity</StyledCellHeader>
-                    <StyledCellHeader>Updated Quantity</StyledCellHeader>
-                    <StyledCellHeader>Total Order amount</StyledCellHeader>
-
-                    <StyledCellHeader>Delete</StyledCellHeader>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {ProductData?.map((item, index) => (
-                    <TableRow key={index}>
-                      <StyledCell>{index + 1}</StyledCell>
-                      {item?.SKU && item?.Name ? (
-                        <>
-                          <StyledCell>{item?.SKU}</StyledCell>
-                          <StyledCell>{item?.Name}</StyledCell>{" "}
-                          <StyledCell>
-                            {" "}
-                            {item?.prevRMB !== "NA"
-                              ? "¥" + item?.prevRMB
-                              : "N/A"}{" "}
-                          </StyledCell>
-                          <StyledCell>
-                            {" "}
-                            {item?.prevUSD !== "NA" ? "$" + item?.prevUSD : "N/A"}
-                          </StyledCell>
-                        </>
-                      ) : (
-                        <>
-                          <StyledCell>
-                            <input
-                              name="USD"
-                              value={item?.USD}
-                              style={{
-                                background: "#fff",
-                                border: "none",
-                                padding: "5px",
-                                width: "100px",
-                                border: "none",
-                                textAlign: "center",
-                              }}
-                              onChange={(e) => handleInputChange(e, item?.SKU)}
-                            />
-                          </StyledCell>
-                        </>
-                      )}
-
-                      <StyledCell sx={{ textAlign: "center", width: "150px" }}>
-                        <input
-                          name="USD"
-                          value={item?.USD}
-                          type="number"
-                          style={{
-                            background: "#fff",
-                            border: "none",
-                            padding: "5px",
-                            width: "100px",
-                            border: "none",
-                            textAlign: "center",
-                          }}
-                          onChange={(e) => handleInputChange(e, item?.SKU)}
-                        />
-                      </StyledCell>
-                      <StyledCell sx={{ textAlign: "center", width: "150px" }}>
-                        <input
-                          name="RMB"
-                          value={item?.RMB}
-                          type="number"
-                          style={{
-                            background: "#fff",
-                            border: "none",
-                            padding: "5px",
-                            width: "100px",
-                            border: "none",
-                            textAlign: "center",
-                          }}
-                          onChange={(e) => handleInputChange(e, item.SKU)}
-                        />
-                      </StyledCell>
-                      <StyledCell>{item?.Orderqty}</StyledCell>
-                      <StyledCell>
-                        <input
-                          name="updatedQTY"
-                          value={item?.updatedQTY}
-                          style={{
-                            background: "#fff",
-                            border: "none",
-                            padding: "5px",
-                            width: "50px",
-                            border: "none",
-                            textAlign: "center",
-                          }}
-                          onChange={(e) => handleInputChange(e, item?.SKU)}
-                        />
-                      </StyledCell>
-                      <StyledCell>$ {item?.updatedQTY * item?.USD}</StyledCell>
-
-                      <StyledCell>
-                        <DeleteIcon
-                          onClick={() => {
-                            handleRemoveRestockItem(item?.SKU);
-                          }}
-                          sx={{
-                            textAlign: "center",
-                            cursor: "pointer", // Add the pointer cursor on hover
-                          }}
-                        />
-                      </StyledCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
 
             {/* <Box
             sx={{
@@ -874,8 +830,10 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
             disabled={
               updateLoading ||
               suborderLoading ||
-              updatesuborderLoading || intailUtilize === 0 ||
-             (getSingleData?.data?.subOrders.length - 1) - index ? true
+              updatesuborderLoading ||
+              intailUtilize === 0 ||
+              getSingleData?.data?.subOrders.length - 1 - index
+                ? true
                 : false
             }
             onClick={handleSubmitMain}
