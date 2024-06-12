@@ -455,9 +455,9 @@ function App() {
                 <Route
                   path="/viewQuery/admin"
                   element={
-                    <UserRole name={"View Query Admin"}>
+                    // <UserRole name={"View Query Admin"}>
                       <ViewQuery />
-                    </UserRole>
+                    // </UserRole>
                   }
                 />
                 <Route
