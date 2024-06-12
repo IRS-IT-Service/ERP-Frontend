@@ -47,7 +47,7 @@ const StyledCellHeader = styled(TableCell)(({ theme }) => ({
   fontSize: ".8rem",
 }));
 
-const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
+const AccordionComp = ({ getSingleData, item, AccordFor, refetch ,index}) => {
   const [ProductData, setProductData] = useState([]);
   const [ConversionRate, setConversionRate] = useState(null);
   const [prevConversionRate, setPrevConversionRate] = useState(null);
@@ -81,10 +81,20 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
   const dataMain = item;
 
-  const shortFallamount = +item.finalValueUSD - totalAmount;
+  const intailAmount =+getSingleData?.data?.totalUSDAmount
+  const intailUtilize = +getSingleData?.data?.utilzedUSDAmount
+
+
+  // const shortFallamount = index === 0 ? +intailAmount - totalAmount : intailUtilize - totalAmount;
+
+
+  const shortFallamount = (index === 0) ? (intailAmount - totalAmount) :
+  (index === 1) ? (intailUtilize !== 0 ? intailUtilize - totalAmount : intailUtilize) :
+  intailUtilize;
+
 
   const isNegative = checkNegative(shortFallamount);
-
+console.log()
   useEffect(() => {
     if (dataSub) {
       setProductData(
@@ -93,7 +103,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
             return {
               ...item,
               originalRMB: item.RMB,
-              updatedQTY: "",
+              updatedQTY: item.updateQTY || 0,
             };
           }
         })
@@ -211,7 +221,9 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
   }, [ConversionRate]);
 
   const handleRemoveRestockItem = (SKU) => {
+
     const newSelectedItems = ProductData.filter((item) => item.SKU !== SKU);
+
     setProductData(newSelectedItems);
   };
 
@@ -226,7 +238,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
         prevUSD: item.prevUSD,
         Name: item.Name,
         originalRMB: "",
-        updatedQTY: "",
+        updatedQTY: 0,
       }));
 
       setProductData((prev) => [...prev, ...updatedData]);
@@ -239,11 +251,16 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
   const handleSubmitMain = async () => {
     try {
+      if(!isNegative){
+        return toast.error("please insert proper value")
+      }
+   
       const UpdateOrder = [];
       const order = getSingleData?.data?.subOrders;
       const processedData = ProductData.map((item) => {
         const remainingQty = item.Orderqty - item.updatedQTY;
-
+   
+        console.log(remainingQty)
         return {
           final:
             remainingQty !== 0 && remainingQty > 0
@@ -284,24 +301,26 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
         orderId: getSingleData?.data?.overseaseOrderId,
         piNo: getSingleData?.data?.piNo,
         products: updateValue,
-        totalUSDAmount: totalAmount,
-        totalRMBAmount: totalRMBAmount,
+        totalUSDAmount: shortFallamount,
+  
       };
 
       const suborder = {
         orderId: getSingleData?.data?.overseaseOrderId,
         products: finalValue,
+        totalUSDAmount: shortFallamount,
+    
       };
       if (shortFallamount > 0) {
-        // const result = await createsuborder(suborder).unwrap();
-        // toast.success("Sub order created successfully");
-        // const result1 = await updatesuborder(updateProduct).unwrap();
-        // toast.success("Order updated successfully");
+        const result = await createsuborder(suborder).unwrap();
+        toast.success("Sub order created successfully");
+        const result1 = await updatesuborder(updateProduct).unwrap();
+        toast.success("Order updated successfully");
         console.log(updateProduct)
         console.log(suborder)
       } else {
-        // const result = await updatesuborder(updateProduct).unwrap();
-        // toast.success("Order updated successfully");
+        const result = await updatesuborder(updateProduct).unwrap();
+        toast.success("Order updated successfully");
         console.log(updateProduct)
       }
 
@@ -846,9 +865,8 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
             disabled={
               updateLoading ||
               suborderLoading ||
-              updatesuborderLoading ||
-              !isSubItem
-                ? getSingleData?.data?.subOrders?.length > 0
+              updatesuborderLoading || intailUtilize === 0 ||
+             (getSingleData?.data?.subOrders.length - 1) - index ? true
                 : false
             }
             onClick={handleSubmitMain}

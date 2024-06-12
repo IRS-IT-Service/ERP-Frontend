@@ -242,7 +242,7 @@ const SubPIList1 = () => {
                 marginRight: "3px",
               }}
             >
-              $ {getSingleData?.data.totalUSDAmount - getSingleData?.data.utilzedUSDAmount}
+              $ {getSingleData?.data.utilzedUSDAmount}
             </Typography>
           </StyledBox>
         </Box>
@@ -285,6 +285,7 @@ const SubPIList1 = () => {
                 item={item}
                 AccordFor={"SubPI"}
                 refetch={refetch}
+                index = {index}
               />
               
             );
