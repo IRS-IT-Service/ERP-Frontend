@@ -75,6 +75,8 @@ const Order2Vendor = ({
   const [processItems, setProcessItems] = useState([]);
   const [conversionRate, setConversionRate] = useState(null);
 
+
+
   /// rtk query
   const { data: allVendorData } = useGetAllVendorQuery();
   const [assignOrderApi, { isLoading }] = useAssignOrderVendorMutation();
@@ -83,12 +85,16 @@ const Order2Vendor = ({
     setProcessItems((prev) => {
       return items.map((item, index) => ({
         ...item,
+        NewQuantity:item.RestockQuantity
       }));
     });
   }, [items]);
 
 
-
+  const handleRemoveRestockItem = (SKU) => {
+    const newSelectedItems = processItems.filter((item) => item?.SKU !== SKU);
+    setProcessItems(newSelectedItems);
+  };
 
   const handleChange = (e, SKU) => {
     const { name, value } = e.target;
@@ -346,15 +352,16 @@ const Order2Vendor = ({
                     display: "flex",
                     width: "15%",
                     gap: "10px",
+                    alignItems: "center",
                   }}
                 >
                   <Typography
                     sx={{
-                      fontSize: "0.878rem",
+                      fontSize: "0.7rem",
                       fontWeight: "bold",
                     }}
                   >
-                    Conversion rate
+                    USD to RMB Conversion Rate
                   </Typography>{" "}
                   <input
                     value={conversionRate}
@@ -514,7 +521,7 @@ const Order2Vendor = ({
                         sx={{ textAlign: "center", fontSize: "12px" }}
                       >
                         <DeleteIcon
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => handleRemoveRestockItem(item.SKU)}
                           sx={{ cursor: "pointer" }}
                         />
                       </StyledCell>

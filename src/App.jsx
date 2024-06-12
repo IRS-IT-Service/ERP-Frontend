@@ -456,7 +456,7 @@ function App() {
                   path="/viewQuery/admin"
                   element={
                     // <UserRole name={"View Query Admin"}>
-                      <ViewQuery />
+                    <ViewQuery />
                     // </UserRole>
                   }
                 />
@@ -630,16 +630,16 @@ function App() {
                   path="/RestockOrderList"
                   element={
                     <UserRole name={"Restock Order"}>
-                      <RestockOrderList />
+                      <OneRestockOrder />{" "}
                     </UserRole>
                   }
                 />
                 <Route
                   path="/RestockOrderView"
                   element={
-                    <UserRole name={"Restock Order View"}>
-                      <RestockOrderList />
-                    </UserRole>
+                    // <UserRole name={"Restock Order View"}>
+                    <RestockOrderList />
+                    // </UserRole>
                   }
                 />
                 <Route

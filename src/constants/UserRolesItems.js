@@ -247,13 +247,13 @@ const userRolesData = [
         id: 9,
         name: 'Restock Order Assign',
         path: '/RestockOrderList',
-        icon: 'fa fa-registered',
+        icon: 'fa fa-list-alt',
       },
       {
         id: 33,
         name: 'Restock Order View',
         path: '/RestockOrderView',
-        icon: 'fa fa-registered',
+        icon: 'fa fa-eye',
       },
       {
         id: 46,
