@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import axios from "axios";
 import {
-  useGetRestockProductDetailQuery,
+  useGetAllNewRestocksQuery,
   useUpdateRestockQuantityMutation,
 } from "../../../features/api/RestockOrderApiSlice";
 import Loading from "../../../components/Common/Loading";
@@ -12,6 +12,7 @@ import Order2Vendor from "./Order2Vendor";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import BASEURL from "../../../constants/BaseApi";
+import { formatDate } from "../../../commonFunctions/commonFunctions";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -21,7 +22,7 @@ const OneRestockOrder = () => {
   /// initialize
   const { search } = useLocation();
   const apiRef = useGridApiRef();
-  const { id } = useParams();
+  // const { id } = useParams();
 
   /// local state
   const [rows, setRows] = useState([]);
@@ -33,41 +34,61 @@ const OneRestockOrder = () => {
   const [loading, setLoading] = useState(false);
 
   /// rtk query
+  // const {
+  //   refetch,
+  //   data: RestockProduct,
+  //   isLoading: RestockLoading,
+  //   isFetching,
+  // } = useGetRestockProductDetailQuery(id);
+
   const {
-    refetch,
+    refetch ,
     data: RestockProduct,
     isLoading: RestockLoading,
-    isFetching,
-  } = useGetRestockProductDetailQuery(id);
+    isFetching
+  } = useGetAllNewRestocksQuery("pending");
 
   const [updateQuantityApi, { isLoading: updateLoading }] =
     useUpdateRestockQuantityMutation();
 
   /// useEffect
+  // useEffect(() => {
+  //   if (RestockProduct?.status === "success") {
+  //     const data = RestockProduct?.product?.products?.map((item, index) => {
+  //       return {
+  //         id: item.SKU,
+  //         Sno: index + 1,
+  //         Name: item.Name,
+  //         Quantity: item.Quantity,
+  //         Status: item.Status,
+  //         Brand: item.Brand,
+  //         Category: item.Category,
+  //         GST: item.GST || 0,
+  //         NewQuantity: item.NewQuantity,
+  //         SKU: item.SKU,
+  //         ThresholdQty: item.ThresholdQty,
+  //         SoldCount: item.SoldCount,
+  //         prevUSD: item.prevUSD,
+  //         prevRMB: item.prevRMB,
+  //         priceDate: item.priceDate,
+  //       };
+  //     });
+  //     setRows(data);
+  //   }
+  // }, [RestockProduct]);
+
   useEffect(() => {
-    if (RestockProduct?.status === "success") {
-      const data = RestockProduct?.product?.products?.map((item, index) => {
-        return {
-          id: item.SKU,
-          Sno: index + 1,
-          Name: item.Name,
-          Quantity: item.Quantity,
-          Status: item.Status,
-          Brand: item.Brand,
-          Category: item.Category,
-          GST: item.GST || 0,
-          NewQuantity: item.NewQuantity,
-          SKU: item.SKU,
-          ThresholdQty: item.ThresholdQty,
-          SoldCount: item.SoldCount,
-          prevUSD: item.prevUSD,
-          prevRMB: item.prevRMB,
-          priceDate: item.priceDate,
-        };
-      });
+    if (RestockProduct && RestockProduct.data) {
+      const data = RestockProduct.data.map((item, index) => ({
+        ...item,
+        id: item._id,
+        Sno: index + 1,
+        date: formatDate(item.createdAt),
+        status: item.status,
+      }));
       setRows(data);
     }
-  }, [RestockProduct]);
+  }, [RestockProduct]); 
 
   /// handlers
   const handleRemoveRestockItem = (id) => {
@@ -119,7 +140,7 @@ const OneRestockOrder = () => {
       }
 
       const params = {
-        id: id,
+        // id: id,
         body: { newProductQuantity: processsedRows },
       };
 
@@ -137,7 +158,7 @@ const OneRestockOrder = () => {
     try {
       const body = {
         type: "restockOrder",
-        id: id,
+        // id: id,
       };
 
       const response = await axios.post(
@@ -152,7 +173,7 @@ const OneRestockOrder = () => {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
 
-      saveAs(blob, `RestockOrder_${id}.xlsx`);
+      // saveAs(blob, `RestockOrder_${id}.xlsx`);
 
       toast.success("Download Started...", {
         position: toast.POSITION.TOP_CENTER,
@@ -222,19 +243,9 @@ const OneRestockOrder = () => {
       cellClassName: "super-app-theme--cell",
       valueFormatter: (params) => `${params.value} %`,
     },
+  
     {
-      field: "Status",
-      headerName: "Status",
-      flex: 0.3,
-      minWidth: 100,
-      maxWidth: 110,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
-    {
-      field: "ThresholdQty",
+      field: "Threshold",
       headerName: "Threshold",
       flex: 0.3,
       minWidth: 80,
@@ -267,7 +278,7 @@ const OneRestockOrder = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "NewQuantity",
+      field: "RestockQuantity",
       headerName: "Required QTY",
       flex: 0.3,
       minWidth: 80,
@@ -313,7 +324,7 @@ const OneRestockOrder = () => {
                 ""
               )}
             </Grid>
-            <Grid item xs={4}>
+            {/* <Grid item xs={4}>
               <Box
                 sx={{
                   mt: "0.3rem",
@@ -407,15 +418,15 @@ const OneRestockOrder = () => {
                   </Button>
                 </Box>
               </Box>
-            </Grid>
-            <Grid item xs={4}>
+            </Grid> */}
+            <Grid item xs={12} mt={0.4}>
               {selectedRows.length > 0 ? (
                 <Box
                   sx={{
                     display: "flex",
                   }}
                 >
-                  <Button sx={{ ml: "auto" }} onClick={handleOpenRestockItem}>
+                  <Button sx={{margin:"auto"}} variant="outlined" onClick={handleOpenRestockItem}>
                     Click to Order{" "}
                     {selectedRows.length > 0 ? selectedRows.length : ""}
                   </Button>
@@ -468,15 +479,15 @@ const OneRestockOrder = () => {
               editMode="cell"
               apiRef={apiRef}
               processRowUpdate={handleRowUpdate}
-              onProcessRowUpdateError={(error) => {}}
-              isCellEditable={(params) => {
-                if (params.field === "NewQuantity") {
-                  return params.row.Status === "generated";
-                }
-              }}
-              checkboxSelection={search === "?view" ? false : true}
+              // onProcessRowUpdateError={(error) => {}}
+              // isCellEditable={(params) => {
+              //   if (params.field === "NewQuantity") {
+              //     return params.row.Status === "generated";
+              //   }
+              // }}
+              checkboxSelection
               disableRowSelectionOnClick
-              isRowSelectable={(params) => params.row.Status === "generated"}
+              // isRowSelectable={true}
               onRowSelectionModelChange={handleSelectionChange}
               rowSelectionModel={selectedItems}
             />

@@ -75,6 +75,8 @@ const Order2Vendor = ({
   const [processItems, setProcessItems] = useState([]);
   const [conversionRate, setConversionRate] = useState(null);
 
+  console.log(processItems)
+
   /// rtk query
   const { data: allVendorData } = useGetAllVendorQuery();
   const [assignOrderApi, { isLoading }] = useAssignOrderVendorMutation();

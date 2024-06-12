@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Button, Box, styled, Typography } from "@mui/material";
-import { useGetAllNewRestocksQuery } from "../../../features/api/RestockOrderApiSlice";
+import { useGetAllNewRestocksQuery} from "../../../features/api/RestockOrderApiSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import Nodata from "../../../assets/error.gif";
 import { DataGrid } from "@mui/x-data-grid";
@@ -50,28 +50,19 @@ const RestockOrderListGrid = () => {
     setSelectedRows(selection);
   };
 
-  // useEffect to fetch data when the component mounts
-  useEffect(() => {
-    refetch();
-  }, []);
+useEffect(() => {
+  if (allRestockData && allRestockData.data) {
+    const data = allRestockData.data.map((item, index) => ({
+      ...item,
+      id: item._id,
+      Sno: index + 1,
+      date: formatDate(item.createdAt),
+      status: item.status,
+    }));
+    setRows(data);
+  }
+}, [allRestockData]); 
 
-  // useEffect to handle data after fetching
-  useEffect(() => {
-    if (allRestockData?.status === "success") {
-      const data = allRestockData?.restock?.map((item, index) => {
-        return {
-          id: item.restockId, 
-          ...item,
-          Sno: index + 1,
-          date: formatDate(item.createdAt),
-          status: item.status,
-          isAssigned: item.isAssigned,
-        };
-      });
-
-      setRows(data);
-    }
-  }, [allRestockData]);
 
   // Define the columns
   const columns = [
@@ -105,16 +96,7 @@ const RestockOrderListGrid = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-    {
-      field: "date",
-      headerName: "Date",
-      flex: 0.3,
-      minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
+
     {
       field: "Brand",
       headerName: "Brand",
@@ -135,21 +117,39 @@ const RestockOrderListGrid = () => {
       minWidth: 120,
     },
     {
-      field: "RestockQuantity",
-      headerName:"Ask-Quantity",
+      field: "date",
+      headerName: "Created-On",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      headerName: "In-Process",
+    },
+
+    {
+      field: "RestockQuantity",
+      headerName: "Ask-Quantity",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       align: "center",
       headerAlign: "center",
       minWidth: 240,
     },
     {
       field: "OrderedQuantity",
-      headerName:"Order-Quantity",
+      headerName: "Ordered-Quantity",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      headerName: "In-Process",
+      align: "center",
+      headerAlign: "center",
+      minWidth: 240,
+    },
+    {
+      field: "AddedBy",
+      headerName: "AddedBy",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       align: "center",
       headerAlign: "center",
       minWidth: 240,
@@ -229,7 +229,9 @@ const RestockOrderListGrid = () => {
           rows={rows}
           rowHeight={40}
           Height={"85vh"}
+          rowSelection="multiple"
           onRowSelectionModelChange={handleRowSelection}
+          checkboxSelection
         />
       </StyledBox>
     </>
