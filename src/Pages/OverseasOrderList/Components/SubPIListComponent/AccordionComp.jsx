@@ -301,9 +301,9 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       };
       if (shortFallamount > 0) {
         const result = await createsuborder(suborder).unwrap();
-        toast.success("Sub order created successfully");
+   
         const result1 = await updatesuborder(updateProduct).unwrap();
-        toast.success("Order updated successfully");
+        toast.success("Order Updated successfully");
         // console.log(updateProduct)
         // console.log(suborder)
       } else {
