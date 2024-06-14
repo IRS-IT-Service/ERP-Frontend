@@ -558,6 +558,27 @@ const CustomerShipmentList = () => {
       },
     },
     {
+      field: "update",
+      headerName: "Update",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const orderId = params.row.ShipmentId;
+        return (
+          <Button
+            onClick={() => navigate(`/createOrderShipment?orderId=${orderId}`)}
+            disabled={params.row.isDispatched }
+          >
+            update
+          </Button>
+        );
+      },
+    },
+    {
       field: "delete",
       headerName: "Delete",
       flex: 0.3,
