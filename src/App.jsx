@@ -629,7 +629,7 @@ function App() {
                 <Route
                   path="/RestockOrderList"
                   element={
-                    <UserRole name={"Restock Order"}>
+                    <UserRole name={"Restock Order Assign"}>
                       <OneRestockOrder />{" "}
                     </UserRole>
                   }
@@ -656,7 +656,7 @@ function App() {
                 <Route
                   path="/ComparisionOrder"
                   element={
-                    <UserRole name={"Comparision Order"}>
+                    <UserRole name={"Price Comparison"}>
                       <PriceComparisonOrder />
                     </UserRole>
                   }
