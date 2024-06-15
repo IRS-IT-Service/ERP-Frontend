@@ -146,6 +146,7 @@ import OverseasorderList from "./Pages/OverseasOrderList/Components/Overseasorde
 import { toastNotification } from "./commonFunctions/notificationHelpers";
 
 import SubPIList1 from "./Pages/OverseasOrderList/Components/SubPIListComponent/SubPIList1";
+import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
 
 function App() {
   /// initialize
@@ -817,6 +818,8 @@ function App() {
                   element={<CreateOrderShipmentMain />}
                 />
                 <Route path="/testing" element={<TestingComponent />} />
+                <Route path="/tempOrder/:id" element={<TempOrder />} />
+
               </Route>
             </Routes>
           </Suspense>

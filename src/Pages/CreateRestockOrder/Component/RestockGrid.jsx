@@ -183,7 +183,6 @@ const RestockGrid = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-
       type: "number",
     },
     {
@@ -196,7 +195,6 @@ const RestockGrid = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-
       type: "number",
     },
     {

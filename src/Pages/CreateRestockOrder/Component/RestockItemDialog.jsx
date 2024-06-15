@@ -43,7 +43,7 @@ const RestockItemDialog = ({
     (state) => state.auth
   );
 
-  const userName = userInfo.name
+  const userName = userInfo.name;
 
   /// local state
   const [orderQuantities, setOrderQuantities] = useState({});
@@ -87,9 +87,13 @@ const RestockItemDialog = ({
       const processedItems = items.map((item) => ({
         ...item,
         RestockQuantity: orderQuantities[item.SKU] || 0,
-        AddedBy:userName,
-        Threshold:item.ThresholdQty || 0,
-        SoldCount:item.SoldCount || 0
+        AddedBy: {
+          name: userName,
+          askQty: orderQuantities[item.SKU],
+          date: Date.now(),
+        },
+        Threshold: item.ThresholdQty || 0,
+        SoldCount: item.SoldCount || 0,
       }));
 
       const hasZeroQuantity = processedItems.some(

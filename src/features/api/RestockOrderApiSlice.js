@@ -35,9 +35,9 @@ export const restockApiSlice = apiSlice.injectEndpoints({
     updateRestockQuantity: builder.mutation({
       query: (params) => {
         return {
-          url: `${RESTOCK_URL}/updateOrderQuantity/${params.id}`,
-          method: "PUT",
-          body: params.body,
+          url: `${RESTOCK_URL}/updateRestockById`,
+          method: "PATCH",
+          body: params,
         };
       },
     }),
@@ -315,6 +315,23 @@ export const restockApiSlice = apiSlice.injectEndpoints({
           method:"GET"
         }
       }
+    }),
+    deleteRestockById:builder.mutation({
+      query:(id) =>{
+        return {
+          url:`${RESTOCK_URL}/deleteRestock/${id}`,
+          method:"Delete"
+        }
+      }
+    }),
+    getSingleVendor:builder.query({
+      query:(id) =>{
+        return {
+          url:`${RESTOCK_URL}/getsinglevendor/${id}`,
+          method:"GET"
+          
+        }
+      }
     })
   }),
 
@@ -357,5 +374,6 @@ export const {
   useUpdateOrderOverseasMutation,
   usePassPrevPriceMutation,
   useCreateNewRestockMutation,
-  useGetAllNewRestocksQuery
+  useGetAllNewRestocksQuery,
+  useDeleteRestockByIdMutation,useGetSingleVendorQuery
 } = restockApiSlice;

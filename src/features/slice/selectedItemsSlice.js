@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { enableMapSet } from 'immer';
+import { enableMapSet } from "immer";
 
 enableMapSet();
-
 
 const initialState = {
   createQueryItems: [],
   createQuerySku: [],
-  NewselectedSKU:[],
+  NewselectedSKU: [],
+  selectedOverseaseOrder: [],
 };
 
 const selectedItemsSlice = createSlice({
@@ -24,10 +24,9 @@ const selectedItemsSlice = createSlice({
       state.createQuerySku = action.payload;
     },
     setStoredselectedSKU: (state, action) => {
-      
-      const Stored = [...state.NewselectedSKU , action.payload]; 
+      const Stored = [...state.NewselectedSKU, action.payload];
       const Unique = new Set(Stored);
-      
+
       state.NewselectedSKU = [...Unique];
     },
     removeSelectedSkuQuery: (state) => {
@@ -35,6 +34,12 @@ const selectedItemsSlice = createSlice({
     },
     removeSelectedSKU: (state) => {
       state.NewselectedSKU = [];
+    },
+    setOverseaseSelectedOrder: (state, action) => {
+      state.selectedOverseaseOrder = action.payload
+    },
+    removeSelectedOverseaseOrder: (state) => {
+      state.selectedOverseaseOrder = [];
     },
   },
 });
@@ -44,6 +49,8 @@ export const {
   setSelectedSkuQuery,
   setStoredselectedSKU,
   removeSelectedSkuQuery,
-  removeSelectedSKU
+  removeSelectedSKU,
+  setOverseaseSelectedOrder,
+  removeSelectedOverseaseOrder,
 } = selectedItemsSlice.actions;
 export default selectedItemsSlice.reducer;
