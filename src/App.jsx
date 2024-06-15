@@ -455,9 +455,9 @@ function App() {
                 <Route
                   path="/viewQuery/admin"
                   element={
-                    // <UserRole name={"View Query Admin"}>
+                    <UserRole name={"Sales Query Admin"}>
                     <ViewQuery />
-                    // </UserRole>
+                    </UserRole>
                   }
                 />
                 <Route
@@ -493,7 +493,7 @@ function App() {
                 <Route
                   path="/UpdateSellerPrice/:SalesPrice"
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={"Update Sales Price"}>
                       <UpdateSellerPrice />
                     </UserRole>
                   }
@@ -501,7 +501,7 @@ function App() {
                 <Route
                   path="/UpdateSellerPrice/:SellerPrice"
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={"Update Seller Price"}>
                       <UpdateSellerPrice />
                     </UserRole>
                   }
@@ -509,7 +509,7 @@ function App() {
                 <Route
                   path="/UpdateSellerPrice/:equid"
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={"Update Seller Price"}>
                       <UpdateSellerPrice />
                     </UserRole>
                   }
@@ -545,7 +545,7 @@ function App() {
                 <Route
                   path="/updateBulkProduct"
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={"Update Sales Price"}>
                       <UpdateProductMain />
                     </UserRole>
                   }
@@ -637,9 +637,9 @@ function App() {
                 <Route
                   path="/RestockOrderView"
                   element={
-                    // <UserRole name={"Restock Order View"}>
+                    <UserRole name={"Restock Order View"}>
                     <RestockOrderList />
-                    // </UserRole>
+                     </UserRole>
                   }
                 />
                 <Route

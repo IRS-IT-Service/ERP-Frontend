@@ -191,8 +191,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [FinalData, setFinalData] = useState([]);
   const [updateValue, setUpdateValue] = useState([]);
-  console.log(selectedCustomer);
-
+  console.log(selectedData);
 
   const [Clientlist, setClientlist] = useState([]);
   const [form, setForm] = useState({
@@ -226,8 +225,8 @@ const createOrderShipment = ({ setOpen, id }) => {
     useGetCustomerOrderShipmentQuery(orderId, {
       skip: !orderId,
     });
-  console.log(shipment?.client);
-  const [personType, setPersonType] = useState(selectedCustomer?.CleintType);
+
+  const [personType, setPersonType] = useState("Company");
   const [
     addmoreaddress,
     { isLoading: addmoreaddressLoading, refetch: addRefetch },
@@ -239,6 +238,8 @@ const createOrderShipment = ({ setOpen, id }) => {
     setOpen(false);
   };
   // setFinalData(shipment?.client?.Items)
+
+  console.log(Requireqty);
 
   useEffect(() => {
     if (selectedData?.length > 0) {
@@ -252,22 +253,8 @@ const createOrderShipment = ({ setOpen, id }) => {
         return [...prevFinalData, ...newItems];
       });
     }
-  }, [openDialog]);
+  }, [selectedData]);
 
-  useEffect(() => {
-    if (selectedData?.length > 0) {
-      let newData = [];
-
-      newData = FinalData?.map((data) => {
-        return {
-          SKU: data.SKU,
-          productName: data.Name,
-        };
-      });
-
-      setRequireqty(newData);
-    }
-  }, [FinalData, setFinalData]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -319,17 +306,7 @@ const createOrderShipment = ({ setOpen, id }) => {
     }
   }, [personType, setPersonType]);
 
-  // useEffect(() => {
-  //   {
-  //     setSelectedAddress({});
-  //     setSelectedCustomer({
-  //       ContactName: "Saket Jha",
-  //       ContactNumber: "9709260818",
-  //       AlternateNumber: "8540091427",
-  //       Invoice: "",
-  //     });
-  //   }
-  // }, [shipment?.client]);
+
 
   const handleToggleAddress = (event) => {
     const checked = event.target.checked;
@@ -352,7 +329,7 @@ const createOrderShipment = ({ setOpen, id }) => {
     let error = false;
 
     setQty({ ...qty, [item.SKU]: value });
-    setRequireqty((prev) => {
+    setFinalData((prev) => {
       return prev.map((data) => {
         if (data.SKU === item.SKU) {
           if (value > item.ActualQuantity || value === "0") {
@@ -371,14 +348,15 @@ const createOrderShipment = ({ setOpen, id }) => {
   };
 
   const removeSelectedItems = (id) => {
-    const newSelectedItems = selectedItems.filter((item) => item !== id);
+    const newSelectedItems = Requireqty.filter((item) => item.SKU !== id);
     const newSelectedRowsData = FinalData.filter((item) => item.SKU !== id);
     const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id);
-    setUpdateValue(NewUpdatedValue);
+    // setUpdateValue(NewUpdatedValue);
     setFinalData(newSelectedRowsData);
-    setSelectedItems(newSelectedItems);
+    // setSelectedItems(newSelectedItems);
+    // setRequireqty(newSelectedItems)
   };
-
+  console.log(FinalData);
   const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
   const uniqueSKUsArray = Array.from(uniqueSKUs);
   const realData = uniqueSKUsArray?.filter((item) =>
@@ -386,18 +364,17 @@ const createOrderShipment = ({ setOpen, id }) => {
   );
 
   const handleSelectedChange = (event, newValue) => {
-    console.log(newValue);
     if (newValue && newValue.id) {
       const foundItem = clientData.client.find(
         (item) => item._id === newValue.id
       );
-      console.log(foundItem);
+
       setSelectedCustomer(foundItem);
     } else {
       console.log("ClientId not found in newValue");
     }
   };
-  console.log(selectedCustomer);
+
   useEffect(() => {
     if (shipment) {
       let data = {
@@ -414,6 +391,25 @@ const createOrderShipment = ({ setOpen, id }) => {
     }
   }, [shipment]);
 
+useEffect (()=>{
+
+  if(shipment?.client?.Items) {
+setFinalData((prev)=>{
+  return shipment?.client?.Items.map((item)=>{
+    return {
+      SKU: item.SKU,
+      Qty: item.Qty,
+      Name : item.productName,
+      ActualQuantity: item.ActualQuantity,
+      error: false,
+    }
+  })
+})
+  }
+
+},[shipment])
+
+console.log(shipment)
   const handleSelectAddress = (address) => {
     setSelectedAddress(address);
     handleClose();
@@ -451,24 +447,35 @@ const createOrderShipment = ({ setOpen, id }) => {
 
   // handling send query
   const handleSubmit = async () => {
+    let isError = false;
     try {
-      const isItemsFulfilled = Requireqty.every(
-        (item) => item.Qty && item.Qty !== ""
-      );
-      const isItemsError = Requireqty.some(
-        (item) => item.error && item.error === true
-      );
+
+     
+      const info = FinalData.map((item) => {
+        if (item.Qty === "") {
+          isError = true;
+          return toast.error("Please select quantity");
+        } else if (item.error && item.error === true) {
+          isError = true;
+          return toast.error("Invalid quantity");
+        }
+        return {
+          SKU: item.SKU,
+          Qty: item.Qty,
+          productName: item.Name,
+        };
+      });
+  
       const isEmpty = Object.keys(selectedAddress)?.length === 0;
 
       if (!selectedCustomer.ClientId) {
         return toast.error("Please select Company Name");
       } else if (isEmpty) {
         return toast.error("Please select Shipping Address");
-      } else if (!isItemsFulfilled) {
-        return toast.error("Please select quantity");
-      } else if (isItemsError) {
-        return toast.error("Invalid quantity");
+      } else if (isError) {
+        return;
       }
+
       const formData = new FormData();
       formData.append("ClientId", selectedCustomer.ClientId);
       formData.append("ShippingAddress", JSON.stringify(selectedAddress));
@@ -481,7 +488,7 @@ const createOrderShipment = ({ setOpen, id }) => {
       formData.append("Contact", selectedCustomer.ContactNumber);
       formData.append("CompanyName", selectedCustomer.CompanyName);
       formData.append("AlternateNumber", selectedCustomer.AlternateNumber);
-      formData.append("Items", JSON.stringify(Requireqty));
+      formData.append("Items", JSON.stringify(info));
       const result = await createShipment(formData).unwrap();
 
       toast.success("Order successfully created");
@@ -578,7 +585,7 @@ const createOrderShipment = ({ setOpen, id }) => {
       }
     }
   };
-  console.log(selectedCustomer);
+
   return (
     <div>
       <InfoDialogBox
@@ -615,7 +622,7 @@ const createOrderShipment = ({ setOpen, id }) => {
                 <Select
                   sx={{ width: "15rem", color: "red" }}
                   size="small"
-                  value={personType || selectedCustomer?.CleintType}
+                  value={personType}
                   renderValue={(selected) => {
                     if (selected.length === 0) {
                       return <em>Placeholder</em>;
@@ -631,11 +638,7 @@ const createOrderShipment = ({ setOpen, id }) => {
               </Box>
               {personType === "Company" && (
                 <Box>
-                  {/* <Typography variant="span" fontWeight="bold" fontSize={"12px"}>
-                  Company Name{" "}
-                </Typography> */}
                   <Autocomplete
-                    value={`${selectedCustomer?.CompanyName}`}
                     style={{
                       width: "26rem",
                       backgroundColor: "rgba(255, 255, 255)",
@@ -959,14 +962,14 @@ const createOrderShipment = ({ setOpen, id }) => {
                             },
                           }}
                           name="Qty"
-                          value={qty[item.SKU]}
+                          value={item.Qty}
                           type="number"
                           onChange={(event) => {
                             handleQuantityChange(event, item);
                           }}
-                          error={Requireqty[index]?.error}
+                          error={item?.error}
                           helperText={
-                            Requireqty[index]?.error ? (
+                            item?.error ? (
                               <spna style={{ fontSize: "9px" }}>
                                 Enter valid Qty!
                               </spna>
