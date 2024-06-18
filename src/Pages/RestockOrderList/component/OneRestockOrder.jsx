@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import axios from "axios";
 import {
+  useDeleteRestockByIdMutation,
   useGetAllNewRestocksQuery,
   useUpdateRestockQuantityMutation,
 } from "../../../features/api/RestockOrderApiSlice";
@@ -13,6 +14,11 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import BASEURL from "../../../constants/BaseApi";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
+import ViewHistoryDial from "./ViewHistoryDial";
+import { useDispatch, useSelector } from "react-redux";
+import { Delete } from "@mui/icons-material";
+import AllVendorDial from "./AllVendorDial";
+import { setOverseaseSelectedOrder } from "../../../features/slice/selectedItemsSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -22,7 +28,10 @@ const OneRestockOrder = () => {
   /// initialize
   const { search } = useLocation();
   const apiRef = useGridApiRef();
+  const dispatch = useDispatch()
   // const { id } = useParams();
+
+  const { userInfo } = useSelector((state) => state.auth);
 
   /// local state
   const [rows, setRows] = useState([]);
@@ -32,6 +41,9 @@ const OneRestockOrder = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [openRestockItem, setOpenRestockItem] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState({ SKU: "", history: [] });
+  const [openVendorDial,setOpenVendorDial] = useState(false)
 
   /// rtk query
   // const {
@@ -42,14 +54,17 @@ const OneRestockOrder = () => {
   // } = useGetRestockProductDetailQuery(id);
 
   const {
-    refetch ,
+    refetch,
     data: RestockProduct,
     isLoading: RestockLoading,
-    isFetching
+    isFetching,
   } = useGetAllNewRestocksQuery("pending");
 
   const [updateQuantityApi, { isLoading: updateLoading }] =
     useUpdateRestockQuantityMutation();
+
+  const [deleteRestock, { isLoading: deleteLaoding }] =
+    useDeleteRestockByIdMutation();
 
   /// useEffect
   // useEffect(() => {
@@ -85,10 +100,12 @@ const OneRestockOrder = () => {
         Sno: index + 1,
         date: formatDate(item.createdAt),
         status: item.status,
+        addedBy: item.AddedBy,
+        SKU: item.SKU,
       }));
       setRows(data);
     }
-  }, [RestockProduct]); 
+  }, [RestockProduct]);
 
   /// handlers
   const handleRemoveRestockItem = (id) => {
@@ -100,7 +117,8 @@ const OneRestockOrder = () => {
   };
 
   const handleOpenRestockItem = () => {
-    setOpenRestockItem(!openRestockItem);
+    // setOpenRestockItem(!openRestockItem);
+    setOpenVendorDial(true)
   };
 
   const handleSelectionChange = (ids) => {
@@ -111,6 +129,7 @@ const OneRestockOrder = () => {
     });
 
     setSelectedRows(selectedRowsData);
+    dispatch(setOverseaseSelectedOrder(selectedRowsData))
   };
 
   const handleRowUpdate = () => {
@@ -130,7 +149,11 @@ const OneRestockOrder = () => {
   const handleSubmit = async () => {
     try {
       const processsedRows = editedRows.map((item) => {
-        return { SKU: item.id, NewQuantity: item.value };
+        return {
+          id: item.id,
+          RestockQuantity: item.value,
+          addBy: { name: userInfo.name, askQty: item.value, date: Date.now() },
+        };
       });
 
       if (!processsedRows.length) {
@@ -140,10 +163,9 @@ const OneRestockOrder = () => {
       }
 
       const params = {
-        // id: id,
-        body: { newProductQuantity: processsedRows },
+        products: processsedRows,
       };
-
+      console.log(params);
       const res = await updateQuantityApi(params).unwrap();
       toast.success("Quantity updated successfully");
       handleClear();
@@ -197,6 +219,27 @@ const OneRestockOrder = () => {
     }
     setEditedRows([]);
   };
+
+  const handleOpenView = (SKU, Product) => {
+    setData({
+      SKU: SKU,
+      history: Product,
+    });
+    setOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      console.log(id);
+      if (!id) return;
+      const result = await deleteRestock(id).unwrap();
+      toast.success("Restock deleted successfully");
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const columns = [
     {
       field: "Sno",
@@ -214,7 +257,6 @@ const OneRestockOrder = () => {
       headerName: "SKU",
       flex: 0.3,
       minWidth: 80,
-
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -243,7 +285,7 @@ const OneRestockOrder = () => {
       cellClassName: "super-app-theme--cell",
       valueFormatter: (params) => `${params.value} %`,
     },
-  
+
     {
       field: "Threshold",
       headerName: "Threshold",
@@ -289,6 +331,50 @@ const OneRestockOrder = () => {
       cellClassName: "super-app-theme--cell",
       editable: search === "?view" ? false : true,
       type: "number",
+    },
+    {
+      field: "addedBy",
+      headerName: "AddedBy",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      align: "center",
+      headerAlign: "center",
+      minWidth: 240,
+      renderCell: (params) => {
+        const Sku = params.row.SKU;
+        const AddedBy = params.row.addedBy;
+        return (
+          <Button
+            onClick={() => {
+              // You can pass Sku and AddedBy to handleOpenView if needed
+              handleOpenView(Sku, AddedBy);
+            }}
+          >
+            View
+          </Button>
+        );
+      },
+    },
+    {
+      field: "Delete",
+      headerName: "Delete",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      align: "center",
+      headerAlign: "center",
+      minWidth: 10,
+      renderCell: (params) => {
+        const id = params.row.id;
+        return (
+          <Button
+            onClick={() => {
+              handleDelete(id);
+            }}
+          >
+            <Delete sx={{ color: "red" }} />
+          </Button>
+        );
+      },
     },
   ];
 
@@ -426,8 +512,12 @@ const OneRestockOrder = () => {
                     display: "flex",
                   }}
                 >
-                  <Button sx={{margin:"auto"}} variant="outlined" onClick={handleOpenRestockItem}>
-                    Click to Order{" "}
+                  <Button
+                    sx={{ margin: "auto" }}
+                    variant="outlined"
+                    onClick={handleOpenRestockItem}
+                  >
+                    Assign to Vendor{" "}
                     {selectedRows.length > 0 ? selectedRows.length : ""}
                   </Button>
                 </Box>
@@ -436,8 +526,7 @@ const OneRestockOrder = () => {
               )}
             </Grid>
           </Box>
-   
-   
+
           <Box
             sx={{
               width: "100%",
@@ -503,6 +592,9 @@ const OneRestockOrder = () => {
           </Box>
         </Grid>
       </Grid>
+      {open && <ViewHistoryDial open={open} setOpen={setOpen} data={data} />}
+      {openVendorDial && <AllVendorDial open={openVendorDial} setOpen={setOpenVendorDial}/>}{" "}
+
     </Box>
   );
 };
