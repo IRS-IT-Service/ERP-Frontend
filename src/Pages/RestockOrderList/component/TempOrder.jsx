@@ -57,12 +57,12 @@ const TempOrder = () => {
       if (useRMB) {
         return {
           ...item,
-          usdValue: item.rmbValue * rate,
+          usdValue: item.usdValue / rate,
         };
       } else {
         return {
           ...item,
-          rmbValue: item.usdValue / rate,
+          rmbValue: item.rmbValue * rate,
         };
       }
     });
