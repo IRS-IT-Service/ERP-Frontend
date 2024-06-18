@@ -337,13 +337,17 @@ const createOrderShipment = ({ setOpen, id }) => {
     const { value, name } = event.target;
     let error = false;
 
-    setQty({ ...qty, [item.SKU]: value });
+    // setQty({ ...qty, [item.SKU]: item.Qty });
     setFinalData((prev) => {
-      return prev.map((data) => {
+         return prev.map((data) => {
         if (data.SKU === item.SKU) {
-          if (value > item.ActualQuantity || value === "0") {
-            error = true;
+          if (!orderId && (value > item.ActualQuantity || value === "0")) {
+                error = true;
+          }else if(orderId){
+            if ((!(+item.prevQty + +item.ActualQuantity >= +value)  || value === "0")) {
+             error = true;
           }
+        }
 
           return {
             ...data,
@@ -440,6 +444,7 @@ setFinalData((prev)=>{
     return {
       SKU: item.SKU,
       Qty: item.Qty,
+      prevQty: item.Qty,
       Name : item.productName,
       GST: item.GST,
       Brand:item.Brand,
