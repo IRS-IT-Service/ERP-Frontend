@@ -131,7 +131,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             return {
               ...item,
               USD: +value,
-              RMB: (ConversionRate * +value).toFixed(3),
+              RMB: (ConversionRate * +value).toFixed(2),
             };
           } else {
             return item;
@@ -147,7 +147,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             return {
               ...item,
               RMB: +value,
-              USD: (+value * ConversionRate).toFixed(3),
+              USD: (+value * ConversionRate).toFixed(2),
             };
           } else {
             return item;
@@ -217,7 +217,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
         } else if (item?.RMB && item?.RMB > 0) {
           return {
             ...item,
-            USD: ConversionRate > 0 ? (+item?.RMB * +ConversionRate).toFixed(2) : "",
+            USD: ConversionRate > 0 ? (ConversionType === "USD" ? +item?.RMB * +ConversionRate : +item?.RMB / +ConversionRate).toFixed(2) : "",
           };
         }
 
@@ -598,7 +598,7 @@ const handleChangeType = (e,value) =>{
                   background: "#fff",
                   border: "none",
                   textAlign: "center",
-                  width: "35px",
+                  width: "45px",
                   border: "none",
                   padding:"3px"
                 
