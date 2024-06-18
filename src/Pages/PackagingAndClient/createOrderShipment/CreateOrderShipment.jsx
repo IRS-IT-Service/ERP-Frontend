@@ -76,6 +76,7 @@ const StyledCell = styled(TableCell)(({ theme }) => ({
 import {
   useUpdateCustomershippingAddressMutation,
   useCreateShipmentOrderMutation,
+  useUpdateCustomerShipmentMutation
 } from "../../../features/api/clientAndShipmentApiSlice";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
@@ -191,7 +192,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [FinalData, setFinalData] = useState([]);
   const [updateValue, setUpdateValue] = useState([]);
-  console.log(selectedData);
+  
 
   const [Clientlist, setClientlist] = useState([]);
   const [form, setForm] = useState({
@@ -221,6 +222,11 @@ const createOrderShipment = ({ setOpen, id }) => {
     { isLoading: createShipmentLoading, refetch: createShipmentrefetch },
   ] = useCreateShipmentOrderMutation();
 
+  const [
+    updateShipment,
+    { isLoading: updateShipmentLoading, refetch: updateShipmentrefetch },
+  ] = useUpdateCustomerShipmentMutation();
+
   const { data: shipment, isLoading: isShipmentLoading } =
     useGetCustomerOrderShipmentQuery(orderId, {
       skip: !orderId,
@@ -239,7 +245,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   };
   // setFinalData(shipment?.client?.Items)
 
-  console.log(Requireqty);
+ 
 
   useEffect(() => {
     if (selectedData?.length > 0) {
@@ -257,6 +263,7 @@ const createOrderShipment = ({ setOpen, id }) => {
 
 
   const handleClick = (event) => {
+   
     setAnchorEl(event.currentTarget);
   };
 
@@ -296,6 +303,7 @@ const createOrderShipment = ({ setOpen, id }) => {
 
   useEffect(() => {
     {
+      if(!orderId){
       setSelectedAddress({});
       setSelectedCustomer({
         ContactName: "",
@@ -303,6 +311,7 @@ const createOrderShipment = ({ setOpen, id }) => {
         AlternateNumber: "",
         Invoice: "",
       });
+    }
     }
   }, [personType, setPersonType]);
 
@@ -356,7 +365,7 @@ const createOrderShipment = ({ setOpen, id }) => {
     // setSelectedItems(newSelectedItems);
     // setRequireqty(newSelectedItems)
   };
-  console.log(FinalData);
+
   const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
   const uniqueSKUsArray = Array.from(uniqueSKUs);
   const realData = uniqueSKUsArray?.filter((item) =>
@@ -368,7 +377,7 @@ const createOrderShipment = ({ setOpen, id }) => {
       const foundItem = clientData.client.find(
         (item) => item._id === newValue.id
       );
-
+      console.log(foundItem)
       setSelectedCustomer(foundItem);
     } else {
       console.log("ClientId not found in newValue");
@@ -377,19 +386,51 @@ const createOrderShipment = ({ setOpen, id }) => {
 
   useEffect(() => {
     if (shipment) {
+  
       let data = {
         ClientId: shipment?.client?.ClientId,
-        CleintType:
-          shipment?.client?.CompanyName !== "" ? "Company" : "Individual",
+        _id: shipment?.client?._id,
+        OrderShipmentId:shipment?.client?.OrderShipmentId,
+      ClientType: shipment?.client?.CompanyName !== "" ? "Company" : "Individual",
         CompanyName: shipment?.client?.CompanyName,
         ContactName: shipment?.client?.ContactPerson,
         PermanentAddress: shipment?.client?.BillingAddress,
         AlternateAddress: shipment?.client?.ShippingAddress,
         ContactNumber: shipment?.client?.Contact,
+        AlternateNumber:shipment?.client?.AlternateNumber,
+   
+
+
+
       };
       setSelectedCustomer(data);
+      setSelectedAddress(shipment?.client?.ShippingAddress)
+      setPersonType(shipment?.client?.CompanyName !== "" ? "Company" : "Individual")
+      
     }
   }, [shipment]);
+
+  useEffect(()=>{
+    if(orderId){
+      
+        const foundItem = clientData.client.find(
+          (item) => item.ClientId
+          === shipment?.client?.ClientId
+        );
+      
+        setSelectedCustomer((prev)=>{
+          return {
+           ...prev,
+           AlternateAddress: foundItem.AlternateAddress,
+          }
+        });
+
+     
+      } 
+    
+
+  },[anchorEl])
+
 
 useEffect (()=>{
 
@@ -400,6 +441,8 @@ setFinalData((prev)=>{
       SKU: item.SKU,
       Qty: item.Qty,
       Name : item.productName,
+      GST: item.GST,
+      Brand:item.Brand,
       ActualQuantity: item.ActualQuantity,
       error: false,
     }
@@ -409,7 +452,7 @@ setFinalData((prev)=>{
 
 },[shipment])
 
-console.log(shipment)
+
   const handleSelectAddress = (address) => {
     setSelectedAddress(address);
     handleClose();
@@ -459,11 +502,21 @@ console.log(shipment)
           isError = true;
           return toast.error("Invalid quantity");
         }
-        return {
-          SKU: item.SKU,
-          Qty: item.Qty,
-          productName: item.Name,
-        };
+        if(orderId ){
+          return {
+           
+            SKU: item.SKU,
+            Qty: item.Qty,
+            productName: item.Name,
+          };
+        }else{
+          return {
+            SKU: item.SKU,
+            Qty: item.Qty,
+            productName: item.Name,
+          };
+        }
+        
       });
   
       const isEmpty = Object.keys(selectedAddress)?.length === 0;
@@ -476,7 +529,10 @@ console.log(shipment)
         return;
       }
 
+
+
       const formData = new FormData();
+       {orderId && formData.append("OrderShipmentId", selectedCustomer.OrderShipmentId); }
       formData.append("ClientId", selectedCustomer.ClientId);
       formData.append("ShippingAddress", JSON.stringify(selectedAddress));
       formData.append(
@@ -489,10 +545,22 @@ console.log(shipment)
       formData.append("CompanyName", selectedCustomer.CompanyName);
       formData.append("AlternateNumber", selectedCustomer.AlternateNumber);
       formData.append("Items", JSON.stringify(info));
-      const result = await createShipment(formData).unwrap();
 
-      toast.success("Order successfully created");
+ 
+if(orderId){
+  const result = await updateShipment(formData).unwrap();
+  toast.success("Order successfully updated");
+
+}else{
+  const result = await createShipment(formData).unwrap();
+  toast.success("Order successfully created");
+}
+
+      
+
+     
       navigate("/shipmentList");
+      window.location.reload();
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }
@@ -639,6 +707,7 @@ console.log(shipment)
               {personType === "Company" && (
                 <Box>
                   <Autocomplete
+                    value={orderId && selectedCustomer.CompanyName}
                     style={{
                       width: "26rem",
                       backgroundColor: "rgba(255, 255, 255)",
@@ -681,6 +750,7 @@ console.log(shipment)
               ) : (
                 <Box>
                   <Autocomplete
+                 value={orderId && selectedCustomer.ContactName}
                     style={{
                       width: "26rem",
                       backgroundColor: "rgba(255, 255, 255)",
@@ -1014,8 +1084,8 @@ console.log(shipment)
             paddingBottom: ".6rem",
           }}
         >
-          {" "}
-          {FinalData?.length > 0 && (
+   
+          {FinalData?.length > 0 &&  (
             <Button
               disabled={createShipmentLoading}
               variant="contained"
@@ -1026,13 +1096,17 @@ console.log(shipment)
                 width: "150px",
               }}
             >
-              {createShipmentLoading ? (
+              {createShipmentLoading || updateShipmentLoading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                "Sumit Order"
+               orderId ? "Update Order" : "Submit Order"
               )}
             </Button>
-          )}
+          ) 
+          
+          } 
+
+        
         </Box>
 
         {/* Address popover */}
