@@ -16,12 +16,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Delete } from "@mui/icons-material";
-import { useGetSingleVendorQuery } from "../../../features/api/RestockOrderApiSlice";
+import { useAssignOrderToVendorMutation, useGetSingleVendorQuery } from "../../../features/api/RestockOrderApiSlice";
+import { setOverseaseSelectedOrder } from "../../../features/slice/selectedItemsSlice";
+import { toast } from "react-toastify";
 
 const TempOrder = () => {
   const params = useParams();
   const id = params.id;
-  console.log(id);
 
   const dispatch = useDispatch();
   const { selectedOverseaseOrder } = useSelector(
@@ -33,6 +34,7 @@ const TempOrder = () => {
 
   // rtk queries
   const { data: getVendor, isLoading } = useGetSingleVendorQuery(id);
+  const [assignOrder , {isLoading:assignOrderLoading}] = useAssignOrderToVendorMutation()
 
   const handleToggleChange = () => {
     setUseRMB(!useRMB);
@@ -68,14 +70,18 @@ const TempOrder = () => {
     setOrderData(updatedData);
   };
 
+  console.log(useRMB)
+
   // changeing input value then we get the data
   const handleInputChange = (index, field, value) => {
     const updatedData = [...orderData];
     updatedData[index][field] = value;
     if (field === "rmbValue" && useRMB) {
-      updatedData[index].usdValue = value * conversionRate;
+      console.log("hielle")
+      updatedData[index].usdValue = value / conversionRate;
     } else if (field === "usdValue" && !useRMB) {
-      updatedData[index].rmbValue = value / conversionRate;
+      console.log("ussdd")
+      updatedData[index].rmbValue = value * conversionRate;
     }
     setOrderData(updatedData);
   };
@@ -85,7 +91,7 @@ const TempOrder = () => {
     const updatedData = [...orderData];
     updatedData.splice(index, 1);
     setOrderData(updatedData);
-    dispatch(selectedOverseaseOrder(updatedData));
+    dispatch(setOverseaseSelectedOrder(updatedData));
   };
 
   // get the totalvalue of usd
@@ -96,9 +102,43 @@ const TempOrder = () => {
     );
   }, [orderData]);
 
+  // assign order
+  const handleAssignOrder = async() => {
+    for (let order of orderData) {
+      const { SKU, orderQty, rmbValue, usdValue } = order;
+      if (!SKU || !rmbValue || !usdValue || !orderQty)
+        return toast.error("Plz don't miss required fields");
+    }
+    const products = orderData.map((product) => ({
+      SKU: product.SKU,
+      Name: product.Name,
+      Orderqty: +product.orderQty,
+      RMB: +product.rmbValue,
+      USD: +product.usdValue,
+      Gst: item.GST,
+      Brand: item.Brand,
+      prevRMB:item.prevRMB,
+      prevUSD:item.prevUSD
+    }));
+   try{
+    const result= await assignOrder(products).unwrap();
+    toast.success("Order added successfully")
+
+   }catch(error){
+    console.log(error)
+   }
+  };
   return (
     <Box sx={{ marginTop: "70px" }}>
-      <div style={{ display: "flex", justifyContent: "space-around",border:"0.5px solid black" ,padding:"8px",marginBottom:"8px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          border: "0.5px solid black",
+          padding: "8px",
+          marginBottom: "8px",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -106,7 +146,8 @@ const TempOrder = () => {
             alignItems: "center",
           }}
         >
-          <h4>Company Name : </h4>{""}
+          <h4>Company Name : </h4>
+          {""}
           <span>{getVendor && getVendor?.data?.CompanyName}</span>
         </div>
         <div
@@ -133,7 +174,7 @@ const TempOrder = () => {
             label={useRMB ? "RMB" : "USD"}
           />
           <input
-            placeholder={useRMB ? "1RMB Per USD" : "1USD Per RMB"}
+            placeholder={useRMB ? "1USD Per RMB": "1RMB Per USD"  }
             value={conversionRate}
             onChange={handleConversionRateChange}
             type="number"
@@ -145,7 +186,9 @@ const TempOrder = () => {
           <span style={{ fontWeight: "bold", color: "blue" }}>TOTAL USD:</span>{" "}
           <span>{totalUSDValues}</span>
         </div>
-        <Button variant="contained">Order</Button>
+        <Button variant="contained" onClick={() => handleAssignOrder()}>
+          Order
+        </Button>
       </div>
       <TableContainer component={Paper} sx={{ mt: 2, width: "88vw" }}>
         <Table>
