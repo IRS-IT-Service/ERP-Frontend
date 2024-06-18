@@ -16,6 +16,8 @@ import {
   TableRow,
   TextField,
   Grid,
+  ToggleButtonGroup,
+  ToggleButton 
 } from "@mui/material";
 import { formatDate } from "../../../../commonFunctions/commonFunctions";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -57,6 +59,8 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [FinalData, setFinalData] = useState([]);
+  const [ConversionType , setConversionType] = useState("USD")
+
 
   const [updateproducts, { isLoading: updateLoading }] =
     useUpdateOrderOverseasMutation();
@@ -93,7 +97,12 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       setProductData(
         dataSub.map((item) => {
           if(item.USD || item.RMB || item.RMB > item.USD){
-            prevConv = item.RMB / item.USD
+            if(ConversionType === "USD"){
+              prevConv = item.RMB / item.USD
+              
+            }else if(ConversionType === "RMB"){
+              prevConv = item.USD / item.RMB
+            }
           }
           return {
             ...item,
@@ -104,7 +113,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       );
       setConversionRate(prevConv.toFixed(2));
     }
-  }, [item, getSingleData]);
+  }, [item, getSingleData ,ConversionType ]);
 
   useEffect(() => {
     const selectedSKU = ProductData.map((item) => {
@@ -122,7 +131,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             return {
               ...item,
               USD: +value,
-              RMB: (ConversionRate * +value).toFixed(2),
+              RMB: (ConversionRate * +value).toFixed(3),
             };
           } else {
             return item;
@@ -138,7 +147,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             return {
               ...item,
               RMB: +value,
-              USD: (+value / ConversionRate).toFixed(2),
+              USD: (+value * ConversionRate).toFixed(3),
             };
           } else {
             return item;
@@ -203,12 +212,12 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
         if (item?.USD && item?.USD > 0) {
           return {
             ...item,
-            RMB:ConversionRate > 0 ? (+item?.USD * +ConversionRate).toFixed(2) : "",
+            RMB:ConversionRate > 0 ? (ConversionType === "RMB" ? +item?.USD / +ConversionRate : +item?.USD * +ConversionRate).toFixed(2) : "",
           };
         } else if (item?.RMB && item?.RMB > 0) {
           return {
             ...item,
-            USD: ConversionRate > 0 ? (+item?.RMB / +ConversionRate).toFixed(2) : "",
+            USD: ConversionRate > 0 ? (+item?.RMB * +ConversionRate).toFixed(2) : "",
           };
         }
 
@@ -317,6 +326,16 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       console.log(e);
     }
   };
+
+const handleChangeType = (e,value) =>{
+  if(value !== null){
+
+    setConversionType(value)
+  }
+}
+
+
+
 
   //   const handleSubmitSubPI = async () => {
   //     try {
@@ -560,7 +579,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
 
         <AccordionDetails>
           <Box>
-            <Box display={"flex"} gap={"0.5rem"}>
+            <Box display={"flex"} gap={"0.5rem"} alignItems={'center'}>
               <Typography
                 sx={{
                   fontWeight: "bold",
@@ -569,8 +588,9 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   marginRight: "3px",
                 }}
               >
-               USD to RMB Conversion Rate
-              </Typography>
+               {ConversionType === "RMB" ? "1 RMB equal to USD" : "1 USD equal to RMB"}
+               </Typography>
+              
               <input
                 name="conversion"
                 placeholder="%"
@@ -578,12 +598,16 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   background: "#fff",
                   border: "none",
                   textAlign: "center",
-                  width: "30px",
+                  width: "35px",
                   border: "none",
+                  padding:"3px"
+                
                 }}
                 value={ConversionRate || ""}
                 onChange={(e) => setConversionRate(e.target.value)}
               />
+
+
               <Box>
                 <AddIcon
                   onClick={handleOpenDial}
@@ -595,6 +619,33 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   }}
                 />
               </Box>
+              <Box>
+              <ToggleButtonGroup
+       value={ConversionType}
+  
+      exclusive
+      sx={{
+        width: "100px",
+        height: "30px",
+        border: "none",
+        borderRadius: "0.2rem",
+        padding: "0.2rem",
+        color:"#fff",
+
+"& .Mui-selected":{
+color:"#fff !important", 
+background:"black !important",
+}
+      }}
+      onChange={handleChangeType}
+      aria-label="Platform"
+    >
+      <ToggleButton value="USD" sx={{color:"black",border:"0.5px solid black"}}>USD</ToggleButton>
+      <ToggleButton value="RMB" sx={{color:"black",border:"0.5px solid black"}}>RMB</ToggleButton>
+
+
+    </ToggleButtonGroup>
+            </Box>
             </Box>
 
             <TableContainer sx={{ maxHeight: 450 }}>
@@ -649,6 +700,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             <input
               name="USD"
               value={item?.USD || ""}
+              disabled={ConversionType === "RMB"}
               type="number"
               style={{
                 background: "#fff",
@@ -656,13 +708,15 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                 padding: "5px",
                 width: "100px",
                 textAlign: "center",
-              }}
+                backgroundColor: ConversionType === "RMB" ? "#ccc" : "#ffff"
+              }} 
               onChange={(e) => handleInputChange(e, item?.SKU)}
             />
           </StyledCell>
           <StyledCell sx={{ textAlign: "center", width: "150px" }}>
             <input
               name="RMB"
+              disabled={ConversionType === "USD"}
               value={item?.RMB || ""}
               type="number"
               style={{
@@ -671,6 +725,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                 padding: "5px",
                 width: "100px",
                 textAlign: "center",
+             backgroundColor: ConversionType === "USD" ? "#ccc" : "#ffff"
               }}
               onChange={(e) => handleInputChange(e, item.SKU)}
             />
