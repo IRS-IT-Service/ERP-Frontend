@@ -118,7 +118,9 @@ const CustomerShipmentList = () => {
 
   useEffect(() => {
     refetch();
-  }, [getAllShipments]);
+  }, []);
+
+  console.log("hiii")
 
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {

@@ -50,6 +50,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const [totalAmount, setTotalamount] = useState(null);
   const [totalRMBAmount, setTotalRMBamount] = useState(null);
   const [totalQty, setTotalqty] = useState(null);
+  const [totalReqQty, setTotalReqqty] = useState(null);
   const [isSubItem, setIsSubItem] = useState(
     AccordFor === "SubPI" ? true : false
   );
@@ -183,6 +184,9 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
     const TotalQuantity = ProductData.reduce((acc, cur) => {
       return acc + +cur?.updatedQTY;
     }, 0);
+    const TotalReqQuantity = ProductData.reduce((acc, cur) => {
+      return acc + +cur?.Orderqty;
+    }, 0);
     const TotalRMB = ProductData.reduce((acc, cur) => {
       return acc + +cur?.updatedQTY * +cur?.RMB;
     }, 0);
@@ -190,6 +194,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
     setTotalamount(TotalValue?.toFixed(2));
     setTotalqty(TotalQuantity);
     setTotalRMBamount(TotalRMB);
+    setTotalReqqty(TotalReqQuantity);
   }, [ProductData]);
 
   useEffect(() => {
@@ -296,9 +301,9 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       };
       if (shortFallamount > 0) {
         const result = await createsuborder(suborder).unwrap();
-        toast.success("Sub order created successfully");
+   
         const result1 = await updatesuborder(updateProduct).unwrap();
-        toast.success("Order updated successfully");
+        toast.success("Order Updated successfully");
         // console.log(updateProduct)
         // console.log(suborder)
       } else {
@@ -501,6 +506,29 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   $ {shortFallamount.toFixed(2)}
                 </Typography>
               </Box>
+              <Box display={"flex"}>
+                <Typography
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: ".7rem",
+                    marginTop: "3px",
+                    marginRight: "3px",
+                  }}
+                >
+                  Total Required QTY :
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: ".7rem",
+                    fontWeight: "600",
+                    marginTop: "3px",
+                    marginRight: "3px",
+                  }}
+                >
+                  {" "}
+                  {totalReqQty} pcs
+                </Typography>
+              </Box>
 
               <Box display={"flex"}>
                 <Typography
@@ -511,7 +539,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                     marginRight: "3px",
                   }}
                 >
-                  Total QTY :
+                  Total Updated QTY :
                 </Typography>
                 <Typography
                   sx={{
@@ -525,6 +553,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   {totalQty} pcs
                 </Typography>
               </Box>
+            
             </Box>
           </Box>
         </AccordionSummary>
