@@ -131,7 +131,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             return {
               ...item,
               USD: +value,
-              RMB: (ConversionRate * +value).toFixed(2),
+              RMB: (ConversionRate * +value).toFixed(3),
             };
           } else {
             return item;
@@ -147,7 +147,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             return {
               ...item,
               RMB: +value,
-              USD: (+value * ConversionRate).toFixed(2),
+              USD: (+value * ConversionRate).toFixed(3),
             };
           } else {
             return item;
