@@ -370,39 +370,6 @@ const ToggleNav = () => {
   const isSmOrDown = useMediaQuery(theme.breakpoints.down("sm"));
 
   // This is the code to change the color of
-  const handleClickClr = async (index, adminId, name) => {
-    const title = `Hi ${name}`;
-    const desc = `is calling you....`;
-    const url = "https://erp.indianrobostore.com";
-
-    // Change the color to red immediately
-    setColorStates((prevColorStates) => {
-      const newColorStates = [...prevColorStates];
-      newColorStates[index] = "green";
-      return newColorStates;
-    });
-
-    // Set a timeout to change the color back to green after 10 seconds
-    setTimeout(() => {
-      setColorStates((prevColorStates) => {
-        const updatedColorStates = [...prevColorStates];
-        updatedColorStates[index] = "black";
-        return updatedColorStates;
-      });
-    }, 10000);
-
-    try {
-      const result = await sendNotification({
-        adminId,
-        title,
-        desc,
-        url,
-      }).unwrap();
-      toast.success("Notification Sent");
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <Box>
@@ -465,66 +432,6 @@ const ToggleNav = () => {
               alignItems: "center",
             }}
           >
-            {/* Calling Icon */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
-              <AddIcCallIcon
-                src={profileImage?.url || ""}
-                sx={{
-                  width: "30px",
-                  height: "30px",
-                  "& .MuiAvatar-img": {
-                    objectFit: "fill",
-                    objectPosition: "center",
-                  },
-                }}
-                onClick={handleClickBtn}
-              />
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorElCall}
-                open={CallMenuOpen}
-                onClose={handleCloseBtn}
-                MenuListProps={{
-                  "aria-labelledby": "basic-button",
-                }}
-                sx={{ height: "400px" }}
-              >
-                {getUserForNotification?.data
-                  .filter((item) => {
-                    return item.adminId !== userInfo.adminId;
-                  })
-                  .map((name, index) => {
-                    return (
-                      <MenuItem
-                        key={index}
-                        // onClick={handleCloseBtn}
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          gap: "20px",
-                        }}
-                      >
-                        <Avatar />
-                        {name?.name}
-                        <CallIcon
-                          sx={{ color: colorStates[index] }}
-                          onClick={() =>
-                            handleClickClr(index, name?.adminId, name?.name)
-                          }
-                        />
-                      </MenuItem>
-                    );
-                  })}
-              </Menu>
-            </Box>
-
             <div
               style={{ cursor: "pointer" }}
               onClick={() => navigate("/chat")}
