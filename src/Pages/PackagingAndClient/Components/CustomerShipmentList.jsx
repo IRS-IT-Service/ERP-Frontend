@@ -118,7 +118,9 @@ const CustomerShipmentList = () => {
 
   useEffect(() => {
     refetch();
-  }, [getAllShipments]);
+  }, []);
+
+  console.log("hiii")
 
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {
@@ -553,6 +555,27 @@ const CustomerShipmentList = () => {
             }
           >
             {invoice ? "View" : "Upload"}
+          </Button>
+        );
+      },
+    },
+    {
+      field: "update",
+      headerName: "Update",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const orderId = params.row.ShipmentId;
+        return (
+          <Button
+            onClick={() => navigate(`/createOrderShipment?orderId=${orderId}`)}
+            disabled={params.row.isDispatched }
+          >
+            update
           </Button>
         );
       },

@@ -233,7 +233,6 @@ const apiRef = useGridApiRef();
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-
       type: "number",
     },
     {
@@ -246,7 +245,6 @@ const apiRef = useGridApiRef();
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-
       type: "number",
     },
     {

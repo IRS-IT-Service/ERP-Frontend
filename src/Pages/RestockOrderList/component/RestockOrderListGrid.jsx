@@ -14,6 +14,9 @@ import Nodata from "../../../assets/error.gif";
 import { DataGrid } from "@mui/x-data-grid";
 import Loading from "../../../components/Common/Loading";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
+import { render } from "react-dom";
+import ViewHistoryDial from "./ViewHistoryDial";
+import { Delete } from "@mui/icons-material";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -46,6 +49,8 @@ const RestockOrderListGrid = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [rows, setRows] = useState([]);
   const [toggleValue, setToggleValue] = useState("pending");
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState({ SKU: "", history: [] });
 
   /// rtk query
   const {
@@ -71,6 +76,14 @@ const RestockOrderListGrid = () => {
       setRows(data);
     }
   }, [allRestockData]);
+
+  const handleOpenView = (SKU, Product) => {
+    setData({
+      SKU: SKU,
+      history: Product,
+    });
+    setOpen(true)
+  };
 
   // Define the columns
   const columns = [
@@ -161,7 +174,23 @@ const RestockOrderListGrid = () => {
       align: "center",
       headerAlign: "center",
       minWidth: 240,
+      renderCell: (params) => {
+        const Sku = params.row.SKU;
+        const AddedBy = params.row.AddedBy;
+        return (
+          <Button
+            onClick={() => {
+              // You can pass Sku and AddedBy to handleOpenView if needed
+              handleOpenView(Sku, AddedBy);
+            }}
+          >
+            View
+          </Button>
+        );
+      },
     },
+
+
     // {
     //   field: "paid",
     //   headerClassName: "super-app-theme--header",
@@ -266,6 +295,7 @@ const RestockOrderListGrid = () => {
           checkboxSelection
         />
       </StyledBox>
+      {open &&<ViewHistoryDial open={ open} setOpen={setOpen} data={data}/>}
     </>
   );
 };
