@@ -322,6 +322,29 @@ const OverseasorderList = () => {
         );
       },
     },
+    {
+      field: "editOrder",
+      headerName: "Edit-Details",
+      sortable: false,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const status = params.row.status
+        return (
+          <Button
+            onClick={() => {
+              navigate(`/tempOrder/${params.row.vendorId}`);
+            }}
+            disabled={status == "paid"}
+          >
+            Edit
+          </Button>
+        );
+      },
+    },
   ];
   // infodialog state
   //Todo
