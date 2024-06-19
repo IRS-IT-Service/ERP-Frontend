@@ -383,7 +383,8 @@ const handleChangeType = (e,value) =>{
             : "linear-gradient(to right top, #dae5ff , #e8f0ff)",
           // marginBottom: "4px",
           "& .MuiAccordionSummary-content": {
-            margin: "3px 0px",
+            margin: "0px 0px",
+            
           },
         }}
         // expanded={true}
@@ -406,10 +407,7 @@ const handleChangeType = (e,value) =>{
               sx={{
                 display: "flex",
                 justifyContent: "",
-                marginTop: ".4rem",
-                // marginBottom: ".4rem",
-                // border: '2px solid yellow',
-                padding: ".2rem",
+                  padding: ".2rem",
                 border: "2px solid #3385ff",
                 justifyContent: "space-between",
                 paddingX: "5px",

@@ -13,6 +13,10 @@ import {
   Button,
   TextField,
   CircularProgress,
+  styled,
+  ToggleButtonGroup,
+  ToggleButton,
+  Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,29 +27,43 @@ import {
 } from "../../../features/api/RestockOrderApiSlice";
 import { setOverseaseSelectedOrder } from "../../../features/slice/selectedItemsSlice";
 import { toast } from "react-toastify";
+const DrawerHeader = styled("div")(({ theme }) => ({
+  ...theme.mixins.toolbar,
+}));
+
+const StyledCell = styled(TableCell)(({ theme }) => ({
+  textAlign: "center",
+  padding: 0,
+}));
+
+const StyledCellHeader = styled(TableCell)(({ theme }) => ({
+  textAlign: "center",
+  backgroundColor: "#5E95FE",
+  color: "black",
+  padding: 1.5,
+  fontWeight: "thin",
+  fontSize: ".8rem",
+}));
 
 const TempOrder = () => {
   const params = useParams();
   const id = params.id;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const { selectedOverseaseOrder } = useSelector(
     (state) => state.SelectedItems
   );
-  const [useRMB, setUseRMB] = useState(false);
+
   const [conversionRate, setConversionRate] = useState(null);
   const [orderData, setOrderData] = useState([]);
-  const [piNo,setPINumber] = useState(null)
+  const [piNo, setPINumber] = useState(null);
+  const [ConversionType, setConversionType] = useState("USD");
 
   // rtk queries
   const { data: getVendor, isLoading } = useGetSingleVendorQuery(id);
   const [assignOrder, { isLoading: assignOrderLoading }] =
-  useAssignOrderVendorMutation();
-
-  const handleToggleChange = () => {
-    setUseRMB(!useRMB);
-  };
+    useAssignOrderVendorMutation();
 
   useEffect(() => {
     const initializedData = selectedOverseaseOrder.map((item) => ({
@@ -63,11 +81,11 @@ const TempOrder = () => {
     setConversionRate(rate);
     const updatedData = orderData.map((item) => {
       const updatedItem = { ...item };
-      if (useRMB) {
+      if (ConversionType === "RMB") {
         updatedItem.usdValue = parseFloat(
           ((item.rmbValue || 0) * rate * (item.orderQty || 1)).toFixed(2)
         );
-      } else {
+      } else if (ConversionType === "USD") {
         updatedItem.rmbValue = parseFloat(
           ((item.usdValue || 0) * rate * (item.orderQty || 1)).toFixed(2)
         );
@@ -82,11 +100,11 @@ const TempOrder = () => {
   const handleInputChange = (index, field, value) => {
     const updatedData = [...orderData];
     updatedData[index][field] = value;
-    if (field === "rmbValue" && useRMB) {
+    if (field === "rmbValue" && ConversionType === "RMB") {
       updatedData[index].usdValue = parseFloat(
         (value * conversionRate * (updatedData[index].orderQty || 1)).toFixed(2)
       );
-    } else if (field === "usdValue" && !useRMB) {
+    } else if (field === "usdValue" && ConversionType === "USD") {
       updatedData[index].rmbValue = parseFloat(
         (value * conversionRate * (updatedData[index].orderQty || 1)).toFixed(2)
       );
@@ -113,6 +131,12 @@ const TempOrder = () => {
       .toFixed(2);
   }, [orderData]);
 
+  const handleChangeType = (e, value) => {
+    if (value !== null) {
+      setConversionType(value);
+    }
+  };
+
   // assign order
   const handleAssignOrder = async () => {
     for (let order of orderData) {
@@ -132,37 +156,30 @@ const TempOrder = () => {
       prevUSD: product.prevUSD,
     }));
     const data = {
-      vendorId:id,
-      products:products,
-      piNo:piNo
-    }
+      vendorId: id,
+      products: products,
+      piNo: piNo,
+    };
     try {
       const result = await assignOrder(data).unwrap();
       toast.success("Order added successfully");
-      navigate("/OverseasorderList")
+      navigate("/OverseasorderList");
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getPlaceholderText = () => {
-    if (useRMB && conversionRate) {
-      return `1 RMB = ${(1 / conversionRate).toFixed(2)} USD`;
-    } else if (!useRMB && conversionRate) {
-      return `1 USD = ${(1 / conversionRate).toFixed(2)} RMB`;
-    }
-    return useRMB ? "1 RMB = ? USD" : "1 USD = ? RMB";
-  };
-
   return (
-    <Box sx={{ marginTop: "70px" }}>
+    <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%" }}>
+      <DrawerHeader />
       <div
         style={{
           display: "flex",
+          marginTop: "10px",
           justifyContent: "space-around",
-          border: "0.5px solid black",
+          background: "#ccc",
+
           padding: "8px",
-          marginBottom: "8px",
         }}
       >
         <div
@@ -170,9 +187,10 @@ const TempOrder = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            gap:"10px"
           }}
         >
-          <h4>Company Name : </h4>
+          <h4>Company Name :</h4>
           {""}
           <span>{getVendor && getVendor?.data?.CompanyName}</span>
         </div>
@@ -181,124 +199,155 @@ const TempOrder = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+                gap:"10px"
           }}
         >
           <h4>Concern Person : </h4>
           <span>{getVendor && getVendor?.data?.ConcernPerson}</span>
         </div>
       </div>
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent: "space-between",
           alignItems: "center",
+          padding: "2px 12px",
         }}
       >
-        <div>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={!useRMB}
-                onChange={handleToggleChange}
-                color={useRMB === false ? "secondary" : "warning"}
-              />
-            }
-            label={useRMB ? "RMB" : "USD"}
-          />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "5px",
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: "0.8rem",
+              fontWeight: "bold",
+              color: "black",
+              padding: "0.1rem",
+            }}
+          >
+            PI No
+          </Typography>
           <input
-            placeholder={getPlaceholderText()}
+            value={piNo}
+            style={{ padding: "5px" }}
+            onChange={(e) => setPINumber(e.target.value)}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "15px",
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: "0.7rem",
+              fontWeight: "bold",
+              color: "black",
+              padding: "0.1rem",
+            }}
+          >
+            {ConversionType === "RMB"
+              ? "1 RMB equal to USD"
+              : "1 USD equal to RMB"}
+          </Typography>
+          <input
             value={conversionRate || ""}
             onChange={handleConversionRateChange}
             type="number"
-            style={{ ml: 2, width: "50%", padding: "4%" }}
+            style={{ width: "60px", padding: "4px" }}
           />
-        </div>
-        <div>
-          <TextField size="small" label={"Enter PI Number"} value={piNo} onChange={(e) => setPINumber(e.target.value)}></TextField>
-        </div>
+          <ToggleButtonGroup
+            value={ConversionType}
+            exclusive
+            sx={{
+              width: "100px",
+              height: "30px",
+              border: "none",
+              borderRadius: "0.2rem",
+              padding: "0.2rem",
+              color: "#fff",
+
+              "& .Mui-selected": {
+                color: "#fff !important",
+                background: "black !important",
+              },
+            }}
+            onChange={handleChangeType}
+            aria-label="Platform"
+          >
+            <ToggleButton
+              value="USD"
+              sx={{ color: "black", border: "0.5px solid black" }}
+            >
+              USD
+            </ToggleButton>
+            <ToggleButton
+              value="RMB"
+              sx={{ color: "black", border: "0.5px solid black" }}
+            >
+              RMB
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
 
         <div>
           <span style={{ fontWeight: "bold", color: "blue" }}>TOTAL USD:</span>{" "}
-          <span>{totalUSDValues}</span>
+          <span>$ {totalUSDValues}</span>
         </div>
-        <Button variant="contained" onClick={() => handleAssignOrder()} disabled={assignOrderLoading}>
-          {assignOrderLoading? <CircularProgress/> : "Order"}
-        </Button>
-      </div>
-      <TableContainer component={Paper} sx={{ mt: 2, width: "88vw" }}>
-        <Table>
+      </Box>
+      <TableContainer
+        sx={{
+          width: "100%",
+          height: "73vh",
+          border: "0.5px solid #ccc",
+          overflow: "auto",
+        }}
+      >
+        <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                SKU
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                Name
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                GST
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                Sld C
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                Threshold
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                Prev RMB
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                Prev USD
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                Store Qty
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                Order Qty
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                RMB Value
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                USD Value
-              </TableCell>
-              <TableCell sx={{ textAlign: "center", background: "grey" }}>
-                Delete
-              </TableCell>
+              <StyledCellHeader>SKU</StyledCellHeader>
+              <StyledCellHeader>Name</StyledCellHeader>
+              <StyledCellHeader>GST</StyledCellHeader>
+              <StyledCellHeader>Sld C</StyledCellHeader>
+              <StyledCellHeader>Threshold</StyledCellHeader>
+              <StyledCellHeader>Prev RMB</StyledCellHeader>
+              <StyledCellHeader>Prev USD</StyledCellHeader>
+              <StyledCellHeader>Store Qty</StyledCellHeader>
+              <StyledCellHeader>Order Qty</StyledCellHeader>
+              <StyledCellHeader>RMB Value</StyledCellHeader>
+              <StyledCellHeader>USD Value</StyledCellHeader>
+              <StyledCellHeader>Delete</StyledCellHeader>
             </TableRow>
           </TableHead>
           <TableBody>
             {orderData.map((item, index) => (
               <TableRow key={item.SKU}>
-                <TableCell sx={{ textAlign: "center", padding: "0px" }}>
-                  {item.SKU}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  {item.Name}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  {item.GST}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  {item.SoldCount}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  {item.Threshold}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  {item.prevRMB}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  {item.prevUSD}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  {item.Quantity}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  <TextField
+                <StyledCell>{item.SKU}</StyledCell>
+                <StyledCell>{item.Name}</StyledCell>
+                <StyledCell>{item.GST}</StyledCell>
+                <StyledCell>{item.SoldCount}</StyledCell>
+                <StyledCell>{item.Threshold}</StyledCell>
+                <StyledCell>{item.prevRMB}</StyledCell>
+                <StyledCell>{item.prevUSD}</StyledCell>
+                <StyledCell>{item.Quantity}</StyledCell>
+                <StyledCell>
+                  <input
                     type="number"
-                    size="small"
-                    sx={{ width: "50px" }}
+                    style={{
+                      textAlign: "center",
+                      width: "45px",
+                      padding: "3px",
+                    }}
                     required
                     value={item.orderQty}
                     onChange={(e) =>
@@ -309,12 +358,15 @@ const TempOrder = () => {
                       )
                     }
                   />
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  <TextField
+                </StyledCell>
+                <StyledCell sx={{ textAlign: "center", padding: "4px" }}>
+                  <input
                     type="number"
-                    size="small"
-                    sx={{ width: "110px" }}
+                    style={{
+                      textAlign: "center",
+                      width: "110px",
+                      padding: "3px",
+                    }}
                     value={item.rmbValue}
                     onChange={(e) =>
                       handleInputChange(
@@ -323,17 +375,20 @@ const TempOrder = () => {
                         parseFloat(e.target.value)
                       )
                     }
-                    autoFocus={useRMB}
-                    disabled={!useRMB}
+                    autoFocus={ConversionType === "RMB"}
+                    disabled={ConversionType === "USD"}
                   />
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  <TextField
+                </StyledCell>
+                <StyledCell sx={{ textAlign: "center", padding: "4px" }}>
+                  <input
                     type="number"
                     value={item.usdValue}
-                    size="small"
-                    sx={{ width: "110px" }}
-                    autoFocus={!useRMB}
+                    style={{
+                      textAlign: "center",
+                      width: "110px",
+                      padding: "3px",
+                    }}
+                    autoFocus={ConversionType === "USD"}
                     color="secondary"
                     onChange={(e) =>
                       handleInputChange(
@@ -342,19 +397,43 @@ const TempOrder = () => {
                         parseFloat(e.target.value)
                       )
                     }
-                    disabled={useRMB}
+                    disabled={ConversionType === "RMB"}
                   />
-                </TableCell>
-                <TableCell sx={{ textAlign: "center", padding: "4px" }}>
-                  <Button onClick={() => handleDeleteRow(index)}>
+                </StyledCell>
+                <StyledCell>
+                  <Box
+                    sx={{
+                      color: "black",
+                      "&:hover": {
+                        color: "red",
+                        cursor: "pointer",
+                      },
+                    }}
+                    onClick={() => handleDeleteRow(index)}
+                  >
                     <Delete />
-                  </Button>
-                </TableCell>
+                  </Box>
+                </StyledCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          padding: "5px",
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => handleAssignOrder()}
+          disabled={assignOrderLoading}
+        >
+          {assignOrderLoading ? <CircularProgress /> : "Order"}
+        </Button>
+      </Box>
     </Box>
   );
 };
