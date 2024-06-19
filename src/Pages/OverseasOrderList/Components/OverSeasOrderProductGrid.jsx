@@ -20,9 +20,11 @@ import {
   useUpdateAssignedOrderMutation,
   useAssignPaidOrderMutation,
   useCreateOverseasBoxMutation,
+  useGetSingleVendorWithOrderQuery,
 } from "../../../features/api/RestockOrderApiSlice";
 import PaidOrderDialog from "./PaidOrderDialog";
 import ShipOrderDialog from "./ShipOrderDialog";
+import { formatDate } from "../../../commonFunctions/commonFunctions";
 
 const useStyles = makeStyles((theme) => ({
   selected: {
@@ -38,6 +40,7 @@ const OverSeasOrderProductGrid = () => {
   /// initialize
   const { id } = useParams();
   const apiRef = useGridApiRef();
+  console.log(id);
 
   /// local State
   const classes = useStyles();
@@ -48,7 +51,7 @@ const OverSeasOrderProductGrid = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [newOrderQty, setNewOrderQty] = useState({});
-  const [toggleValue, setToggleValue] = useState("unPaid");
+  const [toggleValue, setToggleValue] = useState("unpaid");
   const [formQuantity, setFormQuantity] = useState({});
   const [formData, setFormData] = useState({
     boxMarking: "",
@@ -61,248 +64,30 @@ const OverSeasOrderProductGrid = () => {
   /// rtk query
 
   const {
-    refetch,
-    data: overseasOrderData,
-    isLoading: overseasOrderLoading,
-  } = useGetAssignedOrderQuery(id);
-
-  const [deleteOrderItemApi, { isLoading: deleteLoading }] =
-    useDeleteAssignedProductMutation();
-  const [updateOrderApi, { isLoading }] = useUpdateAssignedOrderMutation();
-  const [paidOrderApi, { isLoading: paidOrderLoading }] =
-    useAssignPaidOrderMutation();
-  const [createBoxApi, { isLoading: createBoxLoading }] =
-    useCreateOverseasBoxMutation();
+    data: getSingleOrder,
+    isLoading: singleLoading,
+    refetch: singleOrderRefetch,
+  } = useGetSingleVendorWithOrderQuery(id);
 
   /// useEffect
 
   useEffect(() => {
-    if (overseasOrderData?.status === "success") {
-      if (toggleValue === "unPaid") {
-        const data = overseasOrderData.data?.products?.map((item, index) => {
-          return {
-            id: item.SKU,
-            SKU: item.SKU,
-            Sno: index + 1,
-            Name: item.Name,
-            Brand: item.Brand,
-            Price: item.Price || 0,
-            RMB: item.RMB || 0,
-            GST: item.Gst,
-            PrevUSD: item.prevUSD,
-            PrevRMB: item.prevRMB,
-            OrderQty: item.Orderqty,
-          };
-        });
+    if (getSingleOrder && getSingleOrder?.status === true) {
+      const data = getSingleOrder.data?.Orders?.map((item, index) => ({
+        ...item,
+        id: item._id,
+        Sno: index + 1,
+        OrderDate:formatDate(item.createdAt),
+        products:item.subOrders
+      }));
 
-        setRows(data);
-      } else {
-        const data = overseasOrderData.data?.paidProducts?.map(
-          (item, index) => {
-            return {
-              id: item.SKU,
-              SKU: item.SKU,
-              Sno: index + 1,
-              Name: item.Name,
-              Brand: item.Brand,
-              Price: item.Price || 0,
-              RMB: item.RMB || 0,
-              GST: item.Gst,
-              PrevUSD: item.prevUSD,
-              PrevRMB: item.prevRMB,
-              OrderQty: item.Orderqty,
-            };
-          }
-        );
+      const filteredData = data.filter((item) => item.status === toggleValue);
 
-        setRows(data);
-      }
+      setRows(filteredData);
     }
+  }, [toggleValue, getSingleOrder]);
 
-    setSelectedItems([]);
-    setSelectedRows([]);
-  }, [overseasOrderData, toggleValue]);
-
-  // handle
-
-  const handleRowUpdate = (params) => {
-    const ids = apiRef?.current?.state?.editRows || {};
-
-    const outputArray = [];
-    for (const [id, fields] of Object.entries(ids)) {
-      for (const [field, valueObj] of Object.entries(fields)) {
-        const value = Number(valueObj.value);
-        outputArray.push({ id: id, field, value });
-      }
-    }
-
-    setEditedRows(outputArray);
-  };
-
-  const handleDeleteItem = async (sku) => {
-    try {
-      const params = {
-        vendorId: overseasOrderData?.data?.vendorId,
-        sku: sku,
-      };
-      const res = await deleteOrderItemApi(params).unwrap();
-      refetch();
-    } catch (error) {
-      console.error("An error occurred during OverseasOrderList:", error);
-    }
-  };
-
-  const handleUpdateQuantity = async () => {
-    try {
-      const params = {
-        vendorId: overseasOrderData?.data?.vendorId,
-        products: editedRows,
-      };
-
-      const res = await updateOrderApi(params).unwrap();
-
-      setEditedRows([]);
-      refetch().then((data) => {
-        handleClear();
-      });
-
-      toast.success("Product Updated Successfully", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    } catch (error) {
-      console.error("An error occurred during login:", error);
-    }
-  };
-
-  const handleSubmitPaidItem = async () => {
-    try {
-      let error = true;
-      const processedItems = selectedRows.map((row) => {
-        if (!newOrderQty[row.SKU]) {
-          error = true;
-        }
-        return { ...row, Orderqty: row.OrderQty, Gst: row.GST };
-      });
-
-      if (!error) {
-        toast.error("Missing Order Quantity");
-        return;
-      }
-      const params = {
-        vendorId: overseasOrderData?.data?.vendorId,
-        products: processedItems,
-      };
-      console.log(params);
-      const res = await paidOrderApi(params).unwrap();
-
-      refetch();
-      toast.success("Product Processed To Paid", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      setSelectedItems([]);
-      setSelectedRows([]);
-      setNewOrderQty({});
-      setOpen(false);
-    } catch (error) {
-      console.error("An error occurred during login:", error);
-    }
-  };
-
-  const handleSubmitBox = async () => {
-    try {
-      if (!formData.boxMarking) {
-        return toast.error("boxMarking  is required");
-      }
-      if (!formData.weight) {
-        return toast.error("weight  is required");
-      }
-
-      if (!formData.length || !formData.height || !formData.width) {
-        return toast.error("Dimension is required");
-      }
-
-      let errString = "";
-      const processedProducts = selectedRows.map((row) => {
-        const newOrderQty = formQuantity[row.SKU];
-        if (!newOrderQty) {
-          errString = `${row.Name} shipped Quantity is Required`;
-        }
-        if (newOrderQty > row.OrderQty) {
-          errString = `${row.Name} shipped Quantity Cannot be Higher than order Quantity`;
-        }
-        return { ...row, Orderqty: formQuantity[row.SKU], Gst: row.GST };
-      });
-
-      if (errString) {
-        return toast.error(errString);
-      }
-
-      const newFormData = new FormData();
-
-      newFormData.append("vendorId", overseasOrderData?.data?.vendorId);
-      newFormData.append("companyName", overseasOrderData?.data?.companyName);
-      newFormData.append("boxMarking", formData.boxMarking);
-      newFormData.append("weight", formData.weight);
-      newFormData.append(
-        "dimension",
-        JSON.stringify({
-          length: formData.length,
-          height: formData.height,
-          width: formData.width,
-        })
-      );
-      newFormData.append("products", JSON.stringify(processedProducts));
-      newFormData.append("boxImage", formData.fileInput);
-
-
-
-      const res = await createBoxApi(newFormData).unwrap();
-      setSelectedItems([]);
-      setSelectedRows([]);
-      setFormQuantity({});
-      setShipOpen(false);
-      setFormData({
-        boxMarking: "",
-        length: "",
-        width: "",
-        height: "",
-        weight: "",
-        fileInput: null, // Assuming it's a file input
-      });
-      refetch();
-    } catch (error) {
-      console.error("An error occurred during login:", error);
-    }
-  };
-
-  const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
-
-    const selectedRowsData = selectionModel.map((id) => {
-      return rows.find((row) => row.id === id);
-    });
-
-    setSelectedRows(selectedRowsData);
-  };
-  const handleRemoveRestockItem = (id) => {
-    const newSelectedItems = selectedItems.filter((item) => item !== id);
-    setSelectedItems(newSelectedItems);
-    const newSelectedRow = selectedRows.filter((item) => item.id !== id);
-    setSelectedRows(newSelectedRow);
-  };
-
-  const handleClear = () => {
-    if (editedRows.length > 0) {
-      editedRows.forEach((row) => {
-        apiRef.current.stopCellEditMode({
-          id: row.id,
-          field: row.field,
-          ignoreModifications: true,
-        });
-      });
-    }
-    setEditedRows([]);
-  };
+  // handle columns 
 
   const columns = [
     {
@@ -317,8 +102,8 @@ const OverSeasOrderProductGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "SKU",
-      headerName: "SKU",
+      field: "piNo",
+      headerName: "PI No",
       flex: 0.3,
       minWidth: 80,
       maxWidth: 150,
@@ -328,126 +113,25 @@ const OverSeasOrderProductGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "Name",
-      headerName: "Product ",
+      field: "OrderDate",
+      headerName: "Order Date",
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "totalUSDAmount",
+      headerName: "Order Amount ",
       flex: 0.3,
       minWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-    },
-    {
-      field: "Brand",
-      headerName: "Brand",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
-    {
-      field: "GST",
-      headerName: "GST",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `${params.value} %`,
-    },
-    {
-      field: "PrevUSD",
-      headerName: "Prev USD Price",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `$ ${params.value}`,
-    },
-    {
-      field: "PrevRMB",
-      headerName: "Prev RMB Price",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `¥ ${params.value}`,
-    },
-    {
-      field: "Price",
-      headerName: "USD $",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      type: "number",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => `$ ${params.value}`,
-      editable: toggleValue === "unPaid" ? true : false,
-    },
-    {
-      field: "RMB",
-      headerName: "RMB ¥",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      type: "number",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      valueFormatter: (params) => ` ¥ ${params.value}`,
-      editable: toggleValue === "unPaid" ? true : false,
-    },
-    {
-      field: "OrderQty",
-      headerName: "OrderQty",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 140,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      editable: toggleValue === "unPaid" ? true : false,
-    },
-
-    {
-      field: "action",
-      headerName: "Action",
-      flex: 0.3,
-      minWidth: 80,
-      maxWidth: 150,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        return (
-          <DeleteIcon
-            onClick={() => {
-              if (overseasOrderData?.data?.status === "paid") {
-                toast.error("Cant Delete Paid Order Item");
-                return;
-              }
-              handleDeleteItem(params.row.SKU);
-            }}
-          />
-        );
-      },
     },
   ];
 
@@ -465,7 +149,7 @@ const OverSeasOrderProductGrid = () => {
           }}
           aria-label="Platform"
         >
-          <ToggleButton classes={{ selected: classes.selected }} value="unPaid">
+          <ToggleButton classes={{ selected: classes.selected }} value="unpaid">
             UnPaid
           </ToggleButton>
           <ToggleButton classes={{ selected: classes.selected }} value="paid">
@@ -486,7 +170,7 @@ const OverSeasOrderProductGrid = () => {
       <DrawerHeader />
 
       <Grid container>
-        <Loading loading={overseasOrderLoading || deleteLoading || isLoading} />
+        <Loading loading={singleLoading} />
         <Grid item xs={12}>
           <Box
             sx={{
@@ -494,16 +178,6 @@ const OverSeasOrderProductGrid = () => {
               height: "2.5rem",
             }}
           >
-            <Grid item xs={4}>
-              {editedRows.length > 0 ? (
-                <Box sx={{}}>
-                  <Button onClick={handleUpdateQuantity}>Save</Button>{" "}
-                  <Button onClick={handleClear}>Clear</Button>
-                </Box>
-              ) : (
-                ""
-              )}
-            </Grid>
             <Grid item xs={4}>
               <Box
                 sx={{
@@ -531,7 +205,7 @@ const OverSeasOrderProductGrid = () => {
                     Company Name:
                     <Typography variant="span" color="red">
                       {" "}
-                      {overseasOrderData?.data?.companyName}
+                      {getSingleOrder?.data?.CompanyName}
                     </Typography>
                   </Typography>
                 </Box>
@@ -554,7 +228,7 @@ const OverSeasOrderProductGrid = () => {
                   >
                     Concern Person:
                     <Typography variant="span" color="red">
-                      {overseasOrderData?.data?.concernPerson}
+                      {getSingleOrder?.data?.ConcernPerson}
                     </Typography>
                   </Typography>
                 </Box>
@@ -616,7 +290,7 @@ const OverSeasOrderProductGrid = () => {
           >
             <DataGrid
               columns={
-                toggleValue === "unPaid" ? columns : columns.slice(0, -1)
+                toggleValue === "unpaid" ? columns : columns.slice(0, -1)
               }
               rows={rows}
               rowHeight={40}
@@ -624,10 +298,6 @@ const OverSeasOrderProductGrid = () => {
               apiRef={apiRef}
               checkboxSelection
               disableRowSelectionOnClick
-              onRowSelectionModelChange={handleSelectionChange}
-              rowSelectionModel={selectedItems}
-              processRowUpdate={handleRowUpdate}
-              onProcessRowUpdateError={(error) => {}}
               components={{
                 Toolbar: CustomToolbar,
               }}
@@ -635,7 +305,7 @@ const OverSeasOrderProductGrid = () => {
           </Box>
         </Grid>
       </Grid>
-      <PaidOrderDialog
+      {/* <PaidOrderDialog
         data={selectedRows}
         open={open}
         setOpen={setOpen}
@@ -656,7 +326,7 @@ const OverSeasOrderProductGrid = () => {
         formData={formData}
         handleSubmit={handleSubmitBox}
         loading={createBoxLoading}
-      />
+      /> */}
     </Box>
   );
 };
