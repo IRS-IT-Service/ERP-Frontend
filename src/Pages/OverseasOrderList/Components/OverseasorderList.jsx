@@ -332,11 +332,12 @@ const OverseasorderList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+
         const status = params.row.status
         return (
           <Button
             onClick={() => {
-              navigate(`/tempOrder/${params.row.vendorId}`);
+              navigate(`/tempOrder/${params.row.overseaseOrderId}`);
             }}
             disabled={status == "paid"}
           >
