@@ -29,6 +29,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import { useSendSingleNotificationMutation } from "../../../features/api/otherSlice";
+import { NotificationAdd, NotificationAddRounded, NotificationsNone } from "@mui/icons-material";
 
 // infoDialog box data
 const infoDetail = [
@@ -808,7 +809,7 @@ const CreateChat = () => {
                         }}
                       >
                         {docs?.adminId === adminId ? null : (
-                          <CallIcon
+                          <NotificationsNone
                             sx={{ color: colorStates[i] }}
                             onClick={() =>
                               handleClickClr(i, docs?.adminId, docs?.name)
