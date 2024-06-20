@@ -9,19 +9,11 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { toast } from "react-toastify";
 import Loading from "../../../components/Common/Loading";
-import {
-  useGetAssignedOrderQuery,
-  useDeleteAssignedProductMutation,
-  useUpdateAssignedOrderMutation,
-  useAssignPaidOrderMutation,
-  useCreateOverseasBoxMutation,
-  useGetSingleVendorWithOrderQuery,
-} from "../../../features/api/RestockOrderApiSlice";
+import { useGetSingleVendorWithOrderQuery } from "../../../features/api/RestockOrderApiSlice";
 import PaidOrderDialog from "./PaidOrderDialog";
 import ShipOrderDialog from "./ShipOrderDialog";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
@@ -49,18 +41,9 @@ const OverSeasOrderProductGrid = () => {
   const [shipOpen, setShipOpen] = useState(false);
   const [rows, setRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [newOrderQty, setNewOrderQty] = useState({});
+
   const [toggleValue, setToggleValue] = useState("unpaid");
-  const [formQuantity, setFormQuantity] = useState({});
-  const [formData, setFormData] = useState({
-    boxMarking: "",
-    length: "",
-    width: "",
-    height: "",
-    weight: "",
-    fileInput: null, // Assuming it's a file input
-  });
+
   /// rtk query
 
   const {
@@ -69,16 +52,19 @@ const OverSeasOrderProductGrid = () => {
     refetch: singleOrderRefetch,
   } = useGetSingleVendorWithOrderQuery(id);
 
-  /// useEffect
+  const navigate = useNavigate();
 
+  /// useEffect
   useEffect(() => {
     if (getSingleOrder && getSingleOrder?.status === true) {
       const data = getSingleOrder.data?.Orders?.map((item, index) => ({
         ...item,
         id: item._id,
+        overseaseOrderId:item.overseaseOrderId,
         Sno: index + 1,
-        OrderDate:formatDate(item.createdAt),
-        products:item.subOrders
+        OrderDate: formatDate(item.createdAt),
+        products: item.subOrders,
+        totalProducts: item.subOrders.map((item) => item.finalProducts.length),
       }));
 
       const filteredData = data.filter((item) => item.status === toggleValue);
@@ -86,8 +72,9 @@ const OverSeasOrderProductGrid = () => {
       setRows(filteredData);
     }
   }, [toggleValue, getSingleOrder]);
-
-  // handle columns 
+  
+console.log(getSingleOrder?.data)
+  // handle columns
 
   const columns = [
     {
@@ -132,6 +119,38 @@ const OverSeasOrderProductGrid = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `$ ${params.value} `,
+    },
+    {
+      field: "totalProducts",
+      headerName: "Total Product",
+      flex: 0.3,
+      minWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "Order",
+      headerName: "Ordered-Product",
+      flex: 0.3,
+      minWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <Button
+            onClick={() =>
+              navigate(`/tempOrder/${params.row.overseaseOrderId}`)
+            }
+          >
+            View
+          </Button>
+        );
+      },
     },
   ];
 
