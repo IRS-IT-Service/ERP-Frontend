@@ -272,7 +272,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   };
 
   const isEnabled = (index) => {
-    const isValue = getSingleData?.data?.subOrders.length - 1 - index ? true : false
+    const isValue = getSingleData?.data?.subOrders.length - 1 - index ||intailUtilize === 0 ? true : false
 return isValue
 
   };
@@ -809,7 +809,7 @@ return isValue
       <StyledCell>${item.updatedQTY * item.USD}</StyledCell>
       <StyledCell>
         <DeleteIcon
-          onClick={() => handleRemoveRestockItem(item.SKU)}
+          onClick={() => isEnabled(index) ? null : handleRemoveRestockItem(item.SKU)}
           sx={{
             textAlign: "center",
             cursor: "pointer",
@@ -974,8 +974,8 @@ return isValue
             disabled={
               updateLoading ||
               suborderLoading ||
-              updatesuborderLoading ||
-              intailUtilize === 0 
+              updatesuborderLoading 
+              
            
             }
             onClick={isEnabled(index) ? null : handleSubmitMain}
@@ -983,7 +983,7 @@ return isValue
             {updateLoading || suborderLoading || updatesuborderLoading ? (
               <CircularProgress size="25px" sx={{ color: "#fff" }} />
             ) : (
-              isEnabled(index) ? "Submit Box details" : "Submit"
+              isEnabled(index)  ? "Submit Box details" : "Submit"
             )}
           </Button>
         </Box>
