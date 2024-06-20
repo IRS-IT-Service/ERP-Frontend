@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Box,
   Table,
@@ -20,13 +20,22 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
 import { Delete } from "@mui/icons-material";
 import {
   useAssignOrderVendorMutation,
   useGetSingleVendorQuery,
+  useUpdateOrderOverseasMutation,
 } from "../../../features/api/RestockOrderApiSlice";
-import { setOverseaseSelectedOrder } from "../../../features/slice/selectedItemsSlice";
+import {
+  setOverseaseSelectedOrder,
+  removeSelectedOverseaseOrder,
+} from "../../../features/slice/selectedItemsSlice";
+import { useGetSingleOrderQuery } from "../../../features/api/RestockOrderApiSlice";
+import AddshipmentDial from "../../PackagingAndClient/createOrderShipment/AddshimentpartsDial";
+
 import { toast } from "react-toastify";
+import { skSK } from "@mui/x-data-grid";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -49,6 +58,15 @@ const TempOrder = () => {
   const params = useParams();
   const id = params.id;
   const navigate = useNavigate();
+  const isEditable = id.slice(0, 2) === "OV";
+
+  const {
+    data: getSingleData,
+    isLoading: dataLoading,
+    refetch,
+  } = useGetSingleOrderQuery(id, {
+    skip: !isEditable,
+  });
 
   const dispatch = useDispatch();
   const { selectedOverseaseOrder } = useSelector(
@@ -59,21 +77,78 @@ const TempOrder = () => {
   const [orderData, setOrderData] = useState([]);
   const [piNo, setPINumber] = useState(null);
   const [ConversionType, setConversionType] = useState("USD");
+  const [showPrevColumns, setShowPrevColumns] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedData, setSelectedData] = useState([]);
+  const [FinalData, setFinalData] = useState([]);
+  const [totalAmount, setTotalamount] = useState(0);
+  const [totalRMBAmount, setTotalRMBamount] = useState(0);
+  const [totalQty, setTotalqty] = useState(0);
+  const [vendoreDetails, setVendoreDetails] = useState({
+    companyName: "",
+    concernPerson: "",
+  });
+
+  const togglePrevColumns = () => {
+    setShowPrevColumns(!showPrevColumns);
+  };
 
   // rtk queries
   const { data: getVendor, isLoading } = useGetSingleVendorQuery(id);
-  const [assignOrder, { isLoading: assignOrderLoading }] =
-    useAssignOrderVendorMutation();
+  const [
+    assignOrder,
+    { isLoading: assignOrderLoading, refetch: assignreftech },
+  ] = useAssignOrderVendorMutation();
+
+  const [updateassignOrder, { isLoading: updateassignOrderLoading }] =
+    useUpdateOrderOverseasMutation();
 
   useEffect(() => {
-    const initializedData = selectedOverseaseOrder.map((item) => ({
-      ...item,
-      orderQty: item.orderQty || null,
-      rmbValue: item.rmbValue || null,
-      usdValue: item.usdValue || null,
-    }));
-    setOrderData(initializedData);
-  }, [selectedOverseaseOrder]);
+    let prevConv = 0;
+    if (isEditable) {
+      const initializedData =
+        getSingleData?.data?.subOrders[0].finalProducts.map((item) => {
+          if (item.USD || item.RMB || item.RMB > item.USD) {
+            if (ConversionType === "USD") {
+              prevConv = item.RMB / item.USD;
+            } else if (ConversionType === "RMB") {
+              prevConv = item.USD / item.RMB;
+            }
+          }
+          setConversionRate(prevConv.toFixed(2));
+          return {
+            ...item,
+            orderQty: item.Orderqty || 0,
+            rmbValue: item.RMB || 0,
+            usdValue: item.USD || 0,
+            GST: item.Gst || 0,
+          };
+        });
+      setOrderData(initializedData);
+    } else if(!isEditable) {
+      const initializedData = selectedOverseaseOrder.map((item) => ({
+        ...item,
+        orderQty: item.orderQty || null,
+        rmbValue: item.rmbValue || null,
+        usdValue: item.usdValue || null,
+      }));
+     setOrderData(initializedData);
+    }
+  }, [getSingleData, selectedOverseaseOrder, ConversionType]);
+
+  useEffect(() => {
+    const handleLoad = () => {
+    
+      navigate("/RestockOrderList");
+    };
+
+    window.addEventListener('load', handleLoad);
+
+    return () => {
+      window.removeEventListener('load', handleLoad);
+    };
+  }, [])
+
 
   // getting the value after changing the c rates
   const handleConversionRateChange = (e) => {
@@ -83,11 +158,11 @@ const TempOrder = () => {
       const updatedItem = { ...item };
       if (ConversionType === "RMB") {
         updatedItem.usdValue = parseFloat(
-          ((item.rmbValue || 0) * rate * (item.orderQty || 1)).toFixed(2)
+          ((item.rmbValue || 0) * rate ).toFixed(2)
         );
       } else if (ConversionType === "USD") {
         updatedItem.rmbValue = parseFloat(
-          ((item.usdValue || 0) * rate * (item.orderQty || 1)).toFixed(2)
+          ((item.usdValue || 0) * rate ).toFixed(2)
         );
       }
       return updatedItem;
@@ -102,40 +177,79 @@ const TempOrder = () => {
     updatedData[index][field] = value;
     if (field === "rmbValue" && ConversionType === "RMB") {
       updatedData[index].usdValue = parseFloat(
-        (value * conversionRate * (updatedData[index].orderQty || 1)).toFixed(2)
+        (value * conversionRate ).toFixed(2)
       );
     } else if (field === "usdValue" && ConversionType === "USD") {
       updatedData[index].rmbValue = parseFloat(
-        (value * conversionRate * (updatedData[index].orderQty || 1)).toFixed(2)
+        (value * conversionRate ).toFixed(2)
       );
     }
     setOrderData(updatedData);
   };
 
   // delete the order data
-  const handleDeleteRow = (index) => {
-    const updatedData = [...orderData];
-    updatedData.splice(index, 1);
-    setOrderData(updatedData);
-    dispatch(setOverseaseSelectedOrder(updatedData));
+  const handleDeleteRow = (SKU) => {
+    const newSelectedItems = orderData.filter((item) => item?.SKU !== SKU);
+    setOrderData(newSelectedItems);
+    // dispatch(setOverseaseSelectedOrder(newSelectedItems));
   };
 
   // get the total value of usd
-  const totalUSDValues = useMemo(() => {
-    return orderData
-      .reduce(
-        (total, item) =>
-          total + parseFloat(parseFloat(item.usdValue || 0).toFixed(2)),
-        0
-      )
-      .toFixed(2);
-  }, [orderData]);
 
   const handleChangeType = (e, value) => {
     if (value !== null) {
       setConversionType(value);
     }
   };
+
+  useEffect(() => {
+    if (isEditable) {
+      setVendoreDetails({
+        companyName: getSingleData?.data?.vendorCompany,
+        concernPerson: getSingleData?.data?.vendorConcernPerson,
+      });
+
+      setPINumber(getSingleData?.data.piNo);
+      dispatch(removeSelectedOverseaseOrder());
+      setFinalData((data) => {});
+    } else {
+      setVendoreDetails({
+        companyName: getVendor?.data?.CompanyName,
+        concernPerson: getVendor?.data?.ConcernPerson,
+      });
+    }
+  }, [getSingleData, getVendor]);
+
+  useEffect(() => {
+    if (isEditable && selectedData.length > 0) {
+      const initializedData = selectedData.map((item) => ({
+        ...item,
+        orderQty: item.Orderqty || null,
+        rmbValue: item.RMB || null,
+        usdValue: item.USD || null,
+        GST: item.GST || null,
+      }));
+      setOrderData((prev) => [...prev, ...initializedData]);
+    }
+  }, [selectedData]);
+
+  useEffect(() => {
+    const TotalValue = orderData?.reduce((acc, cur) => {
+
+          return acc + +cur?.orderQty * +cur?.usdValue || 0;
+    }, 0);
+    const TotalQuantity = orderData?.reduce((acc, cur) => {
+      return acc + +cur?.orderQty;
+    }, 0);
+    const TotalRMB = orderData?.reduce((acc, cur) => {
+      return acc + +cur?.orderQty * +cur?.rmbValue || 0;
+    }, 0);
+
+    setTotalamount(TotalValue?.toFixed(2));
+    setTotalqty(TotalQuantity);
+
+    setTotalRMBamount(TotalRMB?.toFixed(2));
+  }, [orderData]);
 
   // assign order
   const handleAssignOrder = async () => {
@@ -160,14 +274,37 @@ const TempOrder = () => {
       products: products,
       piNo: piNo,
     };
+    const update = {
+      orderId: id,
+      piNo: piNo,
+      totalRMBAmount: totalRMBAmount,
+      totalUSDAmount: totalAmount,
+      products: products,
+    };
+
     try {
-      const result = await assignOrder(data).unwrap();
-      toast.success("Order added successfully");
-      navigate("/OverseasorderList");
+      if (isEditable) {
+        const result = await updateassignOrder(update).unwrap();
+
+        toast.success("Order updated successfully");
+        navigate("/OverseasorderList");
+        window.location.reload();
+      } else {
+        const result = await assignOrder(data).unwrap();
+        toast.success("Order added successfully");
+        navigate("/OverseasorderList");
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const selectedSKU = orderData?.map((item) => {
+      return item.SKU;
+    });
+    setFinalData(selectedSKU);
+  }, [setOrderData, orderData]);
 
   return (
     <Box component="main" sx={{ flexGrow: 1, p: 0, width: "100%" }}>
@@ -187,23 +324,23 @@ const TempOrder = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            gap:"10px"
+            gap: "10px",
           }}
         >
           <h4>Company Name :</h4>
           {""}
-          <span>{getVendor && getVendor?.data?.CompanyName}</span>
+          <span>{vendoreDetails.companyName}</span>
         </div>
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-                gap:"10px"
+            gap: "10px",
           }}
         >
           <h4>Concern Person : </h4>
-          <span>{getVendor && getVendor?.data?.ConcernPerson}</span>
+          <span>{vendoreDetails.concernPerson}</span>
         </div>
       </div>
       <Box
@@ -222,6 +359,29 @@ const TempOrder = () => {
             gap: "5px",
           }}
         >
+          {isEditable && (
+            <Box
+              sx={{
+                width: "25px",
+                height: "25px",
+                backgroundColor: "#5E95FE",
+                color: "white",
+                borderRadius: "50%",
+                cursor: "pointer",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "15px",
+                "&:hover": {
+                  backgroundColor: "#0842B1",
+                  color: "white",
+                },
+              }}
+              onClick={() => setOpenDialog(true)}
+            >
+              <AddIcon />
+            </Box>
+          )}
           <Typography
             sx={{
               fontSize: "0.8rem",
@@ -258,7 +418,8 @@ const TempOrder = () => {
             {ConversionType === "RMB"
               ? "1 RMB equal to USD"
               : "1 USD equal to RMB"}
-          </Typography>
+          </Typography>{" "}
+          {"="}
           <input
             value={conversionRate || ""}
             onChange={handleConversionRateChange}
@@ -298,10 +459,23 @@ const TempOrder = () => {
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>
+        <Button
+          size="small"
+          onClick={togglePrevColumns}
+          sx={{
+            color: showPrevColumns ? "green" : "red",
+          }}
+        >
+          {showPrevColumns ? "Hide prev columns" : "Show prev columns"}
+        </Button>
 
         <div>
+          <span style={{ fontWeight: "bold", color: "blue" }}>TOTAL RMB:</span>{" "}
+          <span>¥ {totalRMBAmount}</span>
+        </div>
+        <div>
           <span style={{ fontWeight: "bold", color: "blue" }}>TOTAL USD:</span>{" "}
-          <span>$ {totalUSDValues}</span>
+          <span>$ {totalAmount}</span>
         </div>
       </Box>
       <TableContainer
@@ -318,11 +492,11 @@ const TempOrder = () => {
               <StyledCellHeader>SKU</StyledCellHeader>
               <StyledCellHeader>Name</StyledCellHeader>
               <StyledCellHeader>GST</StyledCellHeader>
-              <StyledCellHeader>Sld C</StyledCellHeader>
-              <StyledCellHeader>Threshold</StyledCellHeader>
-              <StyledCellHeader>Prev RMB</StyledCellHeader>
-              <StyledCellHeader>Prev USD</StyledCellHeader>
-              <StyledCellHeader>Store Qty</StyledCellHeader>
+              {!isEditable && <StyledCellHeader>Sold Count</StyledCellHeader>}
+              {!isEditable && <StyledCellHeader>Threshold</StyledCellHeader>}
+              {showPrevColumns && <StyledCellHeader>Prev RMB</StyledCellHeader>}
+              {showPrevColumns && <StyledCellHeader>Prev USD</StyledCellHeader>}
+              {!isEditable && <StyledCellHeader>Store Qty</StyledCellHeader>}
               <StyledCellHeader>Order Qty</StyledCellHeader>
               <StyledCellHeader>RMB Value</StyledCellHeader>
               <StyledCellHeader>USD Value</StyledCellHeader>
@@ -330,16 +504,16 @@ const TempOrder = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orderData.map((item, index) => (
+            {orderData?.map((item, index) => (
               <TableRow key={item.SKU}>
                 <StyledCell>{item.SKU}</StyledCell>
                 <StyledCell>{item.Name}</StyledCell>
-                <StyledCell>{item.GST}</StyledCell>
-                <StyledCell>{item.SoldCount}</StyledCell>
-                <StyledCell>{item.Threshold}</StyledCell>
-                <StyledCell>{item.prevRMB}</StyledCell>
-                <StyledCell>{item.prevUSD}</StyledCell>
-                <StyledCell>{item.Quantity}</StyledCell>
+                <StyledCell>{item.GST && item.GST + "%"}</StyledCell>
+                {!isEditable && <StyledCell>{item.SoldCount}</StyledCell>}
+                {!isEditable && <StyledCell>{item.Threshold}</StyledCell>}
+                {showPrevColumns && <StyledCell>{item.prevRMB}</StyledCell>}
+                {showPrevColumns && <StyledCell>{item.prevUSD}</StyledCell>}
+                {!isEditable && <StyledCell>{item.Quantity}</StyledCell>}
                 <StyledCell>
                   <input
                     type="number"
@@ -409,7 +583,7 @@ const TempOrder = () => {
                         cursor: "pointer",
                       },
                     }}
-                    onClick={() => handleDeleteRow(index)}
+                    onClick={() => handleDeleteRow(item.SKU)}
                   >
                     <Delete />
                   </Box>
@@ -429,11 +603,27 @@ const TempOrder = () => {
         <Button
           variant="contained"
           onClick={() => handleAssignOrder()}
-          disabled={assignOrderLoading}
+          disabled={assignOrderLoading || updateassignOrderLoading}
         >
-          {assignOrderLoading ? <CircularProgress /> : "Order"}
+          {assignOrderLoading || updateassignOrderLoading ? (
+            <CircularProgress />
+          ) : isEditable ? (
+            "update"
+          ) : (
+            "Order"
+          )}
         </Button>
       </Box>
+      {openDialog && (
+        <AddshipmentDial
+          open={openDialog}
+          data={FinalData}
+          setOpen={setOpenDialog}
+          setSelectedData={setSelectedData}
+          FinalData={FinalData}
+          Query={"SubList"}
+        />
+      )}
     </Box>
   );
 };
