@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Table,
   TableBody,
@@ -37,6 +37,7 @@ import { setAddparts } from "../../../features/slice/R&DSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import EditIcon from "@mui/icons-material/Edit";
 
 import axios from "axios";
 const columns = [
@@ -79,6 +80,7 @@ import {
   useUpdateCustomershippingAddressMutation,
   useCreateShipmentOrderMutation,
   useUpdateCustomerShipmentMutation,
+  useDeleteShipmentProductMutation,
 } from "../../../features/api/clientAndShipmentApiSlice";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
@@ -194,6 +196,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [FinalData, setFinalData] = useState([]);
   const [updateValue, setUpdateValue] = useState([]);
+  const [editButton, setEditButton] = useState([]);
 
   const [Clientlist, setClientlist] = useState([]);
   const [form, setForm] = useState({
@@ -239,6 +242,9 @@ const createOrderShipment = ({ setOpen, id }) => {
     { isLoading: addmoreaddressLoading, refetch: addRefetch },
   ] = useUpdateCustomershippingAddressMutation();
 
+  const [deleteProduct, { isLoading: deleteLoading }] =
+    useDeleteShipmentProductMutation();
+
   const { data: clientData, refetch: clientrefetch } = useGetAllClientQuery();
 
   const handleCloseDialog = () => {
@@ -270,6 +276,20 @@ const createOrderShipment = ({ setOpen, id }) => {
 
   const handleAddaddress = (event) => {
     setAddaddress(!addAddress);
+  };
+
+  const handleEditButton = (SKU) => {
+    setFinalData((prev) => {
+      return prev.map((item) => {
+        if (item.SKU === SKU) {
+          return {
+            ...item,
+            isEdit: true,
+          };
+        }
+        return item;
+      });
+    });
   };
 
   useEffect(() => {
@@ -325,12 +345,27 @@ const createOrderShipment = ({ setOpen, id }) => {
     dispatch(setInfo(false));
   };
 
+  const DeleteProduct = async (SKU) => {
+    if(orderId){
+    try {
+      let info = {
+        shipmentId: orderId,
+        SKU: SKU,
+      };
+
+      const result = await deleteProduct(info).unwrap();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  };
+
   const openPop = Boolean(anchorEl);
   const idPop = openPop ? "simple-popover" : undefined;
 
   const handleQuantityChange = (event, item) => {
     const { value } = event.target;
-    const newValue = +value; 
+    const newValue = +value;
     let error = false;
 
     setFinalData((prev) =>
@@ -371,6 +406,8 @@ const createOrderShipment = ({ setOpen, id }) => {
     const newSelectedItems = Requireqty.filter((item) => item.SKU !== id);
     const newSelectedRowsData = FinalData.filter((item) => item.SKU !== id);
     const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id);
+    
+    DeleteProduct(id)
     // setUpdateValue(NewUpdatedValue);
     setFinalData(newSelectedRowsData);
     // setSelectedItems(newSelectedItems);
@@ -447,6 +484,7 @@ const createOrderShipment = ({ setOpen, id }) => {
             Brand: item.Brand,
             ActualQuantity: item.ActualQuantity,
             error: false,
+            isEdit: false,
           };
         });
       });
@@ -1039,34 +1077,51 @@ const createOrderShipment = ({ setOpen, id }) => {
                           >
                             {item.prevQty}
                           </StyleTable>
-                          <StyleTable align="center">
-                            <TextField
-                              autocomplete={false}
-                              size="small"
-                              sx={{
-                                "& input": {
-                                  height: "10px",
-                                  maxWidth: "30px",
-                                },
-                              }}
-                              name="updateQTY"
-                              value={item.updateQTY}
-                              type="number"
-                              onChange={(event) => {
-                                handleQuantityChange(event, item);
-                              }}
-                              error={item?.error}
-                              helperText={
-                                item?.error ? (
-                                  <spna style={{ fontSize: "9px" }}>
-                                    Enter valid Qty!
-                                  </spna>
-                                ) : (
-                                  ""
-                                )
-                              }
-                            />
-                          </StyleTable>{" "}
+                          {item.isEdit ? (
+                            <StyleTable align="center">
+                              <TextField
+                                autocomplete={false}
+                                size="small"
+                                sx={{
+                                  "& input": {
+                                    height: "10px",
+                                    maxWidth: "30px",
+                                  },
+                                }}
+                                name="updateQTY"
+                                value={item.updateQTY}
+                                type="number"
+                                onChange={(event) => {
+                                  handleQuantityChange(event, item);
+                                }}
+                                error={item?.error}
+                                helperText={
+                                  item?.error ? (
+                                    <spna style={{ fontSize: "9px" }}>
+                                      Enter valid Qty!
+                                    </spna>
+                                  ) : (
+                                    ""
+                                  )
+                                }
+                              />
+                            </StyleTable>
+                          ) : (
+                            <StyleTable align="center">
+                              {" "}
+                              <EditIcon
+                                sx={{
+                                  cursor: "pointer",
+                                  color: "blue",
+                                  fontSize: "20px",
+                                  "&:hover": {
+                                    color: "red",
+                                  },
+                                }}
+                                onClick={() => handleEditButton(item.SKU)}
+                              />{" "}
+                            </StyleTable>
+                          )}
                         </>
                       ) : (
                         <>

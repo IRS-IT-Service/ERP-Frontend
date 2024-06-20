@@ -119,6 +119,15 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    deleteShipmentProduct: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/deleteSingleShipment`,
+          method: "DELETE",
+          body:data
+        };
+      },
+    }),
   }),
 });
 
@@ -136,4 +145,5 @@ export const {
   useChangeStatusForDeliverMutation,
   useDeleteShipmentMutation,
   useUpdateCustomerShipmentMutation,
+  useDeleteShipmentProductMutation
 } = clientAndShipmentApiSlice;
