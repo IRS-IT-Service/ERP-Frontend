@@ -247,13 +247,13 @@ const userRolesData = [
         id: 9,
         name: 'Restock Order Assign',
         path: '/RestockOrderList',
-        icon: 'fa fa-registered',
+        icon: 'fa fa-list-alt',
       },
       {
         id: 33,
         name: 'Restock Order View',
         path: '/RestockOrderView',
-        icon: 'fa fa-registered',
+        icon: 'fa fa-eye',
       },
       {
         id: 46,
@@ -264,8 +264,15 @@ const userRolesData = [
       {
 
         id: 81,
-        name: 'Overseas Order List',
+        name: 'Process Order List',
         path: '/OverseasorderList',
+        icon: 'fa fa-clipboard-list',
+      },
+      {
+
+        id: 82,
+        name: 'Paid Order List',
+        path: '/paidOverseasOrder',
         icon: 'fa fa-clipboard-list',
       },
     ],
@@ -586,6 +593,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 81
+// last routes is 82
 
 export default userRolesData;

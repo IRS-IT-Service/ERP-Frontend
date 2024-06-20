@@ -4,11 +4,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
-  Collapse,
-  InputAdornment,
   CircularProgress,
-  InputBase,
-  IconButton,
   Box,
   Button,
   styled,
@@ -20,6 +16,8 @@ import {
   TableRow,
   TextField,
   Grid,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
 import { formatDate } from "../../../../commonFunctions/commonFunctions";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -47,19 +45,21 @@ const StyledCellHeader = styled(TableCell)(({ theme }) => ({
   fontSize: ".8rem",
 }));
 
-const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
+const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const [ProductData, setProductData] = useState([]);
   const [ConversionRate, setConversionRate] = useState(null);
   const [prevConversionRate, setPrevConversionRate] = useState(null);
   const [totalAmount, setTotalamount] = useState(null);
   const [totalRMBAmount, setTotalRMBamount] = useState(null);
   const [totalQty, setTotalqty] = useState(null);
+  const [totalReqQty, setTotalReqqty] = useState(null);
   const [isSubItem, setIsSubItem] = useState(
     AccordFor === "SubPI" ? true : false
   );
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [FinalData, setFinalData] = useState([]);
+  const [ConversionType, setConversionType] = useState("USD");
 
   const [updateproducts, { isLoading: updateLoading }] =
     useUpdateOrderOverseasMutation();
@@ -81,33 +81,45 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
   const dataMain = item;
 
-  const shortFallamount = +item.finalValueUSD - totalAmount;
+  const intailAmount = +getSingleData?.data?.totalUSDAmount;
+  const intailUtilize = +getSingleData?.data?.utilzedUSDAmount;
 
+  const shortFallamount =
+    index === 0 ? intailAmount - totalAmount : item?.shortFall - totalAmount;
   const isNegative = checkNegative(shortFallamount);
 
   useEffect(() => {
+    let prevConv = 0;
     if (dataSub) {
       setProductData(
         dataSub.map((item) => {
-          if (item.RMB > 0) {
-            return {
-              ...item,
-              originalRMB: item.RMB,
-              updatedQTY: "",
-            };
+          if (item.USD || item.RMB || item.RMB > item.USD) {
+            if (ConversionType === "USD") {
+              prevConv = item.RMB / item.USD;
+            } else if (ConversionType === "RMB") {
+              prevConv = item.USD / item.RMB;
+            }
           }
+          return {
+            ...item,
+            originalRMB: item.RMB,
+            updatedQTY: item.updateQTY || 0,
+          };
         })
       );
-      const selectedSKU = dataSub.map((item) => {
-        return item.SKU;
-      });
-      setFinalData(selectedSKU);
+      setConversionRate(prevConv.toFixed(2));
     }
-  }, [item, getSingleData]);
+  }, [item, getSingleData, ConversionType]);
+
+  useEffect(() => {
+    const selectedSKU = ProductData.map((item) => {
+      return item.SKU;
+    });
+    setFinalData(selectedSKU);
+  }, [setProductData, ProductData]);
 
   const handleInputChange = (e, SKU) => {
     const { name, value } = e.target;
-
     if (name === "USD") {
       setProductData((prev) => {
         const newData = prev.map((item) => {
@@ -115,7 +127,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
             return {
               ...item,
               USD: +value,
-              RMB: (ConversionRate * +value).toFixed(2),
+              RMB: (ConversionRate * +value).toFixed(3),
             };
           } else {
             return item;
@@ -131,7 +143,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
             return {
               ...item,
               RMB: +value,
-              USD: (+value / ConversionRate).toFixed(2),
+              USD: (+value * ConversionRate).toFixed(3),
             };
           } else {
             return item;
@@ -172,35 +184,48 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
   useEffect(() => {
     const TotalValue = ProductData.reduce((acc, cur) => {
-      return acc + +cur.updatedQTY * +cur.USD;
+      return acc + +cur?.updatedQTY * +cur?.USD;
     }, 0);
     const TotalQuantity = ProductData.reduce((acc, cur) => {
-      return acc + +cur.updatedQTY;
+      return acc + +cur?.updatedQTY;
+    }, 0);
+    const TotalReqQuantity = ProductData.reduce((acc, cur) => {
+      return acc + +cur?.Orderqty;
     }, 0);
     const TotalRMB = ProductData.reduce((acc, cur) => {
-      return acc + +cur.updatedQTY * +cur.RMB;
+      return acc + +cur?.updatedQTY * +cur?.RMB;
     }, 0);
 
-    setTotalamount(TotalValue);
+    setTotalamount(TotalValue?.toFixed(2));
     setTotalqty(TotalQuantity);
     setTotalRMBamount(TotalRMB);
+    setTotalReqqty(TotalReqQuantity);
   }, [ProductData]);
 
   useEffect(() => {
     setProductData((prev) => {
       const newData = prev.map((item) => {
-        if (item.RMB && item.RMB > 0) {
+        if (item?.USD && item?.USD > 0) {
           return {
             ...item,
             RMB:
               ConversionRate > 0
-                ? +item.originalRMB * +ConversionRate
-                : +item.originalRMB,
+                ? (ConversionType === "RMB"
+                    ? +item?.USD / +ConversionRate
+                    : +item?.USD * +ConversionRate
+                  ).toFixed(2)
+                : "",
           };
-        } else if (item.USD && item.USD > 0) {
+        } else if (item?.RMB && item?.RMB > 0) {
           return {
             ...item,
-            RMB: ConversionRate > 0 ? +item.USD * +ConversionRate : "",
+            USD:
+              ConversionRate > 0
+                ? (ConversionType === "USD"
+                    ? +item?.RMB * +ConversionRate
+                    : +item?.RMB / +ConversionRate
+                  ).toFixed(2)
+                : "",
           };
         }
 
@@ -211,7 +236,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
   }, [ConversionRate]);
 
   const handleRemoveRestockItem = (SKU) => {
-    const newSelectedItems = ProductData.filter((item) => item.SKU !== SKU);
+    const newSelectedItems = ProductData.filter((item) => item?.SKU !== SKU);
     setProductData(newSelectedItems);
   };
 
@@ -226,7 +251,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
         prevUSD: item.prevUSD,
         Name: item.Name,
         originalRMB: "",
-        updatedQTY: "",
+        updatedQTY: 0,
       }));
 
       setProductData((prev) => [...prev, ...updatedData]);
@@ -239,6 +264,10 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
   const handleSubmitMain = async () => {
     try {
+      if (!isNegative) {
+        return toast.error("The price should not exceed the shortfall value.");
+      }
+
       const UpdateOrder = [];
       const order = getSingleData?.data?.subOrders;
       const processedData = ProductData.map((item) => {
@@ -253,22 +282,20 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                   USD: item.USD,
                   RMB: item.RMB,
                   Name: item.Name,
-                  prevRMB:item.prevRMB,
-                  prevUSD:item.prevUSD,
+                  prevRMB: item.prevRMB,
+                  prevUSD: item.prevUSD,
                 }
               : null,
-          updated:
-            {
-                  SKU: item.SKU,
-                  Orderqty: item.Orderqty,
-                  updateQTY:item.updatedQTY,
-                  USD: item.USD,
-                  RMB: item.RMB,
-                  Name: item.Name,
-                  prevRMB:item.prevRMB,
-                  prevUSD:item.prevUSD,
-                }
-            
+          updated: {
+            SKU: item.SKU,
+            Orderqty: item.Orderqty,
+            updateQTY: item.updatedQTY,
+            USD: item.USD,
+            RMB: item.RMB,
+            Name: item.Name,
+            prevRMB: item.prevRMB,
+            prevUSD: item.prevUSD,
+          },
         };
       });
       const finalValue = processedData
@@ -277,37 +304,40 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
       const updateValue = processedData
         .filter((data) => data.updated !== null)
         .map((data) => data.updated);
-
-
       const updateProduct = {
         id: order[order.length - 1]._id,
         orderId: getSingleData?.data?.overseaseOrderId,
         piNo: getSingleData?.data?.piNo,
         products: updateValue,
-        totalUSDAmount: totalAmount,
-        totalRMBAmount: totalRMBAmount,
+        totalUSDAmount: shortFallamount,
       };
-
       const suborder = {
         orderId: getSingleData?.data?.overseaseOrderId,
         products: finalValue,
+        totalUSDAmount: shortFallamount,
       };
       if (shortFallamount > 0) {
-        // const result = await createsuborder(suborder).unwrap();
-        // toast.success("Sub order created successfully");
-        // const result1 = await updatesuborder(updateProduct).unwrap();
-        // toast.success("Order updated successfully");
-        console.log(updateProduct)
-        console.log(suborder)
+        const result = await createsuborder(suborder).unwrap();
+
+        const result1 = await updatesuborder(updateProduct).unwrap();
+        toast.success("Order Updated successfully");
+        // console.log(updateProduct)
+        // console.log(suborder)
       } else {
-        // const result = await updatesuborder(updateProduct).unwrap();
-        // toast.success("Order updated successfully");
-        console.log(updateProduct)
+        const result = await updatesuborder(updateProduct).unwrap();
+        toast.success("Order updated successfully");
+        // console.log(updateProduct)
       }
 
       refetch();
     } catch (e) {
       console.log(e);
+    }
+  };
+
+  const handleChangeType = (e, value) => {
+    if (value !== null) {
+      setConversionType(value);
     }
   };
 
@@ -357,7 +387,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
             : "linear-gradient(to right top, #dae5ff , #e8f0ff)",
           // marginBottom: "4px",
           "& .MuiAccordionSummary-content": {
-            margin: "3px 0px",
+            margin: "0px 0px",
           },
         }}
         // expanded={true}
@@ -380,9 +410,6 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
               sx={{
                 display: "flex",
                 justifyContent: "",
-                marginTop: ".4rem",
-                // marginBottom: ".4rem",
-                // border: '2px solid yellow',
                 padding: ".2rem",
                 border: "2px solid #3385ff",
                 justifyContent: "space-between",
@@ -499,6 +526,29 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                   $ {shortFallamount.toFixed(2)}
                 </Typography>
               </Box>
+              <Box display={"flex"}>
+                <Typography
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: ".7rem",
+                    marginTop: "3px",
+                    marginRight: "3px",
+                  }}
+                >
+                  Total Required QTY :
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: ".7rem",
+                    fontWeight: "600",
+                    marginTop: "3px",
+                    marginRight: "3px",
+                  }}
+                >
+                  {" "}
+                  {totalReqQty} pcs
+                </Typography>
+              </Box>
 
               <Box display={"flex"}>
                 <Typography
@@ -509,7 +559,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                     marginRight: "3px",
                   }}
                 >
-                  Total QTY :
+                  Total Updated QTY :
                 </Typography>
                 <Typography
                   sx={{
@@ -529,7 +579,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
 
         <AccordionDetails>
           <Box>
-            <Box display={"flex"} gap={"0.5rem"}>
+            <Box display={"flex"} gap={"0.5rem"} alignItems={"center"}>
               <Typography
                 sx={{
                   fontWeight: "bold",
@@ -538,21 +588,26 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                   marginRight: "3px",
                 }}
               >
-                RMB convertion rate
+                {ConversionType === "RMB"
+                  ? "1 RMB equal to USD"
+                  : "1 USD equal to RMB"}
               </Typography>
+
               <input
-                name="converion"
+                name="conversion"
                 placeholder="%"
                 style={{
                   background: "#fff",
                   border: "none",
                   textAlign: "center",
-                  width: "30px",
+                  width: "45px",
                   border: "none",
+                  padding: "3px",
                 }}
-                value={ConversionRate}
+                value={ConversionRate || ""}
                 onChange={(e) => setConversionRate(e.target.value)}
               />
+
               <Box>
                 <AddIcon
                   onClick={handleOpenDial}
@@ -564,6 +619,40 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                   }}
                 />
               </Box>
+              <Box>
+                <ToggleButtonGroup
+                  value={ConversionType}
+                  exclusive
+                  sx={{
+                    width: "100px",
+                    height: "30px",
+                    border: "none",
+                    borderRadius: "0.2rem",
+                    padding: "0.2rem",
+                    color: "#fff",
+
+                    "& .Mui-selected": {
+                      color: "#fff !important",
+                      background: "black !important",
+                    },
+                  }}
+                  onChange={handleChangeType}
+                  aria-label="Platform"
+                >
+                  <ToggleButton
+                    value="USD"
+                    sx={{ color: "black", border: "0.5px solid black" }}
+                  >
+                    USD
+                  </ToggleButton>
+                  <ToggleButton
+                    value="RMB"
+                    sx={{ color: "black", border: "0.5px solid black" }}
+                  >
+                    RMB
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
             </Box>
 
             <TableContainer sx={{ maxHeight: 450 }}>
@@ -573,16 +662,13 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                     <StyledCellHeader>Sno</StyledCellHeader>
                     <StyledCellHeader>SKU</StyledCellHeader>
                     <StyledCellHeader>Name</StyledCellHeader>
-
-                    <StyledCellHeader>Prev RMB</StyledCellHeader>
                     <StyledCellHeader>Prev USD</StyledCellHeader>
-
+                    <StyledCellHeader>Prev RMB</StyledCellHeader>
                     <StyledCellHeader>USD $</StyledCellHeader>
                     <StyledCellHeader>RMB ¥</StyledCellHeader>
                     <StyledCellHeader>Order Quantity</StyledCellHeader>
                     <StyledCellHeader>Updated Quantity</StyledCellHeader>
-                    <StyledCellHeader>Total Order amount</StyledCellHeader>
-
+                    <StyledCellHeader>Total Order Amount</StyledCellHeader>
                     <StyledCellHeader>Delete</StyledCellHeader>
                   </TableRow>
                 </TableHead>
@@ -590,99 +676,95 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                   {ProductData?.map((item, index) => (
                     <TableRow key={index}>
                       <StyledCell>{index + 1}</StyledCell>
-                      {item.SKU && item.Name ? (
+                      {item?.SKU && item?.Name ? (
                         <>
-                          <StyledCell>{item.SKU}</StyledCell>
-                          <StyledCell>{item.Name}</StyledCell>{" "}
+                          <StyledCell>{item?.SKU}</StyledCell>
+                          <StyledCell>{item?.Name}</StyledCell>
                           <StyledCell>
-                            {" "}
-                            {item.prevRMB !== "NA"
-                              ? "¥" + item.prevRMB
-                              : "N/A"}{" "}
+                            {item?.prevUSD !== "NA"
+                              ? "$" + item?.prevUSD
+                              : "N/A"}
                           </StyledCell>
                           <StyledCell>
-                            {" "}
-                            {item.prevUSD !== "NA" ? "$" + item.prevUSD : "N/A"}
+                            {item?.prevRMB !== "NA"
+                              ? "¥" + item?.prevRMB
+                              : "N/A"}
                           </StyledCell>
                         </>
                       ) : (
-                        <>
-                          <StyledCell>
-                            <input
-                              name="USD"
-                              value={item.USD}
-                              style={{
-                                background: "#fff",
-                                border: "none",
-                                padding: "5px",
-                                width: "100px",
-                                border: "none",
-                                textAlign: "center",
-                              }}
-                              onChange={(e) => handleInputChange(e, item.SKU)}
-                            />
-                          </StyledCell>
-                        </>
+                        <StyledCell colSpan={4}>
+                          <input
+                            name="USD"
+                            value={item?.USD || ""}
+                            style={{
+                              background: "#fff",
+                              border: "none",
+                              padding: "5px",
+                              width: "100px",
+                              textAlign: "center",
+                            }}
+                            onChange={(e) => handleInputChange(e, item?.SKU)}
+                          />
+                        </StyledCell>
                       )}
-
                       <StyledCell sx={{ textAlign: "center", width: "150px" }}>
                         <input
                           name="USD"
-                          value={item.USD}
+                          value={item?.USD || ""}
+                          disabled={ConversionType === "RMB"}
                           type="number"
                           style={{
                             background: "#fff",
                             border: "none",
                             padding: "5px",
                             width: "100px",
-                            border: "none",
                             textAlign: "center",
+                            backgroundColor:
+                              ConversionType === "RMB" ? "#ccc" : "#ffff",
                           }}
-                          onChange={(e) => handleInputChange(e, item.SKU)}
+                          onChange={(e) => handleInputChange(e, item?.SKU)}
                         />
                       </StyledCell>
                       <StyledCell sx={{ textAlign: "center", width: "150px" }}>
                         <input
                           name="RMB"
-                          value={item.RMB}
+                          disabled={ConversionType === "USD" || getSingleData?.data?.subOrders.length - 1 - index}
+                          value={item?.RMB || ""}
                           type="number"
                           style={{
                             background: "#fff",
                             border: "none",
                             padding: "5px",
                             width: "100px",
-                            border: "none",
                             textAlign: "center",
+                            backgroundColor:
+                              ConversionType === "USD" ? "#ccc" : "#ffff",
                           }}
                           onChange={(e) => handleInputChange(e, item.SKU)}
                         />
                       </StyledCell>
-                      <StyledCell>{item.Orderqty}</StyledCell>
+                      <StyledCell>{item?.Orderqty}</StyledCell>
                       <StyledCell>
                         <input
                           name="updatedQTY"
-                          value={item.updatedQTY}
+                          value={item?.updatedQTY || ""}
                           style={{
                             background: "#fff",
                             border: "none",
                             padding: "5px",
                             width: "50px",
-                            border: "none",
                             textAlign: "center",
                           }}
-                          onChange={(e) => handleInputChange(e, item.SKU)}
+                          onChange={(e) => handleInputChange(e, item?.SKU)}
                         />
                       </StyledCell>
-                      <StyledCell>$ {item.updatedQTY * item.USD}</StyledCell>
-
+                      <StyledCell>$ {item?.updatedQTY * item?.USD}</StyledCell>
                       <StyledCell>
                         <DeleteIcon
-                          onClick={() => {
-                            handleRemoveRestockItem(item.SKU);
-                          }}
+                          onClick={() => handleRemoveRestockItem(item?.SKU)}
                           sx={{
                             textAlign: "center",
-                            cursor: "pointer", // Add the pointer cursor on hover
+                            cursor: "pointer",
                           }}
                         />
                       </StyledCell>
@@ -691,142 +773,138 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
                 </TableBody>
               </Table>
             </TableContainer>
-
-            {/* <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "1rem",
-              padding: "0.5rem",
-              backgroundColor: "#e6e6e6",
-              alignItems: "end",
-            }}
-          >
-          
+{(getSingleData?.data?.subOrders.length - 1 - index) &&
             <Box
-              style={{
+              sx={{
                 display: "flex",
-                width: "100%",
-                gap: "20px",
-                alignItems: "center",
                 justifyContent: "center",
-              }}
-              onChange={handleInputChange}
-            >
-           
-              <input
-                name="boxMarking"
-                placeholder="Box Marking"
-                style={{
-                  marginTop: "1.5rem",
-                  background: "#fff",
-                  border: "none",
-                  padding: "5px",
-                }}
-                  value={formData.boxMarking}
-                  onChange={handleInputChange}
-              />
 
+                gap: "1rem",
+                padding: "0.5rem",
+                backgroundColor: "TRANSPARENT",
+                alignItems: "end",
+              }}
+            >
               <Box
                 style={{
                   display: "flex",
-                  flexDirection: "column",
+                  width: "100%",
+                  gap: "20px",
                   alignItems: "center",
+                  justifyContent: "center",
                 }}
+                onChange={handleInputChange}
               >
-                <span
-                  style={{ fontWeight: "bold", paddingBottom: "0.5rem" }}
-                >
-                  Dimension
-                </span>
+                <input
+                  name="boxMarking"
+                  placeholder="Box Marking"
+                  style={{
+                    marginTop: "1.5rem",
+                    background: "#fff",
+                    border: "none",
+                    padding: "5px",
+                  }}
+                  // value={formData.boxMarking}
+                  // onChange={handleInputChange}
+                />
+
                 <Box
                   style={{
                     display: "flex",
-                    gap: "10px",
+                    flexDirection: "column",
                     alignItems: "center",
                   }}
                 >
-                  <input
-                    name="length"
-                    type="number"
-                    size="small"
-                    placeholder="L"
+                  <span style={{ fontWeight: "bold", paddingBottom: "0.5rem" }}>
+                    Dimension
+                  </span>
+                  <Box
                     style={{
-                      width: "80px",
-                      background: "#fff",
-                      border: "none",
-                      padding: "5px",
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "center",
                     }}
+                  >
+                    <input
+                      name="length"
+                      type="number"
+                      size="small"
+                      placeholder="L"
+                      style={{
+                        width: "80px",
+                        background: "#fff",
+                        border: "none",
+                        padding: "5px",
+                      }}
 
-                      value={formData.length}
-                      onChange={handleInputChange}
-                  />
-                  <span>X</span>
-                  <input
-                    name="width"
-                    type="number"
-                    size="small"
-                    placeholder="W"
-                    style={{
-                      width: "80px",
-                      background: "#fff",
-                      border: "none",
-                      padding: "5px",
-                    }}
-                    variant="outlined"
-                      value={formData.width}
-                      onChange={handleInputChange}
-                  />
-                  <span>X</span>
-                  <input
-                    name="height"
-                    type="number"
-                    size="small"
-                    placeholder="H"
-                    style={{
-                      width: "80px",
-                      background: "#fff",
-                      border: "none",
-                      padding: "5px",
-                    }}
-                    variant="outlined"
-                      value={formData.height}
-                      onChange={handleInputChange}
-                  />
+                      // value={formData.length}
+                      // onChange={handleInputChange}
+                    />
+                    <span>X</span>
+                    <input
+                      name="width"
+                      type="number"
+                      size="small"
+                      placeholder="W"
+                      style={{
+                        width: "80px",
+                        background: "#fff",
+                        border: "none",
+                        padding: "5px",
+                      }}
+                      variant="outlined"
+                      // value={formData.width}
+                      // onChange={handleInputChange}
+                    />
+                    <span>X</span>
+                    <input
+                      name="height"
+                      type="number"
+                      size="small"
+                      placeholder="H"
+                      style={{
+                        width: "80px",
+                        background: "#fff",
+                        border: "none",
+                        padding: "5px",
+                      }}
+                      variant="outlined"
+                      // value={formData.height}
+                      // onChange={handleInputChange}
+                    />
+                  </Box>
                 </Box>
+
+                <input
+                  name="weight"
+                  type="number"
+                  size="small"
+                  placeholder="Weight in kg"
+                  style={{
+                    width: "150px",
+                    marginTop: "1.5rem",
+                    background: "#fff",
+                    border: "none",
+                    padding: "5px",
+                  }}
+                  // value={formData.weight}
+                  // onChange={handleInputChange}
+                />
+
+                <input
+                  type="file"
+                  name="fileInput"
+                  style={{
+                    marginTop: "1rem",
+                    border: "none",
+                    padding: "5px",
+                  }}
+                  // onChange={handleInputChange}
+                  accept=".jpeg, .jpg, .png"
+                />
               </Box>
-
-            
-              <input
-                name="weight"
-                type="number"
-                size="small"
-                placeholder="Weight in kg"
-                style={{
-                  width: "150px",
-                  marginTop: "1.5rem",
-                  background: "#fff",
-                  border: "none",
-                  padding: "5px",
-                }}
-                  value={formData.weight}
-                  onChange={handleInputChange}
-              />
-
-     
-              <input
-                type="file"
-                name="fileInput"
-                style={{
-                  marginTop: "1rem",
-                  border: "none",
-                  padding: "5px",
-                }}
-                onChange={handleInputChange}
-                accept=".jpeg, .jpg, .png"
-              />
             </Box>
-          </Box> */}
+}
           </Box>
         </AccordionDetails>
         <Box
@@ -847,8 +925,9 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
               updateLoading ||
               suborderLoading ||
               updatesuborderLoading ||
-              !isSubItem
-                ? getSingleData?.data?.subOrders?.length > 0
+              intailUtilize === 0 ||
+              getSingleData?.data?.subOrders.length - 1 - index
+                ? true
                 : false
             }
             onClick={handleSubmitMain}
@@ -856,7 +935,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
             {updateLoading || suborderLoading || updatesuborderLoading ? (
               <CircularProgress size="25px" sx={{ color: "#fff" }} />
             ) : (
-              "Submit "
+              "Submit"
             )}
           </Button>
         </Box>
@@ -865,7 +944,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch }) => {
       {openDialog && (
         <AddshipmentDial
           open={openDialog}
-          data={selectedData}
+          data={FinalData}
           setOpen={setOpenDialog}
           setSelectedData={setSelectedData}
           FinalData={FinalData}

@@ -82,7 +82,7 @@ const Dispatch_Return_Grid = () => {
   const [rows, setRows] = useState([]);
   const [barcode, setBarcode] = useState("");
   const [image, setImage] = useState("");
-  const [selectedOption, setSelectedOption] = useState("Dispatch");
+  const [selectedOption, setSelectedOption] = useState("Return");
   const [expandedSubCells, setExpandedSubCells] = useState({});
   const [openStates, setOpenStates] = useState(rows.map(() => false));
   const [openDial, setOpenDial] = useState(false);
@@ -414,9 +414,9 @@ const Dispatch_Return_Grid = () => {
         height: "82.3vh",
       }}
     >
-      {openDial && (
+      {/* {openDial && (
         <SalesHistoryDialbox open={openDial} setOpen={setOpenDial} />
-      )}
+      )} */}
 
       <Box
         spacing={3}
@@ -438,7 +438,7 @@ const Dispatch_Return_Grid = () => {
                 onChange={handleSelectChange}
                 sx={{ width: "20rem", mb: 2 }}
               >
-                <MenuItem value="Dispatch">Dispatch</MenuItem>
+                {/* <MenuItem value="Dispatch">Dispatch</MenuItem> */}
                 <MenuItem value="Return">Return</MenuItem>
                 <MenuItem value="Reject">Reject</MenuItem>
               </Select>

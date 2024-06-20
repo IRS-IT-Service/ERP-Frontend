@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Button, Box, styled, Typography } from "@mui/material";
-import { useGetAllRestockQuery } from "../../../features/api/RestockOrderApiSlice";
+import {
+  Grid,
+  Button,
+  Box,
+  styled,
+  Typography,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
+import { useGetAllNewRestocksQuery } from "../../../features/api/RestockOrderApiSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import Nodata from "../../../assets/error.gif";
 import { DataGrid } from "@mui/x-data-grid";
 import Loading from "../../../components/Common/Loading";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
+import { render } from "react-dom";
+import ViewHistoryDial from "./ViewHistoryDial";
+import { Delete } from "@mui/icons-material";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -37,47 +48,42 @@ const RestockOrderListGrid = () => {
   /// local state
   const [selectedRows, setSelectedRows] = useState([]);
   const [rows, setRows] = useState([]);
+  const [toggleValue, setToggleValue] = useState("pending");
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState({ SKU: "", history: [] });
 
   /// rtk query
   const {
     refetch,
     data: allRestockData,
     isLoading: allRestock,
-  } = useGetAllRestockQuery();
+  } = useGetAllNewRestocksQuery(toggleValue);
 
   /// handlers
   const handleRowSelection = (selection) => {
     setSelectedRows(selection);
   };
 
-  // useEffect to fetch data when the component mounts
   useEffect(() => {
-    refetch();
-  }, []);
-
-  // useEffect to handle data after fetching
-  useEffect(() => {
-    if (allRestockData?.status === "success") {
-      const data = allRestockData?.restock?.map((item, index) => {
-        return {
-          id: item.restockId, // Use 'restockId' as the unique id for each row
-          ...item,
-          Sno: index + 1,
-          date: formatDate(item.createdAt),
-          restockId: item.restockId,
-          description: item?.description || "No description",
-          totalProduct: item.totalProducts,
-          generated: item.totalProductGenerated,
-          inProcess: item.totalProductInProcess,
-          paid: item.totalProductPaid,
-          status: item.status,
-          isAssigned: item.isAssigned,
-        };
-      });
-
+    if (allRestockData && allRestockData.data) {
+      const data = allRestockData.data.map((item, index) => ({
+        ...item,
+        id: item._id,
+        Sno: index + 1,
+        date: formatDate(item.createdAt),
+        status: item.status,
+      }));
       setRows(data);
     }
   }, [allRestockData]);
+
+  const handleOpenView = (SKU, Product) => {
+    setData({
+      SKU: SKU,
+      history: Product,
+    });
+    setOpen(true)
+  };
 
   // Define the columns
   const columns = [
@@ -92,8 +98,8 @@ const RestockOrderListGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "restockId",
-      headerName: "Restock Id",
+      field: "SKU",
+      headerName: "SKU",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -102,8 +108,19 @@ const RestockOrderListGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "description",
-      headerName: "Order Description",
+      field: "Name",
+      headerName: "Name",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+
+    {
+      field: "Brand",
+      headerName: "Brand",
       flex: 0.3,
       minWidth: 100,
       align: "center",
@@ -112,28 +129,8 @@ const RestockOrderListGrid = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "date",
-      headerName: "Date",
-      flex: 0.3,
-      minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
-    {
-      field: "totalProduct",
-      headerName: "Total Product",
-      flex: 0.3,
-      minWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
-    {
-      field: "generated",
-      headerName: "Generated",
+      field: "GST",
+      headerName: "GST",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       align: "center",
@@ -141,14 +138,59 @@ const RestockOrderListGrid = () => {
       minWidth: 120,
     },
     {
-      field: "inProcess",
+      field: "date",
+      headerName: "Created-On",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      headerName: "In-Process",
+    },
+
+    {
+      field: "RestockQuantity",
+      headerName: "Ask-Quantity",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       align: "center",
       headerAlign: "center",
       minWidth: 240,
     },
+    {
+      field: "OrderedQuantity",
+      headerName: "Ordered-Quantity",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      align: "center",
+      headerAlign: "center",
+      minWidth: 240,
+    },
+    {
+      field: "AddedBy",
+      headerName: "AddedBy",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      align: "center",
+      headerAlign: "center",
+      minWidth: 240,
+      renderCell: (params) => {
+        const Sku = params.row.SKU;
+        const AddedBy = params.row.AddedBy;
+        return (
+          <Button
+            onClick={() => {
+              // You can pass Sku and AddedBy to handleOpenView if needed
+              handleOpenView(Sku, AddedBy);
+            }}
+          >
+            View
+          </Button>
+        );
+      },
+    },
+
+
     // {
     //   field: "paid",
     //   headerClassName: "super-app-theme--header",
@@ -167,33 +209,57 @@ const RestockOrderListGrid = () => {
     //   headerAlign: "center",
     //   minWidth: 100,
     // },
-    {
-      field: "details",
-      headerName: "Details",
-      sortable: false,
-      minWidth: 130,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => (
-        <Button
-          onClick={() => {
-            if (location.pathname === "/RestockOrderView") {
-              navigate(`/OrderSelection/${params.row.restockId}?view`);
-            } else {
-              navigate(`/OrderSelection/${params.row.restockId}`);
-            }
-          }}
-        >
-          Details
-        </Button>
-      ),
-    },
+    // {
+    //   field: "details",
+    //   headerName: "Details",
+    //   sortable: false,
+    //   minWidth: 130,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    //   renderCell: (params) => (
+    //     <Button
+    //       onClick={() => {
+    //         if (location.pathname === "/RestockOrderView") {
+    //           navigate(`/OrderSelection/${params.row.restockId}?view`);
+    //         } else {
+    //           navigate(`/OrderSelection/${params.row.restockId}`);
+    //         }
+    //       }}
+    //     >
+    //       Details
+    //     </Button>
+    //   ),
+    // },
   ];
 
   return (
     <>
+      <Box sx={{ display: "flex", justifyContent: "end" }}>
+        <ToggleButtonGroup
+          color="primary"
+          value={toggleValue}
+          exclusive
+          onChange={(e) => {
+            setToggleValue(e.target.value);
+          }}
+          aria-label="Platform"
+        >
+          <ToggleButton
+            // classes={{ selected: classes.selected }}
+            value="pending"
+          >
+            Pending
+          </ToggleButton>
+          <ToggleButton
+            // classes={{ selected: classes.selected }}
+            value="fullfilled"
+          >
+            Closed
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
       <StyledBox>
         <Loading loading={allRestock} />
         <DataGrid
@@ -224,9 +290,12 @@ const RestockOrderListGrid = () => {
           rows={rows}
           rowHeight={40}
           Height={"85vh"}
+          rowSelection="multiple"
           onRowSelectionModelChange={handleRowSelection}
+          checkboxSelection
         />
       </StyledBox>
+      {open &&<ViewHistoryDial open={ open} setOpen={setOpen} data={data}/>}
     </>
   );
 };

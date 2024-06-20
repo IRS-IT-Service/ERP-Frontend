@@ -20,6 +20,7 @@ import {
 import {
   useCreateRestockMutation,
   useCreatePriceComparisionMutation,
+  useCreateNewRestockMutation,
 } from "../../../features/api/RestockOrderApiSlice";
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -42,12 +43,14 @@ const RestockItemDialog = ({
     (state) => state.auth
   );
 
+  const userName = userInfo.name;
+
   /// local state
   const [orderQuantities, setOrderQuantities] = useState({});
   const [description, setDescription] = useState("");
 
   /// rtk query
-  const [createRestockOrderApi, { isLoading }] = useCreateRestockMutation();
+  const [createRestockOrderApi, { isLoading }] = useCreateNewRestockMutation();
   const [createPriceComparision, { isLoading: compareLoading }] =
     useCreatePriceComparisionMutation();
 
@@ -64,9 +67,7 @@ const RestockItemDialog = ({
       });
     }
     setOrderQuantities(oldOrderQuantities);
-
   }, [items]);
-
 
   /// handlers
   const handleQuantityChange = (itemId, value) => {
@@ -85,7 +86,14 @@ const RestockItemDialog = ({
     if (items.length > 0) {
       const processedItems = items.map((item) => ({
         ...item,
-        NewQuantity: orderQuantities[item.SKU] || 0,
+        RestockQuantity: orderQuantities[item.SKU] || 0,
+        AddedBy: {
+          name: userName,
+          askQty: orderQuantities[item.SKU],
+          date: Date.now(),
+        },
+        Threshold: item.ThresholdQty || 0,
+        SoldCount: item.SoldCount || 0,
       }));
 
       const hasZeroQuantity = processedItems.some(
@@ -97,16 +105,11 @@ const RestockItemDialog = ({
         return; // Return from the function
       }
 
-      if (!description) {
-        toast.error("Please Add Order Description first");
-        return; // Return from the function
-      }
-
       try {
         const data = {
-          restocks: processedItems,
-          description,
+          Orders: processedItems,
         };
+        console.log(data);
         const res = await createRestockOrderApi(data).unwrap();
         const liveStatusData = {
           message: `${userInfo.name} Created Restock Order `,
@@ -117,7 +120,7 @@ const RestockItemDialog = ({
         setSelectedItems([]);
         setOrderQuantities({});
         setItems([]);
-        setDescription("");
+        // setDescription("");
         onClose();
       } catch (err) {
         console.error("Error at Creating Restock Order: " + err);
@@ -335,7 +338,7 @@ const RestockItemDialog = ({
           </Table>
         </TableContainer>
       </DialogContent>
-      <Box
+      {/* <Box
         sx={{
           // border: '2px solid green',
           display: "flex",
@@ -368,7 +371,7 @@ const RestockItemDialog = ({
             setDescription(e.target.value);
           }}
         />
-      </Box>
+      </Box> */}
       <Box
         sx={{
           display: "flex",

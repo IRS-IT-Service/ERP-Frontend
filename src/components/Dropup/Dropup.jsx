@@ -118,6 +118,28 @@ const Dropup = () => {
     }
   }, [liveWholeSaleStatus]);
 
+  const  formateDateAndTime =(originalDate) => {
+    const date = new Date(originalDate);
+    if (isNaN(date.getTime())) {
+      // If not valid, return a default value or handle the error
+      return originalDate;
+  }
+    const hours = date.getHours();
+    
+    const minutes = date.getMinutes();
+    const amOrPm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // Months are zero-based, so add 1
+    const day = date.getDate();
+  
+    const formattedTime = `${formattedHours}:${formattedMinutes} ${amOrPm}`;
+    const formattedDate = `${day < 10 ? `0${day}` : day}-${month < 10 ? `0${month}` : month}-${year}`;
+  
+    return `${formattedTime}, ${formattedDate}`;
+  }
+
   return (
     <Draggable nodeRef={draggableRef}>
       <Box
@@ -220,7 +242,7 @@ const Dropup = () => {
             >
               <Box>
                 {value === "Online Users" ? (
-                  onlineUsersData.map((items, index) => {
+                  onlineUsersData?.map((items, index) => {
                     return (
                       <Box
                         key={index}
@@ -245,6 +267,14 @@ const Dropup = () => {
                             {items.name[0].toUpperCase()}
                           </span>
                         </Box>
+                        <Box sx={{
+                         paddingX: ".9rem",
+                          paddingY: ".6rem",
+                          cursor: "pointer",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}>
                         <Typography
                           variant="paragraph"
                           sx={{
@@ -256,6 +286,7 @@ const Dropup = () => {
                         >
                           {items.name}
                         </Typography>
+                        </Box>
                         {items.isOnline ? (
                           <span
                             style={{
@@ -271,11 +302,14 @@ const Dropup = () => {
                             offline
                           </span>
                         )}
+                   
                       </Box>
+                
                     );
                   })
                 ) : value === "live status" ? (
                   liveStatus.map((item, index) => {
+                    console.log(item.time)
                     return (
                       <Box
                         key={index}
@@ -302,15 +336,16 @@ const Dropup = () => {
                             <Typography
                               variant="h6"
                               fontSize=".9rem"
-                              color=" #666666"
+                              color="black"
                             >
+                              
                               {formateDateAndTime(item.time)}
                             </Typography>
                             <CloseIcon
                               onClick={() => {
                                 dispatch(clearOneLiveStatus(index));
                               }}
-                              sx={{ fontSize: "1rem", color: "	 #666666" }}
+                              sx={{ fontSize: "1rem", color: "black" }}
                             />
                           </Box>
 
@@ -508,6 +543,15 @@ const Dropup = () => {
                             {items.name?.[0].toUpperCase()}
                           </span>
                         </Box>
+                        <Box sx={{
+                         paddingX: ".9rem",
+                          paddingY: ".6rem",
+                          cursor: "pointer",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                 
+                        }}>
                         <Typography
                           variant="paragraph"
                           sx={{
@@ -519,6 +563,7 @@ const Dropup = () => {
                         >
                           {items.name}
                         </Typography>
+                        </Box>
                         {items.isOnline ? (
                           <span
                             style={{

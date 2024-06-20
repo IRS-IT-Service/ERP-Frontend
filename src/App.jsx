@@ -146,6 +146,8 @@ import OverseasorderList from "./Pages/OverseasOrderList/Components/Overseasorde
 import { toastNotification } from "./commonFunctions/notificationHelpers";
 
 import SubPIList1 from "./Pages/OverseasOrderList/Components/SubPIListComponent/SubPIList1";
+import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
+import PaidOverseaseOrder from "./Pages/OverseasOrderList/Components/PaidOverseaseOrder";
 
 function App() {
   /// initialize
@@ -455,9 +457,9 @@ function App() {
                 <Route
                   path="/viewQuery/admin"
                   element={
-                    // <UserRole name={"View Query Admin"}>
-                      <ViewQuery />
-                    // </UserRole>
+                    <UserRole name={"Sales Query Admin"}>
+                    <ViewQuery />
+                    </UserRole>
                   }
                 />
                 <Route
@@ -493,7 +495,7 @@ function App() {
                 <Route
                   path="/UpdateSellerPrice/:SalesPrice"
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={"Update Sales Price"}>
                       <UpdateSellerPrice />
                     </UserRole>
                   }
@@ -501,7 +503,7 @@ function App() {
                 <Route
                   path="/UpdateSellerPrice/:SellerPrice"
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={"Update Seller Price"}>
                       <UpdateSellerPrice />
                     </UserRole>
                   }
@@ -509,7 +511,7 @@ function App() {
                 <Route
                   path="/UpdateSellerPrice/:equid"
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={"Update Seller Price"}>
                       <UpdateSellerPrice />
                     </UserRole>
                   }
@@ -545,7 +547,7 @@ function App() {
                 <Route
                   path="/updateBulkProduct"
                   element={
-                    <UserRole name={"Update Product"}>
+                    <UserRole name={"Update Sales Price"}>
                       <UpdateProductMain />
                     </UserRole>
                   }
@@ -629,8 +631,8 @@ function App() {
                 <Route
                   path="/RestockOrderList"
                   element={
-                    <UserRole name={"Restock Order"}>
-                      <RestockOrderList />
+                    <UserRole name={"Restock Order Assign"}>
+                      <OneRestockOrder />{" "}
                     </UserRole>
                   }
                 />
@@ -638,8 +640,8 @@ function App() {
                   path="/RestockOrderView"
                   element={
                     <UserRole name={"Restock Order View"}>
-                      <RestockOrderList />
-                    </UserRole>
+                    <RestockOrderList />
+                     </UserRole>
                   }
                 />
                 <Route
@@ -656,7 +658,7 @@ function App() {
                 <Route
                   path="/ComparisionOrder"
                   element={
-                    <UserRole name={"Comparision Order"}>
+                    <UserRole name={"Price Comparison"}>
                       <PriceComparisonOrder />
                     </UserRole>
                   }
@@ -808,6 +810,10 @@ function App() {
                   path="/OverseasorderList"
                   element={<OverseasorderList />}
                 />
+                <Route
+                  path="/paidOverseasOrder"
+                  element={<PaidOverseaseOrder />}
+                />
                 <Route path="/SubPIList/:id" element={<SubPIList1 />} />
                 {/* Careers */}
                 <Route path="/careers" element={<Careers />} />
@@ -817,6 +823,8 @@ function App() {
                   element={<CreateOrderShipmentMain />}
                 />
                 <Route path="/testing" element={<TestingComponent />} />
+                <Route path="/tempOrder/:id" element={<TempOrder />} />
+
               </Route>
             </Routes>
           </Suspense>

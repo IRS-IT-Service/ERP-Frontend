@@ -35,9 +35,9 @@ export const restockApiSlice = apiSlice.injectEndpoints({
     updateRestockQuantity: builder.mutation({
       query: (params) => {
         return {
-          url: `${RESTOCK_URL}/updateOrderQuantity/${params.id}`,
-          method: "PUT",
-          body: params.body,
+          url: `${RESTOCK_URL}/updateRestockById`,
+          method: "PATCH",
+          body: params,
         };
       },
     }),
@@ -242,7 +242,7 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${RESTOCK_URL}/getSingleOrder/${id}`,
           method: "GET",
-        }
+        };
       },
     }),
     updatePaymentForOrder: builder.mutation({
@@ -250,7 +250,7 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${RESTOCK_URL}/updatePayment`,
           method: "PUT",
-          body:data
+          body: data,
         };
       },
     }),
@@ -259,7 +259,7 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${RESTOCK_URL}/assignOverseasOrder`,
           method: "POST",
-          body:data
+          body: data,
         };
       },
     }),
@@ -268,7 +268,7 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${RESTOCK_URL}/createSubOrder`,
           method: "POST",
-          body:data
+          body: data,
         };
       },
     }),
@@ -277,7 +277,7 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${RESTOCK_URL}/updateSubOrder`,
           method: "PUT",
-          body:data
+          body: data,
         };
       },
     }),
@@ -286,7 +286,7 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${RESTOCK_URL}/updateOrder`,
           method: "PUT",
-          body:data
+          body: data,
         };
       },
     }),
@@ -295,12 +295,52 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${RESTOCK_URL}/getpricehistorywitskus`,
           method: "POST",
-          body:data
+          body: data,
+        };
+      },
+    }),
+    createNewRestock: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/createnewrestock`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    getAllNewRestocks: builder.query({
+      query: (name) => {
+        return {
+          url: `${RESTOCK_URL}/getallnewRestocks?name=${name}`,
+          method: "GET",
+        };
+      },
+    }),
+    deleteRestockById: builder.mutation({
+      query: (id) => {
+        return {
+          url: `${RESTOCK_URL}/deleteRestock/${id}`,
+          method: "Delete",
+        };
+      },
+    }),
+    getSingleVendor: builder.query({
+      query: (id) => {
+        return {
+          url: `${RESTOCK_URL}/getsinglevendor/${id}`,
+          method: "GET",
+        };
+      },
+    }),
+    getSingleVendorWithOrder: builder.query({
+      query: (id) => {
+        return {
+          url: `${RESTOCK_URL}/getSingleVendorWithOrder/${id}`,
+          method: "GET",
         };
       },
     }),
   }),
-
 });
 
 export const {
@@ -339,4 +379,9 @@ export const {
   useUpdateSubOrderMutation,
   useUpdateOrderOverseasMutation,
   usePassPrevPriceMutation,
+  useCreateNewRestockMutation,
+  useGetAllNewRestocksQuery,
+  useDeleteRestockByIdMutation,
+  useGetSingleVendorQuery,
+  useGetSingleVendorWithOrderQuery,
 } = restockApiSlice;
