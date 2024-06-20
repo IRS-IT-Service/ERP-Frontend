@@ -17,7 +17,7 @@ import {
   TextField,
   Grid,
   ToggleButtonGroup,
-  ToggleButton 
+  ToggleButton,
 } from "@mui/material";
 import { formatDate } from "../../../../commonFunctions/commonFunctions";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -59,8 +59,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [FinalData, setFinalData] = useState([]);
-  const [ConversionType , setConversionType] = useState("USD")
-
+  const [ConversionType, setConversionType] = useState("USD");
 
   const [updateproducts, { isLoading: updateLoading }] =
     useUpdateOrderOverseasMutation();
@@ -85,23 +84,20 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const intailAmount = +getSingleData?.data?.totalUSDAmount;
   const intailUtilize = +getSingleData?.data?.utilzedUSDAmount;
 
-
-
   const shortFallamount =
     index === 0 ? intailAmount - totalAmount : item?.shortFall - totalAmount;
   const isNegative = checkNegative(shortFallamount);
 
   useEffect(() => {
-    let prevConv = 0
+    let prevConv = 0;
     if (dataSub) {
       setProductData(
         dataSub.map((item) => {
-          if(item.USD || item.RMB || item.RMB > item.USD){
-            if(ConversionType === "USD"){
-              prevConv = item.RMB / item.USD
-              
-            }else if(ConversionType === "RMB"){
-              prevConv = item.USD / item.RMB
+          if (item.USD || item.RMB || item.RMB > item.USD) {
+            if (ConversionType === "USD") {
+              prevConv = item.RMB / item.USD;
+            } else if (ConversionType === "RMB") {
+              prevConv = item.USD / item.RMB;
             }
           }
           return {
@@ -113,7 +109,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       );
       setConversionRate(prevConv.toFixed(2));
     }
-  }, [item, getSingleData ,ConversionType ]);
+  }, [item, getSingleData, ConversionType]);
 
   useEffect(() => {
     const selectedSKU = ProductData.map((item) => {
@@ -212,12 +208,24 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
         if (item?.USD && item?.USD > 0) {
           return {
             ...item,
-            RMB:ConversionRate > 0 ? (ConversionType === "RMB" ? +item?.USD / +ConversionRate : +item?.USD * +ConversionRate).toFixed(2) : "",
+            RMB:
+              ConversionRate > 0
+                ? (ConversionType === "RMB"
+                    ? +item?.USD / +ConversionRate
+                    : +item?.USD * +ConversionRate
+                  ).toFixed(2)
+                : "",
           };
         } else if (item?.RMB && item?.RMB > 0) {
           return {
             ...item,
-            USD: ConversionRate > 0 ? (ConversionType === "USD" ? +item?.RMB * +ConversionRate : +item?.RMB / +ConversionRate).toFixed(2) : "",
+            USD:
+              ConversionRate > 0
+                ? (ConversionType === "USD"
+                    ? +item?.RMB * +ConversionRate
+                    : +item?.RMB / +ConversionRate
+                  ).toFixed(2)
+                : "",
           };
         }
 
@@ -295,7 +303,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
         .map((data) => data.final);
       const updateValue = processedData
         .filter((data) => data.updated !== null)
-       .map((data) => data.updated);
+        .map((data) => data.updated);
       const updateProduct = {
         id: order[order.length - 1]._id,
         orderId: getSingleData?.data?.overseaseOrderId,
@@ -310,7 +318,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       };
       if (shortFallamount > 0) {
         const result = await createsuborder(suborder).unwrap();
-   
+
         const result1 = await updatesuborder(updateProduct).unwrap();
         toast.success("Order Updated successfully");
         // console.log(updateProduct)
@@ -327,15 +335,11 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
     }
   };
 
-const handleChangeType = (e,value) =>{
-  if(value !== null){
-
-    setConversionType(value)
-  }
-}
-
-
-
+  const handleChangeType = (e, value) => {
+    if (value !== null) {
+      setConversionType(value);
+    }
+  };
 
   //   const handleSubmitSubPI = async () => {
   //     try {
@@ -384,7 +388,6 @@ const handleChangeType = (e,value) =>{
           // marginBottom: "4px",
           "& .MuiAccordionSummary-content": {
             margin: "0px 0px",
-            
           },
         }}
         // expanded={true}
@@ -407,7 +410,7 @@ const handleChangeType = (e,value) =>{
               sx={{
                 display: "flex",
                 justifyContent: "",
-                  padding: ".2rem",
+                padding: ".2rem",
                 border: "2px solid #3385ff",
                 justifyContent: "space-between",
                 paddingX: "5px",
@@ -570,14 +573,13 @@ const handleChangeType = (e,value) =>{
                   {totalQty} pcs
                 </Typography>
               </Box>
-            
             </Box>
           </Box>
         </AccordionSummary>
 
         <AccordionDetails>
           <Box>
-            <Box display={"flex"} gap={"0.5rem"} alignItems={'center'}>
+            <Box display={"flex"} gap={"0.5rem"} alignItems={"center"}>
               <Typography
                 sx={{
                   fontWeight: "bold",
@@ -586,9 +588,11 @@ const handleChangeType = (e,value) =>{
                   marginRight: "3px",
                 }}
               >
-               {ConversionType === "RMB" ? "1 RMB equal to USD" : "1 USD equal to RMB"}
-               </Typography>
-              
+                {ConversionType === "RMB"
+                  ? "1 RMB equal to USD"
+                  : "1 USD equal to RMB"}
+              </Typography>
+
               <input
                 name="conversion"
                 placeholder="%"
@@ -598,13 +602,11 @@ const handleChangeType = (e,value) =>{
                   textAlign: "center",
                   width: "45px",
                   border: "none",
-                  padding:"3px"
-                
+                  padding: "3px",
                 }}
                 value={ConversionRate || ""}
                 onChange={(e) => setConversionRate(e.target.value)}
               />
-
 
               <Box>
                 <AddIcon
@@ -618,283 +620,291 @@ const handleChangeType = (e,value) =>{
                 />
               </Box>
               <Box>
-              <ToggleButtonGroup
-       value={ConversionType}
-  
-      exclusive
-      sx={{
-        width: "100px",
-        height: "30px",
-        border: "none",
-        borderRadius: "0.2rem",
-        padding: "0.2rem",
-        color:"#fff",
+                <ToggleButtonGroup
+                  value={ConversionType}
+                  exclusive
+                  sx={{
+                    width: "100px",
+                    height: "30px",
+                    border: "none",
+                    borderRadius: "0.2rem",
+                    padding: "0.2rem",
+                    color: "#fff",
 
-"& .Mui-selected":{
-color:"#fff !important", 
-background:"black !important",
-}
-      }}
-      onChange={handleChangeType}
-      aria-label="Platform"
-    >
-      <ToggleButton value="USD" sx={{color:"black",border:"0.5px solid black"}}>USD</ToggleButton>
-      <ToggleButton value="RMB" sx={{color:"black",border:"0.5px solid black"}}>RMB</ToggleButton>
-
-
-    </ToggleButtonGroup>
-            </Box>
+                    "& .Mui-selected": {
+                      color: "#fff !important",
+                      background: "black !important",
+                    },
+                  }}
+                  onChange={handleChangeType}
+                  aria-label="Platform"
+                >
+                  <ToggleButton
+                    value="USD"
+                    sx={{ color: "black", border: "0.5px solid black" }}
+                  >
+                    USD
+                  </ToggleButton>
+                  <ToggleButton
+                    value="RMB"
+                    sx={{ color: "black", border: "0.5px solid black" }}
+                  >
+                    RMB
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
             </Box>
 
             <TableContainer sx={{ maxHeight: 450 }}>
-  <Table stickyHeader aria-label="sticky table">
-    <TableHead>
-      <TableRow>
-        <StyledCellHeader>Sno</StyledCellHeader>
-        <StyledCellHeader>SKU</StyledCellHeader>
-        <StyledCellHeader>Name</StyledCellHeader>
-        <StyledCellHeader>Prev USD</StyledCellHeader>
-        <StyledCellHeader>Prev RMB</StyledCellHeader>
-        <StyledCellHeader>USD $</StyledCellHeader>
-        <StyledCellHeader>RMB ¥</StyledCellHeader>
-        <StyledCellHeader>Order Quantity</StyledCellHeader>
-        <StyledCellHeader>Updated Quantity</StyledCellHeader>
-        <StyledCellHeader>Total Order Amount</StyledCellHeader>
-        <StyledCellHeader>Delete</StyledCellHeader>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {ProductData?.map((item, index) => (
-        <TableRow key={index}>
-          <StyledCell>{index + 1}</StyledCell>
-          {item?.SKU && item?.Name ? (
-            <>
-              <StyledCell>{item?.SKU}</StyledCell>
-              <StyledCell>{item?.Name}</StyledCell>
-              <StyledCell>
-                {item?.prevUSD !== "NA" ? "$" + item?.prevUSD : "N/A"}
-              </StyledCell>
-              <StyledCell>
-                {item?.prevRMB !== "NA" ? "¥" + item?.prevRMB : "N/A"}
-              </StyledCell>
-            </>
-          ) : (
-            <StyledCell colSpan={4}>
-              <input
-                name="USD"
-                value={item?.USD || ""}
-                style={{
-                  background: "#fff",
-                  border: "none",
-                  padding: "5px",
-                  width: "100px",
-                  textAlign: "center",
-                }}
-                onChange={(e) => handleInputChange(e, item?.SKU)}
-              />
-            </StyledCell>
-          )}
-          <StyledCell sx={{ textAlign: "center", width: "150px" }}>
-            <input
-              name="USD"
-              value={item?.USD || ""}
-              disabled={ConversionType === "RMB"}
-              type="number"
-              style={{
-                background: "#fff",
-                border: "none",
-                padding: "5px",
-                width: "100px",
-                textAlign: "center",
-                backgroundColor: ConversionType === "RMB" ? "#ccc" : "#ffff"
-              }} 
-              onChange={(e) => handleInputChange(e, item?.SKU)}
-            />
-          </StyledCell>
-          <StyledCell sx={{ textAlign: "center", width: "150px" }}>
-            <input
-              name="RMB"
-              disabled={ConversionType === "USD"}
-              value={item?.RMB || ""}
-              type="number"
-              style={{
-                background: "#fff",
-                border: "none",
-                padding: "5px",
-                width: "100px",
-                textAlign: "center",
-             backgroundColor: ConversionType === "USD" ? "#ccc" : "#ffff"
-              }}
-              onChange={(e) => handleInputChange(e, item.SKU)}
-            />
-          </StyledCell>
-          <StyledCell>{item?.Orderqty}</StyledCell>
-          <StyledCell>
-            <input
-              name="updatedQTY"
-              value={item?.updatedQTY || ""}
-              style={{
-                background: "#fff",
-                border: "none",
-                padding: "5px",
-                width: "50px",
-                textAlign: "center",
-              }}
-              onChange={(e) => handleInputChange(e, item?.SKU)}
-            />
-          </StyledCell>
-          <StyledCell>$ {item?.updatedQTY * item?.USD}</StyledCell>
-          <StyledCell>
-            <DeleteIcon
-              onClick={() => handleRemoveRestockItem(item?.SKU)}
-              sx={{
-                textAlign: "center",
-                cursor: "pointer",
-              }}
-            />
-          </StyledCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-</TableContainer>
-
-
-            {/* <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "1rem",
-              padding: "0.5rem",
-              backgroundColor: "#e6e6e6",
-              alignItems: "end",
-            }}
-          >
-          
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <StyledCellHeader>Sno</StyledCellHeader>
+                    <StyledCellHeader>SKU</StyledCellHeader>
+                    <StyledCellHeader>Name</StyledCellHeader>
+                    <StyledCellHeader>Prev USD</StyledCellHeader>
+                    <StyledCellHeader>Prev RMB</StyledCellHeader>
+                    <StyledCellHeader>USD $</StyledCellHeader>
+                    <StyledCellHeader>RMB ¥</StyledCellHeader>
+                    <StyledCellHeader>Order Quantity</StyledCellHeader>
+                    <StyledCellHeader>Updated Quantity</StyledCellHeader>
+                    <StyledCellHeader>Total Order Amount</StyledCellHeader>
+                    <StyledCellHeader>Delete</StyledCellHeader>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {ProductData?.map((item, index) => (
+                    <TableRow key={index}>
+                      <StyledCell>{index + 1}</StyledCell>
+                      {item?.SKU && item?.Name ? (
+                        <>
+                          <StyledCell>{item?.SKU}</StyledCell>
+                          <StyledCell>{item?.Name}</StyledCell>
+                          <StyledCell>
+                            {item?.prevUSD !== "NA"
+                              ? "$" + item?.prevUSD
+                              : "N/A"}
+                          </StyledCell>
+                          <StyledCell>
+                            {item?.prevRMB !== "NA"
+                              ? "¥" + item?.prevRMB
+                              : "N/A"}
+                          </StyledCell>
+                        </>
+                      ) : (
+                        <StyledCell colSpan={4}>
+                          <input
+                            name="USD"
+                            value={item?.USD || ""}
+                            style={{
+                              background: "#fff",
+                              border: "none",
+                              padding: "5px",
+                              width: "100px",
+                              textAlign: "center",
+                            }}
+                            onChange={(e) => handleInputChange(e, item?.SKU)}
+                          />
+                        </StyledCell>
+                      )}
+                      <StyledCell sx={{ textAlign: "center", width: "150px" }}>
+                        <input
+                          name="USD"
+                          value={item?.USD || ""}
+                          disabled={ConversionType === "RMB"}
+                          type="number"
+                          style={{
+                            background: "#fff",
+                            border: "none",
+                            padding: "5px",
+                            width: "100px",
+                            textAlign: "center",
+                            backgroundColor:
+                              ConversionType === "RMB" ? "#ccc" : "#ffff",
+                          }}
+                          onChange={(e) => handleInputChange(e, item?.SKU)}
+                        />
+                      </StyledCell>
+                      <StyledCell sx={{ textAlign: "center", width: "150px" }}>
+                        <input
+                          name="RMB"
+                          disabled={ConversionType === "USD" || getSingleData?.data?.subOrders.length - 1 - index}
+                          value={item?.RMB || ""}
+                          type="number"
+                          style={{
+                            background: "#fff",
+                            border: "none",
+                            padding: "5px",
+                            width: "100px",
+                            textAlign: "center",
+                            backgroundColor:
+                              ConversionType === "USD" ? "#ccc" : "#ffff",
+                          }}
+                          onChange={(e) => handleInputChange(e, item.SKU)}
+                        />
+                      </StyledCell>
+                      <StyledCell>{item?.Orderqty}</StyledCell>
+                      <StyledCell>
+                        <input
+                          name="updatedQTY"
+                          value={item?.updatedQTY || ""}
+                          style={{
+                            background: "#fff",
+                            border: "none",
+                            padding: "5px",
+                            width: "50px",
+                            textAlign: "center",
+                          }}
+                          onChange={(e) => handleInputChange(e, item?.SKU)}
+                        />
+                      </StyledCell>
+                      <StyledCell>$ {item?.updatedQTY * item?.USD}</StyledCell>
+                      <StyledCell>
+                        <DeleteIcon
+                          onClick={() => handleRemoveRestockItem(item?.SKU)}
+                          sx={{
+                            textAlign: "center",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </StyledCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+{(getSingleData?.data?.subOrders.length - 1 - index) &&
             <Box
-              style={{
+              sx={{
                 display: "flex",
-                width: "100%",
-                gap: "20px",
-                alignItems: "center",
                 justifyContent: "center",
-              }}
-              onChange={handleInputChange}
-            >
-           
-              <input
-                name="boxMarking"
-                placeholder="Box Marking"
-                style={{
-                  marginTop: "1.5rem",
-                  background: "#fff",
-                  border: "none",
-                  padding: "5px",
-                }}
-                  value={formData.boxMarking}
-                  onChange={handleInputChange}
-              />
 
+                gap: "1rem",
+                padding: "0.5rem",
+                backgroundColor: "TRANSPARENT",
+                alignItems: "end",
+              }}
+            >
               <Box
                 style={{
                   display: "flex",
-                  flexDirection: "column",
+                  width: "100%",
+                  gap: "20px",
                   alignItems: "center",
+                  justifyContent: "center",
                 }}
+                onChange={handleInputChange}
               >
-                <span
-                  style={{ fontWeight: "bold", paddingBottom: "0.5rem" }}
-                >
-                  Dimension
-                </span>
+                <input
+                  name="boxMarking"
+                  placeholder="Box Marking"
+                  style={{
+                    marginTop: "1.5rem",
+                    background: "#fff",
+                    border: "none",
+                    padding: "5px",
+                  }}
+                  // value={formData.boxMarking}
+                  // onChange={handleInputChange}
+                />
+
                 <Box
                   style={{
                     display: "flex",
-                    gap: "10px",
+                    flexDirection: "column",
                     alignItems: "center",
                   }}
                 >
-                  <input
-                    name="length"
-                    type="number"
-                    size="small"
-                    placeholder="L"
+                  <span style={{ fontWeight: "bold", paddingBottom: "0.5rem" }}>
+                    Dimension
+                  </span>
+                  <Box
                     style={{
-                      width: "80px",
-                      background: "#fff",
-                      border: "none",
-                      padding: "5px",
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "center",
                     }}
+                  >
+                    <input
+                      name="length"
+                      type="number"
+                      size="small"
+                      placeholder="L"
+                      style={{
+                        width: "80px",
+                        background: "#fff",
+                        border: "none",
+                        padding: "5px",
+                      }}
 
-                      value={formData.length}
-                      onChange={handleInputChange}
-                  />
-                  <span>X</span>
-                  <input
-                    name="width"
-                    type="number"
-                    size="small"
-                    placeholder="W"
-                    style={{
-                      width: "80px",
-                      background: "#fff",
-                      border: "none",
-                      padding: "5px",
-                    }}
-                    variant="outlined"
-                      value={formData.width}
-                      onChange={handleInputChange}
-                  />
-                  <span>X</span>
-                  <input
-                    name="height"
-                    type="number"
-                    size="small"
-                    placeholder="H"
-                    style={{
-                      width: "80px",
-                      background: "#fff",
-                      border: "none",
-                      padding: "5px",
-                    }}
-                    variant="outlined"
-                      value={formData.height}
-                      onChange={handleInputChange}
-                  />
+                      // value={formData.length}
+                      // onChange={handleInputChange}
+                    />
+                    <span>X</span>
+                    <input
+                      name="width"
+                      type="number"
+                      size="small"
+                      placeholder="W"
+                      style={{
+                        width: "80px",
+                        background: "#fff",
+                        border: "none",
+                        padding: "5px",
+                      }}
+                      variant="outlined"
+                      // value={formData.width}
+                      // onChange={handleInputChange}
+                    />
+                    <span>X</span>
+                    <input
+                      name="height"
+                      type="number"
+                      size="small"
+                      placeholder="H"
+                      style={{
+                        width: "80px",
+                        background: "#fff",
+                        border: "none",
+                        padding: "5px",
+                      }}
+                      variant="outlined"
+                      // value={formData.height}
+                      // onChange={handleInputChange}
+                    />
+                  </Box>
                 </Box>
+
+                <input
+                  name="weight"
+                  type="number"
+                  size="small"
+                  placeholder="Weight in kg"
+                  style={{
+                    width: "150px",
+                    marginTop: "1.5rem",
+                    background: "#fff",
+                    border: "none",
+                    padding: "5px",
+                  }}
+                  // value={formData.weight}
+                  // onChange={handleInputChange}
+                />
+
+                <input
+                  type="file"
+                  name="fileInput"
+                  style={{
+                    marginTop: "1rem",
+                    border: "none",
+                    padding: "5px",
+                  }}
+                  // onChange={handleInputChange}
+                  accept=".jpeg, .jpg, .png"
+                />
               </Box>
-
-            
-              <input
-                name="weight"
-                type="number"
-                size="small"
-                placeholder="Weight in kg"
-                style={{
-                  width: "150px",
-                  marginTop: "1.5rem",
-                  background: "#fff",
-                  border: "none",
-                  padding: "5px",
-                }}
-                  value={formData.weight}
-                  onChange={handleInputChange}
-              />
-
-     
-              <input
-                type="file"
-                name="fileInput"
-                style={{
-                  marginTop: "1rem",
-                  border: "none",
-                  padding: "5px",
-                }}
-                onChange={handleInputChange}
-                accept=".jpeg, .jpg, .png"
-              />
             </Box>
-          </Box> */}
+}
           </Box>
         </AccordionDetails>
         <Box
@@ -925,7 +935,7 @@ background:"black !important",
             {updateLoading || suborderLoading || updatesuborderLoading ? (
               <CircularProgress size="25px" sx={{ color: "#fff" }} />
             ) : (
-              "Submit "
+              "Submit"
             )}
           </Button>
         </Box>

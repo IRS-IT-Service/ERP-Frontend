@@ -128,7 +128,7 @@ const ViewQuery = () => {
           <ToggleButton classes={{ selected: classes.selected }} value="Closed">
             Closed Query
           </ToggleButton>
-          <ToggleButton classes={{ selected: classes.selected }} value="Sold">
+         <ToggleButton classes={{ selected: classes.selected }} value="Sold">
             Sold Query
           </ToggleButton>
         </ToggleButtonGroup>
