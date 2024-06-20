@@ -888,15 +888,21 @@ const createOrderShipment = ({ setOpen, id }) => {
                 </Box>
                 <Box
                   sx={{
-                    width: "100%",
-                    height: "auto",
+             
+              
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
                     padding: "16px",
+               
+            
                   }}
                 >
-                  <Table>
+                  <Table sx={{
+                      width: "30vw",
+                    overflow: "auto",
+                     
+                    }} >
                     <TableBody>
                       {selectedCustomer?.PermanentAddress &&
                         Object.keys(selectedCustomer?.PermanentAddress).map(
@@ -905,13 +911,13 @@ const createOrderShipment = ({ setOpen, id }) => {
                               return null;
                             }
                             return (
-                              <TableRow key={key} sx={{ padding: 0 }}>
+                              <TableRow key={key} sx={{ padding: 0  }}>
                                 <TableCell
-                                  sx={{ padding: 0.5, fontWeight: "bold" }}
+                                  sx={{ padding: 0.5, fontWeight: "bold", }}
                                 >
                                   {key?.toUpperCase()}:
                                 </TableCell>
-                                <TableCell sx={{ padding: 0 }}>
+                                <TableCell sx={{ padding: 0,overflow:"auto" }}>
                                   {selectedCustomer?.PermanentAddress[key]}
                                 </TableCell>
                               </TableRow>
@@ -925,6 +931,7 @@ const createOrderShipment = ({ setOpen, id }) => {
 
               <Box
                 sx={{
+               
                   display: "flex",
                   justifyContent: "center",
                   flexDirection: "column",
@@ -934,6 +941,7 @@ const createOrderShipment = ({ setOpen, id }) => {
               >
                 <Box
                   sx={{
+                
                     display: "flex",
                     gap: "10px",
                     alignItems: "center",
@@ -949,7 +957,9 @@ const createOrderShipment = ({ setOpen, id }) => {
                     Shipping Address{" "}
                   </Typography>
                   <Box
+
                     sx={{
+                    
                       cursor: "pointer",
                       color: "blue",
                       fontSize: "20px",
@@ -965,7 +975,7 @@ const createOrderShipment = ({ setOpen, id }) => {
                 </Box>
                 <Box
                   sx={{
-                    width: "100%",
+                
                     height: "auto",
                     display: "flex",
                     flexDirection: "column",
@@ -974,7 +984,11 @@ const createOrderShipment = ({ setOpen, id }) => {
                   }}
                 >
                   {selectedAddress ? (
-                    <Table>
+                    <Table sx={{
+                      width: "30vw",
+                    overflow: "auto",
+                     
+                    }}>
                       <TableBody>
                         {Object.keys(selectedAddress).map((key) => {
                           if (

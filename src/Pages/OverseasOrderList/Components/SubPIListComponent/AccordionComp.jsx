@@ -59,6 +59,15 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [FinalData, setFinalData] = useState([]);
+  const [BoxData , setBoxData] = useState({
+    boxMarking:"",
+    length:"",
+    width:"",
+    height:"",
+    file:"",
+    weight:"",
+  });
+  const [Enabled , setEnabled] = useState(false)
   const [ConversionType, setConversionType] = useState("USD");
 
   const [updateproducts, { isLoading: updateLoading }] =
@@ -262,6 +271,13 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
     setOpenDialog(true);
   };
 
+  const isEnabled = (index) => {
+    const isValue = getSingleData?.data?.subOrders.length - 1 - index ? true : false
+return isValue
+
+  };
+
+
   const handleSubmitMain = async () => {
     try {
       if (!isNegative) {
@@ -340,6 +356,24 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       setConversionType(value);
     }
   };
+
+  const handleBoxInput = (e) => {
+    const { value, name, files, type } = e.target;
+  
+    if (type === "file") {
+      const file = files[0];
+      setBoxData((prevData) => ({
+        ...prevData,
+        [name]: file,
+      }));
+    } else {
+      setBoxData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
 
   //   const handleSubmitSubPI = async () => {
   //     try {
@@ -596,6 +630,10 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
               <input
                 name="conversion"
                 placeholder="%"
+                disabled={
+        
+                  isEnabled(index)
+                }
                 style={{
                   background: "#fff",
                   border: "none",
@@ -603,6 +641,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   width: "45px",
                   border: "none",
                   padding: "3px",
+                  backgroundColor: isEnabled(index) ? "#ccc" : "#fff",
                 }}
                 value={ConversionRate || ""}
                 onChange={(e) => setConversionRate(e.target.value)}
@@ -610,9 +649,10 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
 
               <Box>
                 <AddIcon
-                  onClick={handleOpenDial}
+                 onClick={isEnabled(index) ? null : handleOpenDial} 
                   sx={{
                     cursor: "pointer",
+                  
                     "&:hover": {
                       color: "red",
                     },
@@ -622,6 +662,9 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
               <Box>
                 <ToggleButtonGroup
                   value={ConversionType}
+                  disabled={                
+                    isEnabled(index)
+                  }
                   exclusive
                   sx={{
                     width: "100px",
@@ -656,6 +699,10 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             </Box>
 
             <TableContainer sx={{ maxHeight: 450 }}>
+              <Box sx={{
+                position:"absolute",
+                
+              }}></Box>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -673,107 +720,110 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {ProductData?.map((item, index) => (
-                    <TableRow key={index}>
-                      <StyledCell>{index + 1}</StyledCell>
-                      {item?.SKU && item?.Name ? (
-                        <>
-                          <StyledCell>{item?.SKU}</StyledCell>
-                          <StyledCell>{item?.Name}</StyledCell>
-                          <StyledCell>
-                            {item?.prevUSD !== "NA"
-                              ? "$" + item?.prevUSD
-                              : "N/A"}
-                          </StyledCell>
-                          <StyledCell>
-                            {item?.prevRMB !== "NA"
-                              ? "¥" + item?.prevRMB
-                              : "N/A"}
-                          </StyledCell>
-                        </>
-                      ) : (
-                        <StyledCell colSpan={4}>
-                          <input
-                            name="USD"
-                            value={item?.USD || ""}
-                            style={{
-                              background: "#fff",
-                              border: "none",
-                              padding: "5px",
-                              width: "100px",
-                              textAlign: "center",
-                            }}
-                            onChange={(e) => handleInputChange(e, item?.SKU)}
-                          />
-                        </StyledCell>
-                      )}
-                      <StyledCell sx={{ textAlign: "center", width: "150px" }}>
-                        <input
-                          name="USD"
-                          value={item?.USD || ""}
-                          disabled={ConversionType === "RMB"}
-                          type="number"
-                          style={{
-                            background: "#fff",
-                            border: "none",
-                            padding: "5px",
-                            width: "100px",
-                            textAlign: "center",
-                            backgroundColor:
-                              ConversionType === "RMB" ? "#ccc" : "#ffff",
-                          }}
-                          onChange={(e) => handleInputChange(e, item?.SKU)}
-                        />
-                      </StyledCell>
-                      <StyledCell sx={{ textAlign: "center", width: "150px" }}>
-                        <input
-                          name="RMB"
-                          disabled={ConversionType === "USD" || getSingleData?.data?.subOrders.length - 1 - index}
-                          value={item?.RMB || ""}
-                          type="number"
-                          style={{
-                            background: "#fff",
-                            border: "none",
-                            padding: "5px",
-                            width: "100px",
-                            textAlign: "center",
-                            backgroundColor:
-                              ConversionType === "USD" ? "#ccc" : "#ffff",
-                          }}
-                          onChange={(e) => handleInputChange(e, item.SKU)}
-                        />
-                      </StyledCell>
-                      <StyledCell>{item?.Orderqty}</StyledCell>
-                      <StyledCell>
-                        <input
-                          name="updatedQTY"
-                          value={item?.updatedQTY || ""}
-                          style={{
-                            background: "#fff",
-                            border: "none",
-                            padding: "5px",
-                            width: "50px",
-                            textAlign: "center",
-                          }}
-                          onChange={(e) => handleInputChange(e, item?.SKU)}
-                        />
-                      </StyledCell>
-                      <StyledCell>$ {item?.updatedQTY * item?.USD}</StyledCell>
-                      <StyledCell>
-                        <DeleteIcon
-                          onClick={() => handleRemoveRestockItem(item?.SKU)}
-                          sx={{
-                            textAlign: "center",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </StyledCell>
-                    </TableRow>
-                  ))}
+                {ProductData?.map((item,i) => {
+               
+            
+  return (
+    <TableRow key={i}>
+      <StyledCell>{i + 1}</StyledCell>
+      {item?.SKU && item?.Name ? (
+        <>
+          <StyledCell>{item.SKU}</StyledCell>
+          <StyledCell>{item.Name}</StyledCell>
+          <StyledCell>
+            {item?.prevUSD !== "NA" ? "$" + item.prevUSD : "N/A"}
+          </StyledCell>
+          <StyledCell>
+            {item?.prevRMB !== "NA" ? "¥" + item.prevRMB : "N/A"}
+          </StyledCell>
+        </>
+      ) : (
+        <StyledCell colSpan={4}>
+          <input
+            name="USD"
+            value={item.USD || ""}
+            style={{
+              background: "#fff",
+              border: "none",
+              padding: "5px",
+              width: "100px",
+              textAlign: "center",
+            }}
+            onChange={(e) => handleInputChange(e, item.SKU)}
+          />
+        </StyledCell>
+      )}
+      <StyledCell sx={{ textAlign: "center", width: "150px" }}>
+        <input
+          name="USD"
+          value={item.USD || ""}
+          disabled={ConversionType === "RMB" ||  isEnabled(index) }
+          type="number"
+          style={{
+            background: "#fff",
+            border: "none",
+            padding: "5px",
+            width: "100px",
+            textAlign: "center",
+            backgroundColor: ConversionType === "RMB" || isEnabled(index) ? "#ccc" : "#fff",
+          }}
+          onChange={(e) => handleInputChange(e, item.SKU)}
+        />
+      </StyledCell>
+      <StyledCell sx={{ textAlign: "center", width: "150px" }}>
+        <input
+          name="RMB"
+          disabled={
+            ConversionType === "USD" ||
+            isEnabled(index)
+          }
+          value={item.RMB || ""}
+          type="number"
+          style={{
+            background: "#fff",
+            border: "none",
+            padding: "5px",
+            width: "100px",
+            textAlign: "center",
+            backgroundColor: ConversionType === "USD" || isEnabled(index) ? "#ccc" : "#fff",
+          }}
+          onChange={(e) => handleInputChange(e, item.SKU)}
+        />
+      </StyledCell>
+      <StyledCell>{item.Orderqty}</StyledCell>
+      <StyledCell>
+        <input
+          name="updatedQTY"
+          disabled={isEnabled(index)}
+          value={item.updatedQTY || ""}
+          style={{
+            backgroundColor: isEnabled(index) ? "#ccc" : "#fff",
+            border: "none",
+            padding: "5px",
+            width: "50px",
+            textAlign: "center",
+          }}
+          onChange={(e) => handleInputChange(e, item.SKU)}
+        />
+      </StyledCell>
+      <StyledCell>${item.updatedQTY * item.USD}</StyledCell>
+      <StyledCell>
+        <DeleteIcon
+          onClick={() => handleRemoveRestockItem(item.SKU)}
+          sx={{
+            textAlign: "center",
+            cursor: "pointer",
+          }}
+        />
+      </StyledCell>
+    </TableRow>
+  );
+})}
+
                 </TableBody>
               </Table>
             </TableContainer>
-{(getSingleData?.data?.subOrders.length - 1 - index) &&
+{(isEnabled(index)) &&
             <Box
               sx={{
                 display: "flex",
@@ -804,8 +854,8 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                     border: "none",
                     padding: "5px",
                   }}
-                  // value={formData.boxMarking}
-                  // onChange={handleInputChange}
+                  value={BoxData.boxMarking}
+                  onChange={handleBoxInput}
                 />
 
                 <Box
@@ -837,8 +887,8 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                         padding: "5px",
                       }}
 
-                      // value={formData.length}
-                      // onChange={handleInputChange}
+                      value={BoxData.length}
+                      onChange={handleBoxInput}
                     />
                     <span>X</span>
                     <input
@@ -853,8 +903,8 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                         padding: "5px",
                       }}
                       variant="outlined"
-                      // value={formData.width}
-                      // onChange={handleInputChange}
+                      value={BoxData.width}
+                      onChange={handleBoxInput}
                     />
                     <span>X</span>
                     <input
@@ -869,8 +919,8 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                         padding: "5px",
                       }}
                       variant="outlined"
-                      // value={formData.height}
-                      // onChange={handleInputChange}
+                      value={BoxData.height}
+                      onChange={handleBoxInput}
                     />
                   </Box>
                 </Box>
@@ -887,8 +937,8 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                     border: "none",
                     padding: "5px",
                   }}
-                  // value={formData.weight}
-                  // onChange={handleInputChange}
+                  value={BoxData.weight}
+                  onChange={handleBoxInput}
                 />
 
                 <input
@@ -899,7 +949,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                     border: "none",
                     padding: "5px",
                   }}
-                  // onChange={handleInputChange}
+                  onChange={handleBoxInput}
                   accept=".jpeg, .jpg, .png"
                 />
               </Box>
@@ -925,17 +975,15 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
               updateLoading ||
               suborderLoading ||
               updatesuborderLoading ||
-              intailUtilize === 0 ||
-              getSingleData?.data?.subOrders.length - 1 - index
-                ? true
-                : false
+              intailUtilize === 0 
+           
             }
-            onClick={handleSubmitMain}
+            onClick={isEnabled(index) ? null : handleSubmitMain}
           >
             {updateLoading || suborderLoading || updatesuborderLoading ? (
               <CircularProgress size="25px" sx={{ color: "#fff" }} />
             ) : (
-              "Submit"
+              isEnabled(index) ? "Submit Box details" : "Submit"
             )}
           </Button>
         </Box>
