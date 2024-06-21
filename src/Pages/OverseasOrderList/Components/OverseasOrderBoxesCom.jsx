@@ -122,12 +122,13 @@ const OverseasOrderBoxesCom = () => {
 
   useEffect(() => {
     if (overseasOrderBox?.success === true) {
-      const data = overseasOrderBox.data?.map((item, index) => ({
+      
+      const data = overseasOrderBox?.data?.boxDetail.map((item, index) => ({
         ...item,
-        id: item.overseasBoxId,
+        id: item.BoxId,
         Sno: index + 1,
-        subQty: item?.products?.length,
-        boxId: item.overseasBoxId,
+        subQty: item.products.length,
+        boxId: item.BoxId,
         dimension:
           item?.dimension.length +
           " X " +
@@ -191,18 +192,7 @@ const OverseasOrderBoxesCom = () => {
     },
     {
       field: "subQty",
-      headerName: "Product QTY",
-      flex: 0.2,
-      minWidth: 50,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
-
-    {
-      field: "totalOrderQty",
-      headerName: "Sub Qty",
+      headerName: "Product",
       flex: 0.2,
       minWidth: 50,
       align: "center",
@@ -271,7 +261,6 @@ const OverseasOrderBoxesCom = () => {
     },
   ];
 
-  console.log(shipmentValue);
   return (
     <StyledBox>
       <Loading
@@ -299,7 +288,9 @@ const OverseasOrderBoxesCom = () => {
                 >
                   Company Name :
                 </TableCell>{" "}
-                <TableCell style={{ color: "#fff" }}>{companyName}</TableCell>
+                <TableCell style={{ color: "#fff" }}>
+                  {overseasOrderBox?.data.CompanyName}
+                </TableCell>
                 <TableCell
                   sx={{
                     fontWeight: "bold",
@@ -309,17 +300,9 @@ const OverseasOrderBoxesCom = () => {
                 >
                   Concern Person :
                 </TableCell>{" "}
-                <TableCell style={{ color: "#fff" }}>{concernPerson}</TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    fontSize: "15px",
-                    color: "#9198ed",
-                  }}
-                >
-                  Mobile :
-                </TableCell>{" "}
-                <TableCell style={{ color: "#fff" }}>{mobile}</TableCell>
+                <TableCell style={{ color: "#fff" }}>
+                  {overseasOrderBox?.data.ConcernPerson}
+                </TableCell>
               </TableRow>
 
               <TableBody>{/* Add your table rows here */}</TableBody>

@@ -125,7 +125,7 @@ const TempOrder = () => {
           };
         });
       setOrderData(initializedData);
-    } else if(!isEditable) {
+    } else if(!isEditable && !conversionRate) {
       const initializedData = selectedOverseaseOrder.map((item) => ({
         ...item,
         orderQty: item.orderQty || null,
@@ -133,8 +133,11 @@ const TempOrder = () => {
         usdValue: item.usdValue || null,
       }));
      setOrderData(initializedData);
+     console.log(orderData.length)
     }
   }, [getSingleData, selectedOverseaseOrder, ConversionType]);
+
+
 
   useEffect(() => {
     const handleLoad = () => {
@@ -249,7 +252,7 @@ const TempOrder = () => {
     setTotalqty(TotalQuantity);
 
     setTotalRMBamount(TotalRMB?.toFixed(2));
-  }, [orderData]);
+  }, [orderData,conversionRate]);
 
   // assign order
   const handleAssignOrder = async () => {
@@ -540,6 +543,7 @@ const TempOrder = () => {
                       textAlign: "center",
                       width: "110px",
                       padding: "3px",
+                      
                     }}
                     value={item.rmbValue}
                     onChange={(e) =>

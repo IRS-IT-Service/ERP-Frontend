@@ -210,10 +210,10 @@ const OneOverseasShipment = () => {
     if (overseasOrderBox?.success === true) {
       const data = overseasOrderBox.data?.boxData?.map((item, index) => ({
         ...item,
-        id: item.overseasBoxId,
+        id: item.BoxId,
         Sno: index + 1,
         subQty: item?.products?.length,
-        boxId: item.overseasBoxId,
+        boxId: item.BoxId,
         dimension:
           item?.dimension.length +
           " X " +
@@ -278,17 +278,6 @@ const OneOverseasShipment = () => {
     {
       field: "subQty",
       headerName: "Product QTY",
-      flex: 0.2,
-      minWidth: 50,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
-
-    {
-      field: "totalOrderQty",
-      headerName: "Sub Qty",
       flex: 0.2,
       minWidth: 50,
       align: "center",
@@ -446,17 +435,7 @@ const OneOverseasShipment = () => {
                       <TableCell style={{ color: "#fff" }}>
                         {concernPerson}
                       </TableCell>
-                      <TableCell
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "15px",
-                          color: "#9198ed",
-                        }}
-                      >
-                        Mobile :
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }}>{mobile}</TableCell>
-                      <TableCell
+                       <TableCell
                         sx={{
                           fontWeight: "bold",
                           fontSize: "15px",
