@@ -64,17 +64,9 @@ const infoDetail = [
   },
 ];
 
-const OverseasorderList = () => {
+const PaidOverseaseOrder = () => {
   /// initialize
   const navigate = useNavigate();
-
-  const classes = useStyles();
-  const id = useParams().id;
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const companyName = queryParams.get("companyName");
-  const concernPerson = queryParams.get("concernPerson");
-  const mobile = queryParams.get("mobile");
 
   /// local state
   const [toggleValue, setToggleValue] = useState("pending");
@@ -111,7 +103,7 @@ const OverseasorderList = () => {
         status: item.status,
       }));
 
-      const filteredData = data.filter((item) => item.status === "unpaid");
+      const filteredData = data.filter((item) => item.status !== "unpaid");
 
       setRows(filteredData);
     }
@@ -217,37 +209,6 @@ const OverseasorderList = () => {
     },
 
     {
-      field: "noOfBoxes",
-      headerName: "Action",
-      flex: 0.2,
-      minWidth: 50,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        const status = params.row.status;
-        return (
-          <Button
-            variant="contained"
-            size="small"
-            onClick={(e) => {
-              handleOpen({
-                name: "Add Amount",
-                orderId: params.row.overseaseOrderId,
-                orderAmount: params.row.totalUSDAmount,
-                piNo: params.row.piNo,
-              });
-            }}
-            disabled={status == "paid" || status == "closed"}
-          >
-            Add Amount
-          </Button>
-        );
-      },
-    },
-
-    {
       field: "totalUSDAmount",
       headerName: "Product Value",
       flex: 0.2,
@@ -293,9 +254,10 @@ const OverseasorderList = () => {
         );
       },
     },
+
     {
-      field: "editOrder",
-      headerName: "Update-Order",
+      field: "details",
+      headerName: "Order",
       sortable: false,
       minWidth: 100,
       align: "center",
@@ -307,11 +269,11 @@ const OverseasorderList = () => {
         return (
           <Button
             onClick={() => {
-              navigate(`/tempOrder/${params.row.overseaseOrderId}`);
+              navigate(`/SubPIList/${params.row.overseaseOrderId}`);
             }}
-            disabled={status == "paid"}
+            disabled={status == "unpaid"}
           >
-            Update
+            View
           </Button>
         );
       },
@@ -343,95 +305,17 @@ const OverseasorderList = () => {
         info={true}
         customOnClick={handleOpen}
       /> */}
-
-      <StyledBox>
-        <Loading loading={overseasShipmentLoading} />
-        {/* <Box>
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: "10px",
-            }}
-          >
-            {companyName ? (
-              <Box sx={{ display: "flex" }}>
-                <Table sx={{ background: "#024d70", borderRadius: "15px" }}>
-                  <tbody>
-                    <TableRow>
-                      <TableCell
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "15px",
-                          color: "#9198ed",
-                        }}
-                      >
-                        Company Name :
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }}>
-                        {companyName}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "15px",
-                          color: "#9198ed",
-                        }}
-                      >
-                        Concern Person :
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }}>
-                        {concernPerson}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "15px",
-                          color: "#9198ed",
-                        }}
-                      >
-                        Mobile :
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }}>{mobile}</TableCell>
-                    </TableRow>
-                  </tbody>
-                </Table>
-              </Box>
-            ) : (
-              <Box> </Box>
-            )}
-
-         
-
-            <ToggleButtonGroup
-              color="primary"
-              value={toggleValue}
-              exclusive
-              onChange={(e) => {
-                setToggleValue(e.target.value);
-              }}
-              aria-label="Platform"
-            >
-              <ToggleButton
-                classes={{ selected: classes.selected }}
-                value="pending"
-              >
-                Pending
-              </ToggleButton>
-              <ToggleButton
-                classes={{ selected: classes.selected }}
-                value="closed"
-              >
-                Closed
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-        </Box> */}
+      <Box>
+        {" "}
         <Box>
           <Grid item sx={{ width: "100%", mt: "12px" }}>
             <Box id="filter-panel" />
           </Grid>
         </Box>
+      </Box>
+      <StyledBox>
+        <Loading loading={overseasShipmentLoading} />
+
         <Box
           sx={{
             width: "100%",
@@ -529,4 +413,4 @@ const OverseasorderList = () => {
   );
 };
 
-export default OverseasorderList;
+export default PaidOverseaseOrder;

@@ -30,15 +30,14 @@ const OverseasOrderGrid = () => {
           Sno: index + 1,
           CompanyName: item.comapanyName,
           ConcernPerson: item.concernPerson,
-          Mobile: item.mobileNo,
+          Mobile: item.mobileNo || "N/A",
           vendorId: item.vendorId,
-          paid: item.totalPaidProduct,
-          unPaid: item.totalRestock,
+          paid: item.paidOrders,
+          unPaid: item.unpaidOrders,
         };
       });
 
       setRows(data);
-      // console.log(data);
     }
   }, [allVendorData]);
 
