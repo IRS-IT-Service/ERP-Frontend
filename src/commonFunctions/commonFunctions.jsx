@@ -45,6 +45,7 @@ const  formatDate = (dateString) => {
 const  formateDateAndTime =(originalDate) => {
   const date = new Date(originalDate);
   const hours = date.getHours();
+  
   const minutes = date.getMinutes();
   const amOrPm = hours >= 12 ? "PM" : "AM";
   const formattedHours = hours % 12 || 12; // Convert to 12-hour format

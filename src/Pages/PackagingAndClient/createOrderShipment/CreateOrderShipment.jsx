@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Table,
   TableBody,
@@ -37,6 +37,7 @@ import { setAddparts } from "../../../features/slice/R&DSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import EditIcon from "@mui/icons-material/Edit";
 
 import axios from "axios";
 const columns = [
@@ -46,7 +47,9 @@ const columns = [
   { field: "Brand", headerName: "Brand" },
   { field: "GST", headerName: "GST (%)" },
   { field: "InStock", headerName: "In Store" },
-  { field: "Require QTY", headerName: "Require QTY" },
+  { field: "Assigned QTY", headerName: "Assigned QTY" },
+  { field: "QTY", headerName: "QTY" },
+
   { field: "Delete", headerName: "Remove" },
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
@@ -76,7 +79,8 @@ const StyledCell = styled(TableCell)(({ theme }) => ({
 import {
   useUpdateCustomershippingAddressMutation,
   useCreateShipmentOrderMutation,
-  useUpdateCustomerShipmentMutation
+  useUpdateCustomerShipmentMutation,
+  useDeleteShipmentProductMutation,
 } from "../../../features/api/clientAndShipmentApiSlice";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
@@ -192,7 +196,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [FinalData, setFinalData] = useState([]);
   const [updateValue, setUpdateValue] = useState([]);
-  
+  const [editButton, setEditButton] = useState([]);
 
   const [Clientlist, setClientlist] = useState([]);
   const [form, setForm] = useState({
@@ -238,14 +242,15 @@ const createOrderShipment = ({ setOpen, id }) => {
     { isLoading: addmoreaddressLoading, refetch: addRefetch },
   ] = useUpdateCustomershippingAddressMutation();
 
+  const [deleteProduct, { isLoading: deleteLoading }] =
+    useDeleteShipmentProductMutation();
+
   const { data: clientData, refetch: clientrefetch } = useGetAllClientQuery();
 
   const handleCloseDialog = () => {
     setOpen(false);
   };
   // setFinalData(shipment?.client?.Items)
-
- 
 
   useEffect(() => {
     if (selectedData?.length > 0) {
@@ -261,9 +266,7 @@ const createOrderShipment = ({ setOpen, id }) => {
     }
   }, [selectedData]);
 
-
   const handleClick = (event) => {
-   
     setAnchorEl(event.currentTarget);
   };
 
@@ -273,6 +276,20 @@ const createOrderShipment = ({ setOpen, id }) => {
 
   const handleAddaddress = (event) => {
     setAddaddress(!addAddress);
+  };
+
+  const handleEditButton = (SKU) => {
+    setFinalData((prev) => {
+      return prev.map((item) => {
+        if (item.SKU === SKU) {
+          return {
+            ...item,
+            isEdit: true,
+          };
+        }
+        return item;
+      });
+    });
   };
 
   useEffect(() => {
@@ -303,19 +320,17 @@ const createOrderShipment = ({ setOpen, id }) => {
 
   useEffect(() => {
     {
-      if(!orderId){
-      setSelectedAddress({});
-      setSelectedCustomer({
-        ContactName: "",
-        ContactNumber: "",
-        AlternateNumber: "",
-        Invoice: "",
-      });
-    }
+      if (!orderId) {
+        setSelectedAddress({});
+        setSelectedCustomer({
+          ContactName: "",
+          ContactNumber: "",
+          AlternateNumber: "",
+          Invoice: "",
+        });
+      }
     }
   }, [personType, setPersonType]);
-
-
 
   const handleToggleAddress = (event) => {
     const checked = event.target.checked;
@@ -330,40 +345,69 @@ const createOrderShipment = ({ setOpen, id }) => {
     dispatch(setInfo(false));
   };
 
+  const DeleteProduct = async (SKU) => {
+    if(orderId){
+    try {
+      let info = {
+        shipmentId: orderId,
+        SKU: SKU,
+      };
+
+      const result = await deleteProduct(info).unwrap();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  };
+
   const openPop = Boolean(anchorEl);
   const idPop = openPop ? "simple-popover" : undefined;
 
   const handleQuantityChange = (event, item) => {
-    const { value, name } = event.target;
+    const { value } = event.target;
+    const newValue = +value;
     let error = false;
 
-    // setQty({ ...qty, [item.SKU]: item.Qty });
-    setFinalData((prev) => {
-         return prev.map((data) => {
+    setFinalData((prev) =>
+      prev.map((data) => {
         if (data.SKU === item.SKU) {
-          if (!orderId && (value > item.ActualQuantity || value === "0")) {
+          if (!orderId) {
+            if (newValue > item.ActualQuantity || newValue === 0) {
+              error = true;
+            }
+          } else {
+            if (item.prevQty) {
+              if (
+                !(+item.prevQty + +item.ActualQuantity >= newValue) ||
+                newValue === 0
+              ) {
                 error = true;
-          }else if(orderId){
-            if ((!(+item.prevQty + +item.ActualQuantity >= +value)  || value === "0")) {
-             error = true;
+              }
+            } else {
+              if (newValue > item.ActualQuantity || newValue === 0) {
+                error = true;
+              }
+            }
           }
-        }
 
           return {
             ...data,
-            Qty: value,
             error: error,
+            updateQTY: newValue || "",
+            Qty: newValue || item.prevQty,
           };
         }
         return data;
-      });
-    });
+      })
+    );
   };
 
   const removeSelectedItems = (id) => {
     const newSelectedItems = Requireqty.filter((item) => item.SKU !== id);
     const newSelectedRowsData = FinalData.filter((item) => item.SKU !== id);
     const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id);
+    
+    DeleteProduct(id)
     // setUpdateValue(NewUpdatedValue);
     setFinalData(newSelectedRowsData);
     // setSelectedItems(newSelectedItems);
@@ -381,7 +425,7 @@ const createOrderShipment = ({ setOpen, id }) => {
       const foundItem = clientData.client.find(
         (item) => item._id === newValue.id
       );
-      console.log(foundItem)
+      console.log(foundItem);
       setSelectedCustomer(foundItem);
     } else {
       console.log("ClientId not found in newValue");
@@ -390,78 +434,69 @@ const createOrderShipment = ({ setOpen, id }) => {
 
   useEffect(() => {
     if (shipment) {
-  
       let data = {
         ClientId: shipment?.client?.ClientId,
         _id: shipment?.client?._id,
-        OrderShipmentId:shipment?.client?.OrderShipmentId,
-      ClientType: shipment?.client?.CompanyName !== "" ? "Company" : "Individual",
+        OrderShipmentId: shipment?.client?.OrderShipmentId,
+        ClientType:
+          shipment?.client?.CompanyName !== "" ? "Company" : "Individual",
         CompanyName: shipment?.client?.CompanyName,
         ContactName: shipment?.client?.ContactPerson,
         PermanentAddress: shipment?.client?.BillingAddress,
         AlternateAddress: shipment?.client?.ShippingAddress,
         ContactNumber: shipment?.client?.Contact,
-        AlternateNumber:shipment?.client?.AlternateNumber,
-   
-
-
-
+        AlternateNumber: shipment?.client?.AlternateNumber,
       };
       setSelectedCustomer(data);
-      setSelectedAddress(shipment?.client?.ShippingAddress)
-      setPersonType(shipment?.client?.CompanyName !== "" ? "Company" : "Individual")
-      
+      setSelectedAddress(shipment?.client?.ShippingAddress);
+      setPersonType(
+        shipment?.client?.CompanyName !== "" ? "Company" : "Individual"
+      );
     }
   }, [shipment]);
 
-  useEffect(()=>{
-    if(orderId){
-      
-        const foundItem = clientData.client.find(
-          (item) => item.ClientId
-          === shipment?.client?.ClientId
-        );
-      
-        setSelectedCustomer((prev)=>{
-          return {
-           ...prev,
-           AlternateAddress: foundItem.AlternateAddress,
-          }
-        });
+  useEffect(() => {
+    if (orderId) {
+      const foundItem = clientData.client.find(
+        (item) => item.ClientId === shipment?.client?.ClientId
+      );
 
-     
-      } 
-    
-
-  },[anchorEl])
-
-
-useEffect (()=>{
-
-  if(shipment?.client?.Items) {
-setFinalData((prev)=>{
-  return shipment?.client?.Items.map((item)=>{
-    return {
-      SKU: item.SKU,
-      Qty: item.Qty,
-      prevQty: item.Qty,
-      Name : item.productName,
-      GST: item.GST,
-      Brand:item.Brand,
-      ActualQuantity: item.ActualQuantity,
-      error: false,
+      setSelectedCustomer((prev) => {
+        return {
+          ...prev,
+          AlternateAddress: foundItem.AlternateAddress,
+        };
+      });
     }
-  })
-})
-  }
+  }, [anchorEl]);
 
-},[shipment])
-
+  useEffect(() => {
+    if (shipment?.client?.Items) {
+      setFinalData((prev) => {
+        return shipment?.client?.Items.map((item) => {
+          return {
+            SKU: item.SKU,
+            Qty: item.Qty,
+            prevQty: item.Qty,
+            Name: item.productName,
+            updateQTY: "",
+            GST: item.GST,
+            Brand: item.Brand,
+            ActualQuantity: item.ActualQuantity,
+            error: false,
+            isEdit: false,
+          };
+        });
+      });
+    }
+  }, [shipment]);
 
   const handleSelectAddress = (address) => {
     setSelectedAddress(address);
     handleClose();
   };
+
+  console.log(FinalData);
 
   const handleAddmoreAddress = async () => {
     try {
@@ -497,8 +532,6 @@ setFinalData((prev)=>{
   const handleSubmit = async () => {
     let isError = false;
     try {
-
-     
       const info = FinalData.map((item) => {
         if (item.Qty === "") {
           isError = true;
@@ -507,23 +540,21 @@ setFinalData((prev)=>{
           isError = true;
           return toast.error("Invalid quantity");
         }
-        if(orderId ){
+        if (orderId) {
           return {
-           
             SKU: item.SKU,
             Qty: item.Qty,
             productName: item.Name,
           };
-        }else{
+        } else {
           return {
             SKU: item.SKU,
             Qty: item.Qty,
             productName: item.Name,
           };
         }
-        
       });
-  
+
       const isEmpty = Object.keys(selectedAddress)?.length === 0;
 
       if (!selectedCustomer.ClientId) {
@@ -534,10 +565,11 @@ setFinalData((prev)=>{
         return;
       }
 
-
-
       const formData = new FormData();
-       {orderId && formData.append("OrderShipmentId", selectedCustomer.OrderShipmentId); }
+      {
+        orderId &&
+          formData.append("OrderShipmentId", selectedCustomer.OrderShipmentId);
+      }
       formData.append("ClientId", selectedCustomer.ClientId);
       formData.append("ShippingAddress", JSON.stringify(selectedAddress));
       formData.append(
@@ -551,19 +583,14 @@ setFinalData((prev)=>{
       formData.append("AlternateNumber", selectedCustomer.AlternateNumber);
       formData.append("Items", JSON.stringify(info));
 
- 
-if(orderId){
-  const result = await updateShipment(formData).unwrap();
-  toast.success("Order successfully updated");
+      if (orderId) {
+        const result = await updateShipment(formData).unwrap();
+        toast.success("Order successfully updated");
+      } else {
+        const result = await createShipment(formData).unwrap();
+        toast.success("Order successfully created");
+      }
 
-}else{
-  const result = await createShipment(formData).unwrap();
-  toast.success("Order successfully created");
-}
-
-      
-
-     
       navigate("/shipmentList");
       window.location.reload();
     } catch (e) {
@@ -755,7 +782,7 @@ if(orderId){
               ) : (
                 <Box>
                   <Autocomplete
-                 value={orderId && selectedCustomer.ContactName}
+                    value={orderId && selectedCustomer.ContactName}
                     style={{
                       width: "26rem",
                       backgroundColor: "rgba(255, 255, 255)",
@@ -861,15 +888,21 @@ if(orderId){
                 </Box>
                 <Box
                   sx={{
-                    width: "100%",
-                    height: "auto",
+             
+              
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
                     padding: "16px",
+               
+            
                   }}
                 >
-                  <Table>
+                  <Table sx={{
+                      width: "30vw",
+                    overflow: "auto",
+                     
+                    }} >
                     <TableBody>
                       {selectedCustomer?.PermanentAddress &&
                         Object.keys(selectedCustomer?.PermanentAddress).map(
@@ -878,13 +911,13 @@ if(orderId){
                               return null;
                             }
                             return (
-                              <TableRow key={key} sx={{ padding: 0 }}>
+                              <TableRow key={key} sx={{ padding: 0  }}>
                                 <TableCell
-                                  sx={{ padding: 0.5, fontWeight: "bold" }}
+                                  sx={{ padding: 0.5, fontWeight: "bold", }}
                                 >
                                   {key?.toUpperCase()}:
                                 </TableCell>
-                                <TableCell sx={{ padding: 0 }}>
+                                <TableCell sx={{ padding: 0,overflow:"auto" }}>
                                   {selectedCustomer?.PermanentAddress[key]}
                                 </TableCell>
                               </TableRow>
@@ -898,6 +931,7 @@ if(orderId){
 
               <Box
                 sx={{
+               
                   display: "flex",
                   justifyContent: "center",
                   flexDirection: "column",
@@ -907,6 +941,7 @@ if(orderId){
               >
                 <Box
                   sx={{
+                
                     display: "flex",
                     gap: "10px",
                     alignItems: "center",
@@ -922,7 +957,9 @@ if(orderId){
                     Shipping Address{" "}
                   </Typography>
                   <Box
+
                     sx={{
+                    
                       cursor: "pointer",
                       color: "blue",
                       fontSize: "20px",
@@ -938,7 +975,7 @@ if(orderId){
                 </Box>
                 <Box
                   sx={{
-                    width: "100%",
+                
                     height: "auto",
                     display: "flex",
                     flexDirection: "column",
@@ -947,7 +984,11 @@ if(orderId){
                   }}
                 >
                   {selectedAddress ? (
-                    <Table>
+                    <Table sx={{
+                      width: "30vw",
+                    overflow: "auto",
+                     
+                    }}>
                       <TableBody>
                         {Object.keys(selectedAddress).map((key) => {
                           if (
@@ -986,14 +1027,30 @@ if(orderId){
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {columns.map((column) => (
-                    <StyledTableCell
-                      sx={{ fontSize: ".7rem" }}
-                      key={column.field}
-                    >
-                      {column.headerName}
-                    </StyledTableCell>
-                  ))}
+                  {columns.map((column) => {
+                    if (column.headerName === "Assigned QTY") {
+                      if (orderId) {
+                        return (
+                          <StyledTableCell
+                            key={column.field}
+                            sx={{ fontSize: ".8rem" }}
+                          >
+                            {column.headerName}
+                          </StyledTableCell>
+                        );
+                      } else {
+                        return <></>;
+                      }
+                    }
+                    return (
+                      <StyledTableCell
+                        key={column.field}
+                        sx={{ fontSize: ".7rem" }}
+                      >
+                        {column.headerName}
+                      </StyledTableCell>
+                    );
+                  })}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1026,34 +1083,92 @@ if(orderId){
                         {item.ActualQuantity}
                       </StyleTable>
 
-                      <StyleTable align="center">
-                        <TextField
-                          autocomplete={false}
-                          size="small"
-                          sx={{
-                            "& input": {
-                              height: "10px",
-                              maxWidth: "30px",
-                            },
-                          }}
-                          name="Qty"
-                          value={item.Qty}
-                          type="number"
-                          onChange={(event) => {
-                            handleQuantityChange(event, item);
-                          }}
-                          error={item?.error}
-                          helperText={
-                            item?.error ? (
-                              <spna style={{ fontSize: "9px" }}>
-                                Enter valid Qty!
-                              </spna>
-                            ) : (
-                              ""
-                            )
-                          }
-                        />
-                      </StyleTable>
+                      {orderId ? (
+                        <>
+                          <StyleTable
+                            align="center"
+                            sx={{ fontSize: ".8rem", minWidth: "80px" }}
+                          >
+                            {item.prevQty}
+                          </StyleTable>
+                          {item.isEdit ? (
+                            <StyleTable align="center">
+                              <TextField
+                                autocomplete={false}
+                                size="small"
+                                sx={{
+                                  "& input": {
+                                    height: "10px",
+                                    maxWidth: "30px",
+                                  },
+                                }}
+                                name="updateQTY"
+                                value={item.updateQTY}
+                                type="number"
+                                onChange={(event) => {
+                                  handleQuantityChange(event, item);
+                                }}
+                                error={item?.error}
+                                helperText={
+                                  item?.error ? (
+                                    <spna style={{ fontSize: "9px" }}>
+                                      Enter valid Qty!
+                                    </spna>
+                                  ) : (
+                                    ""
+                                  )
+                                }
+                              />
+                            </StyleTable>
+                          ) : (
+                            <StyleTable align="center">
+                              {" "}
+                              <EditIcon
+                                sx={{
+                                  cursor: "pointer",
+                                  color: "blue",
+                                  fontSize: "20px",
+                                  "&:hover": {
+                                    color: "red",
+                                  },
+                                }}
+                                onClick={() => handleEditButton(item.SKU)}
+                              />{" "}
+                            </StyleTable>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <StyleTable align="center">
+                            <TextField
+                              autocomplete={false}
+                              size="small"
+                              sx={{
+                                "& input": {
+                                  height: "10px",
+                                  maxWidth: "30px",
+                                },
+                              }}
+                              name="Qty"
+                              value={item.Qty}
+                              type="number"
+                              onChange={(event) => {
+                                handleQuantityChange(event, item);
+                              }}
+                              error={item?.error}
+                              helperText={
+                                item?.error ? (
+                                  <spna style={{ fontSize: "9px" }}>
+                                    Enter valid Qty!
+                                  </spna>
+                                ) : (
+                                  ""
+                                )
+                              }
+                            />
+                          </StyleTable>{" "}
+                        </>
+                      )}
 
                       <StyleTable align="center">
                         <DeleteIcon
@@ -1089,8 +1204,7 @@ if(orderId){
             paddingBottom: ".6rem",
           }}
         >
-   
-          {FinalData?.length > 0 &&  (
+          {FinalData?.length > 0 && (
             <Button
               disabled={createShipmentLoading}
               variant="contained"
@@ -1103,15 +1217,13 @@ if(orderId){
             >
               {createShipmentLoading || updateShipmentLoading ? (
                 <CircularProgress size={24} color="inherit" />
+              ) : orderId ? (
+                "Update Order"
               ) : (
-               orderId ? "Update Order" : "Submit Order"
+                "Submit Order"
               )}
             </Button>
-          ) 
-          
-          } 
-
-        
+          )}
         </Box>
 
         {/* Address popover */}

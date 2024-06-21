@@ -18,8 +18,14 @@ import { toast } from "react-toastify";
 import { DatePicker } from "@mui/x-date-pickers";
 import { ref } from "firebase/storage";
 
-const OpenActionDial = ({ open, close, selectedDetails, selectedInfo ,refetch}) => {
-  console.log(selectedInfo)
+const OpenActionDial = ({
+  open,
+  close,
+  selectedDetails,
+  selectedInfo,
+  refetch,
+}) => {
+  console.log(selectedInfo);
   let piPdf =
     selectedInfo && selectedInfo?.piCopy?.url?.split("/").pop().includes("pdf");
   let swiftPdf =
@@ -34,8 +40,8 @@ const OpenActionDial = ({ open, close, selectedDetails, selectedInfo ,refetch}) 
   const [selectedData, setSelectedData] = useState({
     RemittanceNO: "",
     RemittanceAmount: "",
-    PINO: "",
-    date:"",
+    PINO: selectedInfo?.piNo,
+    date: "",
   });
 
   // rtk query api callings
@@ -67,9 +73,10 @@ const OpenActionDial = ({ open, close, selectedDetails, selectedInfo ,refetch}) 
       formdata.append("remitanceNo", selectedData.RemittanceNO);
       formdata.append("orderId", selectedDetails?.orderId);
       formdata.append("piNo", selectedData.PINO);
+      // console.log(selectedData.PINO)
       const result = await updatePayment(formdata).unwrap();
       toast.success("Payment updated successfully");
-      refetch()
+      refetch();
       close();
     } catch (error) {
       console.log(error);
@@ -146,13 +153,13 @@ const OpenActionDial = ({ open, close, selectedDetails, selectedInfo ,refetch}) 
                   value={selectedInfo?.orderAmount}
                   // onChange={handleOnChangeFile}
                   disabled
-             
                 />
                 <TextField
                   name="PINO"
                   label="PI NO"
                   size="small"
                   value={selectedData.PINO}
+                  // defaultValue={selectedInfo?.piNo}
                   onChange={handleOnChangeFile}
                   required
                 />

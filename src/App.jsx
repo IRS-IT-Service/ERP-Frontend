@@ -147,6 +147,7 @@ import { toastNotification } from "./commonFunctions/notificationHelpers";
 
 import SubPIList1 from "./Pages/OverseasOrderList/Components/SubPIListComponent/SubPIList1";
 import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
+import PaidOverseaseOrder from "./Pages/OverseasOrderList/Components/PaidOverseaseOrder";
 
 function App() {
   /// initialize
@@ -808,6 +809,10 @@ function App() {
                 <Route
                   path="/OverseasorderList"
                   element={<OverseasorderList />}
+                />
+                <Route
+                  path="/paidOverseasOrder"
+                  element={<PaidOverseaseOrder />}
                 />
                 <Route path="/SubPIList/:id" element={<SubPIList1 />} />
                 {/* Careers */}
