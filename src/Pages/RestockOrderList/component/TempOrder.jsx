@@ -125,33 +125,28 @@ const TempOrder = () => {
           };
         });
       setOrderData(initializedData);
-    } else if(!isEditable && !conversionRate) {
+    } else if (!isEditable && !conversionRate) {
       const initializedData = selectedOverseaseOrder.map((item) => ({
         ...item,
-        orderQty: item.orderQty || null,
+        orderQty: item.orderQty || item.RestockQuantity,
         rmbValue: item.rmbValue || null,
         usdValue: item.usdValue || null,
       }));
-     setOrderData(initializedData);
-     console.log(orderData.length)
+      setOrderData(initializedData);
     }
   }, [getSingleData, selectedOverseaseOrder, ConversionType]);
 
-
-
   useEffect(() => {
     const handleLoad = () => {
-    
       navigate("/RestockOrderList");
     };
 
-    window.addEventListener('load', handleLoad);
+    window.addEventListener("load", handleLoad);
 
     return () => {
-      window.removeEventListener('load', handleLoad);
+      window.removeEventListener("load", handleLoad);
     };
-  }, [])
-
+  }, []);
 
   // getting the value after changing the c rates
   const handleConversionRateChange = (e) => {
@@ -161,11 +156,11 @@ const TempOrder = () => {
       const updatedItem = { ...item };
       if (ConversionType === "RMB") {
         updatedItem.usdValue = parseFloat(
-          ((item.rmbValue || 0) * rate ).toFixed(2)
+          ((item.rmbValue || 0) * rate).toFixed(2)
         );
       } else if (ConversionType === "USD") {
         updatedItem.rmbValue = parseFloat(
-          ((item.usdValue || 0) * rate ).toFixed(2)
+          ((item.usdValue || 0) * rate).toFixed(2)
         );
       }
       return updatedItem;
@@ -180,11 +175,11 @@ const TempOrder = () => {
     updatedData[index][field] = value;
     if (field === "rmbValue" && ConversionType === "RMB") {
       updatedData[index].usdValue = parseFloat(
-        (value * conversionRate ).toFixed(2)
+        (value * conversionRate).toFixed(2)
       );
     } else if (field === "usdValue" && ConversionType === "USD") {
       updatedData[index].rmbValue = parseFloat(
-        (value * conversionRate ).toFixed(2)
+        (value * conversionRate).toFixed(2)
       );
     }
     setOrderData(updatedData);
@@ -232,14 +227,14 @@ const TempOrder = () => {
         usdValue: item.USD || null,
         GST: item.GST || null,
       }));
+
       setOrderData((prev) => [...prev, ...initializedData]);
     }
   }, [selectedData]);
-
+  console.log(selectedData);
   useEffect(() => {
     const TotalValue = orderData?.reduce((acc, cur) => {
-
-          return acc + +cur?.orderQty * +cur?.usdValue || 0;
+      return acc + +cur?.orderQty * +cur?.usdValue || 0;
     }, 0);
     const TotalQuantity = orderData?.reduce((acc, cur) => {
       return acc + +cur?.orderQty;
@@ -252,7 +247,7 @@ const TempOrder = () => {
     setTotalqty(TotalQuantity);
 
     setTotalRMBamount(TotalRMB?.toFixed(2));
-  }, [orderData,conversionRate]);
+  }, [orderData, conversionRate]);
 
   // assign order
   const handleAssignOrder = async () => {
@@ -543,7 +538,6 @@ const TempOrder = () => {
                       textAlign: "center",
                       width: "110px",
                       padding: "3px",
-                      
                     }}
                     value={item.rmbValue}
                     onChange={(e) =>
