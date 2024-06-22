@@ -77,10 +77,8 @@ const BoxesDialog = ({ setOpenbox, openBox, product }) => {
                       <StyledCellHeader>Sno</StyledCellHeader>
                       <StyledCellHeader>SKU</StyledCellHeader>
                       <StyledCellHeader>Name</StyledCellHeader>
-                      <StyledCellHeader>Brand</StyledCellHeader>
-                      <StyledCellHeader>GST %</StyledCellHeader>
-                      <StyledCellHeader>Price $</StyledCellHeader>
-                      <StyledCellHeader>Box Quantity</StyledCellHeader>
+                 
+                      <StyledCellHeader>Order Quantity</StyledCellHeader>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -89,14 +87,7 @@ const BoxesDialog = ({ setOpenbox, openBox, product }) => {
                         <StyledCell>{index + 1}</StyledCell>
                         <StyledCell>{item.SKU}</StyledCell>
                         <StyledCell>{item.Name}</StyledCell>
-                        <StyledCell>{item.Brand}</StyledCell>
-                        <StyledCell>{item.Gst}</StyledCell>
-                        <StyledCell
-                      
-                        >
-                          $ {item.Price}
-                        </StyledCell>
-                        <StyledCell>{item.Orderqty}</StyledCell>
+                       <StyledCell>{item.updateQTY || item.Orderqty}</StyledCell>
 
             
                       </TableRow>
@@ -105,12 +96,10 @@ const BoxesDialog = ({ setOpenbox, openBox, product }) => {
                 </Table>
               </TableContainer>
             </Box>
-            <Box style={{ flexBasis: "35%", width:500 ,height:500 }}>
+            <Box style={{ flexBasis: "35%", width:600 ,height:500,padding:"10px" }}>
               <img
-                src={product?.image}
-                allowFullScreen=""
-                frameBorder="0"
-               title="Image Preview"
+                src={product?.image?.url}
+                title="Image Preview"
                 style={{objectFit:"cover",objectPosition:"center",width:"100%",height:"100%"}}
               />
             </Box>
