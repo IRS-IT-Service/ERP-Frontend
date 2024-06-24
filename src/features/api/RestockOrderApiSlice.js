@@ -349,6 +349,14 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getAllBoxes: builder.query({
+      query: (query) => {
+        return {
+          url: `${RESTOCK_URL}/getAllBoxes?query=${query}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -394,4 +402,5 @@ export const {
   useGetSingleVendorQuery,
   useGetSingleVendorWithOrderQuery,
   useCreateOrderBoxDetailsMutation,
+  useGetAllBoxesQuery
 } = restockApiSlice;
