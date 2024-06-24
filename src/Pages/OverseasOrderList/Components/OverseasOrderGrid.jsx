@@ -28,18 +28,21 @@ const OverseasOrderGrid = () => {
         return {
           id: item.vendorId,
           Sno: index + 1,
-          CompanyName: item.comapanyName,
+          CompanyName: item.companyName,
           ConcernPerson: item.concernPerson,
           Mobile: item.mobileNo || "N/A",
           vendorId: item.vendorId,
           paid: item.paidOrders,
           unPaid: item.unpaidOrders,
+          box: item.box,
         };
       });
 
       setRows(data);
     }
   }, [allVendorData]);
+
+  console.log(rows);
 
   // Define the columns
   const columns = [
@@ -143,17 +146,26 @@ const OverseasOrderGrid = () => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      renderCell: (params) => (
-        <Button
-          onClick={() => {
-            navigate(
-              `/OverseasOrderBoxes/${params.row.vendorId}?companyName=${params.row.CompanyName}&concernPerson=${params.row.ConcernPerson}&mobile=${params.row.Mobile}`
-            );
-          }}
-        >
-          View
-        </Button>
-      ),
+      renderCell: (params) => {
+        const box = params.row.box;
+        const countPending = box.reduce(
+          (acc, item) => acc + (item.status === "pending" ? 1 : 0),
+          0
+        );
+        return (
+          <Button
+            // variant={countPending ? "contained" : ""}
+            sx={{ color: `${countPending ? "red" : ""}` }}
+            onClick={() => {
+              navigate(
+                `/OverseasOrderBoxes/${params.row.vendorId}?companyName=${params.row.CompanyName}&concernPerson=${params.row.ConcernPerson}&mobile=${params.row.Mobile}`
+              );
+            }}
+          >
+            {countPending ? ` Pending ${countPending}` : "view"}
+          </Button>
+        );
+      },
     },
     {
       field: "shipment",
@@ -166,11 +178,11 @@ const OverseasOrderGrid = () => {
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => (
         <Button
-        onClick={() => {
-          navigate(
-            `/OverseasShipment/${params.row.vendorId}?companyName=${params.row.CompanyName}&concernPerson=${params.row.ConcernPerson}&mobile=${params.row.Mobile}`
-          );
-        }}
+          onClick={() => {
+            navigate(
+              `/OverseasShipment/${params.row.vendorId}?companyName=${params.row.CompanyName}&concernPerson=${params.row.ConcernPerson}&mobile=${params.row.Mobile}`
+            );
+          }}
         >
           View
         </Button>
