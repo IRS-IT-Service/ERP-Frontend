@@ -224,15 +224,21 @@ const Inventory = () => {
     setSelectedItemsData(newSelectedRowsData);
     setSelectedItems(newSelectedItems);
   };
-  const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
-  const uniqueSKUsArray = Array.from(uniqueSKUs);
-  const realData = uniqueSKUsArray?.filter((item) =>
-    selectedItems.find((docs) => item.SKU === docs)
-  );
+  // const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
+  // const uniqueSKUsArray = Array.from(uniqueSKUs);
+  // const realData = uniqueSKUsArray?.filter((item) =>
+  //   selectedItems.find((docs) => item.SKU === docs)
+  // );
+
+  const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
+const realData = Array.from(uniqueSKUs).map((sku) => 
+  createQueryItems.find((item) => item.SKU === sku)
+);
+ 
   const handleOpenDialog = () => {
     setOpen(true);
   };
-console.log(realData)
+
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
