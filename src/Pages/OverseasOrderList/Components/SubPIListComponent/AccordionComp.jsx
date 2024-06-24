@@ -314,10 +314,11 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       }
 
       const UpdateOrder = [];
+      let isEmptyQTY = false
       const order = getSingleData?.data?.subOrders;
       const processedData = ProductData.map((item) => {
         const remainingQty = item.Orderqty - item.updatedQTY;
-
+        isEmptyQTY = item.updatedQTY ? false : true
         return {
           final:
             remainingQty !== 0 && remainingQty > 0
@@ -361,6 +362,10 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
         products: finalValue,
         totalUSDAmount: shortFallamount,
       };
+
+ if(isEmptyQTY){
+   return toast.error("Please update the quantity")
+ }
       if (shortFallamount > 0) {
         const result = await createsuborder(suborder).unwrap();
 
