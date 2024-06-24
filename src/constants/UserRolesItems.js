@@ -238,10 +238,18 @@ const userRolesData = [
         icon: 'fa fa-truck',
       },
       {
+    
         id: 10,
         name: 'Create Restock Order',
         path: '/RestockOrder',
-        icon: 'fa fa-list',
+        icon: 'fa fa-cubes',
+      },
+      {
+    
+        id: 83,
+        name: 'Create Shipment',
+        path: '/CreateShipment',
+        icon: 'fa fa-truck-fast',
       },
       {
         id: 9,
@@ -593,6 +601,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 82
+// last routes is 83
 
 export default userRolesData;

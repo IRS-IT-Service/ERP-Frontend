@@ -833,7 +833,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                             onChange={(e) => handleInputChange(e, item.SKU)}
                           />
                         </StyledCell>
-                        <StyledCell>${item.updatedQTY * item.USD}</StyledCell>
+                        <StyledCell>${(item.updatedQTY * item.USD).toFixed(3)}</StyledCell>
                         <StyledCell>
                           <DeleteIcon
                             onClick={() =>
