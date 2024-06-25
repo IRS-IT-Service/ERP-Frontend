@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, styled, Button, CircularProgress } from "@mui/material";
 import Header from "../../components/Common/Header";
 import axios from "axios";
@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import {
   useAddAlternateNameMutation,
   useAddProductMutation,
+  useGetDynamicValueQuery,
 } from "../../features/api/productApiSlice";
 import { useCreateUserHistoryMutation } from "../../features/api/usersApiSlice";
 import { useSocket } from "../../CustomProvider/useWebSocket";
@@ -30,16 +31,30 @@ const BulkAddProduct = () => {
   /// local state
   const [loading, setLoading] = useState(false);
   const [excelData, setExcelData] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [subCategory, setSubCatgory] = useState([]);
+  const [gst, setGst] = useState([]);
 
   /// RTK query
   const [addProductsApi, { isLoading }] = useAddProductMutation();
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [addAlterNateName, { isLoading: alternatLoading }] =
     useAddAlternateNameMutation();
+  const { data: getDynamicValue } = useGetDynamicValueQuery();
+
+  useEffect(() => {
+    if (getDynamicValue && getDynamicValue.data[0]) {
+      const mainArr = getDynamicValue.data[0];
+      setBrands(mainArr.Brand);
+      setCategory(mainArr.Category);
+      setSubCatgory(mainArr.SubCategory);
+      setGst(mainArr.GST);
+    }
+  }, [getDynamicValue]);
 
   /// Handlers
   const donwnloadExcelSample = async () => {
-    console.log("hii");
     try {
       setLoading(true);
       let response;
@@ -74,7 +89,7 @@ const BulkAddProduct = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
-
+console.log("trigger")
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: "array" });
@@ -107,10 +122,43 @@ const BulkAddProduct = () => {
           }
         )
       );
+
+      // Validation
+      let  invalidEntries = [];
+      excelObjects.forEach((obj) => {
+        if (obj.Brand && !brands.includes(obj.Brand)) {
+          invalidEntries.push(
+            `${obj.Name}: Invalid Brand - ${obj.Brand}`
+          );
+        }
+        if (obj.Category && !category.includes(obj.Category)) {
+          invalidEntries.push(
+            `${obj.Name}: Invalid Category - ${obj.Category}`
+          );
+        }
+        if ((obj.SubCategory) && !subCategory.includes(obj.SubCategory)) {
+          invalidEntries.push(
+            `${obj.Name}: Invalid SubCategory - ${obj.SubCategory}`
+          );
+        }
+        if (String(obj.GST) && !gst.includes(String(obj.GST))) {
+          invalidEntries.push(`${obj.Name}: Invalid GST - ${obj.GST}`);
+        }
+      });
+
+      if (invalidEntries.length > 0) {
+        alert(`Errors found:\n${invalidEntries.join("\n")}`);
+        event.target.value = null;
+        setExcelData([])
+        return;
+      }
       setExcelData(excelObjects);
+      event.target.value = null;
+
     };
     reader.readAsArrayBuffer(file);
   };
+
 
   const handleSubmit = async (e) => {
     const transformedExcelData = excelData.map((item) => ({
@@ -315,7 +363,7 @@ const BulkAddProduct = () => {
           <input
             type="file"
             accept=".xls, .xlsx"
-            onChange={handleFileChange}
+            onChange={(e) => handleFileChange(e)}
             style={{ display: "none" }}
             id="file-upload"
           />
