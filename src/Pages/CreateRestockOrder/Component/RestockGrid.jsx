@@ -3,25 +3,26 @@ import {
   DataGrid,
   useGridApiRef,
   GridToolbarContainer,
-
-
 } from "@mui/x-data-grid";
 // import FilterBar from "../../../components/Common/FilterBar";
 import FilterBarV2 from "../../../components/Common/FilterBarV2";
-import { Grid, Box, Button ,  TablePagination } from "@mui/material";
+import { Grid, Box, Button, TablePagination } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllProducts } from "../../../features/slice/productSlice";
-import {useGetAllProductV2Query } from "../../../features/api/productApiSlice";
+import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import RestockItemDialog from "./RestockItemDialog";
 import CachedIcon from "@mui/icons-material/Cached";
 import { setAllProductsV2 } from "../../../features/slice/productSlice";
-
-
+import {
+  removeSelectedCreateQuery,
+  setSelectedCreateQuery,
+  setSelectedSkuQuery,
+  removeSelectedSkuQuery,
+} from "../../../features/slice/selectedItemsSlice";
 
 const RestockGrid = () => {
-
-const apiRef = useGridApiRef();
+  const apiRef = useGridApiRef();
 
   /// initialization
   const dispatch = useDispatch();
@@ -29,24 +30,22 @@ const apiRef = useGridApiRef();
 
   /// global state
 
-
   const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-  useSelector((state) => state.product);
+    useSelector((state) => state.product);
 
   const [rows, setRows] = useState([]);
   const [editedRows, setEditedRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
   const [openRestockItem, setOpenRestockItem] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [filterString, setFilterString] = useState("page=1");
   const [page, setPage] = useState(1);
   const [rowPerPage, setRowPerPage] = useState(100);
   const [totalProductCount, setTotalProductCount] = useState(0);
+  const [updateValue, setUpdateValue] = useState([]);
+  const [selectedItemsData, setSelectedItemsData] = useState([]);
 
   /// rtk query
-
-
 
   const {
     data: allProductData,
@@ -57,16 +56,24 @@ const apiRef = useGridApiRef();
     pollingInterval: 1000 * 300,
   });
 
+  const { createQueryItems, createQuerySku } = useSelector(
+    (state) => state.SelectedItems
+  );
+
   /// handlers
 
-  const handleSelectionChange = (ids) => {
-    setSelectedItems(ids);
+  const handleSelectionChange = (selectionModel) => {
+    setSelectedItems(selectionModel);
 
-    const selectedRowsData = ids.map((id) => {
-      return rows.find((row) => row.id === id);
-    });
+    // const selectedItemsDataData = ids.map((id) => {
+    //   return rows.find((row) => row.SKU === id);
+    // });
+    const newselectedItemsDataData = rows.filter((item) =>
+      selectionModel.includes(item.id)
+    );
 
-    setSelectedRows(selectedRowsData);
+    setSelectedItemsData(newselectedItemsDataData);
+    dispatch(setSelectedSkuQuery(selectionModel));
   };
 
   const handleOpenRestockItem = () => {
@@ -80,27 +87,30 @@ const apiRef = useGridApiRef();
     const newSelectedItems = selectedItems.filter((item) => item !== id);
 
     setSelectedItems(newSelectedItems);
-    const newSelectedRow = selectedRows.filter((item) => item.id !== id);
-    setSelectedRows(newSelectedRow);
+    const newSelectedRow = selectedItemsData.filter((item) => item.id !== id);
+    setSelectedItemsData(newSelectedRow);
   };
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         return {
-          id: index + 1,
-          Sno: index + 1,
-          SKU: item.SKU,
-          Name: item.Name,
-          Quantity: item.ActualQuantity,
-          soldCount: item.soldCount,
-          ThresholdQty: item.ThresholdQty,
-          Brand: item.Brand,
-          Category: item.Category,
-          GST: item.GST,
+          ...item,
+          id: item?.SKU,
+          Sno:
+            index +
+            1 +
+            (allProductData.data.currentPage - 1) * allProductData.data.limit,
+          // SKU: item.SKU,
+          // Name: item.Name,
+          // Quantity: item.ActualQuantity,
+          // soldCount: item.soldCount,
+          // ThresholdQty: item.ThresholdQty,
+          // Brand: item.Brand,
+          // Category: item.Category,
+          // GST: item.GST,
         };
       });
-
 
       dispatch(setAllProductsV2(allProductData.data));
       setRows(data);
@@ -109,6 +119,43 @@ const apiRef = useGridApiRef();
       setPage(allProductData.data.currentPage);
     }
   }, [allProductData]);
+
+  // removeSelectedQuery
+  useEffect(() => {
+    return () => {
+      dispatch(removeSelectedCreateQuery());
+      dispatch(removeSelectedSkuQuery());
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      selectedItemsData.length > 0 &&
+      (!createQueryItems || createQueryItems.length === 0)
+    ) {
+      dispatch(setSelectedCreateQuery(selectedItemsData));
+    } else if (createQueryItems.length > 0 && selectedItemsData.length > 0) {
+      const newData = [...createQueryItems, ...selectedItemsData];
+      dispatch(setSelectedCreateQuery(newData));
+    }
+  }, [selectedItemsData]);
+  console.log(selectedItemsData.length);
+
+  const removeSelectedItems = (id) => {
+    const newSelectedItems = selectedItems.filter((item) => item !== id);
+    const newselectedItemsDataData = selectedItemsData.filter(
+      (item) => item.SKU !== id
+    );
+    const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id);
+    setUpdateValue(NewUpdatedValue);
+    setSelectedItemsData(newselectedItemsDataData);
+    setSelectedItems(newSelectedItems);
+  };
+  const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
+  const uniqueSKUsArray = Array.from(uniqueSKUs);
+  const realData = uniqueSKUsArray?.filter((item) =>
+    selectedItems.find((docs) => item.SKU === docs)
+  );
 
   useEffect(() => {
     let newFilterString = "";
@@ -138,7 +185,6 @@ const apiRef = useGridApiRef();
 
     setFilterString(`${newFilterString}&page=1`);
   }, [checkedBrand, checkedCategory, checkedGST]);
-
 
   useEffect(() => {
     // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
@@ -259,50 +305,50 @@ const apiRef = useGridApiRef();
       cellClassName: "super-app-theme--cell",
     },
   ];
- /// Custom Footer
- function CustomFooter(props) {
-  const { status } = props;
+  /// Custom Footer
+  function CustomFooter(props) {
+    const { status } = props;
 
-  return (
-    <GridToolbarContainer>
-      <Box display="flex" justifyContent="space-between" width="100%">
-        <Button size="small" onClick={() => status()}>
-          <CachedIcon />
-        </Button>
+    return (
+      <GridToolbarContainer>
+        <Box display="flex" justifyContent="space-between" width="100%">
+          <Button size="small" onClick={() => status()}>
+            <CachedIcon />
+          </Button>
 
-        <TablePagination
-          component="div"
-          count={totalProductCount}
-          page={page - 1}
-          onPageChange={(event, newPage) => {
-            setPage(newPage + 1);
+          <TablePagination
+            component="div"
+            count={totalProductCount}
+            page={page - 1}
+            onPageChange={(event, newPage) => {
+              setPage(newPage + 1);
 
-            let paramString = filterString;
+              let paramString = filterString;
 
-            let param = new URLSearchParams(paramString);
+              let param = new URLSearchParams(paramString);
 
-            param.set("page", newPage + 1);
+              param.set("page", newPage + 1);
 
-            let newFilterString = param.toString();
+              let newFilterString = param.toString();
 
-            setFilterString(newFilterString);
+              setFilterString(newFilterString);
 
-            apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-          }}
-          rowsPerPage={rowPerPage}
-        />
-      </Box>
-    </GridToolbarContainer>
-  );
-}
+              apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+            }}
+            rowsPerPage={rowPerPage}
+          />
+        </Box>
+      </GridToolbarContainer>
+    );
+  }
   return (
     <>
       <Box sx={{ width: "100%", height: "100%" }}>
         {/* <FilterBarV2
           apiRef={apiRef}
           customButton={
-            selectedRows.length
-              ? `Restock Items ${selectedRows.length}`
+            selectedItemsData.length
+              ? `Restock Items ${selectedItemsData.length}`
               : undefined
           }
           customOnClick={handleOpenRestockItem}
@@ -310,14 +356,15 @@ const apiRef = useGridApiRef();
           setHiddenColumns={setHiddenColumns}
           count={selectedItems}
         /> */}
-          <FilterBarV2
-             customButton={
-              selectedRows.length
-                ? `Restock Items ${selectedRows.length}`
-                : undefined
-            }
-            customOnClick={handleOpenRestockItem}
-          apiRef={apiRef}  />
+        <FilterBarV2
+          customButton={
+            selectedItemsData.length
+              ? `Restock Items ${realData.length}`
+              : undefined
+          }
+          customOnClick={handleOpenRestockItem}
+          apiRef={apiRef}
+        />
         <Grid container>
           {productLoading || isFetching ? (
             <Loading loading={true} />
@@ -348,47 +395,38 @@ const apiRef = useGridApiRef();
                 }}
               >
                 <DataGrid
-                 apiRef={apiRef}
+                  columns={columns}
+                  rows={rows}
+                  rowHeight={40}
+                  apiRef={apiRef}
+                  columnVisibilityModel={{
+                    Category: false,
+                  }}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                  onRowSelectionModelChange={handleSelectionChange}
+                  rowSelectionModel={selectedItems}
+                  keepNonExistentRowsSelected
                   components={{
                     Footer: CustomFooter,
                   }}
                   slotProps={{
                     footer: { status: refetch },
                   }}
-                  columns={columns}
-                  rows={rows}
-                  rowHeight={40}
-                  initialState={{
-                    columns: {
-                      columnVisibilityModel: {
-                        Category: false,
-                      },
-                    },
-                  }}
-                  editMode="row"
-                 checkboxSelection
-                  columnVisibilityModel={hiddenColumns}
-                  onColumnVisibilityModelChange={(newModel) =>
-                    setHiddenColumns(newModel)
-                  }
-           
-                  disableRowSelectionOnClick
-                  onRowSelectionModelChange={handleSelectionChange}
-                  rowSelectionModel={selectedItems}
-                  onProcessRowUpdateError={(error) => {}}
                 />
               </Box>
             </Grid>
           )}
         </Grid>
         <RestockItemDialog
-          items={selectedRows}
-          setItems={setSelectedRows}
+          items={realData}
+          setItems={setSelectedItemsData}
           open={openRestockItem}
           onClose={handleCloseRestockItem}
           handleDelete={handleRemoveRestockItem}
           setSelectedItems={setSelectedItems}
           selectedItems={selectedItems}
+          removeSelectedItems={removeSelectedItems}
         />
       </Box>
     </>

@@ -213,7 +213,7 @@ const Inventory = () => {
       dispatch(setSelectedCreateQuery(newData));
     }
   }, [selectedItemsData]);
-
+  console.log(selectedItemsData.length)
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
     const newSelectedRowsData = selectedItemsData.filter(
@@ -232,7 +232,7 @@ const Inventory = () => {
   const handleOpenDialog = () => {
     setOpen(true);
   };
-
+console.log(realData)
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
@@ -556,6 +556,7 @@ const Inventory = () => {
                   footer: { status: refetch },
                 }}
               />
+          
             </Box>
           </Grid>
         )}

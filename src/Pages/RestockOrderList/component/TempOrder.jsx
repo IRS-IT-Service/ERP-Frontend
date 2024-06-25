@@ -231,7 +231,7 @@ const TempOrder = () => {
       setOrderData((prev) => [...prev, ...initializedData]);
     }
   }, [selectedData]);
-  console.log(selectedData);
+
   useEffect(() => {
     const TotalValue = orderData?.reduce((acc, cur) => {
       return acc + +cur?.orderQty * +cur?.usdValue || 0;

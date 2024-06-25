@@ -34,6 +34,7 @@ const RestockItemDialog = ({
   setSelectedItems,
   setItems,
   selectedItems,
+  removeSelectedItems
 }) => {
   /// intialize
   const socket = useSocket();
@@ -68,6 +69,8 @@ const RestockItemDialog = ({
     }
     setOrderQuantities(oldOrderQuantities);
   }, [items]);
+
+ 
 
   /// handlers
   const handleQuantityChange = (itemId, value) => {
