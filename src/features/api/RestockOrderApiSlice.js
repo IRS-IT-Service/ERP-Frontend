@@ -340,6 +340,15 @@ export const restockApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    createOrderBoxDetails: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${RESTOCK_URL}/createOrderBox`,
+          method: "POST",
+          body:data
+        };
+      },
+    }),
   }),
 });
 
@@ -384,4 +393,5 @@ export const {
   useDeleteRestockByIdMutation,
   useGetSingleVendorQuery,
   useGetSingleVendorWithOrderQuery,
+  useCreateOrderBoxDetailsMutation,
 } = restockApiSlice;

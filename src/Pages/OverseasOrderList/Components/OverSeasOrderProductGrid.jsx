@@ -64,7 +64,7 @@ const OverSeasOrderProductGrid = () => {
         Sno: index + 1,
         OrderDate: formatDate(item.createdAt),
         products: item.subOrders,
-        totalProducts: item.subOrders.map((item) => item.finalProducts.length),
+     
       }));
 
       const filteredData = data.filter((item) => item.status === toggleValue);
@@ -73,7 +73,7 @@ const OverSeasOrderProductGrid = () => {
     }
   }, [toggleValue, getSingleOrder]);
   
-console.log(getSingleOrder?.data)
+
   // handle columns
 
   const columns = [
@@ -121,16 +121,7 @@ console.log(getSingleOrder?.data)
       cellClassName: "super-app-theme--cell",
       valueFormatter: (params) => `$ ${params.value} `,
     },
-    {
-      field: "totalProducts",
-      headerName: "Total Product",
-      flex: 0.3,
-      minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
+
     {
       field: "Order",
       headerName: "Ordered-Product",
@@ -315,8 +306,7 @@ console.log(getSingleOrder?.data)
               rowHeight={40}
               editMode="cell"
               apiRef={apiRef}
-              checkboxSelection
-              disableRowSelectionOnClick
+                      disableRowSelectionOnClick
               components={{
                 Toolbar: CustomToolbar,
               }}
