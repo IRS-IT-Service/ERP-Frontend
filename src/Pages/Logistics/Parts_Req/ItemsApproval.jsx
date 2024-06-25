@@ -140,9 +140,9 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   const skip = !id;
   const already = new Audio(alreadyMp3);
   const NotinReq = new Audio(NotinReqMp3);
-  const alreadyExst = new Audio(NotFoundMp3);
-  const NotFound = new Audio(successMp3);
-  const success = new Audio(alreadyExstMp3);
+  const alreadyExst = new Audio(alreadyExstMp3);
+  const NotFound = new Audio(NotFoundMp3);
+  const success = new Audio(successMp3);
  
 
   /// global state
