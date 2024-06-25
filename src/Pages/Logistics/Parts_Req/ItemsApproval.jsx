@@ -377,7 +377,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   useEffect(() => {
     if (!countSKUs(finalBarcodeRow, rows, latestSKU.SKU)) {
       const latestValue = finalBarcodeRow.slice();
-      success.play()
+      
       setBarcoderow(latestValue);
     } else if (finalBarcodeRow.length > 0) {
       already.play()
@@ -427,6 +427,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           }
 
           if (!isBarcodeAlreadyExists(finalBarcodeRow, newRow.serialNumber)) {
+            success.play()
             setFinalBarcodeRow((prevRows) => [...prevRows, newRow]);
             setBarcode("");
             setLatestSKU({ SKU: newRow.SKU, Serial: newRow.serialNumber });
