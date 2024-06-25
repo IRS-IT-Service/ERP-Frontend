@@ -789,6 +789,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       <ProductStatusDownloadDialog
         open={open}
         setOpen={setOpen}
+        type = {downloadType}
         handleExcelDownload={handleExcelDownload}
         loading={loading}
       />
