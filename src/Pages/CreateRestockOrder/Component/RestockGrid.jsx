@@ -68,10 +68,10 @@ const RestockGrid = () => {
     // const selectedItemsDataData = ids.map((id) => {
     //   return rows.find((row) => row.SKU === id);
     // });
-    const newselectedItemsDataData = rows.filter((item) =>
-      selectionModel.includes(item.id)
+    const newselectedItemsDataData = rows.filter((item) =>  
+      selectionModel.includes(item.id),
+      
     );
-
     setSelectedItemsData(newselectedItemsDataData);
     dispatch(setSelectedSkuQuery(selectionModel));
   };
@@ -139,7 +139,7 @@ const RestockGrid = () => {
       dispatch(setSelectedCreateQuery(newData));
     }
   }, [selectedItemsData]);
-  console.log(selectedItemsData.length);
+  
 
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
@@ -151,12 +151,23 @@ const RestockGrid = () => {
     setSelectedItemsData(newselectedItemsDataData);
     setSelectedItems(newSelectedItems);
   };
-  const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
-  const uniqueSKUsArray = Array.from(uniqueSKUs);
-  const realData = uniqueSKUsArray?.filter((item) =>
-    selectedItems.find((docs) => item.SKU === docs)
-  );
+  // const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
+  // const uniqueDATAs = new Set(createQueryItems);
+  // const uniqueDATAsArray = Array.from(uniqueDATAs);
+  // const uniqueSKUsArray = Array.from(uniqueSKUs);
+ 
+  // const realData = uniqueDATAsArray?.filter((item) =>
+  //   uniqueSKUsArray.find((docs) => item.SKU === docs)
+  // );
 
+
+
+
+const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
+const realData = Array.from(uniqueSKUs).map((sku) => 
+  createQueryItems.find((item) => item.SKU === sku)
+);
+ 
   useEffect(() => {
     let newFilterString = "";
     checkedBrand.forEach((item, index) => {

@@ -4,8 +4,16 @@ import {
   useGridApiRef,
   GridToolbarContainer,
   GridPagination,
+  GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import { Grid, Box, Button, styled, TablePagination } from "@mui/material";
+import {
+  Grid,
+  Box,
+  Button,
+  styled,
+  TablePagination,
+  Portal,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetDeletedProductQuery } from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
@@ -121,10 +129,9 @@ const RemovedProduct = () => {
       const newRows = data?.data.map((item, index) => {
         return {
           id: index + 1,
-          Sno: index + 1 + (page - 1) * data?.itemsPerPage,
+          Sno: index + 1,
           SKU: item.SKU,
           Name: item.Name,
-          Quantity: item.ActualQuantity,
           ThresholdQty: item.ThresholdQty,
           Brand: item.Brand,
           Category: item.Category,
@@ -135,7 +142,7 @@ const RemovedProduct = () => {
       setRows(newRows);
       setTotalCount(data?.totalItems);
       setPage(data?.currentPage);
-      setItemCount(data?.itemsPerPage);
+      setItemCount(data?.itemCount);
     }
   }, [data]);
 
@@ -149,6 +156,17 @@ const RemovedProduct = () => {
   useEffect(() => {
     dispatch(setHeader(`Removed Product`));
   }, []);
+
+  function MyCustomToolbar(prop) {
+    return (
+      <>
+        <Portal container={() => document.getElementById("filter-panel")}>
+          <GridToolbarQuickFilter />
+        </Portal>
+        {/* <GridToolbar {...prop} /> */}
+      </>
+    );
+  }
 
   /// Columns
   const columns = [
@@ -219,47 +237,17 @@ const RemovedProduct = () => {
       cellClassName: "super-app-theme--cell",
       valueFormatter: (params) => `${params.value} %`,
     },
-    {
-      field: "Quantity",
-      headerName: "Quantity",
-      flex: 0.3,
-      minWidth: 120,
-      maxWidth: 130,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-    },
   ];
 
   /// Custom Footer
-  function CustomFooter(props) {
-    const { status } = props;
-    return (
-      <GridToolbarContainer>
-        <Box display="flex" justifyContent="space-between" width="100%">
-          <TablePagination
-            sx={{
-              flex: "end",
-            }}
-            component="div"
-            count={totalCount}
-            page={page - 1}
-            onPageChange={(event, newPage) => {
-              setPage(newPage + 1);
-            }}
-            rowsPerPage={itemCount}
-          />
-        </Box>
-      </GridToolbarContainer>
-    );
-  }
 
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
       <DrawerHeader />
       <Loading loading={isLoading || isFetching} />
-
+      <Grid item>
+        <Box id="filter-panel" />
+      </Grid>
       <Grid container>
         <Grid item xs={12} sx={{ mt: "5px" }}>
           <Box
@@ -287,16 +275,24 @@ const RemovedProduct = () => {
             }}
           >
             <DataGrid
-              components={{
-                Footer: CustomFooter,
-              }}
               slotProps={{
                 footer: { status: refetch },
+              }}
+              slots={{
+                toolbar: MyCustomToolbar,
               }}
               columns={columns}
               rows={rows}
               rowHeight={40}
               apiRef={apiRef}
+              initialState={{
+                filter: {
+                  filterModel: {
+                    items: ["Name"],
+                    quickFilterExcludeHiddenColumns: true,
+                  },
+                },
+              }}
             />
           </Box>
         </Grid>{" "}
