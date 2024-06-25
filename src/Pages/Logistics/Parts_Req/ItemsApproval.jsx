@@ -49,7 +49,11 @@ import {
 } from "../../../features/api/barcodeApiSlice";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import { useGetCustomerOrderShipmentQuery } from "../../../features/api/clientAndShipmentApiSlice";
-
+import alreadyMp3 from "../../../../public/Already_fulfilled.mp3"
+import NotinReqMp3 from "../../../../public/Product_is_not_in_req.mp3"
+import NotFoundMp3 from "../../../../public/Barcode_Not_Found.mp3"
+import successMp3 from "../../../../public/success.mp3"
+import alreadyExstMp3 from "../../../../public/Product_already_exis.mp3"
 
 import Swal from "sweetalert2";
 const StyleCell = styled(TableCell)(({ theme }) => ({
@@ -134,11 +138,11 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const skip = !id;
-  const already = new Audio("../../../../public/Already_fulfilled.mp3");
-  const NotinReq = new Audio("../../../../public/Product_is_not_in_req.mp3");
-  const alreadyExst = new Audio("../../../../public/Product_already_exis.mp3");
-  const NotFound = new Audio("../../../../public/Barcode_Not_Found.mp3");
-  const success = new Audio("../../../../public/success.mp3");
+  const already = new Audio(alreadyMp3);
+  const NotinReq = new Audio(NotinReqMp3);
+  const alreadyExst = new Audio(NotFoundMp3);
+  const NotFound = new Audio(successMp3);
+  const success = new Audio(alreadyExstMp3);
  
 
   /// global state
