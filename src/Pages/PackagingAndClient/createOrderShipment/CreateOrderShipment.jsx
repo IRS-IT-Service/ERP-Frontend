@@ -496,7 +496,7 @@ const createOrderShipment = ({ setOpen, id }) => {
     handleClose();
   };
 
-  console.log(FinalData);
+ 
 
   const handleAddmoreAddress = async () => {
     try {
@@ -723,6 +723,7 @@ const createOrderShipment = ({ setOpen, id }) => {
                   sx={{ width: "15rem", color: "red" }}
                   size="small"
                   value={personType}
+                  disabled={orderId}
                   renderValue={(selected) => {
                     if (selected.length === 0) {
                       return <em>Placeholder</em>;
@@ -738,8 +739,22 @@ const createOrderShipment = ({ setOpen, id }) => {
               </Box>
               {personType === "Company" && (
                 <Box>
-                  <Autocomplete
-                    value={orderId && selectedCustomer.CompanyName}
+                { orderId ?       
+                <TextField
+                    size="small"
+                    label="Company Name"
+                    InputLabelProps={{
+                      shrink: !!selectedCustomer?.ContactName,
+                    }}
+                    variant="outlined"
+                    value={selectedCustomer?.CompanyName || ""}
+                    name="CompanyName"
+                    sx={{
+                      width: "26rem",
+                    }}
+                   
+                  /> : <Autocomplete
+                    
                     style={{
                       width: "26rem",
                       backgroundColor: "rgba(255, 255, 255)",
@@ -754,10 +769,12 @@ const createOrderShipment = ({ setOpen, id }) => {
                           console.log(e.target.value);
                         }}
                         size="small"
-                      />
+                      /> 
+                      
+                    
                     )}
-                  />
-                </Box>
+                  /> }
+                </Box> 
               )}
               {personType === "Company" ? (
                 <Box>
@@ -781,8 +798,21 @@ const createOrderShipment = ({ setOpen, id }) => {
                 </Box>
               ) : (
                 <Box>
+                 {orderId ?   <TextField
+                    size="small"
+                    label="Contact person"
+                    InputLabelProps={{
+                      shrink: !!selectedCustomer?.ContactName,
+                    }}
+                    variant="outlined"
+                    value={selectedCustomer?.ContactName || ""}
+                    name="ContactPerson"
+                    sx={{
+                      width: "100%",
+                    }}
+                    
+                  /> :
                   <Autocomplete
-                    value={orderId && selectedCustomer.ContactName}
                     style={{
                       width: "26rem",
                       backgroundColor: "rgba(255, 255, 255)",
@@ -799,7 +829,7 @@ const createOrderShipment = ({ setOpen, id }) => {
                         size="small"
                       />
                     )}
-                  />
+                  /> }
                 </Box>
               )}
               <Box>
