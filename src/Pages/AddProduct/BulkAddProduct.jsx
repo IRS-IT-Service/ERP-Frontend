@@ -89,7 +89,6 @@ const BulkAddProduct = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
-console.log("trigger")
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: "array" });
