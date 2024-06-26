@@ -145,12 +145,72 @@ const infoDetail = [
       "If you click the 'Column Summary' button, you can view details about the columns",
   },
   {
+    name: "Threshold",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/threshold.png?updatedAt=1719398571825"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here you you can see Threshold Value of the product when Quantity is less than Threshold notify the admin",
+  },
+  {
+    name: "Scanned Quantity",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/scanned%20q.png?updatedAt=1719398571877"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here you can See the Scanned Quantity of the product",
+  },
+  {
+    name: "Quantity Assigned",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/quantityin%20store.png?updatedAt=1719398571952"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here you can see the Quantity Assigned of the product",
+  },
+  {
+    name: "Awaiting Scanning",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/awaiting%20scninng.png?updatedAt=1719398571981"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here you can see the Awaiting Scanning of the product",
+  },
+  {
+    name: "Quantity in Store",
+    screenshot: (
+      <img
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/quantityin%20store.png?updatedAt=1719398571952"
+        height={"60%"}
+        width={"90%"}
+      />
+    ),
+    instruction:
+      "Here you can see the Quantity in Store of the product",
+  },
+  {
     name: "Orange color",
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/orangeclr_updateproduct.png?updatedAt=17031364377602"
-        height={"10%"}
-        width={"10%"}
+        height={"60%"}
+        width={"90%"}
       />
     ),
     instruction:
@@ -161,8 +221,8 @@ const infoDetail = [
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/redclr_updateproduct.png?updatedAt=1703136437653"
-        height={"10%"}
-        width={"10%"}
+        height={"60%"}
+        width={"90%"}
       />
     ),
     instruction:
@@ -173,8 +233,8 @@ const infoDetail = [
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/greenclr_updateproduct.png?updatedAt=1703136437783"
-        height={"10%"}
-        width={"10%"}
+        height={"60%"}
+        width={"90%"}
       />
     ),
     instruction:
@@ -185,8 +245,8 @@ const infoDetail = [
     screenshot: (
       <img
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/purpleclr_updateproduct.png?updatedAt=1703136437796"
-        height={"10%"}
-        width={"10%"}
+        height={"60%"}
+        width={"90%"}
       />
     ),
     instruction:
@@ -490,7 +550,7 @@ const UpdateQuantity = ({
     },
     {
       field: "ActualQuantity",
-      headerName: "Actual Quantity",
+      headerName: "Scanned Quantity",
       flex: 0.3,
       minWidth: 100,
       maxWidth: 150,
