@@ -148,6 +148,8 @@ import { toastNotification } from "./commonFunctions/notificationHelpers";
 import SubPIList1 from "./Pages/OverseasOrderList/Components/SubPIListComponent/SubPIList1";
 import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
 import PaidOverseaseOrder from "./Pages/OverseasOrderList/Components/PaidOverseaseOrder";
+import CreateShipment from "./Pages/OverseasOrderList/Components/CreateShipment";
+import UpdateQuantity from "./Pages/UpdateSellerPrice/UpdateQuantity";
 
 function App() {
   /// initialize
@@ -458,7 +460,7 @@ function App() {
                   path="/viewQuery/admin"
                   element={
                     <UserRole name={"Sales Query Admin"}>
-                    <ViewQuery />
+                      <ViewQuery />
                     </UserRole>
                   }
                 />
@@ -640,8 +642,8 @@ function App() {
                   path="/RestockOrderView"
                   element={
                     <UserRole name={"Restock Order View"}>
-                    <RestockOrderList />
-                     </UserRole>
+                      <RestockOrderList />
+                    </UserRole>
                   }
                 />
                 <Route
@@ -824,7 +826,15 @@ function App() {
                 />
                 <Route path="/testing" element={<TestingComponent />} />
                 <Route path="/tempOrder/:id" element={<TempOrder />} />
-
+                <Route path="/CreateShipment" element={<CreateShipment />} />
+                <Route
+                  path="/UpdateQuantity"
+                  element={
+                    <UserRole name={"Update Quantity"}>
+                      <UpdateQuantity/>
+                    </UserRole>
+                  }
+                />
               </Route>
             </Routes>
           </Suspense>

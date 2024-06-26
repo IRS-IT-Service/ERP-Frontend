@@ -213,7 +213,7 @@ const Inventory = () => {
       dispatch(setSelectedCreateQuery(newData));
     }
   }, [selectedItemsData]);
-
+  console.log(selectedItemsData.length)
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
     const newSelectedRowsData = selectedItemsData.filter(
@@ -224,11 +224,17 @@ const Inventory = () => {
     setSelectedItemsData(newSelectedRowsData);
     setSelectedItems(newSelectedItems);
   };
-  const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
-  const uniqueSKUsArray = Array.from(uniqueSKUs);
-  const realData = uniqueSKUsArray?.filter((item) =>
-    selectedItems.find((docs) => item.SKU === docs)
-  );
+  // const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
+  // const uniqueSKUsArray = Array.from(uniqueSKUs);
+  // const realData = uniqueSKUsArray?.filter((item) =>
+  //   selectedItems.find((docs) => item.SKU === docs)
+  // );
+
+  const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
+const realData = Array.from(uniqueSKUs).map((sku) => 
+  createQueryItems.find((item) => item.SKU === sku)
+);
+ 
   const handleOpenDialog = () => {
     setOpen(true);
   };
@@ -556,6 +562,7 @@ const Inventory = () => {
                   footer: { status: refetch },
                 }}
               />
+          
             </Box>
           </Grid>
         )}

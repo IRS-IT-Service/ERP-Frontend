@@ -147,7 +147,7 @@ const UpdateStockDialog = ({
               Current Stock
             </Typography>
             <Typography variant="paragraph">
-              {oneProductData?.data?.ActualQuantity}
+              {oneProductData?.data?.Quantity}
             </Typography>
           </Box>
           <Box

@@ -42,11 +42,12 @@ const infoDetail = [
         src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/search-product_ProductRemoval.png?updatedAt=1703144447246"
         height={"60%"}
         width={"90%"}
-      />  
+      />
     ),
     instruction:
       "If you click the search product, you can search for any product or brand here",
-  },  {
+  },
+  {
     name: "Search-SKU",
     screenshot: (
       <img
@@ -57,7 +58,8 @@ const infoDetail = [
     ),
     instruction:
       "If you click search SKU, you can search for any product or brand by SKU number here ",
-  },  {
+  },
+  {
     name: "check",
     screenshot: (
       <img
@@ -66,9 +68,9 @@ const infoDetail = [
         width={"40%"}
       />
     ),
-    instruction:
-      "If you check this, you can select a particular list",
-  }, {
+    instruction: "If you check this, you can select a particular list",
+  },
+  {
     name: "Price History",
     screenshot: (
       <img
@@ -79,24 +81,23 @@ const infoDetail = [
     ),
     instruction:
       "When you select a particular list, the 'Price History' button becomes enabled. If you click on 'Price History,' you can check the history of that specific price",
-  }, 
-  
+  },
 ];
 const PriceHistroyMain = () => {
-   // infodialog state
-   const description =
-   "This is the Price History. You can view a particular price ";
+  // infodialog state
+  const description =
+    "This is the Price History. You can view a particular price ";
 
-   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-   const { isInfoOpen } = useSelector((state) => state.ui);
-   const handleClose = () => {
-     dispatch(setInfo(false));
-   };
-   
-   useEffect(() => {
-     dispatch(setHeader(`Price History`));
-   }, []);
+  const { isInfoOpen } = useSelector((state) => state.ui);
+  const handleClose = () => {
+    dispatch(setInfo(false));
+  };
+
+  useEffect(() => {
+    dispatch(setHeader(`Price History`));
+  }, []);
   /// local state
 
   const [openHistory, setOpenHistory] = useState(false);
@@ -116,10 +117,10 @@ const PriceHistroyMain = () => {
     >
       <DrawerHeader />
       {/* <Header Name={"Price History"}  info={true} customOnClick={handleOpen}/> */}
-  
+
       <PriceHistroy />
-        {/* infoDialog table */}
-        <InfoDialogBox
+      {/* infoDialog table */}
+      <InfoDialogBox
         infoDetails={infoDetail}
         description={description}
         open={isInfoOpen}

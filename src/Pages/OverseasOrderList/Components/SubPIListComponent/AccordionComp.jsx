@@ -81,7 +81,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
     file: "",
     weight: "",
   });
-  const [Enabled, setEnabled] = useState(false);
+  const [isError, setIsError] = useState(null);
   const [ConversionType, setConversionType] = useState("USD");
 
   const [updateproducts, { isLoading: updateLoading }] =
@@ -102,7 +102,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
     }
     return true;
   }
-
+console.log(isError)
   const dataSub = item?.finalProducts;
 
   const dataMain = item;
@@ -131,6 +131,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
             ...item,
             originalRMB: item.RMB,
             updatedQTY: item.updateQTY || 0,
+            isError: item.updateQTY ? false : true
           };
         })
       );
@@ -310,14 +311,17 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
   const handleSubmitMain = async () => {
     try {
       if (!isNegative) {
+        setIsError("* The price should not exceed the shortfall value *")
         return toast.error("The price should not exceed the shortfall value.");
       }
 
       const UpdateOrder = [];
+      let IsError_occurred = false;
       const order = getSingleData?.data?.subOrders;
       const processedData = ProductData.map((item) => {
         const remainingQty = item.Orderqty - item.updatedQTY;
-
+        setIsError(!item.updatedQTY ? "* Please update quantity *" : null);
+        IsError_occurred = item.updatedQTY ? false : true
         return {
           final:
             remainingQty !== 0 && remainingQty > 0
@@ -361,6 +365,10 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
         products: finalValue,
         totalUSDAmount: shortFallamount,
       };
+if(IsError_occurred){
+  return toast.error("Please update quantity");
+}
+
       if (shortFallamount > 0) {
         const result = await createsuborder(suborder).unwrap();
 
@@ -377,6 +385,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
       refetch();
     } catch (e) {
       console.log(e);
+
     }
   };
 
@@ -651,7 +660,7 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                   background: "#fff",
                   border: "none",
                   textAlign: "center",
-                  width: "45px",
+                  width: "65px",
                   border: "none",
                   padding: "3px",
                   backgroundColor: isEnabled(index) ? "#ccc" : "#fff",
@@ -832,8 +841,9 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
                             }}
                             onChange={(e) => handleInputChange(e, item.SKU)}
                           />
+                       
                         </StyledCell>
-                        <StyledCell>${item.updatedQTY * item.USD}</StyledCell>
+                        <StyledCell>${(item.updatedQTY * item.USD).toFixed(3)}</StyledCell>
                         <StyledCell>
                           <DeleteIcon
                             onClick={() =>
@@ -1052,7 +1062,14 @@ const AccordionComp = ({ getSingleData, item, AccordFor, refetch, index }) => {
               "Submit"
             )}
           </Button>
+          <Box sx={{
+            position: "absolute",
+            right:"300px",
+            color:"red"
+          }}>{isError}</Box>
+      
         </Box>
+      
       </Accordion>
 
       {openDialog && (
