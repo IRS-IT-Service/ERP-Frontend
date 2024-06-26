@@ -127,6 +127,13 @@ const userRolesData = [
         icon: 'fas fa-plus',
         notification: true,
       },
+      {
+        id: 83,
+        name: 'Update Quantity',
+        path: '/UpdateQuantity',
+        icon: 'fa-solid fa-plus-minus',
+        notification: true,
+      },
     ],
   },
   {
@@ -601,6 +608,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 82
+// last routes is 83
 
 export default userRolesData;

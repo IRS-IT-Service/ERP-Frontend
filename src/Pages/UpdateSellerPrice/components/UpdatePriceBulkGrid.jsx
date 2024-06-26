@@ -229,7 +229,7 @@ const UpdatePriceBulk = () => {
                 />
                 <label htmlFor="file-upload">
                   <Button
-                    disabled={query === "Quantity"}
+                    // disabled={query === "Quantity"}
                     variant="outlined"
                     component="span"
                     sx={{
@@ -246,7 +246,7 @@ const UpdatePriceBulk = () => {
               </Grid>
               <Grid item xs={6} style={{ textAlign: "end" }}>
                 <Button
-                  disabled={query === "Quantity" || downloadLoading}
+                  disabled={downloadLoading}
                   variant="contained"
                   color="primary"
                   onClick={handleDownloadSample}

@@ -149,6 +149,7 @@ import SubPIList1 from "./Pages/OverseasOrderList/Components/SubPIListComponent/
 import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
 import PaidOverseaseOrder from "./Pages/OverseasOrderList/Components/PaidOverseaseOrder";
 import CreateShipment from "./Pages/OverseasOrderList/Components/CreateShipment";
+import UpdateQuantity from "./Pages/UpdateSellerPrice/UpdateQuantity";
 
 function App() {
   /// initialize
@@ -826,6 +827,14 @@ function App() {
                 <Route path="/testing" element={<TestingComponent />} />
                 <Route path="/tempOrder/:id" element={<TempOrder />} />
                 <Route path="/CreateShipment" element={<CreateShipment />} />
+                <Route
+                  path="/UpdateQuantity"
+                  element={
+                    <UserRole name={"Update Quantity"}>
+                      <UpdateQuantity/>
+                    </UserRole>
+                  }
+                />
               </Route>
             </Routes>
           </Suspense>
