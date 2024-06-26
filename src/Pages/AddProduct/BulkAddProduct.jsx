@@ -141,7 +141,7 @@ console.log("trigger")
             `${obj.Name}: Invalid SubCategory - ${obj.SubCategory}`
           );
         }
-        if (String(obj.GST) && !gst.includes(String(obj.GST))) {
+        if ((obj.GST) && !gst.includes(String(obj.GST))) {
           invalidEntries.push(`${obj.Name}: Invalid GST - ${obj.GST}`);
         }
       });
