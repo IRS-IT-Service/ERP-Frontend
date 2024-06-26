@@ -793,7 +793,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
                 </Box>
               </>
             )}
-            
           </Box>
           <TablePagination
             component="div"
