@@ -49,7 +49,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const navigate = useNavigate();
   const apiRef = useGridApiRef();
   const debouncing = useRef();
-  let MapSKU = {}
+  let MapSKU = {};
 
   /// global state
   const { deepSearch, checkedBrand, checkedCategory, checkedGST } = useSelector(
@@ -57,10 +57,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   );
   const { isAdmin } = useSelector((state) => state.auth.userInfo);
   const { NewselectedSKU } = useSelector((state) => state.SelectedItems);
-
-  
-
- 
 
   /// local state
   const [rows, setRows] = useState([]);
@@ -79,6 +75,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   const [page, setPage] = useState(1);
   const [rowPerPage, setRowPerPage] = useState(100);
   const [totalProductCount, setTotalProductCount] = useState(0);
+  const [toggleValue, setToggleValue] = useState(false);
 
   /// rtk query
 
@@ -108,9 +105,6 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     }
   };
 
-
-
- 
   const handleIsActiveyncUpdate = async (id, status, type) => {
     try {
       const data = {
@@ -219,25 +213,20 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   //   setStoredSKU(NewData)
   // },[allProductData])
 
-
-
-  useEffect(()=>{
-    dispatch(removeSelectedSKU())
-  },[checkedBrand, checkedCategory, checkedGST])
-
-
-
+  useEffect(() => {
+    dispatch(removeSelectedSKU());
+  }, [checkedBrand, checkedCategory, checkedGST]);
 
   const handleSelectionChange = (selectionModel) => {
-    const NewData= (new Map(
+    const NewData = new Map(
       NewselectedSKU.map((item, index) => {
         return [index + 1, item];
-      }))
+      })
     );
     const FilteredSKU = selectionModel.map((item) => {
       return NewData.get(item);
     });
-   
+
     setFilterSKU(FilteredSKU);
 
     setNewSelectedItems(selectionModel);
@@ -289,6 +278,11 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     setFilterString("type=NoImage");
   };
 
+  // toggle change function
+  const handlechangeToShowValue = (e) => {
+    setToggleValue(e.target.checked);
+  };
+  console.log(toggleValue);
   //Columns*******************
   const columns = [
     {
@@ -426,7 +420,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {icon}
+            {toggleValue ? value : icon}
           </div>
         );
       },
@@ -456,14 +450,14 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {icon}
+            {toggleValue ? value : icon}
           </div>
         );
       },
     },
     {
       field: "LandingCost",
-      headerName: "Cost",
+      headerName: "LNC",
       flex: 0.3,
       minWidth: 80,
       maxWidth: 80,
@@ -471,6 +465,9 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
+      renderHeader: (params) => (
+        <span title="Landing Cost No GST">{params.colDef.headerName}</span>
+      ),
       renderCell: (params) => {
         const value = params.row.LandingCost;
         const icon = value === 0 ? <CloseIcon /> : <CheckIcon />;
@@ -486,7 +483,42 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {icon}
+            {toggleValue ? value : icon}
+          </div>
+        );
+      },
+    },
+    {
+      field: "Landing Cost with GST",
+      headerName: "LCG",
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 80,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderHeader: (params) => (
+        <span title="Landing Cost With GST">{params.colDef.headerName}</span>
+      ),
+      renderCell: (params) => {
+        const value = params.row.LandingCost;
+        const GSt = params.row.GST;
+        const main = +(value + value * (GSt / 100)).toFixed(2);
+        const icon = value === 0 ? <CloseIcon /> : <CheckIcon />;
+        const iconColor = value === 0 ? "red" : "green";
+
+        return (
+          <div
+            style={{
+              height: "30px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: iconColor,
+            }}
+          >
+            {toggleValue ? main : icon}
           </div>
         );
       },
@@ -516,7 +548,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {icon}
+            {toggleValue ? value : icon}
           </div>
         );
       },
@@ -548,7 +580,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {icon}
+            {toggleValue ? value : icon}
           </div>
         );
       },
@@ -746,6 +778,21 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               </Typography>{" "}
               <ImageNotSupportedIcon onClick={() => getNoImageFunc()} />
             </Box>
+            {isAdmin && (
+              <>
+                <Typography sx={{ fontWeight: "bold", fontSize: "12px" }}>
+                  Show Value Only
+                </Typography>
+                <Box sx={{}}>
+                  {" "}
+                  <Switch
+                    checked={toggleValue}
+                    onChange={handlechangeToShowValue}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                </Box>
+              </>
+            )}
           </Box>
           <TablePagination
             component="div"
@@ -789,7 +836,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       <ProductStatusDownloadDialog
         open={open}
         setOpen={setOpen}
-        type = {downloadType}
+        type={downloadType}
         handleExcelDownload={handleExcelDownload}
         loading={loading}
       />

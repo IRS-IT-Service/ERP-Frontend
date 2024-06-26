@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { NearbyError } from "@mui/icons-material";
 
-const BulkUpdateSelectorDialog = ({ list, open, setOpen }) => {
+const BulkUpdateSelectorDialog = ({ list, open, setOpen ,condition }) => {
   const [newList, setNewList] = useState(list?.filter((item) => item.id !== 7));
   // console.log(newList);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -15,7 +15,7 @@ const BulkUpdateSelectorDialog = ({ list, open, setOpen }) => {
   const handleClose = () => {
     setOpen(false);
   };
-
+console.log(newList);
   const handleSelected = (name) => {
     setSelectedItems((prevSelected) => {
       if (prevSelected.includes(name)) {
@@ -36,8 +36,8 @@ const BulkUpdateSelectorDialog = ({ list, open, setOpen }) => {
       <DialogTitle
         style={{
           display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
+          justifyContent:  "space-between",
+          width: !condition ? "100%" :"30vw",
           background: "#80bfff",
         }}
       >
@@ -55,34 +55,67 @@ const BulkUpdateSelectorDialog = ({ list, open, setOpen }) => {
         </div>
       </DialogTitle>
 
-      <DialogActions>
+      <DialogActions sx={{
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+  
+      }}>
         {newList?.map((item) => {
-          return (
-            <Button
-              key={item.id}
-              // onClick={() => {
-              //   onClick(item.name);
-              // }}
-              onClick={() => handleSelected(item.name)}
-              variant={selectedItems.includes(item.name) ? "contained" : "text"}
-              sx={{
-                background: selectedItems.includes(item.name)
-                  ? "#169cff"
-                  : "#fff",
-                color: selectedItems.includes(item.name) ? "black" : "black",
-                margin: "10px",
-                boxShadow:
-                  " rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
-                "&:hover": {
-                  background: "#169cff",
-                  color: "black",
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-              {item.name}
-            </Button>
-          );
+          if(condition === "QTY" && item.name === "Quantity"){
+            console.log(item.name)
+            return (
+              <Button
+                key={item.id}
+                onClick={() => handleSelected(item.name)}
+                variant={selectedItems.includes(item.name) ? "contained" : "text"}
+                sx={{
+                  background: selectedItems.includes(item.name)
+                    ? "#169cff"
+                    : "#fff",
+                  color: selectedItems.includes(item.name) ? "black" : "black",
+                  margin: "10px",
+                  boxShadow:
+                    " rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+                  "&:hover": {
+                    background: "#169cff",
+                    color: "black",
+                    transform: "scale(1.05)",
+                  },
+                }}
+              >
+                {item.name}
+              </Button>
+            );
+          }else if(!condition){
+            return (
+              <Button
+                key={item.id}
+                // onClick={() => {
+                //   onClick(item.name);
+                // }}
+                onClick={() => handleSelected(item.name)}
+                variant={selectedItems.includes(item.name) ? "contained" : "text"}
+                sx={{
+                  background: selectedItems.includes(item.name)
+                    ? "#169cff"
+                    : "#fff",
+                  color: selectedItems.includes(item.name) ? "black" : "black",
+                  margin: "10px",
+                  boxShadow:
+                    " rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
+                  "&:hover": {
+                    background: "#169cff",
+                    color: "black",
+                    transform: "scale(1.05)",
+                  },
+                }}
+              >
+                {item.name}
+              </Button>
+            );
+          }
+          
         })}
 
         <Button

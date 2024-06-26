@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -14,10 +14,13 @@ import {
   TextField,
   CircularProgress,
   Box,
-} from '@mui/material';
-import { useAddPriceHistoryMutation } from '../../../features/api/PriceHistoryApiSlice';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { toast } from 'react-toastify';
+  ToggleButtonGroup,
+  ToggleButton,
+  Typography,
+} from "@mui/material";
+import { useAddPriceHistoryMutation } from "../../../features/api/PriceHistoryApiSlice";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { toast } from "react-toastify";
 
 function PriceHistoryCalc({
   data,
@@ -29,69 +32,45 @@ function PriceHistoryCalc({
 }) {
   /// local state
 
-  const [usdCommon, setUSDcommon] = useState('');
+  const [usdCommon, setUSDcommon] = useState("");
   const [qty, setQty] = useState({});
   const [usdValue, setUSDValue] = useState({});
   const [rmbValue, setRMBValue] = useState({});
+  const [ConversionType, setConversionType] = useState("USD");
+  const [conversionRate, setConversionRate] = useState(null);
+  const [datas, setDatas] = useState();
 
   /// rtk query
   const [addpriceHistory, { isLoading: addpriceHistoryLoading }] =
     useAddPriceHistoryMutation();
 
   /// handlers
+  useEffect(() => {
+    if (data) {
+      const initializeData = data.map((item, index) => ({
+        ...item,
+        usdValue: null,
+        rmbValue: null,
+      }));
+      setDatas(initializeData);
+    }
+  }, [data]);
 
-  const handleChange = (SKU, value, name) => {
-    if (name === 'usdCommon') {
-      setUSDcommon(value);
-      let newRMBValue = {};
+  const handleInputChange = (index, field, value) => {
+    const updatedData = [...datas];
+    updatedData[index][field] = value;
 
-      data.forEach((row, index) => {
-        newRMBValue[row.SKU] =
-          (usdValue[row.SKU] || 0) * (qty[row.SKU] || 0) * value;
-      });
-
-      setRMBValue(newRMBValue);
+    if (field === "rmbValue" && ConversionType === "RMB") {
+      updatedData[index].usdValue = parseFloat(
+        (value * conversionRate).toFixed(2)
+      );
+    } else if (field === "usdValue" && ConversionType === "USD") {
+      updatedData[index].rmbValue = parseFloat(
+        (+value * conversionRate).toFixed(2)
+      );
     }
 
-    if (name === 'qty') {
-      setQty((prev) => {
-        return { ...prev, [SKU]: value };
-      });
-    }
-    if (name === 'rmbValue') {
-      setRMBValue((prev) => {
-        return { ...prev, [SKU]: value };
-      });
-
-      let newUSDValue = {};
-
-      data.forEach((row, index) => {
-        if (row.SKU === SKU) {
-          newUSDValue[row.SKU] = ((value || 0) / (usdCommon || 0)).toFixed(2);
-        } else {
-          newUSDValue[row.SKU] = usdValue[row.SKU];
-        }
-      });
-
-      setUSDValue(newUSDValue);
-    }
-    if (name === 'usdValue') {
-      setUSDValue((prev) => {
-        return { ...prev, [SKU]: value };
-      });
-
-      let newRMBValue = {};
-
-      data.forEach((row, index) => {
-        if (row.SKU === SKU) {
-          newRMBValue[row.SKU] = ((value || 0) * (usdCommon || 0)).toFixed(2);
-        } else {
-          newRMBValue[row.SKU] = rmbValue[row.SKU];
-        }
-      });
-
-      setRMBValue(newRMBValue);
-    }
+    setDatas(updatedData);
   };
 
   const handleDelete = (id) => {
@@ -105,37 +84,47 @@ function PriceHistoryCalc({
 
   const handleHistoryUpdate = async () => {
     try {
-      if (!usdCommon) {
-        toast.error('please add Conversion Rate');
+      if (!conversionRate) {
+        toast.error("Please add Conversion Rate");
         return;
       }
-      const apiData = data
-        .map((item) => {
-          if (!rmbValue[item.SKU] || !usdValue[item.SKU]) {
-            return null;
-          }
-          return {
-            SKU: item.SKU,
-            priceHistory: [
-              {
-                conversionRate: usdCommon,
-                Quantity: +qty[item.SKU],
-                RMB: +rmbValue[item.SKU],
-                USD: +usdValue[item.SKU],
-              },
-            ],
-          };
-        })
-        .filter((item) => item);
+
+      let apiData = [];
+
+      datas.forEach((item, index) => {
+        if (!item.rmbValue || !item.usdValue) {
+          toast.error(`Missing field for SKU: ${item.SKU}`);
+          return;
+        }
+
+        apiData.push({
+          SKU: item.SKU,
+          priceHistory: [
+            {
+              conversionRate: conversionRate,
+              Quantity: item.QTY,
+              RMB: +item.rmbValue,
+              USD: +item.usdValue,
+            },
+          ],
+        });
+      });
+
+      if (apiData.length !== datas.length) {
+        return;
+      }
 
       const res = await addpriceHistory(apiData).unwrap();
 
       successdisplay();
       handleSelectionChange([]);
-      setTimeout(() => {
-        setOpen(false);
-      }, 500);
+      setDatas([])
+      setConversionRate()
+      setOpen(false);
     } catch (err) {
+      handleSelectionChange([]);
+      setDatas([])
+      setConversionRate()
       console.error(err);
     }
   };
@@ -144,134 +133,198 @@ function PriceHistoryCalc({
     setOpen(false);
   };
 
+  const handleChangeType = (e, value) => {
+    if (value !== null) {
+      setConversionType(value);
+    }
+  };
+
+  // getting the value after changing the c rates
+  const handleConversionRateChange = (e) => {
+    const rate = parseFloat(e.target.value);
+    setConversionRate(rate);
+    const updatedData = datas.map((item) => {
+      const updatedItem = { ...item };
+      if (ConversionType === "RMB") {
+        updatedItem.usdValue = parseFloat(
+          ((item.rmbValue || 0) * rate).toFixed(2)
+        );
+      } else if (ConversionType === "USD") {
+        updatedItem.rmbValue = parseFloat(
+          ((item.usdValue || 0) * rate).toFixed(2)
+        );
+      }
+      return updatedItem;
+    });
+
+    setDatas(updatedData);
+  };
+
   return (
-    <div style={{ backgroundColor: 'green' }}>
-      <Dialog sx={{}} open={open} onClose={handleClose} maxWidth='xl'>
+    <div style={{ backgroundColor: "green" }}>
+      <Dialog sx={{}} open={open} onClose={handleClose} maxWidth="xl">
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            padding: '1rem',
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "1rem",
           }}
         >
-          <h2 style={{flex: "1", textAlign:"center",}}>Enter conversion rate</h2>
-
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'right',
-              paddingX: '1rem',
-              gap: '.5rem',
-            }}
-          >
-            <span>1 USD$ = </span>
-            {/* <TextField
-            type='number'
-            value={usdCommon}
-            onChange={(e) => {
-              handleChange(null, e.target.value, 'usdCommon');
-            }}
-          /> */}
-            <input
-              style={{ padding: '.2rem', fontSize: '1rem', width: '4rem' }}
-              type='number'
-              value={usdCommon}
-              onChange={(e) => {
-                handleChange(null, e.target.value, 'usdCommon');
-              }}
-            />
-          </Box>
+          <h2 style={{ flex: "1", textAlign: "center" }}>
+            Enter conversion rate
+          </h2>
         </Box>
 
         <DialogContent>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "15px",
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: "0.7rem",
+                fontWeight: "bold",
+                color: "black",
+                padding: "0.1rem",
+              }}
+            >
+              {ConversionType === "RMB"
+                ? "1 RMB equal to USD"
+                : "1 USD equal to RMB"}
+            </Typography>{" "}
+            {"="}
+            <input
+              value={conversionRate || ""}
+              onChange={handleConversionRateChange}
+              type="number"
+              style={{ width: "80px", padding: "4px" }}
+            />
+            <ToggleButtonGroup
+              value={ConversionType}
+              exclusive
+              sx={{
+                width: "100px",
+                height: "30px",
+                border: "none",
+                borderRadius: "0.2rem",
+                padding: "0.2rem",
+                color: "#fff",
+
+                "& .Mui-selected": {
+                  color: "#fff !important",
+                  background: "black !important",
+                },
+              }}
+              onChange={handleChangeType}
+              aria-label="Platform"
+            >
+              <ToggleButton
+                value="USD"
+                sx={{ color: "black", border: "0.5px solid black" }}
+              >
+                USD
+              </ToggleButton>
+              <ToggleButton
+                value="RMB"
+                sx={{ color: "black", border: "0.5px solid black" }}
+              >
+                RMB
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
           <TableContainer component={Paper} sx={{ maxHeight: 540 }}>
-            <Table stickyHeader aria-label='sticky table'>
-              <TableHead sx={{ backgroundColor: '#03084E' }}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead sx={{ backgroundColor: "#03084E" }}>
                 <TableRow>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     Sno
                   </TableCell>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     SKU
                   </TableCell>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     Name
                   </TableCell>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     Quantity
                   </TableCell>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     GST %
                   </TableCell>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     Qty
                   </TableCell>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     RMB
                   </TableCell>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     USD
                   </TableCell>
-                  <TableCell sx={{ color: '#fff', backgroundColor: '#03084E' }}>
+                  <TableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     Action
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.map((row, index) => (
+                {datas?.map((row, index) => (
                   <TableRow key={row.id}>
-                    <TableCell sx={{ padding: '.5rem' }}>{index + 1}</TableCell>
-                    <TableCell sx={{ padding: '.5rem' }}>{row.SKU}</TableCell>
-                    <TableCell sx={{ padding: '.5rem' }}>{row.Name}</TableCell>
-                    <TableCell sx={{ padding: '.5rem' }}>{row.Brand}</TableCell>
-                    <TableCell sx={{ padding: '.5rem' }}>{row.GST} %</TableCell>
-                    <TableCell sx={{ padding: '.5rem' }}>
+                    <TableCell sx={{ padding: ".5rem" }}>{index + 1}</TableCell>
+                    <TableCell sx={{ padding: ".5rem" }}>{row.SKU}</TableCell>
+                    <TableCell sx={{ padding: ".5rem" }}>{row.Name}</TableCell>
+                    <TableCell sx={{ padding: ".5rem" }}>{row.Brand}</TableCell>
+                    <TableCell sx={{ padding: ".5rem" }}>{row.GST} %</TableCell>
+                    <TableCell sx={{ padding: ".5rem" }}>
                       <input
                         style={{
-                          width: '4rem',
-                          height: '2rem',
-                          padding: '.6rem',
+                          width: "4rem",
+                          height: "2rem",
+                          padding: ".6rem",
                         }}
-                        name='qty'
-                        type='number'
-                        value={qty[row.SKU] || ''}
+                        name="qty"
+                        type="number"
+                        value={row.QTY || ""}
                         onChange={(e) => {
-                          handleChange(row.SKU, e.target.value, 'qty');
+                          handleInputChange(index, "QTY", e.target.value);
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={{ padding: '.5rem' }}>
+                    <TableCell sx={{ padding: ".5rem" }}>
                       <input
                         style={{
-                          width: '4rem',
-                          height: '2rem',
-                          padding: '.6rem',
+                          width: "4rem",
+                          height: "2rem",
+                          padding: ".6rem",
                         }}
-                        name='rmb'
-                        type='number'
-                        value={rmbValue[row.SKU] || ''}
+                        name="rmb"
+                        type="number"
+                        value={row.rmbValue || ""}
                         onChange={(e) => {
-                          handleChange(row.SKU, e.target.value, 'rmbValue');
+                          handleInputChange(index, "rmbValue", e.target.value);
                         }}
+                        disabled={ConversionType === "USD"}
                       />
                     </TableCell>
-                    <TableCell sx={{ padding: '.5rem' }}>
+                    <TableCell sx={{ padding: ".5rem" }}>
                       <input
                         style={{
-                          width: '4rem',
-                          height: '2rem',
-                          padding: '.6rem',
+                          width: "4rem",
+                          height: "2rem",
+                          padding: ".6rem",
                         }}
-                        type='number'
-                        name='usd'
-                        value={usdValue[row.SKU] || ''}
+                        type="number"
+                        name="usdValue"
+                        value={row.usdValue || ""}
                         onChange={(e) => {
-                          handleChange(row.SKU, e.target.value, 'usdValue');
+                          handleInputChange(index, "usdValue", e.target.value);
                         }}
+                        disabled={ConversionType === "RMB"}
                       />
                     </TableCell>
-                    <TableCell sx={{ padding: '.5rem' }}>
+                    <TableCell sx={{ padding: ".5rem" }}>
                       <Button
                         onClick={() => {
                           handleDelete(row.id);
@@ -288,16 +341,16 @@ function PriceHistoryCalc({
         </DialogContent>
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'right',
-            padding: '.6rem',
-            gap: '1rem',
+            display: "flex",
+            justifyContent: "right",
+            padding: ".6rem",
+            gap: "1rem",
           }}
         >
-          <Button variant='contained' onClick={handleHistoryUpdate}>
-            {addpriceHistoryLoading ? <CircularProgress /> : 'Save'}
+          <Button variant="contained" onClick={handleHistoryUpdate}>
+            {addpriceHistoryLoading ? <CircularProgress /> : "Save"}
           </Button>
-          <Button variant='outlined' onClick={handleClose}>
+          <Button variant="outlined" onClick={handleClose}>
             Close
           </Button>
         </Box>
