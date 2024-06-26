@@ -76,7 +76,7 @@ const InvoiceDial = ({ open, setOpen, details, refetch }) => {
                     src={invoice.url}
                   />
                 ) : (
-                  <img src={invoice.url} alt="Invoice" />
+                  <img src={invoice.url} style={{ width: "100%", height: "100%" ,objectFit:"cover" ,objectPosition:"center" }} alt="Invoice" />
                 )}
               </Box>
             ) : (

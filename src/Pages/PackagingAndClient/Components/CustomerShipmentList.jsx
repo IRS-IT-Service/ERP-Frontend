@@ -120,7 +120,7 @@ const CustomerShipmentList = () => {
     refetch();
   }, []);
 
-  console.log("hiii")
+
 
   useEffect(() => {
     if (getAllShipments && getAllShipments.status) {
