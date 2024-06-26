@@ -550,7 +550,7 @@ const UpdateQuantity = ({
     },
     {
       field: "ActualQuantity",
-      headerName: "Scanned Quantity",
+      headerName: "Sticked Quantity",
       flex: 0.3,
       minWidth: 100,
       maxWidth: 150,
