@@ -49,11 +49,11 @@ import {
 } from "../../../features/api/barcodeApiSlice";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import { useGetCustomerOrderShipmentQuery } from "../../../features/api/clientAndShipmentApiSlice";
-import alreadyMp3 from "../../../../public/Already_fulfilled.mp3"
-import NotinReqMp3 from "../../../../public/Product_is_not_in_req.mp3"
-import NotFoundMp3 from "../../../../public/Barcode_Not_Found.mp3"
-import successMp3 from "../../../../public/success.mp3"
-import alreadyExstMp3 from "../../../../public/Product_already_exis.mp3"
+import alreadyMp3 from "../../../../public/Already_fulfilled.mp3";
+import NotinReqMp3 from "../../../../public/Product_is_not_in_req.mp3";
+import NotFoundMp3 from "../../../../public/Barcode_Not_Found.mp3";
+import successMp3 from "../../../../public/success.mp3";
+import alreadyExstMp3 from "../../../../public/Product_already_exis.mp3";
 
 import Swal from "sweetalert2";
 const StyleCell = styled(TableCell)(({ theme }) => ({
@@ -143,7 +143,6 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   const alreadyExst = new Audio(alreadyExstMp3);
   const NotFound = new Audio(NotFoundMp3);
   const success = new Audio(successMp3);
- 
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
@@ -235,7 +234,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
             if (item.SKU === newSku) {
               return {
                 ...item,
-                Isdone: "true",
+                Isdone: "done",
               };
             }
             return item;
@@ -299,7 +298,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
     try {
       const data = groupBySKU(barcodeRow);
-      const allDone = rows.every((row) => row.Isdone === true);
+      const allDone = rows.every((row) => row.Isdone === "done");
       let params = null;
       if (id) {
         if (!allDone) {
@@ -381,19 +380,18 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   useEffect(() => {
     if (!countSKUs(finalBarcodeRow, rows, latestSKU.SKU)) {
       const latestValue = finalBarcodeRow.slice();
-      
+
       setBarcoderow(latestValue);
     } else if (finalBarcodeRow.length > 0) {
-      already.play()
+      already.play();
       toast.error("Items are already fulfilled as per requirements");
       const latestValue = finalBarcodeRow.slice();
 
       const currentValue = latestValue.filter(
         (value) => value.serialNumber !== latestSKU.Serial
       );
-      
+
       setFinalBarcodeRow(currentValue);
-      
     }
   }, [finalBarcodeRow, setFinalBarcodeRow]);
 
@@ -408,7 +406,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
         );
 
         if (isExist) {
-          alreadyExst.play()
+          alreadyExst.play();
           toast.error("Product already exists");
           setBarcode("");
           return;
@@ -418,20 +416,19 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
         const res = await verifyBarcodeApi(params).unwrap();
 
         if (res.status === "success") {
-          
           const { barcode, product } = res.data;
           setImage(product.mainImage?.lowUrl);
           const newRow = { ...barcode, ...product };
           setBarcode("");
 
           if (!isBarcodeInRequest(rows, newRow.SKU)) {
-            NotinReq.play()
+            NotinReq.play();
             toast.error("Product is not in the requested");
             return;
           }
 
           if (!isBarcodeAlreadyExists(finalBarcodeRow, newRow.serialNumber)) {
-            success.play()
+            success.play();
             setFinalBarcodeRow((prevRows) => [...prevRows, newRow]);
             setBarcode("");
             setLatestSKU({ SKU: newRow.SKU, Serial: newRow.serialNumber });
@@ -440,7 +437,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       } catch (error) {
         console.error("An error occur #248f24 Dispatch return:", error);
         setBarcode("");
-        NotFound.play()
+        NotFound.play();
         Swal.fire({
           icon: "error",
           title: isDispatchError
@@ -612,7 +609,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
               alignItems: "center",
             }}
           >
-            {params.row.Isdone === "true" ? (
+            {params.row.Isdone === "done" ? (
               <span style={{ color: "green", fontSize: "20px" }}>
                 {" "}
                 <i className="fa-solid fa-check"></i>{" "}
