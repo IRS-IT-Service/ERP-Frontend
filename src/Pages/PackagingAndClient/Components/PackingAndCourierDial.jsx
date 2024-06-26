@@ -65,6 +65,8 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
     trackingId: "",
   });
 
+
+
   const [packingDetails, setPackingDetails] = useState([
     {
       _id: "",
@@ -314,6 +316,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
       console.log(error);
     }
   };
+
 
   return (
     <Box>
@@ -743,6 +746,7 @@ const PackingAndCourierDial = ({ open, setOpen, details, refetch }) => {
                   fullWidth
                   label="Enter Tracking Id"
                   name="trackingId"
+                  value={details?.TrackingId}
                   onChange={(e) => handleCourierNameChange(e)}
                   // disabled={details?.TrackingId ? true : false}
                 ></TextField>
