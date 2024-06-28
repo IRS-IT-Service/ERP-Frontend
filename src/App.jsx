@@ -431,13 +431,13 @@ function App() {
                 path="/admin/resetPassword/:token"
                 element={<ResetPassword />}
               />
+                 <Route path="/profile" element={<PrivateRoute nav={true} />}>
+                  <Route path="/profile" element={<Profile />} />
+                </Route>
               {/* Home Router. */}
               <Route path="*" element={<PrivateRoute nav={true} />}>
                 {" "}
                 <Route path="*" element={<NoPageFound />} />
-              </Route>
-              <Route path="/profile" element={<PrivateRoute nav={true} />}>
-                <Route path="/profile" element={<Profile />} />
               </Route>
 
               {/* Admin Router */}
@@ -448,6 +448,7 @@ function App() {
                   path="/setDicountpricerange"
                   element={<SetDiscountPrice />}
                 />
+             
                 <Route
                   path="/Users"
                   element={

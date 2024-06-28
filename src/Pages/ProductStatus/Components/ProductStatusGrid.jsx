@@ -40,6 +40,7 @@ import { useNavigate } from "react-router-dom";
 import ProductStatusDownloadDialog from "./ProductStatusDownloadDialog";
 import CachedIcon from "@mui/icons-material/Cached";
 import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
+import { formatIndianPrice } from "../../../commonFunctions/commonFunctions";
 
 // for refresh data
 
@@ -399,8 +400,8 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "Quantity",
       headerName: "QTY",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 90,
+      minWidth: 60,
+      maxWidth: 70,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -429,8 +430,8 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "MRP",
       headerName: "MRP",
       flex: 0.3,
-      minWidth: 60,
-      maxWidth: 70,
+      minWidth: 100,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -450,7 +451,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {toggleValue ? value : icon}
+            {toggleValue ? formatIndianPrice(value) : icon}
           </div>
         );
       },
@@ -459,8 +460,8 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "LandingCost",
       headerName: "LNC",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 80,
+      minWidth: 100,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -483,7 +484,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {toggleValue ? value : icon}
+            {toggleValue ? formatIndianPrice(value) : icon}
           </div>
         );
       },
@@ -492,8 +493,8 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "Landing Cost with GST",
       headerName: "LCG",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 80,
+      minWidth: 100,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -518,7 +519,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {toggleValue ? main : icon}
+            {toggleValue ? formatIndianPrice(main) : icon}
           </div>
         );
       },
@@ -531,8 +532,8 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       headerName: "Sales",
       align: "center",
       headerAlign: "center",
-      minWidth: 70,
-      maxWidth: 80,
+      minWidth: 100,
+      maxWidth: 100,
       renderCell: (params) => {
         const value = params.row.SalesPrice;
         const icon = value === 0 ? <CloseIcon /> : <CheckIcon />;
@@ -548,7 +549,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {toggleValue ? value : icon}
+            {toggleValue ? formatIndianPrice(value) : icon}
           </div>
         );
       },
@@ -562,8 +563,8 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
       align: "center",
       headerAlign: "center",
       flex: 0.2,
-      minWidth: 70,
-      maxWidth: 80,
+      minWidth: 100,
+      maxWidth: 100,
       editable: true,
       type: "number",
       renderCell: (params) => {
@@ -580,7 +581,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
               color: iconColor,
             }}
           >
-            {toggleValue ? value : icon}
+            {toggleValue ? formatIndianPrice(value) : icon}
           </div>
         );
       },

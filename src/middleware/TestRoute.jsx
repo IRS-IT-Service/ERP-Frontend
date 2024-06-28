@@ -12,7 +12,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const TestRoute = ({ children }) => {
   return (
-    <StyledBox sx={{ display: "flex", gap: "10px",overflow: 'hidden' }}>
+    <StyledBox sx={{ display: "flex", gap: "10px",width:"90vw",overflow: 'hidden', }}>
       <ToggleNav />
       {children}
     </StyledBox>

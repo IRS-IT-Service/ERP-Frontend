@@ -159,6 +159,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    userUpdateWhole: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/updateUser`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    getSingleAdmin: builder.query({
+      query: (data) => ({
+        url: `${USERS_URL}/getSingleAdmin/${data}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -186,4 +199,5 @@ export const {
   useGetReceivedMessagesMutation,
   useChangeVisibilityMutation,
   useUpdateProfileMutation,
+  useUserUpdateWholeMutation,useGetSingleAdminQuery
 } = userApiSlice;
