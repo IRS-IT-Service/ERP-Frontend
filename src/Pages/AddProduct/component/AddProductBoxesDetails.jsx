@@ -17,6 +17,7 @@ const AddProductBoxesDetails = () => {
   /// local state
   const [form, setForm] = useState({
     productName: "",
+    alternativeName: "",
     brand: "",
     category: "",
     subCategory: "",
@@ -111,6 +112,7 @@ const AddProductBoxesDetails = () => {
     try {
       const {
         productName,
+        alternativeName,
         brand,
         category,
         subCategory,
@@ -165,6 +167,7 @@ const AddProductBoxesDetails = () => {
       const params = [
         {
           name: productName,
+          alternativeName: alternativeName,
           brand: brand,
           category: category,
           subCategory: subCategory,
@@ -188,6 +191,7 @@ const AddProductBoxesDetails = () => {
       await sendMessageToAdmin(whatsappMessage).unwrap();
       setForm({
         productName: "",
+        alternativeName: "",
         brand: "",
         category: "",
         subCategory: "",
@@ -197,7 +201,7 @@ const AddProductBoxesDetails = () => {
         subItems: [""],
         packageDimensions: [{ width: "", height: "", length: "", weight: "" }],
       });
-    window.location.reload();
+      window.location.reload();
     } catch (e) {
       console.log("error At Add Product");
       console.log(e.message);
@@ -226,23 +230,24 @@ const AddProductBoxesDetails = () => {
           sx={{
             width: "100%",
             height: "100%",
-            boxShadow: 0,
             borderRadius: "8px",
             display: "flex",
             flexDirection: "column",
+          
           }}
         >
           {/* header2 */}
           <Box
             sx={{
               width: "100%",
-              height: "8.8vh",
               boxShadow: 3,
-              borderRadius: "8px",
+              borderRadius: "4px",
               display: "flex",
               justifyContent: "space-around",
               alignContent: "center",
-              padding: "0.5% 0%",
+              padding: "1% 1%",
+              gap: "1%",
+              margin: "12px 4px 4px 4px",
             }}
           >
             <TextField
@@ -253,9 +258,9 @@ const AddProductBoxesDetails = () => {
               onChange={(e) => {
                 handleChange("normal", e.target.value, null, "productName");
               }}
+              size="small"
               inputProps={{
                 style: {
-                  height: "2.1vh",
                   width: "24vw",
                 },
               }}
@@ -266,15 +271,12 @@ const AddProductBoxesDetails = () => {
                 width: "20%",
                 backgroundColor: "rgba(255, 255, 255)",
               }}
+              size="small"
               options={getDynaicValue?.data?.[0]?.Brand || []}
               getOptionLabel={(option) => option}
               onChange={(event, value) => handleSelectedChange(value, "brand")}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select Brand"
-                  value={form.value}
-                />
+                <TextField {...params} label="Brand" value={form.value} />
               )}
             />
             <Autocomplete
@@ -282,6 +284,7 @@ const AddProductBoxesDetails = () => {
                 width: "20%",
                 backgroundColor: "rgba(255, 255, 255)",
               }}
+              size="small"
               options={getDynaicValue?.data?.[0]?.Category || []}
               getOptionLabel={(option) => option}
               onChange={(event, value) =>
@@ -291,7 +294,7 @@ const AddProductBoxesDetails = () => {
                 <TextField
                   name="Category"
                   {...params}
-                  label="Select Category"
+                  label="Category"
                   value={form.category}
                 />
               )}
@@ -301,6 +304,7 @@ const AddProductBoxesDetails = () => {
                 width: "20%",
                 backgroundColor: "rgba(255, 255, 255)",
               }}
+              size="small"
               options={getDynaicValue?.data?.[0]?.SubCategory || []}
               getOptionLabel={(option) => option}
               onChange={(event, value) =>
@@ -309,7 +313,7 @@ const AddProductBoxesDetails = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Select Sub Category"
+                  label="Sub Category"
                   value={form.subCategory}
                 />
               )}
@@ -319,19 +323,35 @@ const AddProductBoxesDetails = () => {
                 width: "8%",
                 backgroundColor: "rgba(255, 255, 255)",
               }}
+              size="small"
               options={getDynaicValue?.data?.[0]?.GST || []}
               getOptionLabel={(option) => option}
               onChange={(event, value) => handleSelectedChange(value, "gst")}
               renderInput={(params) => (
-                <TextField {...params} label="Gst" value={form.gst} />
+                <TextField {...params} label="GST" value={form.gst} />
               )}
+            />
+            <TextField
+              id="outlined-basic"
+              label="Alternative Name"
+              variant="outlined"
+              size="small"
+              value={form?.alternativeName}
+              onChange={(e) => {
+                handleChange("normal", e.target.value, null, "alternativeName");
+              }}
+              inputProps={{
+                style: {
+                  width: "24vw",
+                },
+              }}
             />
           </Box>
 
           <Box
             sx={{
               width: "100%",
-              height: "70vh",
+              height: "80vh",
               borderRadius: "8px",
               display: "flex",
               justifyContent: "start",
@@ -342,15 +362,13 @@ const AddProductBoxesDetails = () => {
             <Box
               sx={{
                 width: "40%",
-                height: "98%",
+                height: "68.5vh",
                 boxShadow: 3,
                 borderRadius: "8px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
               }}
             >
               {/* product value header */}
+
               <Box
                 sx={{
                   width: "100%",
@@ -358,7 +376,7 @@ const AddProductBoxesDetails = () => {
                   display: "flex",
                   justifyContent: "space-around",
                   alignItems: "center",
-                  boxShadow: 1,
+                  border: "1px solid #D3D3D3",
                   paddingY: "2.4%",
                 }}
               >
@@ -374,37 +392,44 @@ const AddProductBoxesDetails = () => {
 
               <Box
                 sx={{
-                  width: "auto",
-                  height: "70vh",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "start",
-                  alignItems: "start",
+                  width: "100%",
+                  height: "100%",
                 }}
               >
                 {/* value1 */}
                 <Box
                   sx={{
                     display: "flex",
-                    height: "21vh",
-                    width: "32vw",
-                    borderBottomRadius: "8px",
-                    overflow: "hidden",
+                    height: "25%",
                   }}
                 >
                   {/* product weight */}
                   <Box
                     sx={{
-                      width: "17vw",
-                      height: "20.9vh",
+                      width: "40%",
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "center",
                       alignItems: "center",
-                      gap: "2px",
+                      borderRight: "1px solid #D3D3D3",
                     }}
                   >
-                    <Typography sx={{ fontSize: "0.9rem", fontWeight: "600" }}>
+                   <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "left",
+                        alignItems: "center",
+                        width: "14vw",
+                      }}
+                    >
+
+                    </Box>
+                    <Typography
+                      sx={{
+                        fontSize: "0.9rem",
+                        fontWeight: "600",
+                      }}
+                    >
                       Product Weight
                     </Typography>
 
@@ -413,53 +438,68 @@ const AddProductBoxesDetails = () => {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        width: "13vw",
-                        height: "3vh",
+                        gap: "1vw",
+                        height: "10vh",
                       }}
                     >
-                      <Typography sx={{ fontSize: "0.6rem" }}>
-                        Weight in (Gram)
-                      </Typography>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <Typography
+                          sx={{ fontSize: "0.6rem", marginLeft: "4px" }}
+                        >
+                          Weight<sup>(gm)</sup>
+                        </Typography>
+                        <TextField
+                          id="outlined-basic"
+                          placeholder="Weight"
+                          type="number"
+                          value={form?.weight}
+                          onChange={(e) => {
+                            handleChange(
+                              "normal",
+                              e.target.value,
+                              null,
+                              "weight"
+                            );
+                          }}
+                          variant="outlined"
+                          inputProps={{
+                            style: {
+                              height: "0.2vh",
+                              width: "5.5vw",
+                            },
+                          }}
+                        />{" "}
+                      </div>
                     </Box>
-
-                    <TextField
-                      id="outlined-basic"
-                      placeholder="Weight"
-                      type="number"
-                      value={form?.weight}
-                      onChange={(e) => {
-                        handleChange("normal", e.target.value, null, "weight");
-                      }}
-                      variant="outlined"
-                      inputProps={{
-                        style: {
-                          height: "0.2vh",
-                          width: "5.5vw",
-                        },
-                      }}
-                    />
                   </Box>
 
                   {/* dimension */}
                   <Box
                     sx={{
-                      width: "21vw",
-                      height: "20.5vh",
+                      width: "60%",
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "center",
                       alignItems: "center",
-                      marginTop: "0.6%",
                     }}
                   >
-                    <Typography
+                    <Box
                       sx={{
-                        fontSize: "0.9rem",
-                        fontWeight: "600",
+                        display: "flex",
+                        justifyContent: "left",
+                        alignItems: "center",
+                        width: "14vw",
                       }}
                     >
-                      Dimension(L*B*H)
-                    </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "0.9rem",
+                          fontWeight: "600",
+                        }}
+                      >
+                        Dimension(L*B*H)
+                      </Typography>
+                    </Box>
 
                     <Box
                       sx={{
@@ -468,16 +508,20 @@ const AddProductBoxesDetails = () => {
                         alignItems: "center",
                         gap: "1vw",
                         width: "18vw",
-                        height: "11vh",
+                        height: "10vh",
                       }}
                     >
                       {/* lenght */}
-                      <div style={{ display: "flex", flexDirection: "column" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
                         <Typography
                           sx={{
                             fontSize: "0.6rem",
-
-                            textAlign: "center",
+                            marginLeft: "4px",
                           }}
                         >
                           Length<sup>(cm)</sup>
@@ -510,8 +554,7 @@ const AddProductBoxesDetails = () => {
                         <Typography
                           sx={{
                             fontSize: "0.6rem",
-
-                            textAlign: "center",
+                            marginLeft: "4px",
                           }}
                         >
                           Width<sup>(cm)</sup>
@@ -549,8 +592,7 @@ const AddProductBoxesDetails = () => {
                         <Typography
                           sx={{
                             fontSize: "0.6rem",
-
-                            textAlign: "center",
+                            marginLeft: "4px",
                           }}
                         >
                           Height<sup>(cm)</sup>
@@ -585,30 +627,30 @@ const AddProductBoxesDetails = () => {
                 <Box
                   sx={{
                     width: "100%",
-                    height: "38.5vh",
-                    boxShadow: 0,
+                    height: "65%",
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "center",
+                    justifyContent: "space-evenly",
                     alignItems: "center",
-
                     borderRadius: "8px",
+                    borderTop: "1px solid #D3D3D3",
+                    gap: "1%",
+                    padding: "2%",
+                    border: "1px solid #D3D3D3",
                   }}
                 >
                   <Box
                     sx={{
+                      width: "100%",
                       backgroundColor: "white",
-
                       display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      justifyContent: "right",
                     }}
                   >
                     <Button
                       variant="outlined"
                       sx={{
                         backgroundColor: "#b5e6f5",
-                        marginTop: "1%",
                       }}
                       onClick={handleAddSubItems}
                     >
@@ -620,17 +662,13 @@ const AddProductBoxesDetails = () => {
                   {/* Box of add subtitle1/2/3 */}
                   <Box
                     sx={{
-                      width: "30vw",
+                      width: "100%",
                       height: "60%",
-
-                      // border: '2px solid red',
                       display: "flex",
                       flexWrap: "wrap",
-                      justifyContent: "center",
                       gap: "1%",
                       overflowY: "auto",
-                      paddingY: "1.5%",
-                      marginBottom: "1.5%",
+                      padding: "4%",
                       boxShadow: 3,
                       borderRadius: "8px",
                     }}
@@ -641,9 +679,6 @@ const AddProductBoxesDetails = () => {
                           display: "flex",
                           justifyContent: "center",
                           alignContent: "center",
-                          // border: '2px solid black',
-
-                          // gap: '2%',
                           marginBottom: "2%",
                         }}
                         key={index}
@@ -652,16 +687,13 @@ const AddProductBoxesDetails = () => {
                           label={`Subitem-${index + 1}`}
                           variant="outlined"
                           value={form?.subItems[index]}
+                          size="small"
                           onChange={(e) => {
                             handleChange("subItem", e.target.value, index);
                           }}
                           inputProps={{
                             style: {
-                              height: "1.9vh",
-                              width: "6vw",
-
-                              // marginY: '15%',
-                              // paddingY: '5%',
+                              width: "6.5vw",
                             },
                           }}
                         />
@@ -676,7 +708,6 @@ const AddProductBoxesDetails = () => {
                             justifyContent: "space-around",
                             alignItems: "center",
                             borderRadius: "8px",
-                            // border: '2px solid black',
                           }}
                         >
                           <DeleteIcon
@@ -687,7 +718,6 @@ const AddProductBoxesDetails = () => {
                               boxShadow: 3,
                               cursor: "pointer",
                               fontSize: "1.1rem",
-                              // display: index ? "block" : "none",
                             }}
                             onClick={() => {
                               handleRemoveSubItems(index);
@@ -703,7 +733,7 @@ const AddProductBoxesDetails = () => {
                     sx={{
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center",
+                      width: "100%",
                     }}
                   >
                     <Button
@@ -725,16 +755,13 @@ const AddProductBoxesDetails = () => {
             {/* right packeging values */}
             <Box
               sx={{
-                width: "50vw",
+                width: "60%",
                 height: "68.5vh",
                 boxShadow: 3,
                 borderRadius: "8px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "start",
-                // border: '2px solid black',
-
-                // paddingX: '1%',
               }}
             >
               {/* product value header */}
@@ -742,14 +769,11 @@ const AddProductBoxesDetails = () => {
                 sx={{
                   width: "100%",
                   height: "10%",
-                  // border: '1px solid grey',
-                  borderRadius: "8px",
                   display: "flex",
-                  // flexDirection: 'column',
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "4%",
-                  boxShadow: 1,
+                  border: "1px solid #D3D3D3",
                 }}
               >
                 <Typography
@@ -763,7 +787,6 @@ const AddProductBoxesDetails = () => {
 
                 <AddIcon
                   sx={{
-                    // border: '2px solid black',
                     backgroundColor: "#42a5f5",
                     color: "white",
                     borderRadius: "4px",
@@ -780,7 +803,6 @@ const AddProductBoxesDetails = () => {
                 sx={{
                   width: "100%",
                   height: "93%",
-                  // border: '2px solid black',
                 }}
               >
                 <Box
@@ -789,7 +811,7 @@ const AddProductBoxesDetails = () => {
                     justifyContent: "space-around",
                     paddingX: "8%",
                     alignItems: "center",
-                    boxShadow: 1,
+                    borderBottom: "1px solid #D3D3D3",
                     height: "10%",
                     borderRadius: "8px",
                   }}
@@ -819,10 +841,8 @@ const AddProductBoxesDetails = () => {
                     flexDirection: "column",
                     justifyContent: "start",
                     alignItems: "start",
-                    // boxShadow: 3,
                     height: "70%",
                     borderRadius: "8px",
-                    // border: '2px solid red',
                     marginTop: "2%",
                     paddingTop: "1%",
                     overflowY: "auto",
@@ -845,6 +865,7 @@ const AddProductBoxesDetails = () => {
                         id="outlined-basic"
                         label="Weight in (Gm)"
                         type="number"
+                        size="small"
                         variant="outlined"
                         value={form?.packageDimensions[index]?.weight}
                         onChange={(e) => {
@@ -857,8 +878,7 @@ const AddProductBoxesDetails = () => {
                         }}
                         inputProps={{
                           style: {
-                            width: "9vw",
-                            height: "1vh",
+                            width: "10vw",
                           },
                         }}
                       />
@@ -879,6 +899,7 @@ const AddProductBoxesDetails = () => {
                           label="Length(cm)"
                           variant="outlined"
                           type="number"
+                          size="small"
                           value={form?.packageDimensions[index]?.length}
                           onChange={(e) => {
                             handleChange(
@@ -891,7 +912,6 @@ const AddProductBoxesDetails = () => {
                           inputProps={{
                             style: {
                               width: "10vw",
-                              height: "1vh",
                             },
                           }}
                         />
@@ -900,6 +920,7 @@ const AddProductBoxesDetails = () => {
                           label="Width(cm)"
                           variant="outlined"
                           type="number"
+                          size="small"
                           value={form?.packageDimensions[index]?.width}
                           onChange={(e) => {
                             handleChange(
@@ -911,8 +932,7 @@ const AddProductBoxesDetails = () => {
                           }}
                           inputProps={{
                             style: {
-                              width: "9vw",
-                              height: "1vh",
+                              width: "10vw",
                             },
                           }}
                         />
@@ -921,6 +941,7 @@ const AddProductBoxesDetails = () => {
                           label="Height(cm)"
                           variant="outlined"
                           type="number"
+                          size="small"
                           value={form?.packageDimensions[index]?.height}
                           onChange={(e) => {
                             handleChange(
@@ -933,20 +954,21 @@ const AddProductBoxesDetails = () => {
                           inputProps={{
                             style: {
                               width: "9vw",
-                              height: "1vh",
                             },
                           }}
                         />
 
-                        {/* delete icon */}
+                        {/* Delete Function */}
                         <DeleteIcon
                           sx={{
                             backgroundColor: "#42a5f5",
                             color: "white",
+                            height: "24px",
+                            width: "24px",
                             borderRadius: "4px",
                             boxShadow: 3,
                             cursor: "pointer",
-                            fontSize: "1.1rem",
+                            padding: "2px",
                           }}
                           onClick={() => {
                             handleRemovePackageDimensions(index);
