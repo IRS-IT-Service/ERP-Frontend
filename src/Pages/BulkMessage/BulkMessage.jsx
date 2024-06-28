@@ -92,7 +92,7 @@ import chatBg from '../../../public/ChatBackground.jpeg';
 import dscImage from '../../../public/dscImage.jpg';
 
 const BulkMessage = () => {
-  const items = Array.from({ length: 16 }).map((index) => (
+  const items = Array.from({ length: 5 }).map((index) => (
     <Grid item md={3} lg={1.5} key={index}>
       <Box
         sx={{
@@ -134,17 +134,16 @@ const BulkMessage = () => {
           borderRadius: '10px',
           marginBottom: '50px',
           boxShadow: '2px 2px 5px 5px #eee',
+          width: '100%',
         }}
       >
         <Box
           sx={{
-            // border: '2px solid red',
             display: 'flex',
-            justifyContent: 'center',
             gap: '20px',
           }}
         >
-          <Box sx={{ border: '2px solid #', width: '20vw' }}>Send Box</Box>
+          <Box sx={{ border: '2px solid #eee', width: '20vw' }}>Send Box</Box>
 
           <Box
             sx={{
@@ -203,10 +202,11 @@ const BulkMessage = () => {
             flexGrow: 1,
             marginTop: '50px',
             // border: '2px solid grey',
-            boxShadow: '2px 1px 8px 2px grey',
+            boxShadow: '2px 1px 4px 2px grey',
             padding: '20px',
             borderRadius: '10px',
             marginBottom: '20px',
+            width: '100%',
           }}
         >
           <Grid container spacing={2}>
