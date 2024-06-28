@@ -636,7 +636,7 @@ const AddProductBoxesDetails = () => {
                     borderTop: "1px solid #D3D3D3",
                     gap: "1%",
                     padding: "2%",
-                    border: "1px solid #D3D3D3",
+                    
                   }}
                 >
                   <Box
