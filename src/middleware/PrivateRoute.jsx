@@ -6,9 +6,8 @@ import ToggleNav from "../components/Common/Togglenav";
 import Dropup from "../components/Dropup/Dropup";
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "grey" : "#fff",
-  display: "flex",
-  gap: "5px",
-  overflow: "hidden",
+   
+
 }));
 
 const PrivateRoute = ({ nav }) => {
@@ -16,7 +15,7 @@ const PrivateRoute = ({ nav }) => {
 
   if (nav) {
     return userInfo ? (
-      <Box>
+      <Box sx={{ display: "flex", gap: "10px",width:"100%",overflow: 'hidden', }}>
         {" "}
         <ToggleNav /> <Outlet />{" "}
       </Box>
@@ -26,11 +25,11 @@ const PrivateRoute = ({ nav }) => {
   }
 
   return userInfo ? (
-    <StyledBox>
+    <Box sx={{ display: "flex", gap: "10px",width:"100%",overflow: 'hidden', }}>
       {isAdmin ? <Dropup /> : ""}
       <ToggleNav />
       <Outlet />
-    </StyledBox>
+      </Box>
   ) : (
     <Navigate to="/login" replace />
   );
