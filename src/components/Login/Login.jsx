@@ -90,7 +90,6 @@ export default function Login({ registrationToken }) {
     });
   };
 
-
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
       setLocation({
@@ -266,6 +265,14 @@ export default function Login({ registrationToken }) {
     handleLogout(); // Call the async function
   }, [timerExpired]);
 
+  // Function for changing email to lowerCase
+  const [emailLowerCase, setEmailLowerCase] = useState('');
+
+  const handleEmailLowerCase = () => {
+    const value = event.target.value.toLowerCase();
+    setEmailLowerCase(value);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -407,6 +414,19 @@ export default function Login({ registrationToken }) {
                 noValidate
                 sx={{ mt: 1 }}
               >
+                {/*Without  Email in LowerCase */}
+                {/* <TextField
+                  margin='normal'
+                  required
+                  fullWidth
+                  id='email'
+                  label='Email Address'
+                  name='email'
+                  autoComplete='email'
+                  autoFocus
+                /> */}
+
+                {/* Email in LowerCase */}
                 <TextField
                   margin='normal'
                   required
@@ -416,6 +436,8 @@ export default function Login({ registrationToken }) {
                   name='email'
                   autoComplete='email'
                   autoFocus
+                  value={emailLowerCase}
+                  onChange={handleEmailLowerCase}
                 />
                 <TextField
                   margin='normal'
