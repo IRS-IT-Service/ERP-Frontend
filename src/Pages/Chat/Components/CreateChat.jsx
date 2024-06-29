@@ -30,7 +30,11 @@ import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import { useSendSingleNotificationMutation } from "../../../features/api/otherSlice";
 import { NotificationAdd, NotificationAddRounded, NotificationsNone } from "@mui/icons-material";
-
+import excel from '../../../assets/DrivePNG/excel.png';
+import pdf from '../../../assets/DrivePNG/pdf.png';
+import unknown from '../../../assets/DrivePNG/unknown.png';
+import word from '../../../assets/DrivePNG/word.png';
+import txt from '../../../assets/DrivePNG/txt.jpg';
 // infoDialog box data
 const infoDetail = [
   {
@@ -635,6 +639,52 @@ const CreateChat = () => {
     }
   };
 
+
+  function getFileExtension(filename) {
+    const parts = filename.split('.');
+    const extension = parts[parts.length - 1];
+
+    switch (extension) {
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+        return filename
+      case 'pdf':
+        return pdf;
+      case 'csv':
+      case 'xlsx':
+        return excel;
+      case 'docx':
+        return word;
+      case 'txt':
+        return txt;
+
+      default:
+        return unknown;
+    }
+  }
+
+  function getFileExtensionUrl(filename, url) {
+    const parts = filename.split('.');
+    const extension = parts[parts.length - 1];
+    switch (extension) {
+      case 'csv':
+      case 'xlsx':
+        return excel;
+      case 'docx':
+        return word;
+      case 'pdf':
+        return pdf;
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+      case 'txt':
+        return url;
+      default:
+        return unknown;
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -1010,7 +1060,7 @@ const CreateChat = () => {
                               }}
                             >
                               <img
-                                src={msg?.Content?.url}
+                                src={getFileExtension(msg?.Content?.url)}
                                 alt="Media"
                                 style={{
                                   maxWidth: "250px",
@@ -1162,7 +1212,7 @@ const CreateChat = () => {
                           Preview Image
                         </span>
                         <img
-                          src={URL.createObjectURL(selectedImage)}
+                          src={getFileExtensionUrl(selectedImage.name, URL.createObjectURL(selectedImage)) }
                           alt="test"
                           style={{ height: "200px", width: "200px" }}
                         ></img>
