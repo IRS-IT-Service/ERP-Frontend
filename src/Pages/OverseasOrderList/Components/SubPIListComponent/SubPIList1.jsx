@@ -221,7 +221,7 @@ const SubPIList1 = () => {
                 marginRight: "3px",
               }}
             >
-              $ {getSingleData?.data.totalUSDAmount}
+              $ {(getSingleData?.data.totalUSDAmount).toFixed(2)}
             </Typography>
           </StyledBox>
           <StyledBox>
@@ -242,7 +242,7 @@ const SubPIList1 = () => {
                 marginRight: "3px",
               }}
             >
-              $ {getSingleData?.data.utilzedUSDAmount}
+              $ {(getSingleData?.data.utilzedUSDAmount).toFixed(2)}
             </Typography>
           </StyledBox>
         </Box>
