@@ -37,9 +37,11 @@ import chatBg from "../../../public/ChatBackground.jpeg";
 import dscImage from "../../../public/dscImage.jpg";
 import { formatDateForWhatsApp } from "../../commonFunctions/commonFunctions";
 import { formatTime } from "../../commonFunctions/commonFunctions";
-import CountDown from "./Components/countDown";
+import CountDown from "./Components/CountDown";
 import { DataGrid } from "@mui/x-data-grid";
-
+import {
+  useGetAllClientQuery,
+} from "../../features/api/clientAndShipmentApiSlice";
 
 const columns = [
   { field: "sn", headerName: "ID", width: 90 },
@@ -93,6 +95,8 @@ const PreviewChat = () => {
   const [DeleteTask, { isLoading: DeleteTaskTaskLoading }] =
     useDeleteScheduledTaskMutation();
 
+  const { data: clientData, refetch: clientrefetch } = useGetAllClientQuery();
+
   const [selectedDate, setSelectedDate] = useState();
 
   const [anchorEl, setAnchorEl] = useState(false);
@@ -131,6 +135,8 @@ const PreviewChat = () => {
     whiteSpace: "nowrap",
     width: 1,
   });
+
+  
 
   function convertHtmlToWhatsAppFormat(html) {
     // Replace bold tags with WhatsApp bold format
@@ -250,6 +256,22 @@ const PreviewChat = () => {
       console.log(err);
     }
   };
+  console.log()
+
+  useEffect(() => {
+    if (clientData?.message === "Customer Successfully fetched") {
+      const row = clientData?.data.map((item, index) => {
+        return {
+          ...item,
+          id: item._id,
+          sn: index + 1,
+        };
+      });
+
+      setRows(row);
+      refetch();
+    }
+  }, [clientData]);
 
   const handleAccept = async (value, context) => {
     const customerNumber = ["9205777123"];
