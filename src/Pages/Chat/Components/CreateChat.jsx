@@ -29,12 +29,17 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import { useSendSingleNotificationMutation } from "../../../features/api/otherSlice";
-import { NotificationAdd, NotificationAddRounded, NotificationsNone } from "@mui/icons-material";
-import excel from '../../../assets/DrivePNG/excel.png';
-import pdf from '../../../assets/DrivePNG/pdf.png';
-import unknown from '../../../assets/DrivePNG/unknown.png';
-import word from '../../../assets/DrivePNG/word.png';
-import txt from '../../../assets/DrivePNG/txt.jpg';
+import {
+  NotificationAdd,
+  NotificationAddRounded,
+  NotificationsNone,
+} from "@mui/icons-material";
+import excel from "../../../assets/DrivePNG/excel.png";
+import pdf from "../../../assets/DrivePNG/pdf.png";
+import unknown from "../../../assets/DrivePNG/unknown.png";
+import word from "../../../assets/DrivePNG/word.png";
+import txt from "../../../assets/DrivePNG/txt.jpg";
+import { useUploadFileWhatsappMutation } from "../../../features/api/driveApiSlice";
 // infoDialog box data
 const infoDetail = [
   {
@@ -226,6 +231,8 @@ const CreateChat = () => {
   const [uploadFile, { isLoading }] = useUploadFileOnImageKitMutation();
   const [changeVisibility, { refetch }] = useChangeVisibilityMutation();
   const [sendNotification] = useSendSingleNotificationMutation();
+  const [uploadFileWhatsapp, { isLoading: uploadFileLoading }] =
+    useUploadFileWhatsappMutation();
 
   // getting online user from redux and showing whether they are online or offline
   const online = onLineUsers.includes(singleUserData?.adminId);
@@ -265,29 +272,48 @@ const CreateChat = () => {
     }
   };
 
-  const handleDownLoadFile = async (url) => {
+  const handleDownloadFile = async (data) => {
+    if (!data) return toast.error("Please select a file to download");
     try {
-      const urlArray = url.split("/");
-      const fileName = urlArray.pop();
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
+      const id = data?.id;
+      const name = data?.name;
+      const downloadUrl = `https://drive.google.com/uc?id=${id}&export=download`;
       const link = document.createElement("a");
-      link.href = blobUrl;
-      link.setAttribute("download", fileName);
-
+      link.href = downloadUrl;
+      link.download = name;
       document.body.appendChild(link);
       link.click();
-
       document.body.removeChild(link);
-      URL.revokeObjectURL(blobUrl);
-
       toast.success("File downloaded successfully");
     } catch (error) {
-      console.error("Error downloading file:", error);
-      toast.error("Error downloading file");
+      console.log(error);
+      toast.error("Failed to download the file");
     }
   };
+
+  // const handleDownLoadFile = async (url) => {
+  //   try {
+  //     const urlArray = url.split("/");
+  //     const fileName = urlArray.pop();
+  //     const response = await fetch(url);
+  //     const blob = await response.blob();
+  //     const blobUrl = URL.createObjectURL(blob);
+  //     const link = document.createElement("a");
+  //     link.href = blobUrl;
+  //     link.setAttribute("download", fileName);
+
+  //     document.body.appendChild(link);
+  //     link.click();
+
+  //     document.body.removeChild(link);
+  //     URL.revokeObjectURL(blobUrl);
+
+  //     toast.success("File downloaded successfully");
+  //   } catch (error) {
+  //     console.error("Error downloading file:", error);
+  //     toast.error("Error downloading file");
+  //   }
+  // };
   // for like when user comes to chat then the div scroll down to bottom
   // useEffect(() => {
   //   messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
@@ -393,7 +419,9 @@ const CreateChat = () => {
     try {
       const formData = new FormData();
       formData.append("file", selectedImage);
-      const uploadfiles = await uploadFile(formData).unwrap();
+      const uploadfiles = await uploadFileWhatsapp(formData).unwrap();
+
+      console.log("411", uploadfiles);
       if (!uploadfiles) return;
       const messageData = {
         _id: Math.random().toString(36).substring(2),
@@ -408,7 +436,11 @@ const CreateChat = () => {
           _id: Math.random().toString(36).substring(2),
           SenderId: adminId,
           ReceiverId: singleUserData?.adminId,
-          Content: { url: uploadfiles?.file?.url },
+          Content: {
+            url: uploadfiles?.file?.url,
+            fileId: uploadfiles?.file?.fileId,
+            fileName: uploadfiles?.file?.fileName,
+          },
           Type: "media",
           createdAt: Date.now(),
         },
@@ -639,24 +671,24 @@ const CreateChat = () => {
     }
   };
 
-
   function getFileExtension(filename) {
-    const parts = filename.split('.');
+    console.log(filename);
+    const parts = filename.split(".");
     const extension = parts[parts.length - 1];
 
     switch (extension) {
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-        return filename
-      case 'pdf':
+      case "png":
+      case "jpg":
+      case "jpeg":
+        return filename;
+      case "pdf":
         return pdf;
-      case 'csv':
-      case 'xlsx':
+      case "csv":
+      case "xlsx":
         return excel;
-      case 'docx':
+      case "docx":
         return word;
-      case 'txt':
+      case "txt":
         return txt;
 
       default:
@@ -665,20 +697,22 @@ const CreateChat = () => {
   }
 
   function getFileExtensionUrl(filename, url) {
-    const parts = filename.split('.');
+    console.log("filename", filename);
+    console.log("url", url);
+    const parts = filename.split(".");
     const extension = parts[parts.length - 1];
     switch (extension) {
-      case 'csv':
-      case 'xlsx':
+      case "csv":
+      case "xlsx":
         return excel;
-      case 'docx':
+      case "docx":
         return word;
-      case 'pdf':
+      case "pdf":
         return pdf;
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-      case 'txt':
+      case "png":
+      case "jpg":
+      case "jpeg":
+      case "txt":
         return url;
       default:
         return unknown;
@@ -1051,7 +1085,9 @@ const CreateChat = () => {
                                 </span>
                               </div>
                             </div>
-                          ) : msg.Type === "media" ? (
+                          ) : msg.Type === "media" &&
+                            msg?.Content?.fileName &&
+                            msg?.Content?.fileId ? (
                             <div
                               style={{
                                 display: "flex",
@@ -1060,7 +1096,10 @@ const CreateChat = () => {
                               }}
                             >
                               <img
-                                src={getFileExtension(msg?.Content?.url)}
+                                src={getFileExtensionUrl(
+                                  msg?.Content?.fileName,
+                                  `https://drive.google.com/thumbnail?id=${msg?.Content?.fileId}`
+                                )}
                                 alt="Media"
                                 style={{
                                   maxWidth: "250px",
@@ -1069,7 +1108,10 @@ const CreateChat = () => {
                                   cursor: "pointer",
                                 }}
                                 onDoubleClick={() =>
-                                  handleDownLoadFile(msg?.Content?.url)
+                                  handleDownloadFile({
+                                    id: msg?.Content?.fileId,
+                                    name: msg?.Content?.fileName,
+                                  })
                                 }
                               />
                               <div
@@ -1212,11 +1254,14 @@ const CreateChat = () => {
                           Preview Image
                         </span>
                         <img
-                          src={getFileExtensionUrl(selectedImage.name, URL.createObjectURL(selectedImage)) }
+                          src={getFileExtensionUrl(
+                            selectedImage.name,
+                            URL.createObjectURL(selectedImage)
+                          )}
                           alt="test"
                           style={{ height: "200px", width: "200px" }}
                         ></img>
-                        {isLoading ? (
+                        {uploadFileLoading ? (
                           <CircularProgress sx={{ color: "green" }} size={20} />
                         ) : (
                           <SendIcon
