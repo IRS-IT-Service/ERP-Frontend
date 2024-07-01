@@ -8,3 +8,11 @@
     height: 100px;
     width: 100px;
 }
+ul, ol {
+    list-style-type: disc; /* for ul */
+    padding-left: 20px;
+  }
+  
+  ol {
+    list-style-type: decimal; /* for ol */
+  }

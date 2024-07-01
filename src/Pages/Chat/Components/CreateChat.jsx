@@ -672,33 +672,21 @@ const CreateChat = () => {
   };
 
   function getFileExtension(filename) {
-    console.log(filename);
-    const parts = filename.split(".");
+       const parts = filename.split(".");
     const extension = parts[parts.length - 1];
 
     switch (extension) {
       case "png":
       case "jpg":
       case "jpeg":
-        return filename;
-      case "pdf":
-        return pdf;
-      case "csv":
-      case "xlsx":
-        return excel;
-      case "docx":
-        return word;
-      case "txt":
-        return txt;
-
-      default:
-        return unknown;
+        return "350px";
+     default:
+        return "100px";
     }
   }
 
   function getFileExtensionUrl(filename, url) {
-    console.log("filename", filename);
-    console.log("url", url);
+  
     const parts = filename.split(".");
     const extension = parts[parts.length - 1];
     switch (extension) {
@@ -1102,7 +1090,8 @@ const CreateChat = () => {
                                 )}
                                 alt="Media"
                                 style={{
-                                  maxWidth: "250px",
+                                  width: getFileExtension( msg?.Content?.fileName,
+                                    `https://drive.google.com/thumbnail?id=${msg?.Content?.fileId}`),
                                   height: "auto",
                                   display: "block",
                                   cursor: "pointer",
@@ -1113,7 +1102,8 @@ const CreateChat = () => {
                                     name: msg?.Content?.fileName,
                                   })
                                 }
-                              />
+                              /><span style={{fontSize:"13px",width
+                              :"180px",display:"flex",flex:"wrap"}}>{msg?.Content?.fileName}</span>
                               <div
                                 style={{
                                   marginTop: "10px",
