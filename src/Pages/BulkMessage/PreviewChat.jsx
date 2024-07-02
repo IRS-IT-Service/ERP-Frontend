@@ -44,13 +44,16 @@ import {
 } from "../../features/api/clientAndShipmentApiSlice";
 
 const columns = [
-  { field: "sn", headerName: "ID", width: 90 },
+  { field: "sn", headerName: "Sno.", width: 90 ,    headerClassName: "super-app-theme--header",
+    cellClassName: "super-app-theme--cell", },
   {
     field: "ContactName",
     headerName: "Customer Name /Group Name",
     flex:1,
     width: 180,
     editable: true,
+    headerClassName: "super-app-theme--header",
+    cellClassName: "super-app-theme--cell",
   },
   // {
   //   field: "CompanyName",
@@ -65,6 +68,8 @@ const columns = [
     headerName: "Mobile No",
     width: 150,
     editable: true,
+    headerClassName: "super-app-theme--header",
+    cellClassName: "super-app-theme--cell",
   },
   // {
   //   field: "Address",
@@ -162,7 +167,7 @@ const PreviewChat = () => {
     html = html.replace(
       /<ul>\s*(<li>.*?<\/li>)\s*<\/ul>/gi,
       function (match, p1) {
-        return p1.replace(/<li>(.*?)<\/li>/gi, "• $1\n");
+        return p1.replace(/<li>(.*?)<\/li>/gi, "* $1\n");
       }
     );
 
@@ -178,6 +183,8 @@ const PreviewChat = () => {
     );
 
     // Handle line breaks
+  
+   
     html = html.replace(/<br\s*\/?>/gi, "\n");
 
     // Remove any remaining HTML tags
@@ -221,6 +228,7 @@ const PreviewChat = () => {
 
   useEffect(() => {
     const whatsappText = convertHtmlToWhatsAppFormat(editorContent);
+    console.log(whatsappText);
     setConvertedText(whatsappText);
   });
 
@@ -662,7 +670,14 @@ console.log(selectionModel)
          
         </Box>
   
-          <Box sx={{ height: "60vh",width:"50%" ,overflow:"hidden" }}>
+          <Box sx={{ height: "60vh",width:"50%" ,overflow:"hidden" ,  "& .super-app-theme--header": {
+                background: "#eee",
+                color: "black",
+                textAlign: "center",
+              },  }}
+              
+              
+              >
             <DataGrid
               rows={rows}
               columns={columns}
