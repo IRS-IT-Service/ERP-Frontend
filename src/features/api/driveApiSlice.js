@@ -71,6 +71,15 @@ export const driveApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    uploadFileWhatsapp: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${DriveUrl}/uploadFileWhatsapp`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -83,4 +92,5 @@ export const {
   useDeleteFolderMutation,
   useDownloadFileMutation,
   useDeleteFileMutation,
+  useUploadFileWhatsappMutation,
 } = driveApiSlice;
