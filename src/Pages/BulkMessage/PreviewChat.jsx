@@ -46,7 +46,7 @@ import {
 const columns = [
   { field: "sn", headerName: "ID", width: 90 },
   {
-    field: "CustomerName",
+    field: "ContactName",
     headerName: "Customer Name /Group Name",
     flex:1,
     width: 180,
@@ -61,7 +61,7 @@ const columns = [
   //   width: 210,
   // },
   {
-    field: "CustomerNumber",
+    field: "ContactNumber",
     headerName: "Mobile No",
     width: 150,
     editable: true,
@@ -95,7 +95,7 @@ const PreviewChat = () => {
   const [DeleteTask, { isLoading: DeleteTaskTaskLoading }] =
     useDeleteScheduledTaskMutation();
 
-  const { data: clientData, refetch: clientrefetch } = useGetAllClientQuery();
+  const { data: clientData, refetch: clientrefetch ,isLoading:clientLoading } = useGetAllClientQuery();
 
   const [selectedDate, setSelectedDate] = useState();
 
@@ -107,7 +107,10 @@ const PreviewChat = () => {
   const [fileUploaded, setFileUploaded] = useState(false);
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const[rows,setRows] = useState([]);
   const [ConversionType, setConversionType] = useState("Media");
+  const [customerNumber, setCustomerNumber] = useState([]);
+  const [selectionModel, setSelectionModel] = useState([]);
   const handleClose = () => {
     setAnchorEl(false);
   };
@@ -222,7 +225,7 @@ const PreviewChat = () => {
   });
 
   const handleSend = async () => {
-    const customerNumber = ["9205777123"];
+
 
     try {
       // if (!file || !message) {
@@ -251,16 +254,19 @@ const PreviewChat = () => {
       setMessage(null);
       setEditorContent("");
       setConvertedText(null);
+      setCustomerNumber([])
+      setSelectionModel([])
+      window.location.reload();
       refetch();
     } catch (err) {
       console.log(err);
     }
   };
-  console.log()
+
 
   useEffect(() => {
-    if (clientData?.message === "Customer Successfully fetched") {
-      const row = clientData?.data.map((item, index) => {
+    if (clientData?.status) {
+      const row = clientData?.client.map((item, index) => {
         return {
           ...item,
           id: item._id,
@@ -274,7 +280,7 @@ const PreviewChat = () => {
   }, [clientData]);
 
   const handleAccept = async (value, context) => {
-    const customerNumber = ["9205777123"];
+  
     const newDate = new Date(value);
     newDate.setSeconds(0, 0);
     const isoString = newDate.toISOString();
@@ -315,6 +321,9 @@ const PreviewChat = () => {
       setMessage();
       setEditorContent("");
       setConvertedText(null);
+      setCustomerNumber([])
+      setSelectionModel([])
+      window.location.reload();
       refetch();
     } catch (err) {
       console.log(err);
@@ -359,6 +368,16 @@ const PreviewChat = () => {
     }
   };
 
+  const handleSelectionChange = (selectionModel) => {
+      const finalData = rows
+      .filter((row) => selectionModel.includes(row.id))
+      .map((item) => item.ContactNumber);
+    
+    setCustomerNumber(finalData);
+      setSelectionModel(selectionModel);
+  };
+
+console.log(selectionModel)
   return (
     <Box
       sx={{
@@ -485,6 +504,7 @@ const PreviewChat = () => {
             {ConversionType === "Media" &&  <Button
               component="label"
               size="small"
+              disabled={!customerNumber.length > 0}
               sx={{ width: "50%" }}
               variant="contained"
               startIcon={<CloudUploadIcon />}
@@ -500,8 +520,9 @@ const PreviewChat = () => {
           <Box sx={{ display: "flex",marginTop:ConversionType === "Text" ? "3.2rem" : "" }}>
             <Button
               variant="outlined"
+     
               disabled={
-                sendMsgLoading || sendMsgTextLoading || scheduledTaskLoading
+                sendMsgLoading || sendMsgTextLoading || scheduledTaskLoading || !customerNumber.length > 0
               }
               onClick={handleSend}
               sx={{ margin: "4px", width: "50%" }}
@@ -514,7 +535,7 @@ const PreviewChat = () => {
             </Button>
             <Button
               variant="outlined"
-              disabled={sendMsgLoading || sendMsgTextLoading}
+              disabled={sendMsgLoading || sendMsgTextLoading || !customerNumber.length > 0}
               onClick={handleClick}
               sx={{ margin: "4px", width: "50%" }}
             >
@@ -643,9 +664,9 @@ const PreviewChat = () => {
   
           <Box sx={{ height: "60vh",width:"50%" ,overflow:"hidden" }}>
             <DataGrid
-              rows={[]}
+              rows={rows}
               columns={columns}
-              // loading={getloading}
+              loading={clientLoading}
               rowHeight={50}
               initialState={{
                 pagination: {
@@ -654,10 +675,12 @@ const PreviewChat = () => {
                   },
                 },
               }}
+              autoPageSize={true}
               pageSizeOptions={[50]}
               checkboxSelection
+              selectionModel={selectionModel}
               disableRowSelectionOnClick
-              // onRowSelectionModelChange={handleSelectionChange}
+              onRowSelectionModelChange={handleSelectionChange}
             />
           </Box>
  
