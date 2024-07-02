@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import userRolesData from "../../../constants/UserRolesItems";
-import { Dialog, DialogContent, Box, Typography } from "@mui/material";
+import { Dialog, DialogContent, Box, Typography, Button ,  CircularProgress, } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import { useUserRoleUpdateMutation } from "../../../features/api/usersApiSlice";
+import { useSelector } from "react-redux";
 import UserRoleDailogBoxSubmenu from "./UserRoleDailogBoxSubmenu";
+import { toast } from "react-toastify";
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
     minWidth: "400px",
@@ -40,16 +42,50 @@ const UserRolesDialog = ({
   /// local state
   const [userSubmenuData, setUserSubmenuData] = useState(userRolesData);
   const [userRights, setUserRights] = useState([]);
+  const [checked , setChecked] = useState([])
+const [newExisting, setNewExisting] = useState([])
 
   /// RTK query
   const [userRoleUpdateApi, { isLoading }] = useUserRoleUpdateMutation();
+  const [submitRights, setSubmitRights] = useState(false);
 
+  
+
+  const { name } = useSelector((state) => state.auth.userInfo);
   /// userEffect
   useEffect(() => {
     if (oneUserData?.status === "success") {
       setUserRights(oneUserData.data.userRoles);
     }
   }, [oneUserData]);
+
+const handleSubmit = async () => {
+  const rightsMessage = newExisting
+  .map((item) => `${item.name}`)
+  .join(', ');
+
+const data = {
+  type: "userRole",
+  body: {
+    adminId: adminId,
+    role: userRights,
+    message: `${name} added  ${rightsMessage} rights to`,
+  },
+};
+
+  try {
+    const res = await userRoleUpdateApi(data);
+    toast("Rights Updated");
+    refetchOneUser();
+    handleClose();
+    setNewExisting([])
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    toast("Failed to update rights");
+  }
+}
+
+
 
   return (
     <div>
@@ -112,14 +148,32 @@ const UserRolesDialog = ({
                     userRoleUpdateApi={userRoleUpdateApi}
                     loading={isLoading}
                     adminId={adminId}
+                    setChecked={setChecked}
+                    newExisting={newExisting}
+                    checked
+                    setNewExisting={setNewExisting}
                     color = {color
                     }
                   ></UserRoleDailogBoxSubmenu>
                 );
               })}
             </Box>
+         
           </Box>
         </DialogContent>
+        <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          margin: "10px",
+        }}>
+        <Button variant="contained" sx={{
+
+        }} 
+        disabled={!userRights?.length > 0}
+        onClick={handleSubmit}>  {isLoading ? (
+          <CircularProgress sx={{color:"#fff"}} size={30} />
+        ) :"Set User Rights"}</Button>
+        </Box>
       </StyledDialog>
     </div>
   );
