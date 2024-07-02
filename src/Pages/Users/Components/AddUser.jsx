@@ -74,7 +74,7 @@ const AddUser = ({ open, setOpen, refetchAllUser }) => {
     }
 
     // Validate email domain
-    const emailParts = formData.email.split("@");
+    const emailParts = formData.email.toLowerCase().split("@");
     if (emailParts.length !== 2) {
       toast.error("Invalid email format");
       return;
@@ -94,7 +94,7 @@ const AddUser = ({ open, setOpen, refetchAllUser }) => {
 
     const data = new FormData();
     data.append("name", formData.name);
-    data.append("email", formData.email);
+    data.append("email", formData.email.toLowerCase());
     data.append("department", formData.department);
     data.append("Image", formData.profileImage);
     data.append("password", formData.password);
