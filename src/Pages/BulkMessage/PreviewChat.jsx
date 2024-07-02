@@ -150,19 +150,19 @@ const PreviewChat = () => {
     // Replace bold tags with WhatsApp bold format
     html = html.replace(/<strong>(.*?)<\/strong>/gi, "*$1*");
     html = html.replace(/<b>(.*?)<\/b>/gi, "*$1*");
-
+  
     // Replace italic tags with WhatsApp italic format
     html = html.replace(/<em>(.*?)<\/em>/gi, "_$1_");
     html = html.replace(/<i>(.*?)<\/i>/gi, "_$1_");
-
+  
     // Replace strikethrough tags with WhatsApp strikethrough format
     html = html.replace(/<del>(.*?)<\/del>/gi, "~$1~");
     html = html.replace(/<s>(.*?)<\/s>/gi, "~$1~");
-
+  
     // Replace monospace tags with WhatsApp monospace format
     html = html.replace(/<code>(.*?)<\/code>/gi, "```$1```");
     html = html.replace(/<pre>(.*?)<\/pre>/gi, "```$1```");
-
+  
     // Handle bulleted lists
     html = html.replace(
       /<ul>\s*(<li>.*?<\/li>)\s*<\/ul>/gi,
@@ -170,7 +170,7 @@ const PreviewChat = () => {
         return p1.replace(/<li>(.*?)<\/li>/gi, "* $1\n");
       }
     );
-
+  
     // Handle numbered lists
     html = html.replace(
       /<ol>\s*(<li>.*?<\/li>)\s*<\/ol>/gi,
@@ -181,15 +181,18 @@ const PreviewChat = () => {
         });
       }
     );
-
-    // Handle line breaks
   
-   
-    html = html.replace(/<br\s*\/?>/gi, "\n");
+    // Handle line breaks
+    html = html.replace(/<br\s*\/?>/gi, '\n');
 
+  // Handle paragraph breaks
+  // html = html.replace(/<\/p>\s*<p>/gi, '\n\n'); 
+ // Add newline at the start of paragraphs
+  html = html.replace(/<\/p>/gi, '\n'); 
+  console.log(html);
     // Remove any remaining HTML tags
     html = html.replace(/<\/?[^>]+(>|$)/g, "");
-
+  
     return html.trim();
   }
 
@@ -227,10 +230,12 @@ const PreviewChat = () => {
   };
 
   useEffect(() => {
+    console.log(editorContent 
+    )
     const whatsappText = convertHtmlToWhatsAppFormat(editorContent);
     console.log(whatsappText);
     setConvertedText(whatsappText);
-  });
+  },[editorContent]);
 
   const handleSend = async () => {
 
