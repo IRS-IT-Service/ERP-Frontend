@@ -150,7 +150,7 @@ import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
 import PaidOverseaseOrder from "./Pages/OverseasOrderList/Components/PaidOverseaseOrder";
 import CreateShipment from "./Pages/OverseasOrderList/Components/CreateShipment";
 import UpdateQuantity from "./Pages/UpdateSellerPrice/UpdateQuantity";
-
+import AddGroupComp from "./Pages/BulkMessage/AddGroupComp";
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -828,6 +828,8 @@ function App() {
                 <Route path="/testing" element={<TestingComponent />} />
                 <Route path="/tempOrder/:id" element={<TempOrder />} />
                 <Route path="/CreateShipment" element={<CreateShipment />} />
+                <Route path="/AddGroupComp/:id" element={<AddGroupComp />} />
+                <Route path="/AddGroupComp" element={<AddGroupComp />} />
                 <Route
                   path="/UpdateQuantity"
                   element={
@@ -837,6 +839,7 @@ function App() {
                   }
                 />
               </Route>
+          
             </Routes>
           </Suspense>
         </ThemeProvider>

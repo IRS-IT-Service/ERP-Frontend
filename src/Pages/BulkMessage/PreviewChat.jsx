@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import {
   Button,
   Box,
@@ -14,6 +14,7 @@ import {
   styled,
   ToggleButtonGroup,
   ToggleButton,
+  
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { toast } from "react-toastify";
@@ -25,6 +26,7 @@ import {
   useGetAllScheduleMessageQuery,
   useDeleteScheduledTaskMutation,
 } from "../../features/api/whatsAppApiSlice";
+import { useGetAllGroupInfoQuery } from "../../features/api/marketingApiSlice";
 import TextEditor from "../../Pages/BulkMessage/Components/TextEditor";
 import NoImage from "../../assets/Noimage.jpeg";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -38,50 +40,31 @@ import dscImage from "../../../public/dscImage.jpg";
 import { formatDateForWhatsApp } from "../../commonFunctions/commonFunctions";
 import { formatTime } from "../../commonFunctions/commonFunctions";
 import CountDown from "./Components/CountDown";
-import { DataGrid } from "@mui/x-data-grid";
+import { Portal } from "@mui/base/Portal";
+import Iphone from "../../../public/iphone.png";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
-  useGetAllClientQuery,
-} from "../../features/api/clientAndShipmentApiSlice";
-
-const columns = [
-  { field: "sn", headerName: "Sno.", width: 90 ,    headerClassName: "super-app-theme--header",
-    cellClassName: "super-app-theme--cell", },
-  {
-    field: "ContactName",
-    headerName: "Customer Name /Group Name",
-    flex:1,
-    width: 180,
-    editable: true,
-    headerClassName: "super-app-theme--header",
-    cellClassName: "super-app-theme--cell",
-  },
-  // {
-  //   field: "CompanyName",
-  //   headerName: "Company Name",
-  //   headerClassName: "super-app-theme--header",
-  //   cellClassName: "super-app-theme--cell",
-  //   flex: 0.3,
-  //   width: 210,
-  // },
-  {
-    field: "ContactNumber",
-    headerName: "Mobile No",
-    width: 150,
-    editable: true,
-    headerClassName: "super-app-theme--header",
-    cellClassName: "super-app-theme--cell",
-  },
-  // {
-  //   field: "Address",
-  //   headerClassName: "super-app-theme--header",
-  //   cellClassName: "super-app-theme--cell",
-  //   flex: 0.3,
-  //   headerName: "Address",
-  //   width: 250,
-  // },
-];
+  DataGrid,
+  useGridApiRef,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridPagination,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
+import { useGetAllClientQuery } from "../../features/api/clientAndShipmentApiSlice";
+import Nodata from "../../assets/error.gif";
+import CachedIcon from "@mui/icons-material/Cached";
+import { useSelector } from "react-redux";
+import Addgroup from "./Addgroup";
+import { ConstructionOutlined } from "@mui/icons-material";
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 const PreviewChat = () => {
+  const { themeColor } = useSelector((state) => state.ui);
+  const color = themeColor.sideBarColor1;
+  const textColor = themeColor.textColor;
+
   const [sendMsg, { isLoading: sendMsgLoading }] =
     useSendBulkMessagesWithPicMutation();
 
@@ -92,6 +75,12 @@ const PreviewChat = () => {
     useAddScheduledTaskMessageMutation();
 
   const {
+    data: GroupData,
+    isLoading: useGetAllGroupQueryLoading,
+    refetch: GroupRefetch,
+  } = useGetAllGroupInfoQuery();
+
+  const {
     data,
     isLoading: GetScheduledTaskLoading,
     refetch,
@@ -100,24 +89,44 @@ const PreviewChat = () => {
   const [DeleteTask, { isLoading: DeleteTaskTaskLoading }] =
     useDeleteScheduledTaskMutation();
 
-  const { data: clientData, refetch: clientrefetch ,isLoading:clientLoading } = useGetAllClientQuery();
+  const {
+    data: clientData,
+    refetch: clientrefetch,
+    isLoading: clientLoading,
+  } = useGetAllClientQuery();
 
   const [selectedDate, setSelectedDate] = useState();
 
   const [anchorEl, setAnchorEl] = useState(false);
-
+  const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [whatsmessage, setWhatsMessage] = useState("");
   const [convertedText, setConvertedText] = useState("");
   const [fileUploaded, setFileUploaded] = useState(false);
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const[rows,setRows] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [grouprows, setGroupRows] = useState([]);
   const [ConversionType, setConversionType] = useState("Media");
   const [customerNumber, setCustomerNumber] = useState([]);
   const [selectionModel, setSelectionModel] = useState([]);
+  const [OpenAddgroup, setOpenAddgroup] = useState(false);
+  const [memberNumber, setMemberNumber] = useState([]);
+  const [GroupInfo, setGroupInfo] = useState([]);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showReadMore, setShowReadMore] = useState(false);
+  const contentRef = useRef(null);
   const handleClose = () => {
     setAnchorEl(false);
+  };
+
+  const handleClose_addgroup = () => {
+    setOpenAddgroup(false);
+  };
+
+  const handleGroupView = (info) => {
+    setGroupInfo(info);
+    setOpenAddgroup(true);
   };
 
   const handleFileUpload = (event) => {
@@ -144,25 +153,23 @@ const PreviewChat = () => {
     width: 1,
   });
 
-  
-
   function convertHtmlToWhatsAppFormat(html) {
     // Replace bold tags with WhatsApp bold format
     html = html.replace(/<strong>(.*?)<\/strong>/gi, "*$1*");
     html = html.replace(/<b>(.*?)<\/b>/gi, "*$1*");
-  
+
     // Replace italic tags with WhatsApp italic format
     html = html.replace(/<em>(.*?)<\/em>/gi, "_$1_");
     html = html.replace(/<i>(.*?)<\/i>/gi, "_$1_");
-  
+
     // Replace strikethrough tags with WhatsApp strikethrough format
     html = html.replace(/<del>(.*?)<\/del>/gi, "~$1~");
     html = html.replace(/<s>(.*?)<\/s>/gi, "~$1~");
-  
+
     // Replace monospace tags with WhatsApp monospace format
     html = html.replace(/<code>(.*?)<\/code>/gi, "```$1```");
     html = html.replace(/<pre>(.*?)<\/pre>/gi, "```$1```");
-  
+
     // Handle bulleted lists
     html = html.replace(
       /<ul>\s*(<li>.*?<\/li>)\s*<\/ul>/gi,
@@ -170,7 +177,7 @@ const PreviewChat = () => {
         return p1.replace(/<li>(.*?)<\/li>/gi, "* $1\n");
       }
     );
-  
+
     // Handle numbered lists
     html = html.replace(
       /<ol>\s*(<li>.*?<\/li>)\s*<\/ol>/gi,
@@ -181,18 +188,18 @@ const PreviewChat = () => {
         });
       }
     );
-  
-    // Handle line breaks
-    html = html.replace(/<br\s*\/?>/gi, '\n');
 
-  // Handle paragraph breaks
-  // html = html.replace(/<\/p>\s*<p>/gi, '\n\n'); 
- // Add newline at the start of paragraphs
-  html = html.replace(/<\/p>/gi, '\n'); 
-  console.log(html);
+    // Handle line breaks
+    html = html.replace(/<br\s*\/?>/gi, "\n");
+
+    // Handle paragraph breaks
+    // html = html.replace(/<\/p>\s*<p>/gi, '\n\n');
+    // Add newline at the start of paragraphs
+    html = html.replace(/<\/p>/gi, "\n");
+    console.log(html);
     // Remove any remaining HTML tags
     html = html.replace(/<\/?[^>]+(>|$)/g, "");
-  
+
     return html.trim();
   }
 
@@ -230,16 +237,12 @@ const PreviewChat = () => {
   };
 
   useEffect(() => {
-    console.log(editorContent 
-    )
     const whatsappText = convertHtmlToWhatsAppFormat(editorContent);
     console.log(whatsappText);
     setConvertedText(whatsappText);
-  },[editorContent]);
+  }, [editorContent]);
 
   const handleSend = async () => {
-
-
     try {
       // if (!file || !message) {
       //   return toast.error("Please provide both field");
@@ -267,33 +270,47 @@ const PreviewChat = () => {
       setMessage(null);
       setEditorContent("");
       setConvertedText(null);
-      setCustomerNumber([])
-      setSelectionModel([])
-      window.location.reload();
+      setCustomerNumber([]);
+      setSelectionModel([]);
+      setMemberNumber([]);
+      // window.location.reload();
       refetch();
     } catch (err) {
       console.log(err);
     }
   };
 
-
   useEffect(() => {
-    if (clientData?.status) {
+    if (clientData?.client.length > 0) {
       const row = clientData?.client.map((item, index) => {
         return {
           ...item,
           id: item._id,
           sn: index + 1,
+          ContactName: item.ContactName,
         };
       });
 
       setRows(row);
       refetch();
     }
-  }, [clientData]);
+
+    if (GroupData?.data?.length > 0) {
+      const grouprow = GroupData?.data.map((item, index) => {
+        return {
+          ...item,
+          id: item._id,
+          sn: index + 1,
+          Members: item.Members,
+        };
+      });
+
+      setGroupRows(grouprow);
+      refetch();
+    }
+  }, [clientData, GroupData]);
 
   const handleAccept = async (value, context) => {
-  
     const newDate = new Date(value);
     newDate.setSeconds(0, 0);
     const isoString = newDate.toISOString();
@@ -334,9 +351,10 @@ const PreviewChat = () => {
       setMessage();
       setEditorContent("");
       setConvertedText(null);
-      setCustomerNumber([])
-      setSelectionModel([])
-      window.location.reload();
+      setCustomerNumber([]);
+      setSelectionModel([]);
+      setMemberNumber([]);
+      // window.location.reload();
       refetch();
     } catch (err) {
       console.log(err);
@@ -359,13 +377,11 @@ const PreviewChat = () => {
 
   const handleMouseEnter = (item) => {
     if (data?.data.length > 0) {
-     
-     const WhatsappTohtml = whatsappToHTML(item.message);
+      const WhatsappTohtml = whatsappToHTML(item.message);
       setWhatsMessage(WhatsappTohtml);
-      setConversionType(item.Type)
-      if(ConversionType === "Media"){
+      setConversionType(item.Type);
+      if (ConversionType === "Media") {
         setImagePreview(item.image?.url);
-
       }
     }
   };
@@ -382,85 +398,487 @@ const PreviewChat = () => {
   };
 
   const handleSelectionChange = (selectionModel) => {
-      const finalData = rows
-      .filter((row) => selectionModel.includes(row.id))
-      .map((item) => item.ContactNumber);
-    
-    setCustomerNumber(finalData);
-      setSelectionModel(selectionModel);
+    let setPrevious = [];
+    const finalData = rows.filter((row) => selectionModel.includes(row.id));
+    const GroupData = grouprows.filter((row) =>
+      selectionModel.includes(row.id)
+    );
+
+    const MembersData = GroupData.flatMap((item) => item.Members);
+
+    const mergeValues = [...finalData, ...MembersData];
+    const uniqueMembers = Array.from(new Set(MembersData)).map(
+      (item) => item.ContactNumber
+    );
+
+    const Selectivevalue = mergeValues.flatMap((row) => {
+      if (row.groupName) {
+        const groupMembers = row.Members.map((item) => item.ContactNumber);
+
+        setPrevious = [...setPrevious, ...groupMembers];
+        return groupMembers;
+      } else {
+        return row.ContactNumber;
+      }
+    });
+    const uniqueNumbers = Array.from(new Set(Selectivevalue));
+    setMemberNumber(uniqueMembers);
+    setCustomerNumber(uniqueNumbers);
+    setSelectionModel(selectionModel);
   };
 
-console.log(selectionModel)
+  const CustomFooter = () => {
+    return (
+      <GridToolbarContainer>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          margin={1}
+          width="100%"
+        >
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => setOpenAddgroup(true)}
+          >
+            add group
+          </Button>
+        </Box>
+      </GridToolbarContainer>
+    );
+  };
+
+  useEffect(() => {
+    if (contentRef.current) {
+      if (contentRef.current.scrollHeight > 308) { // Change this value to the specific height
+        setShowReadMore(true);
+      }else{
+        setShowReadMore(false);
+      }
+    }
+    console.log(contentRef.current.scrollHeight)
+  }, [editorContent , whatsmessage]);
+
+  const toggleReadMore = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const columns = [
+    {
+      field: "sn",
+      headerName: "Sno.",
+      flex: 0.1,
+      minWidth: 10,
+      maxWidth: 50,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "ContactName",
+      headerName: "Customer Name",
+      flex: 0.1,
+      minWidth: 90,
+      maxWidth: 500,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    // {
+    //   field: "CompanyName",
+    //   headerName: "Company Name",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    //   flex: 0.3,
+    //   width: 210,
+    // },
+    {
+      field: "ContactNumber",
+      headerName: "Mobile No",
+      flex: 0.1,
+      minWidth: 90,
+      maxWidth: 400,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        if (params.row.groupName) {
+          return (
+            <Button onClick={() => handleGroupView(params.row)}>View</Button>
+          );
+        } else {
+          {
+            params.row.ContactNumber;
+          }
+        }
+      },
+    },
+    // {
+    //   field: "Address",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    //   flex: 0.3,
+    //   headerName: "Address",
+    //   width: 250,
+    // },
+  ];
+
+  const columns2 = [
+    {
+      field: "sn",
+      headerName: "Sno.",
+      flex: 0.1,
+      minWidth: 10,
+      maxWidth: 50,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "groupName",
+      headerName: "Group Name",
+      flex: 0.1,
+      minWidth: 90,
+      maxWidth: 500,
+      align: "center",
+      headerAlign: "center",
+
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    // {
+    //   field: "CompanyName",
+    //   headerName: "Company Name",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    //   flex: 0.3,
+    //   width: 210,
+    // },
+    {
+      field: "groupDescription",
+      headerName: "Group Description",
+      flex: 0.1,
+      minWidth: 90,
+      maxWidth: 400,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "Members",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerName: "No of members",
+      flex: 0.1,
+      minWidth: 50,
+      maxWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return params.row.Members.length;
+      },
+    },
+    {
+      field: "Edit",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerName: "Edit",
+      flex: 0.1,
+      minWidth: 50,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        const id = params.row._id;
+     
+  
+        return (
+          <EditIcon 
+            onClick={() => navigate(`/AddGroupComp/${id}`)}
+            sx={{
+              cursor: "pointer",
+              color: "#0d2e00",
+              "&:hover": {
+                color: "#040f00"
+              }
+            }}
+          />
+        );
+      },
+    },
+    {
+      field: "Action",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      headerName: "Action",
+      flex: 0.1,
+      minWidth: 50,
+      maxWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return(<DeleteIcon sx={{
+          cursor:"pointer",
+          color:"#0d2e00",
+          "&:hover":{
+            color:"red"
+          }
+        }}/> )
+      },
+    },
+  ];
+
+  function MyCustomToolbar1(prop) {
+    return (
+      <React.Fragment>
+        <Portal container={() => document.getElementById("filter-panel1")}>
+          <Box sx={{
+            display:"flex",
+            justifyContent: "space-between",
+        
+          }}>
+          <GridToolbarQuickFilter />
+          <Button size="small" sx={{
+            backgroundColor: "#32a852",
+            color: "white",
+            borderRadius: "5px",
+            margin:"2px",
+            "&:hover":{
+              backgroundColor: "#032b0e",
+            }
+        
+                     }} onClick={() => navigate(
+                      `/AddGroupComp`
+                    ) }>
+           Create Group
+            </Button>
+          </Box>
+        </Portal>
+        {/* <GridToolbar {...prop} /> */}
+      </React.Fragment>
+    );
+  }
+
+  function MyCustomToolbar2(prop) {
+    return (
+      <React.Fragment>
+        <Portal container={() => document.getElementById("filter-panel2")}>
+          <GridToolbarQuickFilter />
+ 
+        </Portal>
+        {/* <GridToolbar {...prop} /> */}
+      </React.Fragment>
+    );
+  }
+
   return (
-    <Box
+    <Box id="Main dev"
       sx={{
         display: "flex",
         flexDirection: "column",
+        width: "100%",
+      
         justifyContent: "center",
         alignItems: "center",
         padding: "20px",
         borderRadius: "10px",
-
         boxShadow: "2px 2px 5px 5px #eee",
-         
+        // border: "2px solid red",
       }}
     >
       <Box
         sx={{
           display: "flex",
-         justifyContent: "center",
-         width: "100%",
+          justifyContent: "space-between",
+          overflow: "hidden",
+          width: "100%",
+          height:"82vh",
           gap: "20px",
-    
-
+       
         }}
       >
+        <Box id="Main Iphone div" sx={{
+          flexBasis:"20%",
+
+        }}>
         <Box
           sx={{
-            marginTop: "2rem",
-        
+            width: "20vw",
+            borderRadius: "50px",
+           
+            
+            
           }}
         >
-          <ToggleButtonGroup
-            value={ConversionType}
-            exclusive
-            sx={{
-              width: "200px",
-              height: "50px",
-              border: "none",
-              borderRadius: "0.2rem",
-              padding: "0.2rem",
-              color: "#fff",
+          {/* inner layer of iphone */}
 
-              "& .Mui-selected": {
-                color: "#fff !important",
-                background: "black !important",
-              },
-            }}
-            onChange={handleChangeType}
-            aria-label="Platform"
+          <Box
+            sx={{
+              position: "relative",
+              
+              
+             }}
           >
-            <ToggleButton
-              value="Media"
+            <img
+              src={Iphone}
+              style={{
+                width: "100%",
+                height: "auto",
+                objectFit: "cover",
+                objectPosition: "center",
+                
+              }}
+            />
+            <Box
               sx={{
-                color: "black",
-                border: "0.5px solid black",
-                fontSize: "0.6rem",
+                
+                position: "absolute",
+                backgroundImage: `url(${chatBg})`,
+                width: "90%",
+                height: "96%",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                margin: "auto",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                borderRadius: "25px",
+                zIndex: -1,
+                
               }}
             >
-              Text with Media
-            </ToggleButton>
-            <ToggleButton
-              value="Text"
+       
+            </Box>
+            <Box
+            sx={{
+              position: "absolute",
+              top: 30,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              margin: "auto",
+              height: "84%",
+              width: "87%",
+              borderRadius: "10px",
+              overflow: "auto",
+              padding: 2,
+             
+              zIndex:100
+            }}
+          >
+            <Box
               sx={{
-                color: "black",
-                border: "0.5px solid black",
-                fontSize: "0.6rem",
+                marginTop:"2rem",
+                display: "flex",
+                flexDirection: "column",
+                border: "2px solid #eee",
+                justifyContent: "center",
+                backgroundColor: "whitesmoke",
+                borderRadius: "10px",
+                padding: "5px 10px",
+                boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                position: "relative",
+                          overflow: "hidden"
+                
               }}
             >
-              Only Text
-            </ToggleButton>
-          </ToggleButtonGroup>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  width:
+                    ConversionType === "Text" ? "calc(40vw - 20vw)" : "100%",
+                    maxHeight: isExpanded ? 'auto' : "31rem",
+                   
+                 overflow: "hidden"
+             
+                }}
+              >
+                {ConversionType === "Media" && (
+                  <div style={{ width: "100%", marginBottom: "5px" }}>
+                    <img
+                      src={imagePreview || NoImage}
+                      alt="Preview"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        objectPosition: "center",
+                        borderRadius: "10px",
+                        background: "#fff",
+                      }}
+                    />
+                  </div>
+                )}
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    fontSize: "12px",
+                    padding: "10px 5px 10px 2px",
+                    textAlign: "start",
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                    listStyleType: "disc",
+                    marginBottom: "10px",
+     
+                  }}
+                >
+                  
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: editorContent || whatsmessage,
+                    }}
+                    ref={contentRef}
+                  />
+   
+     
+                </div>
+        
+              </Box>
+   
+              <Box>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    position: "absolute",
+                    bottom: 1,
+                    right: 8,
+                    color: "grey",
+                  }}
+                >
+                  {formatTime(new Date())}
+                </p>
+   
+              </Box>
+              {showReadMore && (
+        <div onClick={toggleReadMore}>
+          <span style={{
+            color:"#05175e",
+            cursor: "pointer",
+            fontSize:"12px"
+          }}>{isExpanded ? 'Read Less' : '... Read More'}</span>
+        </div>
+      )}
+            </Box>
+     
+          </Box>
+          </Box>
+         
+        </Box>
+</Box>
+        <Box id="Main Text Editor dev"  sx={{
+                  flexBasis:"20%",
+                  paddingTop:"1rem"
+                 
+        }}>
           <Box
             sx={{
               display: "flex",
@@ -470,37 +888,14 @@ console.log(selectionModel)
               alignItems: "center",
             }}
           >
-            {/* <Box
-                sx={{
-                  width: "17vw",
-                  height: "30vh",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                  overflow: "hidden",
-                  padding: "5px",
-                }}
-              >
-                <div style={{ width: "100%", height: "100%" }}>
-                  <img
-                    src={imagePreview || NoImage}
-                    alt="Preview"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      objectPosition: "center",
-                    }}
-                  />
-                </div>
-              </Box> */}
+            {/* preview */}
 
             <Box
               sx={{
                 width: "17vw",
                 "& .ql-container": {
-                  height: "300px",
+                  height: "435px",
+              
                 },
                 "& .ql-editor": {
                   height: "100%",
@@ -509,64 +904,125 @@ console.log(selectionModel)
                   "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
               }}
             >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  padding: "5px",
+                }}
+              >
+                <ToggleButtonGroup
+                  value={ConversionType}
+                  exclusive
+                  sx={{
+                    width: "200px",
+                    height: "50px",
+                    border: "none",
+                    borderRadius: "0.2rem",
+                    padding: "0.2rem",
+                    color: "#fff",
+
+                    "& .Mui-selected": {
+                      color: "#fff !important",
+                      background: "black !important",
+                    },
+                  }}
+                  onChange={handleChangeType}
+                  aria-label="Platform"
+                >
+                  <ToggleButton
+                    value="Media"
+                    sx={{
+                      color: "black",
+                      border: "0.5px solid black",
+                      fontSize: "0.6rem",
+                    }}
+                  >
+                    Text with Media
+                  </ToggleButton>
+                  <ToggleButton
+                    value="Text"
+                    sx={{
+                      color: "black",
+                      border: "0.5px solid black",
+                      fontSize: "0.6rem",
+                    }}
+                  >
+                    Only Text
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                {ConversionType === "Media" && (
+                  <Button
+                    component="label"
+                    size="small"
+                    sx={{ width: "40%", fontSize: "8px" }}
+                    variant="contained"
+                    startIcon={<CloudUploadIcon />}
+                    style={{
+                      backgroundColor: fileUploaded ? "green" : undefined,
+                    }}
+                  >
+                    {fileUploaded ? "File Uploaded" : "Upload File"}
+                    <input type="file" hidden onChange={handleFileUpload} />
+                  </Button>
+                )}
+              </Box>
               <TextEditor
                 setEditorContent={setEditorContent}
                 editorContent={editorContent}
               />
             </Box>
-            {ConversionType === "Media" &&  <Button
-              component="label"
-              size="small"
-              disabled={!customerNumber.length > 0}
-              sx={{ width: "50%" }}
-              variant="contained"
-              startIcon={<CloudUploadIcon />}
-              style={{
-                backgroundColor: fileUploaded ? "green" : undefined,
+            <Box
+              sx={{
+                display: "flex",
+                width: "100%",
+                paddingX: "10px",
               }}
             >
-              {fileUploaded ? "File Uploaded" : "Upload File"}
-              <input type="file" hidden onChange={handleFileUpload} />
-            </Button> }
-          </Box>
-
-          <Box sx={{ display: "flex",marginTop:ConversionType === "Text" ? "3.2rem" : "" }}>
-            <Button
-              variant="outlined"
-     
-              disabled={
-                sendMsgLoading || sendMsgTextLoading || scheduledTaskLoading || !customerNumber.length > 0
-              }
-              onClick={handleSend}
-              sx={{ margin: "4px", width: "50%" }}
-            >
-              {sendMsgLoading || sendMsgTextLoading ? (
-                <CircularProgress size={30} />
-              ) : (
-                "Send"
-              )}
-            </Button>
-            <Button
-              variant="outlined"
-              disabled={sendMsgLoading || sendMsgTextLoading || !customerNumber.length > 0}
-              onClick={handleClick}
-              sx={{ margin: "4px", width: "50%" }}
-            >
-              {scheduledTaskLoading ? (
-                <CircularProgress size={30} />
-              ) : (
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: "5px",
-                    alignItems: "center",
-                  }}
-                >
-                  Schedule
-                  <ScheduleSendIcon />
-                </Box>
-              )}
-            </Button>
+              <Button
+                variant="outlined"
+                disabled={
+                  sendMsgLoading ||
+                  sendMsgTextLoading ||
+                  scheduledTaskLoading ||
+                  !customerNumber.length > 0
+                }
+                onClick={handleSend}
+                sx={{ margin: "4px", width: "100%" }}
+              >
+                {sendMsgLoading || sendMsgTextLoading ? (
+                  <CircularProgress size={30} />
+                ) : (
+                  "Send"
+                )}
+              </Button>
+              <Button
+                variant="outlined"
+                disabled={
+                  sendMsgLoading ||
+                  sendMsgTextLoading ||
+                  !customerNumber.length > 0
+                }
+                onClick={handleClick}
+                sx={{ margin: "4px", width: "100%" }}
+              >
+                {scheduledTaskLoading ? (
+                  <CircularProgress size={30} />
+                ) : (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: "5px",
+                      alignItems: "center",
+                    }}
+                  >
+                    Schedule
+                    <ScheduleSendIcon />
+                  </Box>
+                )}
+              </Button>
+            </Box>
           </Box>
 
           <Box
@@ -588,125 +1044,205 @@ console.log(selectionModel)
           </Box>
         </Box>
 
-        <Box
+        <Box id="Main data grid dev"
           sx={{
-            backgroundImage: `url(${chatBg})`,
-            height: "60vh",
-            width: "30vw",
             display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            border: "2px solid #eee",
-            borderRadius: "10px",
-            overflow: "auto",
-            paddingY: "5rem",
+            flexBasis:"60%",
+            overflow: "hidden",
+            flexDirection: "column",
+            
+           paddingX: "5px",
           }}
         >
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              border: "2px solid #eee",
-              padding: "2px",
-              backgroundColor: "whitesmoke",
-              borderRadius: "10px",
-              padding: 1,
-              boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-              position: "relative",
+              height: "50%",
+              overflow: "auto",
+              width: "100%",
+        
+              "& .super-app-theme--header": {
+                background: "#eee",
+                color: "black",
+                textAlign: "center",
+              },
             }}
           >
             <Box
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                width: ConversionType === "Text" ? "calc(45vw - 20vw)" : "18vw",
-                height: "auto",
-                justifyContent: "center",
-                alignItems: "center",
-                overflow: "hidden",
+                width: "100%",
+                height: "90%",
               }}
             >
-             {ConversionType === "Media" && <div style={{ width: "100%", marginBottom: "5px" }}>
-                <img
-                  src={imagePreview || NoImage}
-                  alt="Preview"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "center",
-                    borderRadius: "10px",
-                    background: "#fff",
-                  }}
-                />
-              </div> }
-              <div
-                style={{
-                  fontSize: "15px",
-                  padding: "10px 5px 20px 2px",
-                  textAlign: "start",
-                  width: "100%",
-                  listStyleType: "disc",
-                }}
-              >
-                {" "}
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: editorContent || whatsmessage,
-                  }}
-                />
-              </div>
-            </Box>
+              <Box id="filter-panel1" />
 
-            <Box>
-              <p
-                style={{
-                  fontSize: "0.8rem",
-                  position: "absolute",
-                  bottom: 10,
-                  right: 8,
-                  color: "grey",
+              <DataGrid
+                rows={grouprows}
+                columns={columns2}
+                loading={clientLoading}
+                slots={{
+                  toolbar: MyCustomToolbar1,
                 }}
-              >
-                {formatTime(new Date())}
-              </p>
+                rowHeight={35}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 50,
+                    },
+                  },
+                  filter: {
+                    filterModel: {
+                      items: ["Group"],
+                      quickFilterExcludeHiddenColumns: true,
+                    },
+                  },
+                }}
+                components={{
+                  NoRowsOverlay: () => (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          // border: '2px solid blue',
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          width: "150px",
+                          height: "150px",
+                        }}
+                      >
+                        <img
+                          src={Nodata}
+                          alt=""
+                          style={{ width: "100px", height: "100px" }}
+                        />
+
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "bold", fontSize: "1rem" }}
+                        >
+                          No data found !
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ),
+                }}
+                autoPageSize={true}
+                pageSizeOptions={[50]}
+                checkboxSelection
+                selectionModel={selectionModel}
+                disableRowSelectionOnClick
+                onRowSelectionModelChange={handleSelectionChange}
+                isRowSelectable={(params) =>
+                  !memberNumber.includes(params.row.ContactNumber)
+                }
+                rowSelectionModel={selectionModel}
+                keepNonExistentRowsSelected
+              />
             </Box>
           </Box>
-         
-        </Box>
-  
-          <Box sx={{ height: "60vh",width:"50%" ,overflow:"hidden" ,  "& .super-app-theme--header": {
+
+          <Box
+            sx={{
+              height: "45%",
+              width: "100%",
+              overflow: "hidden",
+              "& .super-app-theme--header": {
                 background: "#eee",
                 color: "black",
                 textAlign: "center",
-              },  }}
-              
-              
-              >
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              loading={clientLoading}
-              rowHeight={50}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 50,
-                  },
-                },
+              },
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                height: "30vh",
               }}
-              autoPageSize={true}
-              pageSizeOptions={[50]}
-              checkboxSelection
-              selectionModel={selectionModel}
-              disableRowSelectionOnClick
-              onRowSelectionModelChange={handleSelectionChange}
-            />
+            >
+              <Box id="filter-panel2" />
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                loading={clientLoading}
+                slots={{
+                  toolbar: MyCustomToolbar2,
+                }}
+                rowHeight={40}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 50,
+                    },
+                  },
+                  filter: {
+                    filterModel: {
+                      items: ["Individual"],
+                      quickFilterExcludeHiddenColumns: true,
+                    },
+                  },
+                }}
+                components={{
+                  NoRowsOverlay: () => (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          // border: '2px solid blue',
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          width: "150px",
+                          height: "150px",
+                        }}
+                      >
+                        <img
+                          src={Nodata}
+                          alt=""
+                          style={{ width: "100px", height: "100px" }}
+                        />
+
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "bold", fontSize: "1rem" }}
+                        >
+                          No data found !
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ),
+                }}
+                autoPageSize={true}
+                pageSizeOptions={[50]}
+                checkboxSelection
+                selectionModel={selectionModel}
+                disableRowSelectionOnClick
+                onRowSelectionModelChange={handleSelectionChange}
+                isRowSelectable={(params) =>
+                  !memberNumber.includes(params.row.ContactNumber)
+                }
+                rowSelectionModel={selectionModel}
+                keepNonExistentRowsSelected
+              />
+            </Box>
           </Box>
- 
+        </Box>
       </Box>
 
-      <Box
+      {/* <Box
         sx={{
           flexGrow: 1,
           marginTop: "50px",
@@ -792,7 +1328,18 @@ console.log(selectionModel)
             ))}
           </Grid>
         </Grid>
-      </Box>
+      </Box> */}
+      {OpenAddgroup && (
+        <Addgroup
+          open={OpenAddgroup}
+          handleClose={handleClose_addgroup}
+          color={color}
+          data={clientData?.client}
+          GroupRefetch={GroupRefetch}
+          refetch={refetch}
+          GroupInfo={GroupInfo}
+        />
+      )}
     </Box>
   );
 };
