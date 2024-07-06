@@ -28,13 +28,15 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   color: "#fff", 
-  backgroundColor: "#03084E",
+  backgroundColor: "#094f1d",
   textAlign: "center",
+  fontSize:"12px",
+  padding:10
   }));
 
   const StyledTableCellvalue = styled(TableCell)(({ theme }) => ({
    textAlign: "center",
-    padding: ".5rem"
+    padding: 0,
     }));
 
 function GroupDial({
@@ -68,7 +70,7 @@ const [updateGroups, { isLoading: updateLoading }] = useUpdateGroupByIdMutation(
   };
 
 
-console.log(data)
+
 
 
 
@@ -208,35 +210,35 @@ console.log(data)
               onChange={(e) => handleChange(e)}
             />
           </Box>
-          <TableContainer component={Paper} sx={{ maxHeight: 540 }}>
+          <TableContainer component={Paper} sx={{ maxHeight: 540 ,width:"100%" }}>
             <Table stickyHeader aria-label="sticky table">
-              <TableHead sx={{ backgroundColor: "#03084E" }}>
+              <TableHead>
                 <TableRow>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     Sno
                   </StyledTableCell>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     Contact Name
                   </StyledTableCell>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     Company Name
                   </StyledTableCell>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     Mobile No
                   </StyledTableCell>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     Email
                   </StyledTableCell>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     Client Type
                   </StyledTableCell>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     GSTIN
                   </StyledTableCell>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     Address
                   </StyledTableCell>
-                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                  <StyledTableCell >
                     Action
                   </StyledTableCell>
               
@@ -245,20 +247,20 @@ console.log(data)
               <TableBody>
                 {data?.map((row, index) => (
                   <TableRow key={row.id}>
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>{index + 1}</StyledTableCellvalue>
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.ContactName}</StyledTableCellvalue>
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.CompanyName}</StyledTableCellvalue>
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.ContactNumber}</StyledTableCellvalue>
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.Email}</StyledTableCellvalue>
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.ClientType}</StyledTableCellvalue>
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>
+                    <StyledTableCellvalue >{index + 1}</StyledTableCellvalue>
+                    <StyledTableCellvalue >{row.ContactName}</StyledTableCellvalue>
+                    <StyledTableCellvalue >{row.CompanyName}</StyledTableCellvalue>
+                    <StyledTableCellvalue >{row.ContactNumber}</StyledTableCellvalue>
+                    <StyledTableCellvalue >{row.Email}</StyledTableCellvalue>
+                    <StyledTableCellvalue >{row.ClientType}</StyledTableCellvalue>
+                    <StyledTableCellvalue >
                   {row.GSTIN}
                     </StyledTableCellvalue>
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>
+                    <StyledTableCellvalue >
                     {row.Address}
                     </StyledTableCellvalue>
                  
-                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>
+                    <StyledTableCellvalue >
                       <Button
                         onClick={() => {
                           handleDelete(row.id);
