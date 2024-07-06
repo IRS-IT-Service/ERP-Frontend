@@ -190,18 +190,18 @@ const userRolesData = [
         path: '/PriceHistory',
         icon: 'fa-solid fa-hand-holding-dollar',
       },
-      // {
-      //   id: 56,
-      //   name: "Add Proforma",
-      //   path: "/AddProforma",
-      //   icon: "fa fa-file-text",
-      // },
-      // {
-      //   id: 57,
-      //   name: "Proforma List",
-      //   path: "/ProformaList",
-      //   icon: "fa fa-list",
-      // },
+      {
+        id: 56,
+        name: "Add Proforma",
+        path: "/AddProforma",
+        icon: "fa fa-file-text",
+      },
+      {
+        id: 57,
+        name: "Proforma List",
+        path: "/ProformaList",
+        icon: "fa fa-list",
+      },
       // {
       //   id: 58,
       //   name: "Proforma Details",
