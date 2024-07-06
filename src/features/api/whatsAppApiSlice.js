@@ -114,6 +114,14 @@ export const whatsAppApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getAllScheduleMessageHistory: builder.query({
+      query: () => {
+        return {
+          url: `${WhatsApp_URL}/getAllScheduleMessagehistory`,
+          method: "GET",
+        };
+      },
+    }),
 
     deleteScheduledTask: builder.mutation({
       query: (id) => {
@@ -142,6 +150,7 @@ export const {
   useSendBulkWithoutMediaMutation,
   useAddScheduledTaskMessageMutation,
   useGetAllScheduleMessageQuery,
+  useGetAllScheduleMessageHistoryQuery,
   useDeleteScheduledTaskMutation,
   
 } = whatsAppApiSlice;

@@ -179,7 +179,7 @@ const CreateChat = () => {
   const [messageData, setMessageData] = useState([]);
   const [incomingCallData, setIncomingCallData] = useState(null);
   const [callDial, setCallDial] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [isLoadingMessage, setIsLoadingMessage] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [myStream, setMyStream] = useState(null);
@@ -189,6 +189,7 @@ const CreateChat = () => {
   const [typing, setTyping] = useState("");
   const [emoji, setEmoji] = useState(false);
   const [emojiData, setEmojiData] = useState("");
+  const [fileError, setFileError] = useState("");
 
   // setting redux message which is live text data to local state
   useEffect(() => {
@@ -405,20 +406,45 @@ const CreateChat = () => {
   };
 
   // function for file
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setSelectedFile(file);
+  //   }
+  // };
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "video/mp4",
+    "application/pdf",
+    "text/plain",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+  ];
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedImage(file);
+      if (allowedTypes.includes(file.type)) {
+        setSelectedFile(file);
+        setFileError("");
+      } else {
+        setFileError(
+          "Invalid file type. Please upload an image, video, PDF, text, or Excel document."
+        );
+      }
     }
   };
 
   //function for submitting file
   const handleFileSend = async () => {
-    if (!selectedImage) return;
+    if (!selectedFile) return;
     scrollToBottom();
     try {
       const formData = new FormData();
-      formData.append("file", selectedImage);
+      formData.append("file", selectedFile);
       const uploadfiles = await uploadFileWhatsapp(formData).unwrap();
 
       console.log("411", uploadfiles);
@@ -446,15 +472,15 @@ const CreateChat = () => {
         },
       ]);
       socket.emit("newChatMessage", messageData);
-      setSelectedImage(null);
+      setSelectedFile(null);
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleClickOnDiv = () => {
-    if (emoji || selectedImage) {
-      setEmoji(false), setSelectedImage(null);
+    if (emoji || selectedFile) {
+      setEmoji(false), setSelectedFile(null);
     }
   };
 
@@ -672,36 +698,43 @@ const CreateChat = () => {
   };
 
   function getFileExtension(filename) {
-       const parts = filename.split(".");
+    const parts = filename.split(".");
     const extension = parts[parts.length - 1];
 
     switch (extension) {
+
+
+      case "csv":
+      case "xlsx":
+      case "docx":
+      case "mp4":
+      case "pdf":
+        return "200px";
+
       case "png":
       case "jpg":
       case "jpeg":
         return "350px";
-     default:
+      default:
         return "100px";
     }
   }
 
   function getFileExtensionUrl(filename, url) {
-  
     const parts = filename.split(".");
     const extension = parts[parts.length - 1];
     switch (extension) {
       case "csv":
       case "xlsx":
-        return excel;
       case "docx":
-        return word;
+      case "mp4":
       case "pdf":
-        return pdf;
       case "png":
       case "jpg":
       case "jpeg":
       case "txt":
         return url;
+      case "mp3":
       default:
         return unknown;
     }
@@ -1090,8 +1123,10 @@ const CreateChat = () => {
                                 )}
                                 alt="Media"
                                 style={{
-                                  width: getFileExtension( msg?.Content?.fileName,
-                                    `https://drive.google.com/thumbnail?id=${msg?.Content?.fileId}`),
+                                  width: getFileExtension(
+                                    msg?.Content?.fileName,
+                                    `https://drive.google.com/thumbnail?id=${msg?.Content?.fileId}`
+                                  ),
                                   height: "auto",
                                   display: "block",
                                   cursor: "pointer",
@@ -1102,8 +1137,17 @@ const CreateChat = () => {
                                     name: msg?.Content?.fileName,
                                   })
                                 }
-                              /><span style={{fontSize:"13px",width
-                              :"180px",display:"flex",flex:"wrap"}}>{msg?.Content?.fileName}</span>
+                              />
+                              <span
+                                style={{
+                                  fontSize: "13px",
+                                  width: "180px",
+                                  display: "flex",
+                                  flex: "wrap",
+                                }}
+                              >
+                                {msg?.Content?.fileName}
+                              </span>
                               <div
                                 style={{
                                   marginTop: "10px",
@@ -1218,7 +1262,7 @@ const CreateChat = () => {
                   )}
                 </div>
                 <div style={{ position: "relative" }}>
-                  {selectedImage && (
+                  {selectedFile && (
                     <Box
                       sx={{
                         position: "absolute",
@@ -1245,8 +1289,8 @@ const CreateChat = () => {
                         </span>
                         <img
                           src={getFileExtensionUrl(
-                            selectedImage.name,
-                            URL.createObjectURL(selectedImage)
+                            selectedFile.name,
+                            URL.createObjectURL(selectedFile)
                           )}
                           alt="test"
                           style={{ height: "200px", width: "200px" }}
@@ -1265,15 +1309,17 @@ const CreateChat = () => {
                   <label htmlFor="fileInput">
                     <AttachFileIcon
                       sx={{ cursor: "pointer", marginTop: "5px" }}
-                    />{" "}
+                    />
                     <input
                       type="file"
                       id="fileInput"
-                      accept="image/*"
+                      accept={allowedTypes.join(",")}
                       style={{ display: "none" }}
-                      onChange={(e) => handleFileChange(e)}
+                      onChange={handleFileChange}
                     />
                   </label>
+                  {fileError && <p style={{ color: "red" }}>{fileError}</p>}
+                  {selectedFile && <p>File selected: {selectedFile.name}</p>}
                 </div>
                 <input
                   placeholder="Enter Message Here"

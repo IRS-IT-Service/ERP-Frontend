@@ -190,18 +190,18 @@ const userRolesData = [
         path: '/PriceHistory',
         icon: 'fa-solid fa-hand-holding-dollar',
       },
-      // {
-      //   id: 56,
-      //   name: "Add Proforma",
-      //   path: "/AddProforma",
-      //   icon: "fa fa-file-text",
-      // },
-      // {
-      //   id: 57,
-      //   name: "Proforma List",
-      //   path: "/ProformaList",
-      //   icon: "fa fa-list",
-      // },
+      {
+        id: 56,
+        name: "Add Proforma",
+        path: "/AddProforma",
+        icon: "fa fa-file-text",
+      },
+      {
+        id: 57,
+        name: "Proforma List",
+        path: "/ProformaList",
+        icon: "fa fa-list",
+      },
       // {
       //   id: 58,
       //   name: "Proforma Details",
@@ -568,6 +568,14 @@ const userRolesData = [
         icon: 'fa fa-comment',
         notification: true,
       },
+   
+      {
+        id: 84,
+        name: 'Scheduled Message',
+        path: '/ScheduledMessage',
+        icon: 'fa fa-clock-rotate-left',
+        notification: true,
+      },
       {
         id: 69,
         name: 'MessageTemplate',
@@ -608,6 +616,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 83
+// last routes is 84
 
 export default userRolesData;
