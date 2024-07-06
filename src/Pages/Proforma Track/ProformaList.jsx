@@ -1,7 +1,15 @@
 import { Box, styled, Button } from "@mui/material";
 import React, { useEffect } from "react";
 import Header from "../../components/Common/Header";
-import { DataGrid } from "@mui/x-data-grid";
+import { Portal } from "@mui/base/Portal";
+import {
+  DataGrid,
+  useGridApiRef,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridPagination,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
 import {
   formatDate,
   formatIndianPrice,
@@ -27,7 +35,7 @@ const ProformaList = () => {
     setPreviewDialOpen(true);
   };
 
-  console.log(allData);
+
   useEffect(() => {
     if (allData?.status === true) {
       const data = allData?.data?.map((item, index) => {
@@ -49,20 +57,84 @@ const ProformaList = () => {
       setRows(data);
     }
   }, [allData]);
+  
+  const CustomToolbar = (prop) => {
+    /// global state
+    const { themeColor } = useSelector((state) => state.ui);
+ 
 
+    return (
+    <>
+          <Portal container={() => document.getElementById("filter-panel")}>
+              <Box style={{ display: "flex", justifyContent: "space-between",marginTop:"10px" }}>
+         <GridToolbarQuickFilter style={{paddingTop:"20px"}} />
+        
+        </Box>
+       </Portal>
+      
+      </>
+ 
+ 
+    
+    );
+  };
   // Column definitions
   const columns = [
-    { field: "Sno", headerName: "Sno", flex: 1 },
-    { field: "id", headerName: "PI Id", flex: 1 },
-    { field: "companyName", headerName: "Company Name", flex: 2 },
-    { field: "description", headerName: "Description", flex: 2 },
-    { field: "vendorId", headerName: "Vendor ID", flex: 1 },
-    { field: "piNo", headerName: "PI No", flex: 1 },
-    { field: "date", headerName: "Date", flex: 1 },
+    {
+      field: "Sno",
+      headerName: "Sno",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "id",
+      headerName: "PI Id",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "companyName",
+      headerName: "Company Name",
+      flex: 2,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 2,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "vendorId",
+      headerName: "Vendor ID",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "piNo",
+      headerName: "PI No",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "date",
+      headerName: "Date",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
     {
       field: "amount",
       headerName: "Total Amount",
       flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
         console.log(params.row);
         return (
@@ -74,7 +146,7 @@ const ProformaList = () => {
         );
       },
     },
-    
+
     {
       field: "piCopy",
       headerName: "Pi Copy",
@@ -85,11 +157,10 @@ const ProformaList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-        
         const file = params.value.url;
         const piId = params.row.id;
         const CompanyName = params.row.companyName;
-        console.log(params?.row)
+        console.log(params?.row);
         return (
           <Button
             onClick={() =>
@@ -115,11 +186,10 @@ const ProformaList = () => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-  
         const file = params.value.url;
         const piId = params.row.id;
         const CustomerName = params.row.companyName;
-       
+
         return (
           <Button
             onClick={() =>
@@ -183,14 +253,39 @@ const ProformaList = () => {
       {/* <Header Name={"Proforma List"} /> */}
 
       {/* Add the DataGrid */}
-      <Box sx={{ height: "88vh", width: "100%" }}>
+      <Box id="filter-panel" />
+      <Box
+              sx={{
+                width: "100%",
+                height: "80vh",
+                "& .super-app-theme--header": {
+                  background: "#eee",
+                  color: "black",
+                  textAlign: "center",
+                },
+                "& .vertical-lines .MuiDataGrid-cell": {
+                  borderRight: "1px solid #e0e0e0",
+                },
+               
+              }}
+            >
         <DataGrid
           rows={rows}
           columns={columns}
-          pageSize={5} // Adjust as needed
+          pageSize={5} 
           rowsPerPageOptions={[5, 10, 20]} // Adjust as needed
-          //   checkboxSelection
-          //   disableSelectionOnClick
+   
+          initialState={{
+            filter: {
+                filterModel: {
+                  items: ["Group"],
+                  quickFilterExcludeHiddenColumns: true,
+                },
+              },
+            }}
+            components={{
+              Toolbar: CustomToolbar,
+            }}
         />
       </Box>
       {previewDialOpen && (

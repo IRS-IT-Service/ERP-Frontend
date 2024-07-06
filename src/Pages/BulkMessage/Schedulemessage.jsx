@@ -563,15 +563,7 @@ const Schedulemessage = () => {
                 "& .vertical-lines .MuiDataGrid-cell": {
                   borderRight: "1px solid #e0e0e0",
                 },
-                "& .supercursor-app-theme--cell:hover": {
-                  background:
-                    "linear-gradient(180deg, #AA076B 26.71%, #61045F 99.36%)",
-                  color: "white",
-                  cursor: "pointer",
-                },
-                "& .MuiDataGrid-columnHeaderTitleContainer": {
-                  background: "#eee",
-                },
+               
               }}
             >
                  <Box id="filter-panel" />
