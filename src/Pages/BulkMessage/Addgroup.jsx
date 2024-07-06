@@ -96,7 +96,7 @@ const Addgroup = ({
 
   const [addGroups, { isLoading: groupLoading }] = useAddGroupMutation();
 
-  console.log(IsGroupInfo);
+  
 
   /// RTK query
   const handleDragStart = (event, item) => {

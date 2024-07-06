@@ -568,6 +568,14 @@ const userRolesData = [
         icon: 'fa fa-comment',
         notification: true,
       },
+   
+      {
+        id: 84,
+        name: 'Scheduled Message',
+        path: '/ScheduledMessage',
+        icon: 'fa fa-clock-rotate-left',
+        notification: true,
+      },
       {
         id: 69,
         name: 'MessageTemplate',
@@ -608,6 +616,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 83
+// last routes is 84
 
 export default userRolesData;

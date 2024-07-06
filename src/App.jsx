@@ -151,6 +151,7 @@ import PaidOverseaseOrder from "./Pages/OverseasOrderList/Components/PaidOversea
 import CreateShipment from "./Pages/OverseasOrderList/Components/CreateShipment";
 import UpdateQuantity from "./Pages/UpdateSellerPrice/UpdateQuantity";
 import AddGroupComp from "./Pages/BulkMessage/AddGroupComp";
+import Schedulemessage from "./Pages/BulkMessage/Schedulemessage";
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -612,6 +613,7 @@ function App() {
                     </UserRole>
                   }
                 />
+
                 {/* Account Router */}
                 <Route path="/OverseasOrder" element={<OverseasOrder />} />
                 <Route
@@ -683,6 +685,14 @@ function App() {
                   element={
                     <UserRole name={"View Query"}>
                       <ViewQuery />
+                    </UserRole>
+                  }
+                />
+                      <Route
+                  path="/ScheduledMessage"
+                  element={
+                    <UserRole name={"Scheduled Message"}>
+                      <Schedulemessage />
                     </UserRole>
                   }
                 />

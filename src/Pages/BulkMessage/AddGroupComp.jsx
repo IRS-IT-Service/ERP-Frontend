@@ -30,8 +30,10 @@ import Loading from "../../components/Common/Loading";
 import { formatDate } from "../../commonFunctions/commonFunctions";
 import { useGetAllClientQuery } from "../../features/api/clientAndShipmentApiSlice";
 import { Portal } from "@mui/base/Portal";
+import {useGetGroupInfoByidQuery} from "../../features/api/marketingApiSlice"
 
 import Swal from "sweetalert2";
+import { useParams } from "react-router-dom";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -119,6 +121,7 @@ const AddGroupComp = () => {
   // infodialog state
 
   const apiRef = useGridApiRef();
+const {id} = useParams()
 
 
   const description =
@@ -136,6 +139,14 @@ const AddGroupComp = () => {
     refetch: clientrefetch,
     isLoading: clientLoading,
   } = useGetAllClientQuery();
+
+  const {
+    data: GroupData,
+    refetch: grouprefetch,
+    isLoading: groupLoading,
+  } = useGetGroupInfoByidQuery(id,{
+    skip:!id
+  });
 
   useEffect(() => {
     dispatch(setHeader(`Add Whatsapp Group`));
@@ -182,10 +193,14 @@ const AddGroupComp = () => {
   });
 
   const [openGroupDial, setOpenGroupDial] = useState(false);
-  const [hiddenColumns, setHiddenColumns] = useState({});
+  const [preData, setPreData] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [rows, setRows] = useState([]);
+  const [Group, setGroup] = useState({
+    name: "",
+    desc: "",
+  });
 
   /// useEffects
   useEffect(() => {
@@ -203,6 +218,29 @@ const AddGroupComp = () => {
       setRows(data);
     }
   }, [clientData, dispatch]);
+
+
+  useEffect(() => {
+    let SelectedItem = []
+    if (GroupData?.status) {
+      const ClientDetails = rows.filter((row) =>
+        GroupData?.data?.Members.some((member) => member.ClientId === row.ClientId)
+  
+      );
+      if(ClientDetails.length > 0){
+        SelectedItem = ClientDetails.map((item)=> item._id)
+      }
+
+      setSelectedItemsData(ClientDetails)
+      setSelectedItems(SelectedItem)
+    console.log(GroupData?.data)
+      setOpenGroupDial(true)
+      setGroup({
+        name: GroupData?.data?.groupName,
+        desc: GroupData?.data?.groupDescription,
+    })
+    }
+  }, [GroupData, rows]);
 
   function MyCustomToolbar(prop) {
     return (
@@ -279,6 +317,17 @@ const AddGroupComp = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
+      field: "ContactNumber",
+      headerName: "Mobile No",
+      flex: 0.1,
+      minWidth: 90,
+      maxWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
       field: "Email",
       headerName: "Email",
       flex: 0.1,
@@ -293,8 +342,8 @@ const AddGroupComp = () => {
       field: "ClientType",
       headerName: "Client Type",
       flex: 0.4,
-      minWidth: 200,
-      maxWidth: 300,
+      minWidth: 90,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -317,8 +366,8 @@ const AddGroupComp = () => {
       field: "Address",
       headerName: "Address",
       flex: 0.1,
-      minWidth: 100,
-      maxWidth: 300,
+      minWidth: 200,
+      maxWidth: 500,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -352,6 +401,10 @@ const AddGroupComp = () => {
             selectedItems={selectedItems}
             setSelectedItemsData={setSelectedItemsData}
             setSelectedItems={setSelectedItems}
+            setGroup ={setGroup}
+            Group = {Group}
+            grouprefetch={grouprefetch}
+            id={id}
           />
           <Grid item xs={12} sx={{ mt: "5px" }}>
             {/* <Loading loading={productLoading || isFetching} /> */}
@@ -418,7 +471,7 @@ const AddGroupComp = () => {
             }
            
         }}>
-          <span>Create Group</span>
+          <span>{id ? "Update Group" : "Create Group"}</span>
         </Box>
       ) }
       </Box>

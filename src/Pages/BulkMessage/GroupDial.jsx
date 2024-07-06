@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useAddGroupMutation } from "../../features/api/marketingApiSlice";
+import { useAddGroupMutation ,useUpdateGroupByIdMutation } from "../../features/api/marketingApiSlice";
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -45,16 +45,18 @@ function GroupDial({
   handleSelectionChange,
   selectedItems,
   setSelectedItems,
-  setSelectedItemsData
+  setSelectedItemsData,
+  id,
+  setGroup,
+  Group,
+  grouprefetch
 }) {
   /// local state
 
   const [addGroups, { isLoading: groupLoading }] = useAddGroupMutation();
-  const [datas, setDatas] = useState();
-  const [Group, setGroup] = useState({
-    name: "",
-    desc: "",
-  });
+const [updateGroups, { isLoading: updateLoading }] = useUpdateGroupByIdMutation();
+
+
 
   const navigate = useNavigate();
 
@@ -65,17 +67,8 @@ function GroupDial({
     setGroup({ ...Group, [name]: value });
   };
 
-  /// handlers
-  useEffect(() => {
-    if (data) {
-      const initializeData = data.map((item, index) => ({
-        ...item,
-        usdValue: null,
-        rmbValue: null,
-      }));
-      setDatas(initializeData);
-    }
-  }, [data]);
+
+console.log(data)
 
 
 
@@ -95,6 +88,7 @@ function GroupDial({
   };
 
   const handleSubmit = async () => {
+    let info = {}
     const NewMember = data.map((item) => {
       return {
         ClientId:item.ClientId,
@@ -107,17 +101,34 @@ function GroupDial({
       if (!Group.name && !Group.desc) {
         return toast("Please enter a group name and description");
       }
-      const info = {
-        groupName: Group.name,
-        groupDescription: Group.desc,
-        Members: JSON.stringify(NewMember),
-      };
-      const result = await addGroups(info).unwrap();
-      toast.success("Group Created Successfully");
+  if(id){
+    info = {
+      id:id,
+      groupName: Group.name,
+      groupDescription: Group.desc,
+      Members: JSON.stringify(NewMember),
+    };
+  }else{
+    info = {
+      groupName: Group.name,
+      groupDescription: Group.desc,
+      Members: JSON.stringify(NewMember),
+    };
+  }
+   
+      if(id){
+        const result = await updateGroups(info).unwrap();
+        toast.success("Group Updated Successfully");
+      }else{
+        const result = await addGroups(info).unwrap();
+        toast.success("Group Created Successfully");
+      }
+     
       setSelectedItems([])
       setSelectedItems([])
       setGroup({})
       handleClose();
+      grouprefetch();
       navigate(
         `/BulkMessage`
       );
@@ -156,7 +167,7 @@ function GroupDial({
                 fontSize: "1.2rem",
               }}
             >
-              Add Group
+             { id ? "Update Group" : "Create Group" }
             </Typography>
             <CloseIcon
               onClick={handleClose}
@@ -211,6 +222,9 @@ function GroupDial({
                     Company Name
                   </StyledTableCell>
                   <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
+                    Mobile No
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
                     Email
                   </StyledTableCell>
                   <StyledTableCell sx={{ color: "#fff", backgroundColor: "#03084E" }}>
@@ -229,11 +243,12 @@ function GroupDial({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {datas?.map((row, index) => (
+                {data?.map((row, index) => (
                   <TableRow key={row.id}>
                     <StyledTableCellvalue sx={{ padding: ".5rem" }}>{index + 1}</StyledTableCellvalue>
                     <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.ContactName}</StyledTableCellvalue>
                     <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.CompanyName}</StyledTableCellvalue>
+                    <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.ContactNumber}</StyledTableCellvalue>
                     <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.Email}</StyledTableCellvalue>
                     <StyledTableCellvalue sx={{ padding: ".5rem" }}>{row.ClientType}</StyledTableCellvalue>
                     <StyledTableCellvalue sx={{ padding: ".5rem" }}>
@@ -284,10 +299,10 @@ function GroupDial({
               onClick={handleSubmit}
               disabled={groupLoading}
             >
-              {groupLoading ? (
+              {groupLoading || updateLoading ? (
                 <CircularProgress size={30} sx={{ color: "#fff" }} />
               ) : (
-                "Create group"
+               id ? "Update group" : "Create group"
               )}
             </Button>{" "}
           </Box>

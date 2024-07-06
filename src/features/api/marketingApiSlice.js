@@ -25,6 +25,39 @@ export const marketingApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    getGroupInfoByid: builder.query({
+      query: (id) => {
+        return {
+          url: `${Marketing_URL}/getGroupById/${id}`,
+          method: "GET",
+         
+        };
+      },
+    }),
+
+    updateGroupById: builder.mutation({
+      query: (data) => {
+        const id = data.id
+        return {
+          url: `${Marketing_URL}/updateGroup/${id}`,
+          method: "PUT",
+          body: data
+         
+        };
+      },
+    }),
+
+    deleteGroupById: builder.mutation({
+      query: (id) => {
+        console.log(id)
+       return {
+          url: `${Marketing_URL}/deleteGroup/${id}`,
+          method: "DELETE",
+              
+        };
+      },
+    }),
+
     
   }),
 });
@@ -32,6 +65,9 @@ export const marketingApiSlice = apiSlice.injectEndpoints({
 export const {
   useAddGroupMutation,
   useGetAllGroupInfoQuery,
+  useGetGroupInfoByidQuery,
+  useUpdateGroupByIdMutation,
+  useDeleteGroupByIdMutation,
 
 
   

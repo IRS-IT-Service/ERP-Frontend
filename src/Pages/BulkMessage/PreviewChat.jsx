@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Button,
   Box,
@@ -14,7 +14,7 @@ import {
   styled,
   ToggleButtonGroup,
   ToggleButton,
-  
+
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { toast } from "react-toastify";
@@ -26,7 +26,10 @@ import {
   useGetAllScheduleMessageQuery,
   useDeleteScheduledTaskMutation,
 } from "../../features/api/whatsAppApiSlice";
-import { useGetAllGroupInfoQuery } from "../../features/api/marketingApiSlice";
+import {
+  useGetAllGroupInfoQuery,
+  useDeleteGroupByIdMutation,
+} from "../../features/api/marketingApiSlice";
 import TextEditor from "../../Pages/BulkMessage/Components/TextEditor";
 import NoImage from "../../assets/Noimage.jpeg";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -42,8 +45,8 @@ import { formatTime } from "../../commonFunctions/commonFunctions";
 import CountDown from "./Components/CountDown";
 import { Portal } from "@mui/base/Portal";
 import Iphone from "../../../public/iphone.png";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   DataGrid,
   useGridApiRef,
@@ -58,8 +61,10 @@ import CachedIcon from "@mui/icons-material/Cached";
 import { useSelector } from "react-redux";
 import Addgroup from "./Addgroup";
 import { ConstructionOutlined } from "@mui/icons-material";
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
+import ScheduleIcon from '@mui/icons-material/Schedule';
 const PreviewChat = () => {
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
@@ -89,6 +94,9 @@ const PreviewChat = () => {
   const [DeleteTask, { isLoading: DeleteTaskTaskLoading }] =
     useDeleteScheduledTaskMutation();
 
+  const [DeleteGroup, { isLoading: DeleteGroupLoading }] =
+    useDeleteGroupByIdMutation();
+
   const {
     data: clientData,
     refetch: clientrefetch,
@@ -115,6 +123,8 @@ const PreviewChat = () => {
   const [GroupInfo, setGroupInfo] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
+  const [popOver ,setPopover] = useState(null);
+  const [addTitle,setTitle] = useState(null);
   const contentRef = useRef(null);
   const handleClose = () => {
     setAnchorEl(false);
@@ -128,6 +138,18 @@ const PreviewChat = () => {
     setGroupInfo(info);
     setOpenAddgroup(true);
   };
+
+  const handleOpenpop = (event) => {
+    console.log(event)
+    setPopover(event.currentTarget);
+  };
+
+  const handleOpenpopClose = () => {
+    setPopover(null);
+  };
+
+  const open = Boolean(popOver);
+  const id = open ? 'simple-popover' : undefined;
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -233,7 +255,11 @@ const PreviewChat = () => {
   }
 
   const handleClick = () => {
+    if(!addTitle){
+      return toast.error("Title is required")
+    }
     setAnchorEl(true);
+    setPopover(null)
   };
 
   useEffect(() => {
@@ -315,15 +341,18 @@ const PreviewChat = () => {
     newDate.setSeconds(0, 0);
     const isoString = newDate.toISOString();
     let Newvalue = {};
+    console.log(addTitle)
 
     try {
       const formdataText = new FormData();
+      formdataText.append("title", addTitle);
       formdataText.append("message", convertedText);
       formdataText.append("contacts", JSON.stringify(customerNumber));
       formdataText.append("scheduledTime", isoString);
       formdataText.append("Type", ConversionType);
 
       const formdataMedia = new FormData();
+      formdataMedia.append("title", addTitle);
       formdataMedia.append("message", convertedText);
       formdataMedia.append("file", file);
       formdataMedia.append("contacts", JSON.stringify(customerNumber));
@@ -354,6 +383,7 @@ const PreviewChat = () => {
       setCustomerNumber([]);
       setSelectionModel([]);
       setMemberNumber([]);
+      setTitle(null)
       // window.location.reload();
       refetch();
     } catch (err) {
@@ -364,16 +394,7 @@ const PreviewChat = () => {
     // You can add any additional logic here
   };
 
-  const handleDeleteScheduledMessage = async (taskId) => {
-    console.log(taskId);
-    try {
-      await DeleteTask(taskId);
-      toast("Successfully deleted scheduled message");
-      refetch();
-    } catch (err) {
-      console.log(err);
-    }
-  };
+
 
   const handleMouseEnter = (item) => {
     if (data?.data.length > 0) {
@@ -427,37 +448,44 @@ const PreviewChat = () => {
     setSelectionModel(selectionModel);
   };
 
-  const CustomFooter = () => {
-    return (
-      <GridToolbarContainer>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          margin={1}
-          width="100%"
-        >
-          <Button
-            size="small"
-            variant="contained"
-            onClick={() => setOpenAddgroup(true)}
-          >
-            add group
-          </Button>
-        </Box>
-      </GridToolbarContainer>
-    );
+  // Delete group
+  const handleError = (e, id) => {
+    console.log(id)
+    Swal.fire({
+      title: "Are you sure want to delete?",
+      text: `${e}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d11e06",
+      cancelButtonColor: "black",
+      confirmButtonText: "Delete",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.showLoading();
+
+        try {
+          const result = await DeleteGroup(id).unwrap();
+          toast.success("Group deleted successfully");
+          GroupRefetch();
+        } catch (error) {
+          console.log(error);
+        } finally {
+          Swal.hideLoading(); // Hide loading spinner
+        }
+      }
+    });
   };
 
   useEffect(() => {
     if (contentRef.current) {
-      if (contentRef.current.scrollHeight > 308) { // Change this value to the specific height
+      if (contentRef.current.scrollHeight > 308) {
+        // Change this value to the specific height
         setShowReadMore(true);
-      }else{
+      } else {
         setShowReadMore(false);
       }
     }
-    console.log(contentRef.current.scrollHeight)
-  }, [editorContent , whatsmessage]);
+  }, [editorContent, whatsmessage]);
 
   const toggleReadMore = () => {
     setIsExpanded(!isExpanded);
@@ -595,17 +623,16 @@ const PreviewChat = () => {
       headerAlign: "center",
       renderCell: (params) => {
         const id = params.row._id;
-     
-  
+
         return (
-          <EditIcon 
+          <EditIcon
             onClick={() => navigate(`/AddGroupComp/${id}`)}
             sx={{
               cursor: "pointer",
               color: "#0d2e00",
               "&:hover": {
-                color: "#040f00"
-              }
+                color: "#040f00",
+              },
             }}
           />
         );
@@ -622,13 +649,18 @@ const PreviewChat = () => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        return(<DeleteIcon sx={{
-          cursor:"pointer",
-          color:"#0d2e00",
-          "&:hover":{
-            color:"red"
-          }
-        }}/> )
+        return (
+          <DeleteIcon
+          onClick={()=>handleError(params.row.groupName ,params.row._id)}
+            sx={{
+              cursor: "pointer",
+              color: "#0d2e00",
+              "&:hover": {
+                color: "red",
+              },
+            }}
+          />
+        );
       },
     },
   ];
@@ -637,25 +669,27 @@ const PreviewChat = () => {
     return (
       <React.Fragment>
         <Portal container={() => document.getElementById("filter-panel1")}>
-          <Box sx={{
-            display:"flex",
-            justifyContent: "space-between",
-        
-          }}>
-          <GridToolbarQuickFilter />
-          <Button size="small" sx={{
-            backgroundColor: "#32a852",
-            color: "white",
-            borderRadius: "5px",
-            margin:"2px",
-            "&:hover":{
-              backgroundColor: "#032b0e",
-            }
-        
-                     }} onClick={() => navigate(
-                      `/AddGroupComp`
-                    ) }>
-           Create Group
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <GridToolbarQuickFilter />
+            <Button
+              size="small"
+              sx={{
+                backgroundColor: "#32a852",
+                color: "white",
+                borderRadius: "5px",
+                margin: "2px",
+                "&:hover": {
+                  backgroundColor: "#032b0e",
+                },
+              }}
+              onClick={() => navigate(`/AddGroupComp`)}
+            >
+              Create Group
             </Button>
           </Box>
         </Portal>
@@ -669,7 +703,6 @@ const PreviewChat = () => {
       <React.Fragment>
         <Portal container={() => document.getElementById("filter-panel2")}>
           <GridToolbarQuickFilter />
- 
         </Portal>
         {/* <GridToolbar {...prop} /> */}
       </React.Fragment>
@@ -677,12 +710,13 @@ const PreviewChat = () => {
   }
 
   return (
-    <Box id="Main dev"
+    <Box
+      id="Main dev"
       sx={{
         display: "flex",
         flexDirection: "column",
         width: "100%",
-      
+
         justifyContent: "center",
         alignItems: "center",
         padding: "20px",
@@ -697,188 +731,177 @@ const PreviewChat = () => {
           justifyContent: "space-between",
           overflow: "hidden",
           width: "100%",
-          height:"82vh",
+          height: "82vh",
           gap: "20px",
-       
         }}
       >
-        <Box id="Main Iphone div" sx={{
-          flexBasis:"20%",
-
-        }}>
         <Box
+          id="Main Iphone div"
           sx={{
-            width: "20vw",
-            borderRadius: "50px",
-           
-            
-            
+            flexBasis: "20%",
           }}
         >
-          {/* inner layer of iphone */}
-
           <Box
             sx={{
-              position: "relative",
-              
-              
-             }}
-          >
-            <img
-              src={Iphone}
-              style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "cover",
-                objectPosition: "center",
-                
-              }}
-            />
-            <Box
-              sx={{
-                
-                position: "absolute",
-                backgroundImage: `url(${chatBg})`,
-                width: "90%",
-                height: "96%",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                margin: "auto",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                borderRadius: "25px",
-                zIndex: -1,
-                
-              }}
-            >
-       
-            </Box>
-            <Box
-            sx={{
-              position: "absolute",
-              top: 30,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              margin: "auto",
-              height: "84%",
-              width: "87%",
-              borderRadius: "10px",
-              overflow: "auto",
-              padding: 2,
-             
-              zIndex:100
+              width: "20vw",
+              borderRadius: "50px",
             }}
           >
+            {/* inner layer of iphone */}
+
             <Box
               sx={{
-                marginTop:"2rem",
-                display: "flex",
-                flexDirection: "column",
-                border: "2px solid #eee",
-                justifyContent: "center",
-                backgroundColor: "whitesmoke",
-                borderRadius: "10px",
-                padding: "5px 10px",
-                boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
                 position: "relative",
-                          overflow: "hidden"
-                
               }}
             >
+              <img
+                src={Iphone}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                }}
+              />
               <Box
                 sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  width:
-                    ConversionType === "Text" ? "calc(40vw - 20vw)" : "100%",
-                    maxHeight: isExpanded ? 'auto' : "31rem",
-                   
-                 overflow: "hidden"
-             
+                  position: "absolute",
+                  backgroundImage: `url(${chatBg})`,
+                  width: "90%",
+                  height: "96%",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  margin: "auto",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  borderRadius: "25px",
+                  zIndex: -1,
+                }}
+              ></Box>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 30,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  margin: "auto",
+                  height: "84%",
+                  width: "87%",
+                  borderRadius: "10px",
+                  overflow: "auto",
+                  padding: 2,
+
+                  zIndex: 100,
                 }}
               >
-                {ConversionType === "Media" && (
-                  <div style={{ width: "100%", marginBottom: "5px" }}>
-                    <img
-                      src={imagePreview || NoImage}
-                      alt="Preview"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        objectPosition: "center",
-                        borderRadius: "10px",
-                        background: "#fff",
-                      }}
-                    />
-                  </div>
-                )}
-                <div
-                  style={{
-                    width: "100%",
+                <Box
+                  sx={{
+                    marginTop: "2rem",
                     display: "flex",
                     flexDirection: "column",
-                    fontSize: "12px",
-                    padding: "10px 5px 10px 2px",
-                    textAlign: "start",
-                    overflowWrap: "break-word",
-                    wordBreak: "break-word",
-                    listStyleType: "disc",
-                    marginBottom: "10px",
-     
+                    border: "2px solid #eee",
+                    justifyContent: "center",
+                    backgroundColor: "whitesmoke",
+                    borderRadius: "10px",
+                    padding: "5px 10px",
+                    boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
-                  
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: editorContent || whatsmessage,
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width:
+                        ConversionType === "Text"
+                          ? "calc(40vw - 20vw)"
+                          : "100%",
+                      maxHeight: isExpanded ? "auto" : "31rem",
+
+                      overflow: "hidden",
                     }}
-                    ref={contentRef}
-                  />
-   
-     
-                </div>
-        
+                  >
+                    {ConversionType === "Media" && (
+                      <div style={{ width: "100%", marginBottom: "5px" }}>
+                        <img
+                          src={imagePreview || NoImage}
+                          alt="Preview"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            objectPosition: "center",
+                            borderRadius: "10px",
+                            background: "#fff",
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        fontSize: "12px",
+                        padding: "10px 5px 10px 2px",
+                        textAlign: "start",
+                        overflowWrap: "break-word",
+                        wordBreak: "break-word",
+                        listStyleType: "disc",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: editorContent || whatsmessage,
+                        }}
+                        ref={contentRef}
+                      />
+                    </div>
+                  </Box>
+
+                  <Box>
+                    <p
+                      style={{
+                        fontSize: "0.8rem",
+                        position: "absolute",
+                        bottom: 1,
+                        right: 8,
+                        color: "grey",
+                      }}
+                    >
+                      {formatTime(new Date())}
+                    </p>
+                  </Box>
+                  {showReadMore && (
+                    <div onClick={toggleReadMore}>
+                      <span
+                        style={{
+                          color: "#05175e",
+                          cursor: "pointer",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {isExpanded ? "Read Less" : "... Read More"}
+                      </span>
+                    </div>
+                  )}
+                </Box>
               </Box>
-   
-              <Box>
-                <p
-                  style={{
-                    fontSize: "0.8rem",
-                    position: "absolute",
-                    bottom: 1,
-                    right: 8,
-                    color: "grey",
-                  }}
-                >
-                  {formatTime(new Date())}
-                </p>
-   
-              </Box>
-              {showReadMore && (
-        <div onClick={toggleReadMore}>
-          <span style={{
-            color:"#05175e",
-            cursor: "pointer",
-            fontSize:"12px"
-          }}>{isExpanded ? 'Read Less' : '... Read More'}</span>
-        </div>
-      )}
             </Box>
-     
           </Box>
-          </Box>
-         
         </Box>
-</Box>
-        <Box id="Main Text Editor dev"  sx={{
-                  flexBasis:"20%",
-                  paddingTop:"1rem"
-                 
-        }}>
+        <Box
+          id="Main Text Editor dev"
+          sx={{
+            flexBasis: "20%",
+            paddingTop: "1rem",
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -895,7 +918,6 @@ const PreviewChat = () => {
                 width: "17vw",
                 "& .ql-container": {
                   height: "435px",
-              
                 },
                 "& .ql-editor": {
                   height: "100%",
@@ -1004,7 +1026,7 @@ const PreviewChat = () => {
                   sendMsgTextLoading ||
                   !customerNumber.length > 0
                 }
-                onClick={handleClick}
+                onClick={(event)=>handleOpenpop(event)}
                 sx={{ margin: "4px", width: "100%" }}
               >
                 {scheduledTaskLoading ? (
@@ -1033,25 +1055,66 @@ const PreviewChat = () => {
             }}
           >
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <MobileDateTimePicker
+            <Box display="flex" flexDirection="column" gap={2}>
+                   <MobileDateTimePicker
                 defaultValue={dayjs(Date.now())}
                 onAccept={handleAccept}
                 renderInput={(params) => <TextField {...params} />}
                 onClose={handleClose}
                 open={Boolean(anchorEl)}
+                
               />
+              </Box>
             </LocalizationProvider>
+            <Popover
+        id={id}
+        open={open}
+        anchorEl={popOver}
+        onClose={handleOpenpopClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <Box sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          padding: "10px",
+          background: "#f5f5f5",
+          borderRadius: "5px",
+          width: "250px",
+          height: "100px",
+        }}>
+          <TextField
+            size="small"
+            label="Add Title"
+            value={addTitle}
+            onChange={(e)=>setTitle(e.target.value)}
+            fullWidth
+          />
+          <Box sx={{
+            display: "flex",
+            justifyContent: "center",
+          }}>
+            <Button variant="contained" onClick={handleClick} startIcon={<ScheduleIcon />}>
+              OK
+            </Button>
+          </Box>
+        </Box>
+      </Popover>
           </Box>
         </Box>
 
-        <Box id="Main data grid dev"
+        <Box
+          id="Main data grid dev"
           sx={{
             display: "flex",
-            flexBasis:"60%",
+            flexBasis: "60%",
             overflow: "hidden",
             flexDirection: "column",
-            
-           paddingX: "5px",
+
+            paddingX: "5px",
           }}
         >
           <Box
@@ -1059,7 +1122,7 @@ const PreviewChat = () => {
               height: "50%",
               overflow: "auto",
               width: "100%",
-        
+
               "& .super-app-theme--header": {
                 background: "#eee",
                 color: "black",
