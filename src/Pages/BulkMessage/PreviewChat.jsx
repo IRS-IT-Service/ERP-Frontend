@@ -450,7 +450,7 @@ const PreviewChat = () => {
 
   // Delete group
   const handleError = (e, id) => {
-    console.log(id)
+    
     Swal.fire({
       title: "Are you sure want to delete?",
       text: `${e}`,
