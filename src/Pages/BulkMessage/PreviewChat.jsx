@@ -153,6 +153,7 @@ const PreviewChat = () => {
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
+    console.log(file);
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setImagePreview(imageUrl);
@@ -264,15 +265,13 @@ const PreviewChat = () => {
 
   useEffect(() => {
     const whatsappText = convertHtmlToWhatsAppFormat(editorContent);
-    console.log(whatsappText);
+  
     setConvertedText(whatsappText);
   }, [editorContent]);
 
   const handleSend = async () => {
     try {
-      // if (!file || !message) {
-      //   return toast.error("Please provide both field");
-      // }
+ 
       const formdata = new FormData();
       formdata.append("message", convertedText);
       formdata.append("file", file);
@@ -820,7 +819,7 @@ const PreviewChat = () => {
                         ConversionType === "Text"
                           ? "calc(40vw - 20vw)"
                           : "100%",
-                      maxHeight: isExpanded ? "auto" : "31rem",
+                      maxHeight: isExpanded ? "auto" : "32%",
 
                       overflow: "hidden",
                     }}
@@ -982,7 +981,7 @@ const PreviewChat = () => {
                     variant="contained"
                     startIcon={<CloudUploadIcon />}
                     style={{
-                      backgroundColor: fileUploaded ? "green" : undefined,
+                      backgroundColor: fileUploaded ? "green" : "",
                     }}
                   >
                     {fileUploaded ? "File Uploaded" : "Upload File"}
