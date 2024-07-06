@@ -1,73 +1,237 @@
 import { Box, styled, Button } from "@mui/material";
 import React, { useEffect } from "react";
 import Header from "../../components/Common/Header";
-import { DataGrid } from "@mui/x-data-grid";
-import { formatDate } from "../../commonFunctions/commonFunctions";
+import { Portal } from "@mui/base/Portal";
+import {
+  DataGrid,
+  useGridApiRef,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridPagination,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
+import {
+  formatDate,
+  formatIndianPrice,
+  formatUSDPrice,
+} from "../../commonFunctions/commonFunctions";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useGetAllProformaQuery } from "../../features/api/proformaApiSlice";
+import PreviewDial from "./PreviewDial";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const ProformaList = () => {
-  // Sample data
-  const rows = [
-    {
-      id: 1,
-      vendorName: "Hilda",
-      performaNo: "PF84332",
-      amount: 6000,
-      amountLeft: 3000,
-      date: formatDate(new Date()),
-    },
-    {
-      id: 2,
-      vendorName: "Xinjian",
-      performaNo: "PF84234",
-      amount: 5000,
-      amountLeft: 0,
-      date: formatDate(new Date()),
-    },
-    // Add more data as needed
-  ];
+  const [rows, setRows] = React.useState([]);
+  const [previewDialOpen, setPreviewDialOpen] = React.useState(false);
+  const [details, setDetails] = React.useState({});
+  const { data: allData, isLoading } = useGetAllProformaQuery();
 
+  const handlePreviewOpen = (details) => {
+    setDetails(details);
+    setPreviewDialOpen(true);
+  };
+
+
+  useEffect(() => {
+    if (allData?.status === true) {
+      const data = allData?.data?.map((item, index) => {
+        return {
+          id: item.PiId,
+          Sno: index + 1,
+          companyName: item?.CompanyName,
+          vendorId: item?.VendorId,
+          piNo: item?.PiNo,
+          description: item?.Description,
+          date: formatDate(item?.PiDate),
+          amount: item?.Amount,
+          amountType: item?.AmountType,
+          piCopy: item?.PiCopy,
+          shiftCopy: item?.ShiftCopy,
+        };
+      });
+
+      setRows(data);
+    }
+  }, [allData]);
+  
+  const CustomToolbar = (prop) => {
+    /// global state
+    const { themeColor } = useSelector((state) => state.ui);
+ 
+
+    return (
+    <>
+          <Portal container={() => document.getElementById("filter-panel")}>
+              <Box style={{ display: "flex", justifyContent: "space-between",marginTop:"10px" }}>
+         <GridToolbarQuickFilter style={{paddingTop:"20px"}} />
+        
+        </Box>
+       </Portal>
+      
+      </>
+ 
+ 
+    
+    );
+  };
   // Column definitions
   const columns = [
-    { field: "id", headerName: "Sno", flex: 1 },
-    { field: "vendorName", headerName: "Vendor", flex: 2 },
-    { field: "performaNo", headerName: "performaNo", flex: 1 },
-    { field: "date", headerName: "Date", flex: 1 },
-    { field: "amount", headerName: "Total Amount", flex: 2 },
-    { field: "amountLeft", headerName: "Amount Left", flex: 2 },
     {
-      field: "status",
-      headerName: "Status",
+      field: "Sno",
+      headerName: "Sno",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "id",
+      headerName: "PI Id",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "companyName",
+      headerName: "Company Name",
       flex: 2,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 2,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "vendorId",
+      headerName: "Vendor ID",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "piNo",
+      headerName: "PI No",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "date",
+      headerName: "Date",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "amount",
+      headerName: "Total Amount",
+      flex: 1,
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+        console.log(params.row);
         return (
-          <Box
-            sx={{
-              width: "50%",
-              height: "50%",
-              backgroundColor: "lightblue",
-              alignSelf: "center",
-              borderRadius: "5px",
-            }}
-          ></Box>
+          <Box sx={{ width: "50%", height: "50%" }}>
+            {params.row.amountType === "USD"
+              ? `$ ${params.row.amount}`
+              : `¥  ${params.row.amount}`}
+          </Box>
+        );
+      },
+    },
+
+    {
+      field: "piCopy",
+      headerName: "Pi Copy",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        const file = params.value.url;
+        const piId = params.row.id;
+        const CompanyName = params.row.companyName;
+        console.log(params?.row);
+        return (
+          <Button
+            onClick={() =>
+              handlePreviewOpen({
+                file: file,
+                piId: piId,
+                CompanyName: CompanyName,
+              })
+            }
+          >
+            View
+          </Button>
         );
       },
     },
     {
-      field: "action",
-      headerName: "Action",
-      flex: 2,
+      field: "shiftCopy",
+      headerName: "Shift Copy",
+      flex: 0.3,
+      minWidth: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-        return <Button>Details</Button>;
+        const file = params.value.url;
+        const piId = params.row.id;
+        const CustomerName = params.row.companyName;
+
+        return (
+          <Button
+            onClick={() =>
+              handlePreviewOpen({
+                file: file,
+                piId: piId,
+                CustomerName: CustomerName,
+              })
+            }
+          >
+            View
+          </Button>
+        );
       },
     },
+    // {
+    //   field: "status",
+    //   headerName: "Status",
+    //   flex: 2,
+    //   renderCell: (params) => {
+    //     return (
+    //       <Box
+    //         sx={{
+    //           width: "50%",
+    //           height: "50%",
+    //           backgroundColor: "lightblue",
+    //           alignSelf: "center",
+    //           borderRadius: "5px",
+    //         }}
+    //       ></Box>
+    //     );
+    //   },
+    // },
+    // {
+    //   field: "action",
+    //   headerName: "Action",
+    //   flex: 2,
+    //   renderCell: (params) => {
+    //     return <Button>Details</Button>;
+    //   },
+    // },
   ];
-
 
   const dispatch = useDispatch();
 
@@ -75,7 +239,7 @@ const ProformaList = () => {
   const handleClose = () => {
     dispatch(setInfo(false));
   };
-  
+
   useEffect(() => {
     dispatch(setHeader(`Proforma List`));
   }, []);
@@ -89,16 +253,48 @@ const ProformaList = () => {
       {/* <Header Name={"Proforma List"} /> */}
 
       {/* Add the DataGrid */}
-      <Box sx={{ height: "88vh", width: "100%" }}>
+      <Box id="filter-panel" />
+      <Box
+              sx={{
+                width: "100%",
+                height: "80vh",
+                "& .super-app-theme--header": {
+                  background: "#eee",
+                  color: "black",
+                  textAlign: "center",
+                },
+                "& .vertical-lines .MuiDataGrid-cell": {
+                  borderRight: "1px solid #e0e0e0",
+                },
+               
+              }}
+            >
         <DataGrid
           rows={rows}
           columns={columns}
-          pageSize={5} // Adjust as needed
+          pageSize={5} 
           rowsPerPageOptions={[5, 10, 20]} // Adjust as needed
-        //   checkboxSelection
-        //   disableSelectionOnClick
+   
+          initialState={{
+            filter: {
+                filterModel: {
+                  items: ["Group"],
+                  quickFilterExcludeHiddenColumns: true,
+                },
+              },
+            }}
+            components={{
+              Toolbar: CustomToolbar,
+            }}
         />
       </Box>
+      {previewDialOpen && (
+        <PreviewDial
+          open={previewDialOpen}
+          setOpen={setPreviewDialOpen}
+          details={details}
+        />
+      )}
     </Box>
   );
 };

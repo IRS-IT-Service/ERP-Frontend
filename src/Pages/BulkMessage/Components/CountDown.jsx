@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 
-const CountDown = ({ targetDate, refetch }) => {
+const CountDown = ({ targetDate, refetch ,historyRefetch }) => {
   const calculateTimeLeft = () => {
     const difference = new Date(targetDate) - new Date();
     let timeLeft = {};
@@ -43,11 +43,11 @@ const CountDown = ({ targetDate, refetch }) => {
   });
 
   useEffect(() => {
-    console.log("useEffect triggered with timerComponents.length:", timerComponents.length);
+
     if (!timerComponents.length) {
-     
-  
-      refetch();
+    
+        refetch();
+      historyRefetch()
     }
   }, [timeLeft, timerComponents.length, hasRefetched]);
 

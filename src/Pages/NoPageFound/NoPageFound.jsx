@@ -6,10 +6,16 @@ const NoPageFound = () => {
     <section
       className="page_404"
       style={{
-        marginTop: "50px",
+      display:"flex",
+      width:"100%",
+      justifyContent:"center",
+      alignItems:"center",
+      marginTop: "100px"
       }}
     >
-      <Container>
+      <Container sx={{
+     
+      }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <Grid container justifyContent="center">

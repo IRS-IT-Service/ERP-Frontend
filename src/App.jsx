@@ -150,7 +150,8 @@ import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
 import PaidOverseaseOrder from "./Pages/OverseasOrderList/Components/PaidOverseaseOrder";
 import CreateShipment from "./Pages/OverseasOrderList/Components/CreateShipment";
 import UpdateQuantity from "./Pages/UpdateSellerPrice/UpdateQuantity";
-
+import AddGroupComp from "./Pages/BulkMessage/AddGroupComp";
+import Schedulemessage from "./Pages/BulkMessage/Schedulemessage";
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -612,6 +613,7 @@ function App() {
                     </UserRole>
                   }
                 />
+
                 {/* Account Router */}
                 <Route path="/OverseasOrder" element={<OverseasOrder />} />
                 <Route
@@ -683,6 +685,14 @@ function App() {
                   element={
                     <UserRole name={"View Query"}>
                       <ViewQuery />
+                    </UserRole>
+                  }
+                />
+                      <Route
+                  path="/ScheduledMessage"
+                  element={
+                    <UserRole name={"Scheduled Message"}>
+                      <Schedulemessage />
                     </UserRole>
                   }
                 />
@@ -828,6 +838,8 @@ function App() {
                 <Route path="/testing" element={<TestingComponent />} />
                 <Route path="/tempOrder/:id" element={<TempOrder />} />
                 <Route path="/CreateShipment" element={<CreateShipment />} />
+                <Route path="/AddGroupComp/:id" element={<AddGroupComp />} />
+                <Route path="/AddGroupComp" element={<AddGroupComp />} />
                 <Route
                   path="/UpdateQuantity"
                   element={
@@ -837,6 +849,7 @@ function App() {
                   }
                 />
               </Route>
+          
             </Routes>
           </Suspense>
         </ThemeProvider>

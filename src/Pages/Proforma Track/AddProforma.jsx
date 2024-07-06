@@ -9,13 +9,19 @@ import {
   Autocomplete,
   InputBase,
   IconButton,
+  ToggleButtonGroup,
+  ToggleButton,
+  CircularProgress,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Header from "../../components/Common/Header";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetAllVendorQuery } from "../../features/api/RestockOrderApiSlice";
-import { RedoRounded } from "@mui/icons-material";
+import { Description, RedoRounded, Verified } from "@mui/icons-material";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { useCreateProformaMutation } from "../../features/api/proformaApiSlice";
+import { toast } from "react-toastify";
+import { truncateFileName } from "../../commonFunctions/commonFunctions";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -30,8 +36,21 @@ const AddProforma = () => {
   const { data, isLoading } = useGetAllVendorQuery();
 
   /// local state
-  const [form, setForm] = useState(null);
+  const [form, setForm] = useState({
+    CompanyName: "",
+    VendorId: "",
+    piNo: "",
+    Description: "",
+    piDate: "",
+    Amount: "",
+    AmountType: "USD",
+    piFile: null,
+    shiftCopy: null,
+  });
   const [autoCompleteData, setAutoCompleteData] = useState([]);
+
+  const [saveFormApi, { isLoading: saveFormLoading }] =
+    useCreateProformaMutation();
 
   /// useEffect
   useEffect(() => {
@@ -45,29 +64,65 @@ const AddProforma = () => {
   }, [data]);
 
   //choice file
-  const handleFileChange = (event) => {
-    // Handle file change here
+  const handleFileChange = (event, fieldName) => {
     const selectedFile = event.target.files[0];
     console.log("Selected File:", selectedFile);
+    handleChange(selectedFile, fieldName);
   };
-
   /// handler
 
   const handleChange = (value, name) => {
-    setForm((prev) => {
-      if (name === "CompanyName") {
-        return { ...prev, ...value };
-      }
-
-      return { ...prev, [name]: value };
-    });
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = () => {
-    console.log(form);
-  };
+  // const handleToggleChange = (event, newCurrency) => {
+  //   if (newCurrency !== null) {
+  //     handleChange(newCurrency, "AmountType");
+  //   }
+  // };
 
-  console.log(form);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append(
+        "CompanyName",
+        form.CompanyName ? form.CompanyName.CompanyName : ""
+      );
+      formData.append(
+        "VendorId",
+        form.CompanyName ? form.CompanyName.VendorId : ""
+      );
+      formData.append("piNo", form.piNo);
+      formData.append("piDate", form.piDate);
+      formData.append("Description", form.Description);
+      formData.append("Amount", form.Amount);
+      formData.append("AmountType", form.AmountType);
+      formData.append("piFile", form.piFile);
+      formData.append("shiftCopy", form.shiftCopy);
+
+      const data = await saveFormApi(formData).unwrap();
+
+      toast.success("Added Successfully");
+
+      setForm({
+        CompanyName: "",
+        VendorId: "",
+        piNo: "",
+        piDate: "",
+        Description: "",
+        Amount: "",
+        AmountType: "USD",
+        piFile: null,
+        shiftCopy: null,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const dispatch = useDispatch();
 
@@ -75,7 +130,7 @@ const AddProforma = () => {
   const handleClose = () => {
     dispatch(setInfo(false));
   };
-  
+
   useEffect(() => {
     dispatch(setHeader(`Add Performa`));
   }, []);
@@ -126,7 +181,6 @@ const AddProforma = () => {
             <Typography
               sx={{
                 color: "white",
-
                 fontSize: "1.6rem",
                 fontWeight: "bold",
               }}
@@ -148,7 +202,6 @@ const AddProforma = () => {
                 width: "30%",
                 minWidth: "115px",
                 alignContent: "center",
-                // color: "white",
                 marginTop: "12px",
                 fontWeight: "bold",
               }}
@@ -162,7 +215,7 @@ const AddProforma = () => {
                 borderRadius: "4px",
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
-                    borderColor: themeColor.sideBarColor1, // Set the outline color when focused
+                    borderColor: themeColor.sideBarColor1,
                   },
                 },
               }}
@@ -171,15 +224,15 @@ const AddProforma = () => {
                 handleChange(newValue, "CompanyName");
               }}
               getOptionLabel={(option) => option.CompanyName}
+              value={form.CompanyName || null} // Ensure this line to handle the reset
               renderInput={(params) => (
                 <TextField
                   {...params}
                   label="Select"
-                  value={form?.CompanyName || ""}
+                  size="small"
                   onChange={(e) => {
                     console.log(e.target.value);
                   }}
-                  size="small"
                 />
               )}
             />
@@ -203,13 +256,14 @@ const AddProforma = () => {
                 marginTop: "15px",
               }}
             >
-              Performa No
+              PI No
             </InputLabel>
             <TextField
-              placeholder=" Enter Performa No"
-              value={form?.performaNo || ""}
+              placeholder=" Enter PI No"
+              size="small"
+              value={form?.piNo}
               onChange={(e) => {
-                handleChange(e.target.value, "performaNo");
+                handleChange(e.target.value, "piNo");
               }}
               sx={{
                 backgroundColor: "white",
@@ -243,12 +297,13 @@ const AddProforma = () => {
                 marginTop: "15px",
               }}
             >
-              performa Date
+              PI Date
             </InputLabel>
             <TextField
-              value={form?.performaDate || ""}
+              value={form?.piDate}
+              size="small"
               onChange={(e) => {
-                handleChange(e.target.value, "performaDate");
+                handleChange(e.target.value, "piDate");
               }}
               sx={{
                 backgroundColor: "white",
@@ -283,15 +338,92 @@ const AddProforma = () => {
                 marginTop: "15px",
               }}
             >
-              USD Amount $
+              Description
             </InputLabel>
             <TextField
-              value={form?.usdAmount || ""}
+              placeholder="Description"
+              size="small"
+              value={form?.Description}
               onChange={(e) => {
-                handleChange(e.target.value, "usdAmount");
+                handleChange(e.target.value, "Description");
+              }}
+              sx={{
+                backgroundColor: "white",
+                width: { xs: "100%", md: "70%" },
+                borderRadius: "4px",
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: themeColor.sideBarColor1, // Set the outline color when focused
+                  },
+                },
+              }}
+            />
+          </Box>
+
+          <Box sx={{ marginTop: "20px" }}>
+            <ToggleButtonGroup
+              value={form?.AmountType}
+              exclusive
+              onChange={(e) => {
+                handleChange(e.target.value, "AmountType");
+              }}
+              sx={{
+                width: "100px",
+                height: "30px",
+                border: "none",
+                borderRadius: "0.2rem",
+                padding: "0.2rem",
+                color: "#fff",
+                "& .Mui-selected": {
+                  color: "#fff !important",
+                  background: "black !important",
+                },
+              }}
+              aria-label="AmountType"
+            >
+              <ToggleButton
+                value="USD"
+                sx={{ color: "black", border: "0.5px solid black" }}
+              >
+                USD
+              </ToggleButton>
+              <ToggleButton
+                value="RMB"
+                sx={{ color: "black", border: "0.5px solid black" }}
+              >
+                RMB
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+          <Box
+            sx={{
+              color: "white",
+              display: "flex",
+              width: "90%",
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: { xs: "center", md: "" },
+            }}
+          >
+            <InputLabel
+              sx={{
+                width: "30%",
+                minWidth: "115px",
+                alignContent: "center",
+                // color: "white",
+                fontWeight: "bold",
+                marginTop: "15px",
+              }}
+            >
+              Amount
+            </InputLabel>
+            <TextField
+              value={form?.Amount || ""}
+              size="small"
+              onChange={(e) => {
+                handleChange(e.target.value, "Amount");
               }}
               type="number"
-              placeholder=" Enter USD amount"
+              placeholder={`Enter ${form?.AmountType || "USD"} amount`}
               sx={{
                 backgroundColor: "white",
                 width: { xs: "100%", md: "70%" },
@@ -318,50 +450,26 @@ const AddProforma = () => {
                 width: "30%",
                 minWidth: "115px",
                 alignContent: "center",
-                // color: "white",
                 marginTop: "15px",
                 fontWeight: "bold",
               }}
             >
-              Performa File
+              PI File
             </InputLabel>
-            {/* <TextField
-              onChange={(e) => {
-                handleChange(e.target.files[0], "performaFile");
-              }}
-              type="file"
-              placeholder=" Enter Proforma No"
-              sx={{
-                backgroundColor: "white",
-                width: { xs: "100%", md: "70%" },
-                borderRadius: "4px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: themeColor.sideBarColor1, // Set the outline color when focused
-                  },
-                },
-              }}
-            /> */}
             <InputBase
               type="file"
-              onChange={(e) => {
-                handleChange(e.target.files[0], "performaFile");
-              }}
-              sx={{
-                display: "none",
-              }}
+              onChange={(e) => handleFileChange(e, "piFile")}
+              sx={{ display: "none" }}
               inputProps={{
-                onChange: handleFileChange,
-
-                accept: ".pdf, .doc, .docx", // Specify allowed file types
-                id: "file-input", // Add a unique ID for the label to reference
+                accept: ".pdf, .doc, .docx, .png, .jpg, .jpeg",
+                id: "pi-file-input",
               }}
             />
-            <label htmlFor="file-input">
+            <label htmlFor="pi-file-input">
               <IconButton
                 component="span"
                 sx={{
-                  width: "15vw",
+                  width: "16vw",
                   height: "6vh",
                   margin: "1% 0px",
                   border: "solid 3px #fff",
@@ -374,10 +482,12 @@ const AddProforma = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <Typography sx={{ paddingLeft: "3%", color: "#f9f8fc" }}>
-                  Upload File 1
+                <Typography sx={{ paddingLeft: "3%", color: "#00000" }}>
+                  {!form.piFile
+                    ? "Select File"
+                    : truncateFileName(form.piFile.name, 30)}
                 </Typography>
-                <AddIcon />
+                {!form.piFile ? <AddIcon /> : ""}
               </IconButton>
             </label>
           </Box>
@@ -396,35 +506,52 @@ const AddProforma = () => {
                 width: "30%",
                 minWidth: "115px",
                 alignContent: "center",
-                // color: "white",
                 marginTop: "15px",
                 fontWeight: "bold",
               }}
             >
-              Other File
+              Shift Copy
             </InputLabel>
-            <TextField
-              onChange={(e) => {
-                handleChange(e.target.files[0], "otherFile");
-              }}
+            <InputBase
               type="file"
-              placeholder=" Enter Proforma No"
-              sx={{
-                backgroundColor: "white",
-                width: { xs: "100%", md: "70%" },
-                borderRadius: "4px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: themeColor.sideBarColor1, // Set the outline color when focused
-                  },
-                },
+              onChange={(e) => handleFileChange(e, "shiftCopy")}
+              sx={{ display: "none" }}
+              inputProps={{
+                accept: ".pdf, .doc, .docx, .png, .jpg, .jpeg",
+                id: "shift-copy-file-input",
               }}
             />
+            <label htmlFor="shift-copy-file-input">
+              <IconButton
+                component="span"
+                sx={{
+                  width: "16vw",
+                  height: "6vh",
+                  margin: "1% 0px",
+                  border: "solid 3px #fff",
+                  borderRadius: "8px",
+                  boxShadow: "-4px 4px 15px 0 rgba(0, 0, 0, 0.15)",
+                  backgroundColor: "rgba(255, 255, 255, 0.35)",
+                  backdropFilter: "blur(60px)",
+                  paddingLeft: "0%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography sx={{ paddingLeft: "3%", color: "#00000" }}>
+                  {!form.shiftCopy
+                    ? "Select File"
+                    : truncateFileName(form.shiftCopy.name, 30)}
+                </Typography>
+                {!form.shiftCopy ? <AddIcon /> : ""}
+              </IconButton>
+            </label>
           </Box>
 
           <Box sx={{ marginBottom: "10px" }}>
             <Button
               variant="outlined"
+              disabled={saveFormLoading}
               onClick={handleSubmit}
               sx={{
                 color: "white",
@@ -434,7 +561,7 @@ const AddProforma = () => {
                 },
               }}
             >
-              Submit
+              {saveFormLoading ? <CircularProgress size={24} /> : "Submit"}
             </Button>
           </Box>
         </Box>
