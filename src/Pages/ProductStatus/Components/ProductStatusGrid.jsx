@@ -185,7 +185,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           Name: item.Name,
           GST: item.GST,
           MRP: item.MRP,
-          Quantity: item.ActualQuantity,
+          Quantity: item.Quantity,
           LandingCost: +(item.LandingCost).toFixed(2),
           SalesPrice: +(item.SalesPrice).toFixed(2),
           SellerPrice: +(item.SellerPrice).toFixed(2),
@@ -398,10 +398,10 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     },
     {
       field: "Quantity",
-      headerName: "QTY",
+      headerName: "Store QTY",
       flex: 0.3,
       minWidth: 60,
-      maxWidth: 70,
+      maxWidth: 90,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -617,7 +617,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             {" "}
             <Switch
               checked={params.row.isEcwidSync}
-              disabled={!params.row.SalesPrice}
+              // disabled={!params.row.SalesPrice}
               onChange={(e) => {
                 handleIsActiveyncUpdate(
                   params.row.SKU,

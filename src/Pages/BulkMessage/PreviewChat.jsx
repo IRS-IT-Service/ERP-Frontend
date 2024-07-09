@@ -65,6 +65,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import ScheduleIcon from '@mui/icons-material/Schedule';
+
 const PreviewChat = () => {
   const { themeColor } = useSelector((state) => state.ui);
   const color = themeColor.sideBarColor1;
@@ -125,6 +126,7 @@ const PreviewChat = () => {
   const [showReadMore, setShowReadMore] = useState(false);
   const [popOver ,setPopover] = useState(null);
   const [addTitle,setTitle] = useState(null);
+
   const contentRef = useRef(null);
   const handleClose = () => {
     setAnchorEl(false);
@@ -133,6 +135,7 @@ const PreviewChat = () => {
   const handleClose_addgroup = () => {
     setOpenAddgroup(false);
   };
+
 
   const handleGroupView = (info) => {
     setGroupInfo(info);
@@ -219,7 +222,7 @@ const PreviewChat = () => {
     // html = html.replace(/<\/p>\s*<p>/gi, '\n\n');
     // Add newline at the start of paragraphs
     html = html.replace(/<\/p>/gi, "\n");
-    console.log(html);
+   
     // Remove any remaining HTML tags
     html = html.replace(/<\/?[^>]+(>|$)/g, "");
 
@@ -340,7 +343,7 @@ const PreviewChat = () => {
     newDate.setSeconds(0, 0);
     const isoString = newDate.toISOString();
     let Newvalue = {};
-    console.log(addTitle)
+ 
 
     try {
       const formdataText = new FormData();
@@ -732,18 +735,21 @@ const PreviewChat = () => {
           width: "100%",
           height: "82vh",
           gap: "20px",
+       
         }}
       >
         <Box
           id="Main Iphone div"
           sx={{
             flexBasis: "20%",
+            
           }}
         >
           <Box
             sx={{
               width: "20vw",
               borderRadius: "50px",
+             
             }}
           >
             {/* inner layer of iphone */}
@@ -815,10 +821,7 @@ const PreviewChat = () => {
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      width:
-                        ConversionType === "Text"
-                          ? "calc(40vw - 20vw)"
-                          : "100%",
+                      width:"100",
                       maxHeight: isExpanded ? "auto" : "32%",
 
                       overflow: "hidden",
@@ -899,6 +902,7 @@ const PreviewChat = () => {
           sx={{
             flexBasis: "20%",
             paddingTop: "1rem",
+           
           }}
         >
           <Box
@@ -1304,93 +1308,10 @@ const PreviewChat = () => {
         </Box>
       </Box>
 
-      {/* <Box
-        sx={{
-          flexGrow: 1,
-          marginTop: "50px",
-          // boxShadow: "2px 1px 4px 2px grey",
-          padding: "20px",
-          borderRadius: "10px",
-          marginBottom: "20px",
-          width: "100%",
-        }}
-      >
-        <Grid container spacing={2}>
-          <Grid container spacing={2}>
-            {data?.data?.map((item, index) => (
-              <Grid item md={3} lg={1.5} key={index}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    border: "1px solid #cccc",
-                    gap: "10px",
-                    padding: "5px",
-                    borderRadius: "10px",
-                    cursor: "pointer",
-                    boxShadow:
-                      "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;",
-                    "&:hover": {
-                      boxShadow:
-                        "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;",
-                    },
-                  }}
-                  onMouseEnter={() => handleMouseEnter(item)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <Box sx={{ width: "70px" }}>
-                    <img
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        objectFit: "cover",
-                        objectPosition: "center",
-                        borderRadius: "50%",
-                      }}
-                      src={item.image?.url || NoImage}
-                      alt="item"
-                    />
-                  </Box>
-                  <Box>
-                    <CountDown
-                      targetDate={item.scheduledTime}
-                      refetch={refetch}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      width: "20px",
-                      height: "20px",
-                      borderRadius: "50%",
-                      backgroundColor: "black",
-                      padding: "10px",
-                      "& :hover": {
-                        backgroundColor: "red",
-                        width: "20px",
-                        height: "20px",
-                        borderRadius: "50%",
-                      },
-                      color: "white",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handleDeleteScheduledMessage(item._id)}
-                  >
-                    <CloseIcon
-                      sx={{
-                        fontSize: "15px",
-                      }}
-                    />
-                  </Box>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
-      </Box> */}
+    
+
+
+
       {OpenAddgroup && (
         <Addgroup
           open={OpenAddgroup}

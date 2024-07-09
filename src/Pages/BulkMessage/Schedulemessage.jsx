@@ -39,6 +39,7 @@ import {
 } from "../../features/api/whatsAppApiSlice";
 import { toast } from "react-toastify";
 import { Portal } from "@mui/base/Portal";
+import ScheduleDial from "./Components/ScheduleDial";
 
 import CountDown from "./Components/CountDown";
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -124,12 +125,15 @@ const Schedulemessage = () => {
   const [openDial, setOpenDial] = useState(false);
    const [rowData, setRowData] = useState();
   const [showNewData, setShowNewData] = useState(true);
+  const [openpreview , setOpenpreview] = useState(false);
+  const [messageData , setMessagedata] = useState({});
 
 
   const CustomToolbar = (prop) => {
     /// global state
     const { themeColor } = useSelector((state) => state.ui);
  
+
 
     return (
     <>
@@ -186,6 +190,11 @@ const Schedulemessage = () => {
   } = useGetAllScheduleMessageHistoryQuery();
 
  const isHistory = alignment === "Schedule" ? false : true;    
+
+
+ const handleClose_ScheduleDial = () =>{
+  setOpenpreview(false);
+}
 
   // Handlers for toggling data
 
@@ -272,9 +281,9 @@ const Schedulemessage = () => {
     {
       field: "Sno",
       headerName: "Sno",
-      flex: 0.3,
-      minWidth: 70,
-      maxWidth: 80,
+      flex: 1,
+      minWidth: 50,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -283,53 +292,53 @@ const Schedulemessage = () => {
     {
       field: "title",
       headerName: "Title",
-      flex: 0.1,
-      minWidth: 50,
-      maxWidth: 150,
+      flex: 1,
+      minWidth: 100,
+      maxWidth: 250,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-    {
-      field: "message",
-      headerName: "Message",
-      flex: 0.1,
-      minWidth: 200,
-      maxWidth: 500,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      renderCell: (params) => {
-        const message = whatsappToHTML(params.row.message);
-        return (
-          <>
-              <div
-                      style={{
-                        width: "100%",
-                        fontSize: "12px",
-                        overflowWrap: "break-word",
-                        wordBreak: "break-word",
-                        textAlign: "center"
+    // {
+    //   field: "message",
+    //   headerName: "Message",
+    //   flex: 0.1,
+    //   minWidth: 200,
+    //   maxWidth: 500,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   headerClassName: "super-app-theme--header",
+    //   cellClassName: "super-app-theme--cell",
+    //   renderCell: (params) => {
+    //     const message = whatsappToHTML(params.row.message);
+    //     return (
+    //       <>
+    //           <div
+    //                   style={{
+    //                     width: "100%",
+    //                     fontSize: "12px",
+    //                     overflowWrap: "break-word",
+    //                     wordBreak: "break-word",
+    //                     textAlign: "center"
                       
-                      }}
-                    >
-            <div
-              dangerouslySetInnerHTML={{
-                __html: message,
-              }}
-            />
-            </div>
-          </>
-        );
-      },
-    },
+    //                   }}
+    //                 >
+    //         <div
+    //           dangerouslySetInnerHTML={{
+    //             __html: message,
+    //           }}
+    //         />
+    //         </div>
+    //       </>
+    //     );
+    //   },
+    // },
 
     {
         field: "Recipients",
         headerName: "Recipients",
-        flex: 0.1,
+        flex: 1,
         minWidth: 50,
         maxWidth: 100,
         align: "center",
@@ -337,44 +346,44 @@ const Schedulemessage = () => {
         headerClassName: "super-app-theme--header",
         cellClassName: "super-app-theme--cell",
       },
-        {
-          field: "Image",
-          headerName: "Image",
-          flex: 0.1,
-          minWidth:50,
-          maxWidth: 150,
-          align: "center",
-          headerAlign: "center",
-          headerClassName: "super-app-theme--header",
-          cellClassName: "super-app-theme--cell",
-          renderCell: (params) => {
+    //     {
+    //       field: "Image",
+    //       headerName: "Image",
+    //       flex: 0.1,
+    //       minWidth:50,
+    //       maxWidth: 150,
+    //       align: "center",
+    //       headerAlign: "center",
+    //       headerClassName: "super-app-theme--header",
+    //       cellClassName: "super-app-theme--cell",
+    //       renderCell: (params) => {
 
-            return (
-              <>
-               <Box sx={{
-                display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width:"100px",
-                  height:"50px",
-                  overflow: "hidden",
-                  borderRadius: "5px",
-                  padding:1,
+    //         return (
+    //           <>
+    //            <Box sx={{
+    //             display: "flex",
+    //               justifyContent: "center",
+    //               alignItems: "center",
+    //               width:"100px",
+    //               height:"50px",
+    //               overflow: "hidden",
+    //               borderRadius: "5px",
+    //               padding:1,
 
-               }}>
-                { params.row.image ?
-    <img src ={params.row.image.url} style={{objectFit:"cover" ,objectPosition:"center" ,width:"100%" ,height:"100%"}}/> :<span style={{color:"red"}}>No Image</span> }
-               </Box>
-              </>
-            );
-          },
-        },
+    //            }}>
+    //             { params.row.image ?
+    // <img src ={params.row.image.url} style={{objectFit:"cover" ,objectPosition:"center" ,width:"100%" ,height:"100%"}}/> :<span style={{color:"red"}}>No Image</span> }
+    //            </Box>
+    //           </>
+    //         );
+    //       },
+    //     },
     {
       field:"scheduledTime"  ,
       headerName: isHistory ? "Send Time" : "Scheduled Time",
-      flex: 0.1,
-      minWidth: 90,
-      maxWidth: 200,
+      flex: 1,
+      minWidth: 10,
+      maxWidth: 300,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -386,9 +395,9 @@ const Schedulemessage = () => {
     {
       field: "CountDown",
       headerName: isHistory ? "Status" : "Count Down",
-      flex: 0.1,
-      minWidth: 150,
-      maxWidth: 300,
+      flex: 1,
+      minWidth: 200,
+      maxWidth: 400,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -413,48 +422,49 @@ const Schedulemessage = () => {
     {
       field: "Type",
       headerName: "Message Type",
-      flex: 0.1,
+      flex: 1,
       minWidth: 100,
-      maxWidth: 150,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
 
-    // {
-    //     field: "View",
-    //     headerName: "Preview",
-    //     flex: 0.1,
-    //     minWidth:90,
-    //     maxWidth: 150,
-    //     align: "center",
-    //     headerAlign: "center",
-    //     headerClassName: "super-app-theme--header",
-    //     cellClassName: "super-app-theme--cell",
-    //     renderCell: (params) => {
-    //     const id =  params.row.id
-    //     console.log(id)
-    //       return (
-    //         <>
-    //           <Button
-    //             style={{
-    //               height: "100%",
-    //               width: "100%",
-    //               display: "flex",
-    //               justifyContent: "center",
-    //               alignItems: "center",
-    //             }}
-    //             onClick={() => {
-    //               handleDeleteScheduledMessage(id)
-    //             }}
-    //           >
-    //             View
-    //           </Button>
-    //         </>
-    //       );
-    //     },
-    //   },
+    {
+        field: "View",
+        headerName: "Preview",
+        flex: 1,
+        minWidth:100,
+        maxWidth: 250,
+        align: "center",
+        headerAlign: "center",
+        headerClassName: "super-app-theme--header",
+        cellClassName: "super-app-theme--cell",
+        renderCell: (params) => {
+        const id =  params.row.id
+        
+          return (
+            <>
+              <Button
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={() => {
+                  setOpenpreview(true)
+                  setMessagedata(params.row)
+                }}
+              >
+                View
+              </Button>
+            </>
+          );
+        },
+      },
 
     // valueFormatter: (params) => `₹ ${params.value}`,
 
@@ -462,8 +472,8 @@ const Schedulemessage = () => {
       field: "Action",
       headerName: "Action",
       flex: 0.1,
-      minWidth: 90,
-      maxWidth: 150,
+      minWidth: 100,
+      maxWidth: 250,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -625,6 +635,15 @@ const Schedulemessage = () => {
           </Grid>
         )}
       </Grid>
+      {openpreview &&
+  <ScheduleDial
+  open ={openpreview}
+  handleClose={handleClose_ScheduleDial}
+  messageData ={messageData}
+  
+  
+  />
+}
       {openDial ? (
         <ViewQueryDialog
           openDial={openDial}
