@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  useGridApiRef,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridPagination,
+  GridToolbarQuickFilter,
+} from "@mui/x-data-grid";
 import { useNavigate } from 'react-router-dom';
 import AddSingleClientDial from './AddSingleClientDial';
 import { useGetAllClientQuery } from '../../../features/api/clientAndShipmentApiSlice';
-import { useGridApiRef } from '@mui/x-data-grid';
 import { setHeader, setInfo } from '../../../features/slice/uiSlice';
 import InfoDialogBox from '../../../components/Common/InfoDialogBox';
 import { useDispatch, useSelector } from 'react-redux';
+import { Portal } from "@mui/base/Portal";
 
 // infoDialog box data
 const infoDetail = [
@@ -46,6 +53,8 @@ const infoDetail = [
   },
 ];
 
+
+
 const AddClient = () => {
   // api calling
   const { data: getAllClient, refetch, isLoading } = useGetAllClientQuery();
@@ -72,6 +81,38 @@ const AddClient = () => {
     return formattedString;
   };
 
+
+  function MyCustomToolbar(prop) {
+    return (
+      <>
+        <Portal container={() => document.getElementById("filter-panel")}>
+         
+        </Portal>
+          <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: '20px',
+            marginTop: '10px',
+            padding:"2px 5px"
+          
+     
+          }}
+        >
+      <GridToolbarQuickFilter  />
+          <Button variant='outlined' onClick={() => navigate('/bulkAdd')}>
+            Bulk Add Client
+          </Button>
+          <Button variant='outlined' onClick={() => setOpen(true)}>
+            {' '}
+            Add Single Client
+          </Button>
+        </Box>
+     
+     
+      </>
+    );
+  }
   ///search
 
   const handleFilterChange = (field, operator, value) => {
@@ -199,43 +240,16 @@ const AddClient = () => {
   };
 
   return (
-    <Box sx={{}}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: '20px',
-          padding: '10px',
-        }}
-      >
-        <Box>
-          <input
-            placeholder='search Company Name'
-            style={{
-              width: '30rem',
-              padding: '10px 25px',
-              margin: '2px 0',
-              borderRadius: '20px',
-            }}
-            name='search'
-            onChange={(e) => {
-              setSearch(e.target.value);
-              handleFilterChange('CompanyName', 'contains', e.target.value);
-            }}
-          />
-        </Box>
-        <Button variant='outlined' onClick={() => navigate('/bulkAdd')}>
-          Bulk Add Client
-        </Button>
-        <Button variant='outlined' onClick={() => setOpen(true)}>
-          {' '}
-          Add Single Client
-        </Button>
-      </Box>
+    <Box sx={{
+     
+      
+    }}>
+    
 
       <Box
         sx={{
-          height: '87vh',
+          height: '80vh',
+          marginTop:"10px",
           '& .super-app-theme--header': {
             background: '#eee',
             color: 'black',
@@ -256,7 +270,30 @@ const AddClient = () => {
           position: 'relative',
         }}
       >
-        <DataGrid columns={columns} rows={rows} apiRef={apiRef} />
+              <Box id="filter-panel2" />
+        <DataGrid columns={columns} rows={rows} apiRef={apiRef} 
+          slots={{
+            toolbar: MyCustomToolbar,
+          }}
+
+     
+             initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 50,
+                },
+              },
+              filter: {
+                filterModel: {
+                  items: ["Individual"],
+                  quickFilterExcludeHiddenColumns: true,
+                },
+              },
+            }}
+            autoPageSize={true}
+            pageSizeOptions={[50]}
+        
+        />
       </Box>
       {open && (
         <AddSingleClientDial open={open} setOpen={setOpen} refetch={refetch} />

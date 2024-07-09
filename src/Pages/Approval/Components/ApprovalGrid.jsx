@@ -19,7 +19,7 @@ import Header from "../../../components/Common/Header";
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { useSendMessageMutation } from "../../../features/api/whatsAppApiSlice";
-import { DataSaverOff } from "@mui/icons-material";
+import { DataSaverOff, Visibility } from "@mui/icons-material";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 
 // infoDialog box data
@@ -33,7 +33,8 @@ const infoDetail = [
         width={"50%"}
       />
     ),
-    instruction: "Here you can see Stock Quantity Update and Approve or Reject,  Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions.",
+    instruction:
+      "Here you can see Stock Quantity Update and Approve or Reject,  Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions.",
   },
 ];
 
@@ -86,6 +87,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
   const handleApproveClick = async (params, bool) => {
     try {
+      const approvalTypes = bool ? "Approved" : "UnApproved";
       setSkip(false);
       const data = {
         SKU: params.row.SKU,
@@ -103,7 +105,11 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           : query === "LandingCost"
           ? "Cost Approval"
           : null;
-      const param = { query: query, body: { products: data } };
+      const param = {
+        query: query,
+        body: { products: data ,approvalType: approvalTypes},
+        
+      };
       const res = await approveProductApi(param).unwrap();
       if (res.ecwidUpdateTrack.length) {
         res.ecwidUpdateTrack.forEach((item) => {
@@ -156,6 +162,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
   const handleBulkApprove = async (bool) => {
     try {
       setSkip(false);
+      const approvalTypes = bool ? "Approved" : "UnApproved";
       const products = selectedItems.map((item) => {
         const findName = rows.find((data) => data.SKU === item);
         return { SKU: item, value: bool, name: findName.Name };
@@ -172,7 +179,11 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           : query === "LandingCost"
           ? "Cost Approval"
           : null;
-      const param = { query: query, body: { products: products } };
+      const param = {
+        query: query,
+        body: { products: products , approvalType: approvalTypes},
+        
+      };
       const res = await approveProductApi(param).unwrap();
       const liveStatusData = {
         message: `${userInfo.name}   ${
@@ -229,6 +240,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       const data = allProductData?.data.map((item, index) => {
         return {
           id: item.SKU,
+          UserName: item.UserName,
           Sno: index + 1,
           SKU: item.SKU,
           Name: item.Name,
@@ -290,10 +302,13 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
             100
           ).toFixed(2),
 
-          currentValue: item[query === "Quantity" ? "ActualQuantity" : query],
+          currentValue: item[query === "Quantity" ? "Quantity" : query],
           newValue: item[`Pending${query}`],
           newValueWithGST: item[`Pending${query}`]
             ? ((item[`Pending${query}`] / 100) * (100 + item.GST)).toFixed(2)
+            : 0,
+          oldValueWithGST: item[query]
+            ? ((item[query] / 100) * (100 + item.GST)).toFixed(2)
             : 0,
         };
       });
@@ -322,12 +337,12 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
       setActualColumns(newColumns);
     } else if (query === "SellerPrice") {
-      const insertIndex = Math.floor(columns.length / 2);
+      const insertIndex = Math.floor(columns.length / 1);
 
       const newColumns = [
-        ...columns.slice(0, insertIndex),
+        ...columns.slice(0, 3),
         ...updatedColumnsSellerPrice,
-        ...columns.slice(insertIndex),
+        // ...columns.slice(insertIndex),
       ];
 
       setActualColumns(newColumns);
@@ -336,8 +351,8 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
       const newColumns = [
         ...columns.slice(0, insertIndex),
+
         ...updatedColumnsLandingCost,
-        ...columns.slice(insertIndex),
       ];
 
       setActualColumns(newColumns);
@@ -377,6 +392,16 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           </div>
         );
       },
+    },
+    {
+      field: "UserName",
+      headerName: "Updated By",
+      flex: 0.3,
+      minWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
       field: "SKU",
@@ -442,7 +467,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     },
     {
       field: "currentValue",
-      headerName: `Current ${query}`,
+      headerName: `Old ${query}`,
       flex: 0.3,
       minWidth: 80,
       maxWidth: 150,
@@ -457,7 +482,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     },
     {
       field: "newValue",
-      headerName: `Pending ${query}`,
+      headerName: `New ${query}`,
       flex: 0.3,
       minWidth: 80,
       maxWidth: 150,
@@ -551,16 +576,125 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
   const updatedColumnsLandingCost = [
     {
-      field: "newValueWithGST",
-      headerName: "LandingCost +GST",
+      field: "GST",
+      headerName: "GST",
+      flex: 0.3,
+      minWidth: 70,
+      maxWidth: 70,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `${params.value} %`,
+    },
+
+    {
+      field: "currentValue",
+      headerName:
+        query === "LandingCost" ? `Old LC without GST` : `Current ${query}`,
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header--Current",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) =>
+        query === "Quantity"
+          ? `${(+params.value).toFixed(0)} `
+          : `₹ ${(+params.value).toFixed(0)} `,
+    },
+    {
+      field: "oldValueWithGST",
+      headerName: "Old LC with GST",
       flex: 0.3,
       minWidth: 100,
       maxWidth: 150,
       align: "center",
       headerAlign: "center",
-      headerClassName: "super-app-theme--header",
+      headerClassName: "super-app-theme--header--Current",
       cellClassName: "super-app-theme--cell",
       valueFormatter: (params) => `₹ ${params.value}`,
+    },
+
+    {
+      field: "newValue",
+      headerName:
+        query === "LandingCost" ? `New LC without GST` : `Pending ${query}`,
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header--Pending",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) =>
+        query === "Quantity"
+          ? `${(+params.value).toFixed(0)} `
+          : `₹ ${(+params.value).toFixed(0)} `,
+    },
+    {
+      field: "newValueWithGST",
+      headerName: "New LC with GST",
+      flex: 0.3,
+      minWidth: 100,
+      maxWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header--Pending",
+      cellClassName: "super-app-theme--cell",
+      valueFormatter: (params) => `₹ ${params.value}`,
+    },
+
+    {
+      field: "Accept",
+      headerName: "Accept",
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 80,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              color: "green",
+              fontSize: "32px", // Adjust the size as needed
+              cursor: "pointer", // Show pointer cursor on hover
+            }}
+            onClick={() => handleApproveClick(params, true)}
+          >
+            <ThumbUpIcon />
+          </div>
+        );
+      },
+    },
+    {
+      field: "Reject",
+      headerName: "Reject",
+      flex: 0.3,
+      minWidth: 80,
+      maxWidth: 80,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              color: "red",
+              fontSize: "32px", // Adjust the size as needed
+              cursor: "pointer", // Show pointer cursor on hover
+            }}
+            onClick={() => handleApproveClick(params, false)}
+          >
+            <ThumbDownIcon />
+          </div>
+        );
+      },
     },
   ];
 
