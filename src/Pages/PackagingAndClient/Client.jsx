@@ -10,7 +10,7 @@ const Client = () => {
   return (
     <Box
       component="main"
-      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "auto" }}
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden"  }}
     >
       <DrawerHeader />
       <AddClient/>
