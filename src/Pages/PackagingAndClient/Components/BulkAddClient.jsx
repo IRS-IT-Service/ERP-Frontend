@@ -15,6 +15,9 @@ const StyledBox = styled(Box)(({ theme }) => ({
 import BASEURL from "../../../constants/BaseApi";
 import { useSelector } from "react-redux";
 import { DataGrid } from "@mui/x-data-grid";
+import * as XLSX from "xlsx";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const BulkAddClient = () => {
   /// local state
@@ -25,39 +28,142 @@ const BulkAddClient = () => {
 
   const color = themeColor.sideBarColor1;
 
+  // const handleFileChange = (event) => {
+  //   const file = event.target.files[0];
+  //   const reader = new FileReader();
+
+  //   reader.onload = (e) => {
+  //     const data = new Uint8Array(e.target.result);
+  //     const workbook = XLSX.read(data, { type: "array" });
+  //     const sheetName = workbook.SheetNames[0];
+  //     const worksheet = workbook.Sheets[sheetName];
+  //     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+  //     // Remove white spaces from the header row
+  //     const headerRow = jsonData.shift().map((item) => item.trim());
+  //     const processedHeaderRow = headerRow.map((item) =>
+  //       item.startsWith("GSTIN")
+  //         ? item.replace(" (GST Number)", "").trim()
+  //         : item
+  //     );
+  //     const headerRowExist = processedHeaderRow.some(
+  //       (item) => item.trim() === query
+  //     );
+
+  //     if (!headerRowExist) {
+  //       toast.error("Invalid Excel Format");
+  //       return;
+  //     }
+
+  //     const excelObjects = jsonData.map((row, index) =>
+  //       row.reduce(
+  //         (obj, value, columnIndex) => {
+  //           // Remove white spaces from the cell values
+  //           const trimmedValue =
+  //             typeof value === "string" ? value.trim() : value;
+  //           return {
+  //             ...obj,
+  //             [processedHeaderRow[columnIndex]]: trimmedValue,
+  //           };
+  //         },
+  //         {
+  //           Sno: index + 1,
+  //           id: index + 1,
+  //         }
+  //       )
+  //     );
+
+  //     setExcelData(excelObjects);
+  //   };
+
+  //   reader.readAsArrayBuffer(file);
+  // };
+
   const handleFileChange = (event) => {
+    console.log(event)
     const file = event.target.files[0];
     const reader = new FileReader();
-
+  
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: "array" });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
+  
       // Remove white spaces from the header row
       const headerRow = jsonData.shift().map((item) => item.trim());
       const processedHeaderRow = headerRow.map((item) =>
-        item.startsWith("Name")
-          ? item.replace(" (its not required for reference only)", "").trim()
-          : item
+        item.startsWith("Address") ? item.replace(" (Street Address)", "").trim() : item
       );
+  
       const headerRowExist = processedHeaderRow.some(
-        (item) => item.trim() === query
+        (item) => item.trim() === "ClientId"
       );
-
+  
       if (!headerRowExist) {
         toast.error("Invalid Excel Format");
         return;
       }
-
+  
       const excelObjects = jsonData.map((row, index) =>
         row.reduce(
           (obj, value, columnIndex) => {
             // Remove white spaces from the cell values
-            const trimmedValue =
-              typeof value === "string" ? value.trim() : value;
+            const trimmedValue = typeof value === "string" ? value.trim() : value;
+  
+            // Constructing PermanentAddress object
+            if (processedHeaderRow[columnIndex] === 'Address') {
+              return {
+                ...obj,
+                PermanentAddress: {
+                  ...obj.PermanentAddress,
+                  Address: trimmedValue,
+                }
+              };
+            }
+  
+            // Continue adding other address fields similarly
+            if (processedHeaderRow[columnIndex] === 'Pincode') {
+              return {
+                ...obj,
+                PermanentAddress: {
+                  ...obj.PermanentAddress,
+                  Pincode: trimmedValue,
+                }
+              };
+            }
+  
+            if (processedHeaderRow[columnIndex] === 'District') {
+              return {
+                ...obj,
+                PermanentAddress: {
+                  ...obj.PermanentAddress,
+                  District: trimmedValue,
+                }
+              };
+            }
+  
+            if (processedHeaderRow[columnIndex] === 'State') {
+              return {
+                ...obj,
+                PermanentAddress: {
+                  ...obj.PermanentAddress,
+                  State: trimmedValue,
+                }
+              };
+            }
+  
+            if (processedHeaderRow[columnIndex] === 'Country') {
+              return {
+                ...obj,
+                PermanentAddress: {
+                  ...obj.PermanentAddress,
+                  Country: trimmedValue,
+                }
+              };
+            }
+  
             return {
               ...obj,
               [processedHeaderRow[columnIndex]]: trimmedValue,
@@ -69,12 +175,14 @@ const BulkAddClient = () => {
           }
         )
       );
-
+  
       setExcelData(excelObjects);
+      console.log(excelObjects);
     };
-
+  
     reader.readAsArrayBuffer(file);
   };
+
 
   const handleSubmit = async () => {
     try {
@@ -114,28 +222,28 @@ const BulkAddClient = () => {
     setExcelData([]);
   };
 
-  const handleDownloadSample = async () => {
+  const downloadExcelSample = async () => {
     try {
       setDownloadLoading(true);
-      const response = await axios.get(
-        `${BASEURL}/Sample/${query}Sample.xlsx`,
-        {
-          responseType: "blob",
-        }
-      );
-
+      
+      let response = await axios.get(`${BASEURL}/Sample/AddBulkClient.xlsx`, {
+        responseType: "blob",
+      });
+  
       // Create a temporary link element to trigger the download
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${query}Sample.xlsx`);
+      let atribute = "AddBulkClient.xlsx";
+  
+      link.setAttribute("download", atribute);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      setDownloadLoading(false);
     } catch (error) {
       console.error("Error downloading sample:", error);
     } finally {
+      setDownloadLoading(false);
     }
   };
 
@@ -145,6 +253,18 @@ const BulkAddClient = () => {
       headerName: "Sno",
       flex: 0.1,
       minWidth: 10,
+      maxWidth:100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "ContactName",
+      headerName: "Contact Name",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth:200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -153,8 +273,9 @@ const BulkAddClient = () => {
     {
       field: "CompanyName",
       headerName: "Company Name",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 100,
+      maxWidth:400,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -163,8 +284,9 @@ const BulkAddClient = () => {
     {
       field: "ContactNumber",
       headerName: "Contact",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 100,
+      maxWidth:200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -173,18 +295,20 @@ const BulkAddClient = () => {
     {
       field: "Email",
       headerName: "Email",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 100,
+      maxWidth:200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
     {
-      field: "GST",
-      headerName: "GST",
-      flex: 0.3,
+      field: "GSTIN",
+      headerName: "GSTIN",
+      flex: 0.1,
       minWidth: 100,
+      maxWidth:200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -192,10 +316,67 @@ const BulkAddClient = () => {
     },
 
     {
+      field: "ClientType",
+      headerName: "Type ",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth:200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
       field: "Address",
-      headerName: "Address ",
-      flex: 0.3,
-      minWidth: 250,
+      headerName: "Address (Street Address) ",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth:200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "Pincode",
+      headerName: "Pincode",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth:200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+
+    {
+      field: "District",
+      headerName: "District",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth:200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "State",
+      headerName: "State",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth:200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "Country",
+      headerName: "Country",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth:200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -212,7 +393,7 @@ const BulkAddClient = () => {
                 <input
                   type="file"
                   accept=".xls, .xlsx"
-                  onChange={handleFileChange}
+                  onChange={(event)=>handleFileChange(event)}
                   style={{ display: "none" }}
                   id="file-upload"
                 />
@@ -237,7 +418,7 @@ const BulkAddClient = () => {
                   //   disabled={query === "Quantity" || downloadLoading}
                   variant="contained"
                   color="primary"
-                  onClick={handleDownloadSample}
+                  onClick={downloadExcelSample}
                 >
                   {downloadLoading ? (
                     <CircularProgress size={24} color="inherit" />
