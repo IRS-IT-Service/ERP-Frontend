@@ -70,6 +70,39 @@ const ScheduleDial = ({ open,
               }
             }
           }, [data]);
+
+          function whatsappToHTML(text) {
+            // Replace WhatsApp bold format with HTML bold tags
+            text = text.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
+        
+            // Replace WhatsApp italic format with HTML italic tags
+            text = text.replace(/_(.*?)_/g, "<em>$1</em>");
+        
+            // Replace WhatsApp strikethrough format with HTML strikethrough tags
+            text = text.replace(/~(.*?)~/g, "<del>$1</del>");
+        
+            // Replace WhatsApp monospace format with HTML code tags
+            text = text.replace(/```(.*?)```/g, "<code>$1</code>");
+        
+            // Handle bulleted lists
+            text = text.replace(/^•\s*(.*)$/gm, "<li>$1</li>");
+            text = text.replace(/(<li>.*<\/li>\n?)+/g, "<ul>$&</ul>");
+            text = text.replace(/<\/li>\n<li>/g, "</li><li>");
+        
+            // Handle numbered lists
+            text = text.replace(/^\d+\.\s*(.*)$/gm, "<li>$1</li>");
+            text = text.replace(/(<li>.*<\/li>\n?)+/g, "<ol>$&</ol>");
+            text = text.replace(/<\/li>\n<li>/g, "</li><li>");
+        
+            // Handle line breaks
+            text = text.replace(/\n/g, "<br>");
+        
+            return text.trim();
+          }
+
+
+
+
 console.log(messageData)
   return (
     <StyledDialog
@@ -244,7 +277,7 @@ console.log(messageData)
                     >
                       <div
                         dangerouslySetInnerHTML={{
-                          __html:messageData.message,
+                          __html:whatsappToHTML(messageData.message),
                         }}
                         ref={contentRef}
                       />
