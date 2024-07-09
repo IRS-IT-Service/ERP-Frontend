@@ -617,7 +617,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
             {" "}
             <Switch
               checked={params.row.isEcwidSync}
-              // disabled={!params.row.SalesPrice}
+              disabled={!params.row.SalesPrice}
               onChange={(e) => {
                 handleIsActiveyncUpdate(
                   params.row.SKU,
