@@ -33,7 +33,8 @@ const infoDetail = [
         width={"50%"}
       />
     ),
-    instruction: "Here you can see Stock Quantity Update and Approve or Reject,  Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions.",
+    instruction:
+      "Here you can see Stock Quantity Update and Approve or Reject,  Subsequently, ACCEPT ALL and REJECT ALL buttons appear, allowing you to approve or reject all selected products. You can navigate to the accept and reject columns, where icons enable you to perform the desired actions.",
   },
 ];
 
@@ -86,6 +87,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
   const handleApproveClick = async (params, bool) => {
     try {
+      const approvalTypes = bool ? "Approved" : "UnApproved";
       setSkip(false);
       const data = {
         SKU: params.row.SKU,
@@ -103,7 +105,11 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           : query === "LandingCost"
           ? "Cost Approval"
           : null;
-      const param = { query: query, body: { products: data } };
+      const param = {
+        query: query,
+        body: { products: data ,approvalType: approvalTypes},
+        
+      };
       const res = await approveProductApi(param).unwrap();
       if (res.ecwidUpdateTrack.length) {
         res.ecwidUpdateTrack.forEach((item) => {
@@ -156,6 +162,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
   const handleBulkApprove = async (bool) => {
     try {
       setSkip(false);
+      const approvalTypes = bool ? "Approved" : "UnApproved";
       const products = selectedItems.map((item) => {
         const findName = rows.find((data) => data.SKU === item);
         return { SKU: item, value: bool, name: findName.Name };
@@ -172,7 +179,11 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           : query === "LandingCost"
           ? "Cost Approval"
           : null;
-      const param = { query: query, body: { products: products } };
+      const param = {
+        query: query,
+        body: { products: products , approvalType: approvalTypes},
+        
+      };
       const res = await approveProductApi(param).unwrap();
       const liveStatusData = {
         message: `${userInfo.name}   ${
@@ -227,9 +238,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
   useEffect(() => {
     if (allProductData?.status === "success") {
       const data = allProductData?.data.map((item, index) => {
-     
         return {
           id: item.SKU,
+          UserName: item.UserName,
           Sno: index + 1,
           SKU: item.SKU,
           Name: item.Name,
@@ -296,7 +307,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           newValueWithGST: item[`Pending${query}`]
             ? ((item[`Pending${query}`] / 100) * (100 + item.GST)).toFixed(2)
             : 0,
-            oldValueWithGST: item[query]
+          oldValueWithGST: item[query]
             ? ((item[query] / 100) * (100 + item.GST)).toFixed(2)
             : 0,
         };
@@ -339,11 +350,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       const insertIndex = Math.floor(columns.length / 2);
 
       const newColumns = [
-        
         ...columns.slice(0, insertIndex),
-        
-           ...updatedColumnsLandingCost,
-        
+
+        ...updatedColumnsLandingCost,
       ];
 
       setActualColumns(newColumns);
@@ -383,6 +392,16 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           </div>
         );
       },
+    },
+    {
+      field: "UserName",
+      headerName: "Updated By",
+      flex: 0.3,
+      minWidth: 150,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
     },
     {
       field: "SKU",
@@ -440,7 +459,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       flex: 0.3,
       minWidth: 70,
       maxWidth: 70,
-       align: "center",
+      align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
@@ -448,7 +467,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     },
     {
       field: "currentValue",
-      headerName:`Old ${query}`,
+      headerName: `Old ${query}`,
       flex: 0.3,
       minWidth: 80,
       maxWidth: 150,
@@ -463,7 +482,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     },
     {
       field: "newValue",
-      headerName:`New ${query}`,
+      headerName: `New ${query}`,
       flex: 0.3,
       minWidth: 80,
       maxWidth: 150,
@@ -531,7 +550,6 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
   ];
 
   const updatedColumnsMRP = [
-    
     {
       field: "LandingCost",
       headerName: "Cost",
@@ -563,7 +581,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       flex: 0.3,
       minWidth: 70,
       maxWidth: 70,
-       align: "center",
+      align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
@@ -572,7 +590,8 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
     {
       field: "currentValue",
-      headerName:query === "LandingCost" ?`Old LC without GST` : `Current ${query}`,
+      headerName:
+        query === "LandingCost" ? `Old LC without GST` : `Current ${query}`,
       flex: 0.3,
       minWidth: 80,
       maxWidth: 150,
@@ -600,7 +619,8 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
     {
       field: "newValue",
-      headerName: query === "LandingCost" ? `New LC without GST` : `Pending ${query}`,
+      headerName:
+        query === "LandingCost" ? `New LC without GST` : `Pending ${query}`,
       flex: 0.3,
       minWidth: 80,
       maxWidth: 150,
