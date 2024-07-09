@@ -53,37 +53,7 @@ const infoDetail = [
   },
 ];
 
-function MyCustomToolbar(prop) {
-  return (
-    <>
-      <Portal container={() => document.getElementById("filter-panel")}>
-       
-      </Portal>
-        <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: '20px',
-          marginTop: '10px',
-          padding:"2px 5px"
-        
-   
-        }}
-      >
-    <GridToolbarQuickFilter  />
-        <Button variant='outlined' onClick={() => navigate('/bulkAdd')}>
-          Bulk Add Client
-        </Button>
-        <Button variant='outlined' onClick={() => setOpen(true)}>
-          {' '}
-          Add Single Client
-        </Button>
-      </Box>
-   
-   
-    </>
-  );
-}
+
 
 const AddClient = () => {
   // api calling
@@ -111,6 +81,38 @@ const AddClient = () => {
     return formattedString;
   };
 
+
+  function MyCustomToolbar(prop) {
+    return (
+      <>
+        <Portal container={() => document.getElementById("filter-panel")}>
+         
+        </Portal>
+          <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: '20px',
+            marginTop: '10px',
+            padding:"2px 5px"
+          
+     
+          }}
+        >
+      <GridToolbarQuickFilter  />
+          <Button variant='outlined' onClick={() => navigate('/bulkAdd')}>
+            Bulk Add Client
+          </Button>
+          <Button variant='outlined' onClick={() => setOpen(true)}>
+            {' '}
+            Add Single Client
+          </Button>
+        </Box>
+     
+     
+      </>
+    );
+  }
   ///search
 
   const handleFilterChange = (field, operator, value) => {
