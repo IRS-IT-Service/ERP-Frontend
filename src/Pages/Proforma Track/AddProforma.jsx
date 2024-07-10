@@ -359,42 +359,49 @@ const AddProforma = () => {
               }}
             />
           </Box>
+          {/* <Box
+            sx={{
+              width: "100%",
+              borderRadius: "4px",
+            }}
+          >
+            <Box sx={{ marginTop: "10px", marginRight: "10px" }}>
+              <ToggleButtonGroup
+                value={form?.AmountType}
+                exclusive
+                onChange={(e) => {
+                  handleChange(e.target.value, "AmountType");
+                }}
+                sx={{
+                  width: "100px",
+                  height: "30px",
+                  border: "none",
+                  borderRadius: "0.2rem",
+                  padding: "0.2rem",
+                  color: "#fff",
+                  "& .Mui-selected": {
+                    color: "#fff !important",
+                    background: "black !important",
+                  },
+                }}
+                aria-label="AmountType"
+              >
+                <ToggleButton
+                  value="USD"
+                  sx={{ color: "black", border: "0.5px solid black" }}
+                >
+                  USD
+                </ToggleButton>
+                <ToggleButton
+                  value="RMB"
+                  sx={{ color: "black", border: "0.5px solid black" }}
+                >
+                  RMB
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </Box> */}
 
-          <Box sx={{ marginTop: "20px" }}>
-            <ToggleButtonGroup
-              value={form?.AmountType}
-              exclusive
-              onChange={(e) => {
-                handleChange(e.target.value, "AmountType");
-              }}
-              sx={{
-                width: "100px",
-                height: "30px",
-                border: "none",
-                borderRadius: "0.2rem",
-                padding: "0.2rem",
-                color: "#fff",
-                "& .Mui-selected": {
-                  color: "#fff !important",
-                  background: "black !important",
-                },
-              }}
-              aria-label="AmountType"
-            >
-              <ToggleButton
-                value="USD"
-                sx={{ color: "black", border: "0.5px solid black" }}
-              >
-                USD
-              </ToggleButton>
-              <ToggleButton
-                value="RMB"
-                sx={{ color: "black", border: "0.5px solid black" }}
-              >
-                RMB
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
           <Box
             sx={{
               color: "white",
@@ -416,25 +423,63 @@ const AddProforma = () => {
             >
               Amount
             </InputLabel>
-            <TextField
-              value={form?.Amount || ""}
-              size="small"
-              onChange={(e) => {
-                handleChange(e.target.value, "Amount");
-              }}
-              type="number"
-              placeholder={`Enter ${form?.AmountType || "USD"} amount`}
-              sx={{
-                backgroundColor: "white",
-                width: { xs: "100%", md: "70%" },
-                borderRadius: "4px",
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: themeColor.sideBarColor1, // Set the outline color when focused
+            <Box sx={{ width: "70%", display: "flex", flexDirection: "row" }}>
+              <Box sx={{ marginRight: "2px" }}>
+                <ToggleButtonGroup
+                  value={form?.AmountType}
+                  exclusive
+                  onChange={(e) => {
+                    handleChange(e.target.value, "AmountType");
+                  }}
+                  sx={{
+                    width: "100px",
+                    height: "40px",
+                    border: "none",
+                    // borderRadius: "0.2rem",
+                    // padding: "0.2rem",
+                    color: "#fff",
+                    "& .Mui-selected": {
+                      color: "#fff !important",
+                      background: "black !important",
+                    },
+                  }}
+                  aria-label="AmountType"
+                >
+                  <ToggleButton
+                    value="USD"
+                    sx={{ color: "black", border: "0.5px solid black" }}
+                  >
+                    USD
+                  </ToggleButton>
+                  <ToggleButton
+                    value="RMB"
+                    sx={{ color: "black", border: "0.5px solid black" }}
+                  >
+                    RMB
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+              <TextField
+                value={form?.Amount}
+                size="small"
+                onChange={(e) => {
+                  handleChange(e.target.value, "Amount");
+                }}
+                type="number"
+                placeholder={`Enter ${form?.AmountType || "USD"} Amount`}
+                sx={{
+                  backgroundColor: "white",
+                  width: "100%",
+                  border: "1px  black",
+                  borderRadius: "4px",
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused fieldset": {
+                      borderColor: themeColor.sideBarColor1, // Set the outline color when focused
+                    },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            </Box>
           </Box>
           <Box
             sx={{
