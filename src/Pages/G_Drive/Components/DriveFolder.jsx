@@ -5,55 +5,64 @@ import {
   Typography,
   ToggleButton,
   ToggleButtonGroup,
-} from '@mui/material';
-import React, { useState, useEffect } from 'react';
+} from "@mui/material";
+import React, { useState, useEffect } from "react";
 import {
   useCreateFolderMutation,
   useDeleteFileMutation,
   useDownloadFileMutation,
   useGetAllFilesOfSingleFolderMutation,
   useGetAllFolderQuery,
+  useGetFolderBySpecificUserMutation,
   useUploadFileMutation,
-} from '../../../features/api/driveApiSlice';
-import DriveDial from './DriveDial';
-import { toast } from 'react-toastify';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DownloadIcon from '@mui/icons-material/Download';
-import folderIcon from '../../../assets/DrivePNG/folder.png';
-import FolderDeleteDial from './FolderDeleteDial';
-import excel from '../../../assets/DrivePNG/excel.png';
-import image from '../../../assets/DrivePNG/image.png';
-import pdf from '../../../assets/DrivePNG/pdf.png';
-import unknown from '../../../assets/DrivePNG/unknown.png';
-import word from '../../../assets/DrivePNG/word.png';
-import txt from '../../../assets/DrivePNG/txt.jpg';
-import noData from '../../../assets/no-data-found.jpg';
-import FileDelete from './FileDelete';
-import FolderVerificationDial from './FolderVerificationDial';
-import { useSelector, useDispatch } from 'react-redux';
-import { setHeader, setInfo } from '../../../features/slice/uiSlice';
-import InfoDialogBox from '../../../components/Common/InfoDialogBox';
+} from "../../../features/api/driveApiSlice";
+import DriveDial from "./DriveDial";
+import { toast } from "react-toastify";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DownloadIcon from "@mui/icons-material/Download";
+import folderIcon from "../../../assets/DrivePNG/folder.png";
+import FolderDeleteDial from "./FolderDeleteDial";
+import excel from "../../../assets/DrivePNG/excel.png";
+import image from "../../../assets/DrivePNG/image.png";
+import pdf from "../../../assets/DrivePNG/pdf.png";
+import unknown from "../../../assets/DrivePNG/unknown.png";
+import word from "../../../assets/DrivePNG/word.png";
+import txt from "../../../assets/DrivePNG/txt.jpg";
+import noData from "../../../assets/no-data-found.jpg";
+import FileDelete from "./FileDelete";
+import FolderVerificationDial from "./FolderVerificationDial";
+import { useSelector, useDispatch } from "react-redux";
+import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 
 const DriveFolder = () => {
   // local state
-  const [createFolderName, setCreateFolder] = useState('');
-  const [folderId, setFolderId] = useState('');
-  const [folderName, setFolderName] = useState('');
+  const [createFolderName, setCreateFolder] = useState("");
+  const [folderId, setFolderId] = useState("");
+  const [folderName, setFolderName] = useState("");
   const [allFiles, setAllFiles] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [openFor, setOpenFor] = useState('');
+  const [openFor, setOpenFor] = useState("");
   const [hovered, setHovered] = useState(null);
   const [folderDeleteOpen, setFolderDeleteOpen] = useState(false);
-  const [trigger, setTrigger] = useState('');
+  const [trigger, setTrigger] = useState("");
   const [showMenu, setShowMenu] = useState(false);
-  const [FileName, setFileName] = useState('');
+  const [FileName, setFileName] = useState("");
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [showMenuFile, setShowMenuFile] = useState(false);
   const [menuPositionFile, setMenuPositionFile] = useState({ x: 0, y: 0 });
-  const [gridView, setGridView] = useState('icon');
+  const [gridView, setGridView] = useState("icon");
   const [deleteConf, setDeleteConf] = useState(false);
   const [folderVerify, setFolderVerifyOtp] = useState(false);
+  const [alignment, setAlignment] = useState("Your");
+  const [mainAllFolders,setMainAllFolders] = useState([]);
+  const [specificFolders,setSpecificFolders] = useState([])
+
+  // getting data from redux
+  const { adminId, name, isAdmin } = useSelector(
+    (state) => state.auth.userInfo
+  );
 
   // rtk query api calling
   const [
@@ -80,6 +89,11 @@ const DriveFolder = () => {
     { isLoading: deleteFileLoading, refetch: deleteFileRefetch },
   ] = useDeleteFileMutation();
 
+  const [
+    getUsersAllFolder,
+    { isLoading: getAllUserFolderLoading, refetch: getAllUsersFolderRefetch },
+  ] = useGetFolderBySpecificUserMutation();
+
   // using dispatch
 
   const dispatch = useDispatch();
@@ -88,26 +102,29 @@ const DriveFolder = () => {
 
   // functions for hanlding things
   const handleClickFolder = (data) => {
-    if (!DriveVerifyOtp) {
-      setFolderVerifyOtp(true);
-      setFolderId(data.id);
-      setFolderName(data.name);
-    } else {
-      setFolderId(data.id);
-      setFolderName(data.name);
-    }
-  };
+    // if (!DriveVerifyOtp) {
+    //   setFolderVerifyOtp(true);
+    //   setFolderId(data.id);
+    //   setFolderName(data.name);
+    // } else {
+    // setFolderVerifyOtp(true);
 
+    setFolderId(data.id);
+    setFolderName(data.name);
+    // }
+  };
   ///Handle Context Menu
 
   const handleContextMenu = (e, folder) => {
     e.preventDefault();
     if (folder === folderId) {
+      console.log("context menu");
       setShowMenu(true);
       setMenuPosition({ x: e.clientX, y: e.clientY });
     }
   };
   const handleContextMenuFile = (e, folder) => {
+    console.log("handleContextMenuFile", folder);
     e.preventDefault();
     setFileName(folder);
     setShowMenuFile(true);
@@ -142,18 +159,19 @@ const DriveFolder = () => {
 
   const handleCloseDial = async () => {
     setOpen(false);
-    setCreateFolder('');
+    setCreateFolder("");
     setSelectedFile(null);
   };
 
   const handleCreateFolder = async () => {
-    if (!createFolderName) return toast.error('plz enter folder name');
+    if (!createFolderName) return toast.error("plz enter folder name");
     try {
-      const info = { folderName: createFolderName };
+      const info = { folderName: createFolderName,userName:name,userId:adminId };
       const createFolder = await creatingFolder(info).unwrap();
-      toast.success('Folder created successfully');
-      setCreateFolder('');
+      toast.success("Folder created successfully");
+      setCreateFolder("");
       refetchAllFolder();
+      setTrigger("createFolder")
       setOpen(false);
     } catch (error) {
       console.log(error);
@@ -162,14 +180,14 @@ const DriveFolder = () => {
 
   const handleUploadFile = async () => {
     if (!folderId || !selectedFile)
-      return toast.error('File and folder required');
+      return toast.error("File and folder required");
     try {
       const formData = new FormData();
-      formData.append('id', folderId),
-        formData.append('file', selectedFile.files[0]);
+      formData.append("id", folderId),
+        formData.append("file", selectedFile.files[0]);
       const uploadfile = await uploadFile(formData).unwrap();
-      toast.success('File uploaded successfully');
-      setTrigger('upload');
+      toast.success("File uploaded successfully");
+      setTrigger("upload");
       setOpen(false);
       setSelectedFile(null);
     } catch (error) {
@@ -178,19 +196,19 @@ const DriveFolder = () => {
   };
 
   const handleDownloadFile = async (data) => {
-    if (!data) return toast.error('Plase select file to download');
+    if (!data) return toast.error("Plase select file to download");
     try {
       const id = data?.id;
       const name = data?.name;
       const downloadUrl = await downloadFile(id).unwrap();
       const url = downloadUrl.download;
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = name;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success('File downloaded successfully');
+      toast.success("File downloaded successfully");
     } catch (error) {
       console.log(error);
     }
@@ -206,28 +224,28 @@ const DriveFolder = () => {
         console.log(error);
       }
     };
-    if (folderId && DriveVerifyOtp) {
+    if (folderId) {
       fetchAllFiles();
     }
   }, [folderId, setFolderId, trigger, setTrigger]);
 
   function getFileExtension(filename) {
-    const parts = filename.split('.');
+    const parts = filename.split(".");
     const extension = parts[parts.length - 1];
 
     switch (extension) {
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
+      case "png":
+      case "jpg":
+      case "jpeg":
         return image;
-      case 'pdf':
+      case "pdf":
         return pdf;
-      case 'csv':
-      case 'xlsx':
+      case "csv":
+      case "xlsx":
         return excel;
-      case 'docx':
+      case "docx":
         return word;
-      case 'txt':
+      case "txt":
         return txt;
 
       default:
@@ -236,19 +254,19 @@ const DriveFolder = () => {
   }
 
   function getFileExtensionUrl(filename, url) {
-    const parts = filename.split('.');
+    const parts = filename.split(".");
     const extension = parts[parts.length - 1];
     switch (extension) {
-      case 'csv':
-      case 'xlsx':
+      case "csv":
+      case "xlsx":
         return excel;
-      case 'docx':
+      case "docx":
         return word;
-      case 'pdf':
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-      case 'txt':
+      case "pdf":
+      case "png":
+      case "jpg":
+      case "jpeg":
+      case "txt":
         return url;
       default:
         return unknown;
@@ -257,38 +275,40 @@ const DriveFolder = () => {
 
   const infoDetail = [
     {
-      name: 'Add Folder',
+      name: "Add Folder",
       screenshot: (
         <img
-          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addFolder.png?updatedAt=1717241870063'
-          height={'60%'}
-          width={'90%'}
+          src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/addFolder.png?updatedAt=1717241870063"
+          height={"60%"}
+          width={"90%"}
         />
       ),
-      instruction: 'Add Folder for your files linked with Google Drive and Manage it',
+      instruction:
+        "Add Folder for your files linked with Google Drive and Manage it",
     },
 
     {
-      name: 'Files',
+      name: "Files",
       screenshot: (
         <img
-          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/files.png?updatedAt=1717241931656'
-          height={'40%'}
-          width={'40%'}
+          src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/files.png?updatedAt=1717241931656"
+          height={"40%"}
+          width={"40%"}
         />
       ),
-      instruction: 'All Your Folders Details can be seen here and you can manage it',
+      instruction:
+        "All Your Folders Details can be seen here and you can manage it",
     },
     {
-      name: 'Upload Files',
+      name: "Upload Files",
       screenshot: (
         <img
-          src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/uploadFiles.png?updatedAt=1717241910103'
-          height={'40%'}
-          width={'40%'}
+          src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/uploadFiles.png?updatedAt=1717241910103"
+          height={"40%"}
+          width={"40%"}
         />
       ),
-      instruction: 'Upload files to your Google Drive in specific folder',
+      instruction: "Upload files to your Google Drive in specific folder",
     },
   ];
 
@@ -301,100 +321,142 @@ const DriveFolder = () => {
     dispatch(setHeader(`Google Drive`));
   }, []);
 
+  const handleChange = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  
+    if (newAlignment === "Your") {
+      setMainAllFolders(specificFolders);
+    } else {
+      const filteredData = getAllFolder?.data.filter((item) => {
+        return !specificFolders.some((folder) => folder.id === item.id);
+      });
+  
+      setMainAllFolders(filteredData);
+    }
+  };
+  
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        const data = await getUsersAllFolder(adminId);
+        console.log(data)
+        setSpecificFolders(data?.data);
+        setMainAllFolders(data?.data);
+      } catch (error) {
+        console.error("Error fetching user folders:", error);
+      }
+    };
+  
+    fetchAllData();
+  }, [adminId,trigger,setTrigger]);
   return (
     <>
       <Box
         sx={{
-          height: '87vh',
-          width: '100%',
-          marginTop: '10px',
-          borderRadius: '10px',
-          boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
+          height: "87vh",
+          width: "100%",
+          marginTop: "10px",
+          borderRadius: "10px",
+          boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
         }}
       >
         <div
           style={{
-            height: '30%',
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '5px',
-            padding: '10px',
+            height: "30%",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "5px",
+            padding: "10px",
           }}
         >
-          <Box
-            sx={{
-              fontSize: '12px',
-              width: '100px',
-              padding: '3px',
-              textAlign: 'center',
-              borderRadius: '10px',
-              cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: 'black',
-                color: '#fff',
-              },
-              border: '1px solid grey',
-            }}
-            onClick={() => handleOpenDial('addFolder')}
-          >
-            <i class='fa-solid fa-plus'></i> Add Folder
+          <Box sx={{ display: "flex", justifyContent: "start", gap: "20px" }}>
+            <Box
+              sx={{
+                fontSize: "12px",
+                width: "100px",
+                padding: "3px",
+                textAlign: "center",
+                borderRadius: "10px",
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "black",
+                  color: "#fff",
+                },
+                border: "1px solid grey",
+              }}
+              onClick={() => handleOpenDial("addFolder")}
+            >
+              <i className="fa-solid fa-plus"></i> Add Folder
+            </Box>
+            {isAdmin && (
+              <ToggleButtonGroup
+                color="warning"
+                value={alignment}
+                exclusive
+                onChange={handleChange}
+                aria-label="Platform"
+              >
+                <ToggleButton value="Your">Your Folder</ToggleButton>
+                <ToggleButton value="Users">Users Folder</ToggleButton>
+              </ToggleButtonGroup>
+            )}
           </Box>
 
           <div
             style={{
-              display: 'flex',
-              gap: '20px',
-              width: '100%',
-              height: '100%',
-              overflowY: 'auto',
-              flexWrap: 'wrap',
-              padding: '5px',
+              display: "flex",
+              gap: "20px",
+              width: "100%",
+              height: "100%",
+              overflowY: "auto",
+              flexWrap: "wrap",
+              padding: "5px",
             }}
             onClick={handleCloseMenu}
           >
             {showMenu && (
               <div
                 style={{
-                  position: 'fixed',
+                  position: "fixed",
                   top: menuPosition.y,
                   left: menuPosition.x,
-                  background: '#fff',
-                  border: '1px solid #ccc',
-                  padding: '5px',
+                  background: "#fff",
+                  border: "1px solid #ccc",
+                  padding: "5px",
                   zIndex: 1000,
                 }}
               >
                 <ul
                   style={{
-                    listStyleType: 'none',
+                    listStyleType: "none",
                   }}
                 >
                   <li
                     style={{
-                      cursor: 'pointer',
+                      cursor: "pointer",
                     }}
                     onClick={handleMenuClick}
                   >
                     <Box
                       sx={{
-                        display: 'flex',
-                        gap: '5px',
-                        padding: '2px',
-                        '&:hover': {
-                          backgroundColor: 'rgb(1, 62, 173,0.5)',
-                          color: '#fff',
+                        display: "flex",
+                        gap: "5px",
+                        padding: "2px",
+                        "&:hover": {
+                          backgroundColor: "rgb(1, 62, 173,0.5)",
+                          color: "#fff",
                         },
                       }}
                     >
                       <DeleteIcon
                         sx={{
-                          fontSize: '15px',
+                          fontSize: "15px",
                         }}
                       />
                       <Typography
                         sx={{
-                          fontSize: '12px',
+                          fontSize: "12px",
                         }}
                       >
                         Delete File
@@ -405,23 +467,23 @@ const DriveFolder = () => {
               </div>
             )}
 
-            {getAllFolder?.data?.map((folder) => (
+            {mainAllFolders?.map((folder) => (
               <Box
                 sx={{
-                  cursor: 'pointer',
-                  borderRadius: '6px',
+                  cursor: "pointer",
+                  borderRadius: "6px",
                   background: `${
-                    folder.id === folderId ? 'rgba(88, 160, 243,0.5)' : ''
+                    folder.id === folderId ? "rgba(88, 160, 243,0.5)" : ""
                   }`,
                   border: `${
-                    folder.id === folderId ? '1px solid #276AB7' : ''
+                    folder.id === folderId ? "1px solid #276AB7" : ""
                   }`,
-                  width: '110px',
-                  height: '85px',
-                  padding: '2px',
-                  '&:hover': {
-                    border: '1px solid #276AB7',
-                    background: 'rgba(88, 160, 243,0.5)',
+                  width: "110px",
+                  height: "85px",
+                  padding: "2px",
+                  "&:hover": {
+                    border: "1px solid #276AB7",
+                    background: "rgba(88, 160, 243,0.5)",
                   },
                 }}
                 key={folder.id}
@@ -432,34 +494,34 @@ const DriveFolder = () => {
               >
                 <div
                   style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '2px',
-                    padding: '10px',
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "2px",
+                    padding: "10px",
                   }}
                 >
                   <img
                     src={folderIcon}
                     style={{
-                      width: '30px',
-                      height: '30px',
+                      width: "30px",
+                      height: "30px",
                     }}
                   />
                   <div
                     style={{
-                      width: '100%',
-                      overflow: 'hidden',
-                      textAlign: 'center',
+                      width: "100%",
+                      overflow: "hidden",
+                      textAlign: "center",
                     }}
                   >
                     <Typography
                       sx={{
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        fontSize: "11px",
+                        fontWeight: "bold",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       }}
                     >
                       {folder.name}
@@ -472,75 +534,75 @@ const DriveFolder = () => {
         </div>
         <div
           style={{
-            height: '70%',
-            display: 'flex',
-            flexDirection: 'column',
-            borderTop: '1px solid gray',
+            height: "70%",
+            display: "flex",
+            flexDirection: "column",
+            borderTop: "1px solid gray",
           }}
           onClick={handleCloseMenuFile}
         >
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              padding: '10px',
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "10px",
             }}
           >
             {folderId && (
               <Box
                 sx={{
-                  fontSize: '12px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '5px',
-                  width: '100px',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: 'black',
-                    color: '#fff',
+                  fontSize: "12px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "5px",
+                  width: "100px",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "black",
+                    color: "#fff",
                   },
-                  border: '1px solid grey',
+                  border: "1px solid grey",
                 }}
-                onClick={() => handleOpenDial('fileUpload')}
+                onClick={() => handleOpenDial("fileUpload")}
               >
-                <i class='fa-solid fa-plus'></i> Upload Files
+                <i className="fa-solid fa-plus"></i> Upload Files
               </Box>
             )}
             <span
               style={{
-                fontFamily: 'cursive',
-                fontWeight: 'bold',
-                color: 'green',
-                marginLeft: `${!folderName ? '35rem' : ''}`,
+                fontFamily: "cursive",
+                fontWeight: "bold",
+                color: "green",
+                marginLeft: `${!folderName ? "35rem" : ""}`,
               }}
             >
               {folderName
                 ? `You are viewing files of ${folderName} Folder`
-                : 'Plz Select any folder to upload file or view it'}
+                : "Plz Select any folder to upload file or view it"}
             </span>
             <ToggleButtonGroup
               value={gridView}
               exclusive
               onChange={handleGrid}
-              aria-label='text alignment'
+              aria-label="text alignment"
             >
-              <ToggleButton value='icon' aria-label='left aligned'>
-                <i class='fa-solid fa-grip'></i>
+              <ToggleButton value="icon" aria-label="left aligned">
+                <i className="fa-solid fa-grip"></i>
               </ToggleButton>
-              <ToggleButton value='preview' aria-label='centered'>
-                <i class='fa-solid fa-table-cells-large'></i>
+              <ToggleButton value="preview" aria-label="centered">
+                <i className="fa-solid fa-table-cells-large"></i>
               </ToggleButton>
             </ToggleButtonGroup>
           </div>
 
           <div
             style={{
-              display: 'flex',
-              gap: '20px',
-              flexWrap: 'wrap',
-              padding: '0px 5px',
+              display: "flex",
+              gap: "20px",
+              flexWrap: "wrap",
+              padding: "0px 5px",
             }}
           >
             {allFiles && allFiles.length > 0 ? (
@@ -548,11 +610,11 @@ const DriveFolder = () => {
                 {getAllFilesLoading ? (
                   <Box
                     sx={{
-                      width: '100%',
-                      height: '54vh',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      width: "100%",
+                      height: "54vh",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     <CircularProgress />
@@ -560,26 +622,26 @@ const DriveFolder = () => {
                 ) : (
                   allFiles.map((file) => (
                     <>
-                      {gridView === 'preview' ? (
+                      {gridView === "preview" ? (
                         <Box
                           key={file?.id}
                           sx={{
-                            display: 'flex',
-                            width: '150px',
+                            display: "flex",
+                            width: "150px",
 
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            gap: '5px',
-                            overflow: 'hidden',
-                            textAlign: 'center',
-                            flexWrap: 'wrap',
-                            cursor: 'pointer',
-                            padding: '5px',
-                            '&:hover': {
-                              border: '1px solid #276AB7',
-                              background: 'rgba(88, 160, 243,0.5)',
-                              borderRadius: '5px',
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: "5px",
+                            overflow: "hidden",
+                            textAlign: "center",
+                            flexWrap: "wrap",
+                            cursor: "pointer",
+                            padding: "5px",
+                            "&:hover": {
+                              border: "1px solid #276AB7",
+                              background: "rgba(88, 160, 243,0.5)",
+                              borderRadius: "5px",
                             },
                           }}
                           onDoubleClick={() =>
@@ -589,15 +651,15 @@ const DriveFolder = () => {
                         >
                           <Box
                             sx={{
-                              height: '120px',
-                              width: '120px',
+                              height: "120px",
+                              width: "120px",
 
-                              marginTop: '20px',
-                              border: '0.5px solid gray',
-                              position: 'relative',
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
+                              marginTop: "20px",
+                              border: "0.5px solid gray",
+                              position: "relative",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
                             }}
                           >
                             <img
@@ -605,21 +667,21 @@ const DriveFolder = () => {
                                 file.name,
                                 `https://drive.google.com/thumbnail?id=${file.id}`
                               )}
-                              alt='Image from Google Drive'
+                              alt="Image from Google Drive"
                               style={{
-                                height: '100%',
-                                width: '100%',
-                                objectFit: 'fill',
+                                height: "100%",
+                                width: "100%",
+                                objectFit: "fill",
                               }}
                             />
                           </Box>
 
                           <Typography
                             sx={{
-                              fontSize: '11px',
-                              fontWeight: 'bold',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'wrap',
+                              fontSize: "11px",
+                              fontWeight: "bold",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "wrap",
                             }}
                           >
                             {file.name}
@@ -628,22 +690,22 @@ const DriveFolder = () => {
                       ) : (
                         <Box
                           sx={{
-                            display: 'flex',
-                            width: '150px',
-                            height: '100px',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            gap: '5px',
-                            overflow: 'hidden',
-                            textAlign: 'center',
-                            flexWrap: 'wrap',
-                            cursor: 'pointer',
+                            display: "flex",
+                            width: "150px",
+                            height: "100px",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: "5px",
+                            overflow: "hidden",
+                            textAlign: "center",
+                            flexWrap: "wrap",
+                            cursor: "pointer",
 
-                            '&:hover': {
-                              border: '1px solid #276AB7',
-                              background: 'rgba(88, 160, 243,0.5)',
-                              borderRadius: '10px',
+                            "&:hover": {
+                              border: "1px solid #276AB7",
+                              background: "rgba(88, 160, 243,0.5)",
+                              borderRadius: "10px",
                             },
                           }}
                           onDoubleClick={() =>
@@ -654,16 +716,16 @@ const DriveFolder = () => {
                           <img
                             src={getFileExtension(file.name)}
                             style={{
-                              width: '30px',
-                              height: '30px',
+                              width: "30px",
+                              height: "30px",
                             }}
                           />
                           <Typography
                             sx={{
-                              fontSize: '11px',
-                              fontWeight: 'bold',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'wrap',
+                              fontSize: "11px",
+                              fontWeight: "bold",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "wrap",
                             }}
                           >
                             {file.name}
@@ -676,25 +738,25 @@ const DriveFolder = () => {
                 {showMenuFile && (
                   <div
                     style={{
-                      position: 'fixed',
+                      position: "fixed",
                       top: menuPositionFile.y,
                       left: menuPositionFile.x,
-                      background: '#fff',
-                      border: '1px solid #ccc',
-                      textAlign: 'center',
-                      padding: '5px',
+                      background: "#fff",
+                      border: "1px solid #ccc",
+                      textAlign: "center",
+                      padding: "5px",
                       zIndex: 1000,
                     }}
                   >
                     <ul
                       style={{
-                        listStyleType: 'none',
+                        listStyleType: "none",
                       }}
                     >
                       <li
                         style={{
-                          cursor: 'pointer',
-                          padding: '5px',
+                          cursor: "pointer",
+                          padding: "5px",
                         }}
                         onClick={() =>
                           handleDownloadFile({
@@ -705,23 +767,23 @@ const DriveFolder = () => {
                       >
                         <Box
                           sx={{
-                            display: 'flex',
-                            gap: '5px',
-                            padding: '2px',
-                            '&:hover': {
-                              backgroundColor: 'rgb(1, 62, 173,0.5)',
-                              color: '#fff',
+                            display: "flex",
+                            gap: "5px",
+                            padding: "2px",
+                            "&:hover": {
+                              backgroundColor: "rgb(1, 62, 173,0.5)",
+                              color: "#fff",
                             },
                           }}
                         >
                           <DownloadIcon
                             sx={{
-                              fontSize: '15px',
+                              fontSize: "15px",
                             }}
                           />
                           <Typography
                             sx={{
-                              fontSize: '12px',
+                              fontSize: "12px",
                             }}
                           >
                             Download File
@@ -730,31 +792,31 @@ const DriveFolder = () => {
                       </li>
                       <li
                         style={{
-                          cursor: 'pointer',
-                          borderTop: '1px solid #ccc',
-                          padding: '5px',
+                          cursor: "pointer",
+                          borderTop: "1px solid #ccc",
+                          padding: "5px",
                         }}
                         onClick={() => setDeleteConf(true)}
                       >
                         <Box
                           sx={{
-                            display: 'flex',
-                            gap: '5px',
-                            padding: '2px',
-                            '&:hover': {
-                              backgroundColor: 'rgb(1, 62, 173,0.5)',
-                              color: '#fff',
+                            display: "flex",
+                            gap: "5px",
+                            padding: "2px",
+                            "&:hover": {
+                              backgroundColor: "rgb(1, 62, 173,0.5)",
+                              color: "#fff",
                             },
                           }}
                         >
                           <DeleteIcon
                             sx={{
-                              fontSize: '15px',
+                              fontSize: "15px",
                             }}
                           />
                           <Typography
                             sx={{
-                              fontSize: '12px',
+                              fontSize: "12px",
                             }}
                           >
                             Delete File
@@ -768,17 +830,17 @@ const DriveFolder = () => {
             ) : (
               <Box
                 sx={{
-                  width: '100%',
-                  height: '54vh',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  width: "100%",
+                  height: "54vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <img
                   src={noData}
                   style={{
-                    width: '20%',
+                    width: "20%",
                   }}
                 />
               </Box>
@@ -807,6 +869,7 @@ const DriveFolder = () => {
             folderId={folderId}
             folderName={folderName}
             refetchAllFolder={refetchAllFolder}
+            setTriggeer = {setTrigger}
           />
         )}
         {folderVerify && (
