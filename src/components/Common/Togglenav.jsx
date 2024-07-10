@@ -140,7 +140,6 @@ const ToggleNav = () => {
   const { isAdmin, userRole, userInfo, chatNotificationData } = useSelector(
     (state) => state.auth
   );
-  console.log(userInfo.adminId);
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
   const unApprovedData = useSelector(
     (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data

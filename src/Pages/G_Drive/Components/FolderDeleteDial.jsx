@@ -18,7 +18,7 @@ const FolderDeleteDial = ({
   setOpen,
   folderId,
   refetchAllFolder,
-  folderName,
+  folderName,setTriggeer
 }) => {
   const [otp, setOtp] = useState("");
   const [sendOtpForDelete, { isLoading: otpLoading }] =

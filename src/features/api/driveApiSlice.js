@@ -80,6 +80,15 @@ export const driveApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getFolderBySpecificUser: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${DriveUrl}/getSingleUserFolders/${data}`,
+          method: "GET",
+         
+        };
+      },
+    }),
   }),
 });
 
@@ -93,4 +102,5 @@ export const {
   useDownloadFileMutation,
   useDeleteFileMutation,
   useUploadFileWhatsappMutation,
+  useGetFolderBySpecificUserMutation,
 } = driveApiSlice;

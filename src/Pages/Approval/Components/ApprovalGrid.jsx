@@ -107,8 +107,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           : null;
       const param = {
         query: query,
-        body: { products: data ,approvalType: approvalTypes},
-        
+        body: { products: data, approvalType: approvalTypes },
       };
       const res = await approveProductApi(param).unwrap();
       if (res.ecwidUpdateTrack.length) {
@@ -181,8 +180,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
           : null;
       const param = {
         query: query,
-        body: { products: products , approvalType: approvalTypes},
-        
+        body: { products: products, approvalType: approvalTypes },
       };
       const res = await approveProductApi(param).unwrap();
       const liveStatusData = {
@@ -367,8 +365,8 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "Sno",
       headerName: "Sno",
       flex: 0.3,
-      minWidth: 80,
-      maxWidth: 80,
+      minWidth: 50,
+      maxWidth: 60,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -397,7 +395,8 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "UserName",
       headerName: "Updated By",
       flex: 0.3,
-      minWidth: 150,
+      minWidth: 100,
+      maxWidth: 120,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -407,7 +406,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "SKU",
       headerName: "SKU",
       flex: 0.3,
-      minWidth: 80,
+      minWidth: 100,
       maxWidth: 140,
       align: "center",
       headerAlign: "center",
@@ -436,7 +435,8 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "Name",
       headerName: "Product ",
       flex: 0.3,
-      minWidth: 250,
+      minWidth: 400,
+      maxWidth: 500,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -446,8 +446,8 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "Brand",
       headerName: "Brand",
       flex: 0.3,
-      minWidth: 120,
-      maxWidth: 150,
+      minWidth: 100,
+      maxWidth: 130,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -499,9 +499,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "Accept",
       headerName: "Accept",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 80,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -524,9 +524,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "Reject",
       headerName: "Reject",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 80,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -553,8 +553,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "LandingCost",
       headerName: "Cost",
-      flex: 0.3,
-      minWidth: 100,
+      flex: 0.1,
+      minWidth: 80,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -564,8 +565,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "LandingCostWithGST",
       headerName: "Cost +GST",
-      flex: 0.3,
-      minWidth: 100,
+      flex: 0.1,
+      minWidth: 80,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -578,9 +580,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "GST",
       headerName: "GST",
-      flex: 0.3,
-      minWidth: 70,
-      maxWidth: 70,
+      flex: 0.1,
+      minWidth: 80,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -590,15 +592,23 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
 
     {
       field: "currentValue",
-      headerName:
-        query === "LandingCost" ? `Old LC without GST` : `Current ${query}`,
-      flex: 0.3,
+      headerName: query === "LandingCost" ? `OLCWG` : `Current ${query}`,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 150,
+      maxWidth: 130,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header--Current",
       cellClassName: "super-app-theme--cell",
+      renderHeader: (params) => (
+        <span style={{fontWeight:"bold"}}
+          title={
+            query === "LandingCost" ? `Old LC without GST` : `Current ${query}`
+          }
+        >
+          {params.colDef.headerName}
+        </span>
+      ),
       valueFormatter: (params) =>
         query === "Quantity"
           ? `${(+params.value).toFixed(0)} `
@@ -606,28 +616,35 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     },
     {
       field: "oldValueWithGST",
-      headerName: "Old LC with GST",
-      flex: 0.3,
-      minWidth: 100,
-      maxWidth: 150,
+      headerName: "OLC +G",
+      flex: 0.1,
+      minWidth: 80,
+      maxWidth: 130,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header--Current",
       cellClassName: "super-app-theme--cell",
+
+      renderHeader: (params) => (
+        <span style={{fontWeight:"bold"}} title="Old LC with GST">{params.colDef.headerName}</span>
+      ),
       valueFormatter: (params) => `₹ ${params.value}`,
     },
 
     {
       field: "newValue",
       headerName:
-        query === "LandingCost" ? `New LC without GST` : `Pending ${query}`,
-      flex: 0.3,
+        query === "LandingCost" ? `NLCWG` : `Pending ${query}`,
+      flex: 0.1,
       minWidth: 80,
       maxWidth: 150,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header--Pending",
       cellClassName: "super-app-theme--cell",
+      renderHeader: (params) => (
+        <span title={ query === "LandingCost" ? `New LC without GST` : `Pending ${query}`}>{params.colDef.headerName}</span>
+      ),
       valueFormatter: (params) =>
         query === "Quantity"
           ? `${(+params.value).toFixed(0)} `
@@ -635,23 +652,26 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     },
     {
       field: "newValueWithGST",
-      headerName: "New LC with GST",
-      flex: 0.3,
+      headerName: "NLC +G",
+      flex: 0.1,
       minWidth: 100,
       maxWidth: 150,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header--Pending",
       cellClassName: "super-app-theme--cell",
+      renderHeader: (params) => (
+        <span title="New LC with GST">{params.colDef.headerName}</span>
+      ),
       valueFormatter: (params) => `₹ ${params.value}`,
     },
 
     {
       field: "Accept",
       headerName: "Accept",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 80,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -674,9 +694,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "Reject",
       headerName: "Reject",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 80,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
