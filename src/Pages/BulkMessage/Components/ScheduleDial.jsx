@@ -25,6 +25,12 @@ import Iphone from "../../../../public/iphone.png";
 import chatBg from "../../../../public/ChatBackground.jpeg";
 import NoImage from "../../../assets/Noimage.jpeg";
 import { formatTime } from "../../../commonFunctions/commonFunctions";
+import GMobiledataIcon from '@mui/icons-material/GMobiledata';
+import {
+  useGetAllGroupInfoQuery,
+  useDeleteGroupByIdMutation,
+} from "../../../features/api/marketingApiSlice";
+import { useGetAllClientQuery } from "../../../features/api/clientAndShipmentApiSlice";
 
 import { toast } from "react-toastify";
 import { TypeSpecimenSharp } from "@mui/icons-material";
@@ -47,22 +53,49 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
     fontSize:"10px",
     width:"100%",
+    position:"relative"
   }));
   
 
 const ScheduleDial = ({ open,
-    handleClose,  data,messageData}) => {
+    handleClose,data,messageData}) => {
         const contentRef = useRef(null);
         const [isExpanded, setIsExpanded] = useState(false);
         const [showReadMore, setShowReadMore] = useState(false);
+        const [recipient , setReceipent] = useState([]);
+// Calling Api
+        const {
+          data: GroupData,
+          isLoading: useGetAllGroupQueryLoading,
+          refetch: GroupRefetch,
+        } = useGetAllGroupInfoQuery();
+
+        const {
+          data: clientData,
+          refetch: clientrefetch,
+          isLoading: clientLoading,
+        } = useGetAllClientQuery();
 
         const toggleReadMore = () => {
             setIsExpanded(!isExpanded);
           };
 
           useEffect(() => {
+            const receipentId = messageData?.recipient_Id;
+            console.log(receipentId);
+            if (GroupData?.data && clientData?.client) {
+              const MergeData = [...GroupData.data, ...clientData.client];
+              console.log(MergeData);
+              const receipentName = MergeData.filter((item) => receipentId?.includes(item._id));
+              setReceipent(receipentName)
+              console.log(receipentName);
+            }
+          }, [GroupData, clientData]);
+         
+
+          useEffect(() => {
             if (contentRef.current) {
-              if (contentRef.current.scrollHeight > 308) {
+              if (contentRef.current.scrollHeight > 306) {
                 // Change this value to the specific height
                 setShowReadMore(true);
               } else {
@@ -100,10 +133,9 @@ const ScheduleDial = ({ open,
             return text.trim();
           }
 
+console.log(recipient)
 
 
-
-console.log(messageData)
   return (
     <StyledDialog
     open={open}
@@ -129,7 +161,7 @@ console.log(messageData)
                 textDecoration: "underline"
               }}
             >
-              {`Preview of ${messageData.title}`}
+              {messageData.title === "N/A" ? "Preview" :  `Preview of ${messageData.title}` }
             </Typography>
             <CloseIcon
               onClick={handleClose}
@@ -155,7 +187,7 @@ console.log(messageData)
             sx={{
               width: "20vw",
               borderRadius: "50px",
-             
+             zIndex:2
             }}
           >
             {/* inner layer of iphone */}
@@ -294,7 +326,7 @@ console.log(messageData)
                         color: "grey",
                       }}
                     >
-                      {formatTime(new Date())}
+                      {formatTime(messageData.sendTime ? messageData.sendTime : new Date())}
                     </p>
                   </Box>
                   {showReadMore && (
@@ -330,7 +362,7 @@ console.log(messageData)
         padding: '20px',
         boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
         borderRadius: '8px',
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#d4fce0',
         overflow: 'auto', // Added to handle overflow
       }}
     >
@@ -340,23 +372,55 @@ console.log(messageData)
           backgroundColor: 'black',
           color: '#fff',
           marginBottom: '10px',
-          padding: '10px', // Added padding for better visual
+          padding: '2px', // Added padding for better visual
         }}
         variant="h6"
       >
         Recipient
       </Typography>
       <Grid container spacing={2}>
-        {messageData.contacts.map((item, index) => (
-          <Grid item sx={{
-           
-          }} xs={10} sm={2} md={5} lg={4} key={index}>
-            <MiniCard>
-              <Typography  >{item}</Typography>
-            </MiniCard>
-          </Grid>
-        ))}
-      </Grid>
+  {recipient.map((item, index) => {
+    const isGroup = item.groupName ? true : false;
+  
+    return (
+    <Grid 
+      item 
+      sx={{}} 
+      xs={10} 
+      sm={2} 
+      md={5} 
+      lg={4} 
+      key={index}
+    >
+      <MiniCard>
+        <Box sx={{
+          width:"100%",
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap:"10px",
+        
+       
+        }}>
+  <Typography fontSize="12px">{isGroup ? item.groupName : item.ContactName}</Typography>
+  <Typography fontSize="12px">{isGroup ? <GMobiledataIcon sx={{
+    position: 'absolute',
+    top:0,
+    right:0,
+    color:"green",
+    fontSize:"20px",
+
+  
+  }} /> : item.ContactNumber
+  }</Typography>
+        </Box>
+      
+      </MiniCard>
+    </Grid>
+    )
+    })}
+</Grid>
+
     </Box>
     </DialogContent>
     </StyledDialog>

@@ -98,6 +98,18 @@ const PreviewChat = () => {
   const [DeleteGroup, { isLoading: DeleteGroupLoading }] =
     useDeleteGroupByIdMutation();
 
+
+    const handleSuccess = (e) =>{
+      Swal.fire({
+        icon: 'success',
+        title: e,
+        text: `${e} successfully.`,
+        timer: 2000, 
+        showConfirmButton: false, // Hide the confirm button
+      });
+
+    }
+
   const {
     data: clientData,
     refetch: clientrefetch,
@@ -126,6 +138,7 @@ const PreviewChat = () => {
   const [showReadMore, setShowReadMore] = useState(false);
   const [popOver ,setPopover] = useState(null);
   const [addTitle,setTitle] = useState(null);
+  const [recipient_Id , setRecipient_Id] = useState([]);
 
   const contentRef = useRef(null);
   const handleClose = () => {
@@ -156,7 +169,7 @@ const PreviewChat = () => {
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    console.log(file);
+
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setImagePreview(imageUrl);
@@ -279,10 +292,13 @@ const PreviewChat = () => {
       formdata.append("message", convertedText);
       formdata.append("file", file);
       formdata.append("contacts", JSON.stringify(customerNumber));
+      formdata.append("recipient_Id",JSON.stringify( recipient_Id));
+     
 
       const Info = {
         message: convertedText,
         contacts: JSON.stringify(customerNumber),
+        recipient_Id:JSON.stringify(recipient_Id),
       };
 
       if (ConversionType === "Text") {
@@ -290,7 +306,7 @@ const PreviewChat = () => {
       } else {
         const res = await sendMsg(formdata).unwrap();
       }
-
+      handleSuccess("Message sent")
       setFileUploaded(false);
       setSelectedDate(null);
       setImagePreview(null);
@@ -343,7 +359,7 @@ const PreviewChat = () => {
     newDate.setSeconds(0, 0);
     const isoString = newDate.toISOString();
     let Newvalue = {};
- 
+
 
     try {
       const formdataText = new FormData();
@@ -352,12 +368,14 @@ const PreviewChat = () => {
       formdataText.append("contacts", JSON.stringify(customerNumber));
       formdataText.append("scheduledTime", isoString);
       formdataText.append("Type", ConversionType);
+      formdataText.append("recipient_Id",JSON.stringify( recipient_Id));
 
       const formdataMedia = new FormData();
       formdataMedia.append("title", addTitle);
       formdataMedia.append("message", convertedText);
       formdataMedia.append("file", file);
       formdataMedia.append("contacts", JSON.stringify(customerNumber));
+      formdataMedia.append("recipient_Id",JSON.stringify( recipient_Id));
       formdataMedia.append("scheduledTime", isoString);
       formdataMedia.append("Type", ConversionType);
 
@@ -374,7 +392,7 @@ const PreviewChat = () => {
       }
       const result = await scheduledTask(Newvalue).unwrap();
 
-      toast("Successfully scheduled");
+      handleSuccess("Schedule")
       setFileUploaded(false);
       setSelectedDate(null);
       setImagePreview(null);
@@ -421,6 +439,8 @@ const PreviewChat = () => {
   };
 
   const handleSelectionChange = (selectionModel) => {
+    setRecipient_Id(selectionModel)
+    
     let setPrevious = [];
     const finalData = rows.filter((row) => selectionModel.includes(row.id));
     const GroupData = grouprows.filter((row) =>
