@@ -133,7 +133,7 @@ const ScheduleDial = ({ open,
             return text.trim();
           }
 
-console.log(recipient)
+
 
 
   return (
@@ -395,14 +395,19 @@ console.log(recipient)
       <MiniCard>
         <Box sx={{
           width:"100%",
+          height:"50px",
+          textWrap:"wrap",
+          overflow:"hidden",
           display: 'flex',
+          flexDirection: 'column',
+     
           justifyContent: 'center',
           alignItems: 'center',
-          gap:"10px",
+          gap:"5px",
         
        
         }}>
-  <Typography fontSize="12px">{isGroup ? item.groupName : item.ContactName}</Typography>
+  <Typography fontSize="10.5px">{isGroup ? item.groupName : item.ContactName}</Typography>
   <Typography fontSize="12px">{isGroup ? <GMobiledataIcon sx={{
     position: 'absolute',
     top:0,
