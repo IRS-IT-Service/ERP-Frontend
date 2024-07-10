@@ -499,9 +499,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "Accept",
       headerName: "Accept",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 80,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -524,9 +524,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "Reject",
       headerName: "Reject",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 80,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -553,8 +553,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "LandingCost",
       headerName: "Cost",
-      flex: 0.3,
-      minWidth: 100,
+      flex: 0.1,
+      minWidth: 80,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -564,8 +565,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "LandingCostWithGST",
       headerName: "Cost +GST",
-      flex: 0.3,
-      minWidth: 100,
+      flex: 0.1,
+      minWidth: 80,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -578,9 +580,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "GST",
       headerName: "GST",
-      flex: 0.3,
-      minWidth: 70,
-      maxWidth: 70,
+      flex: 0.1,
+      minWidth: 80,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -591,7 +593,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "currentValue",
       headerName: query === "LandingCost" ? `OLCWG` : `Current ${query}`,
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
       maxWidth: 130,
       align: "center",
@@ -599,7 +601,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       headerClassName: "super-app-theme--header--Current",
       cellClassName: "super-app-theme--cell",
       renderHeader: (params) => (
-        <span
+        <span style={{fontWeight:"bold"}}
           title={
             query === "LandingCost" ? `Old LC without GST` : `Current ${query}`
           }
@@ -615,7 +617,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "oldValueWithGST",
       headerName: "OLC +G",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
       maxWidth: 130,
       align: "center",
@@ -624,7 +626,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       cellClassName: "super-app-theme--cell",
 
       renderHeader: (params) => (
-        <span title="Old LC with GST">{params.colDef.headerName}</span>
+        <span style={{fontWeight:"bold"}} title="Old LC with GST">{params.colDef.headerName}</span>
       ),
       valueFormatter: (params) => `₹ ${params.value}`,
     },
@@ -633,7 +635,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
       field: "newValue",
       headerName:
         query === "LandingCost" ? `NLCWG` : `Pending ${query}`,
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
       maxWidth: 150,
       align: "center",
@@ -651,7 +653,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "newValueWithGST",
       headerName: "NLC +G",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 100,
       maxWidth: 150,
       align: "center",
@@ -667,9 +669,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "Accept",
       headerName: "Accept",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 80,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -692,9 +694,9 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
     {
       field: "Reject",
       headerName: "Reject",
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 80,
-      maxWidth: 80,
+      maxWidth: 200,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
