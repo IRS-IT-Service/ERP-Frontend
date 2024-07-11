@@ -56,8 +56,8 @@ const DriveFolder = () => {
   const [deleteConf, setDeleteConf] = useState(false);
   const [folderVerify, setFolderVerifyOtp] = useState(false);
   const [alignment, setAlignment] = useState("Your");
-  const [mainAllFolders,setMainAllFolders] = useState([]);
-  const [specificFolders,setSpecificFolders] = useState([])
+  const [mainAllFolders, setMainAllFolders] = useState([]);
+  const [specificFolders, setSpecificFolders] = useState([]);
 
   // getting data from redux
   const { adminId, name, isAdmin } = useSelector(
@@ -166,12 +166,16 @@ const DriveFolder = () => {
   const handleCreateFolder = async () => {
     if (!createFolderName) return toast.error("plz enter folder name");
     try {
-      const info = { folderName: createFolderName,userName:name,userId:adminId };
+      const info = {
+        folderName: createFolderName,
+        userName: name,
+        userId: adminId,
+      };
       const createFolder = await creatingFolder(info).unwrap();
       toast.success("Folder created successfully");
       setCreateFolder("");
       refetchAllFolder();
-      setTrigger("createFolder")
+      setTrigger("createFolder");
       setOpen(false);
     } catch (error) {
       console.log(error);
@@ -323,32 +327,32 @@ const DriveFolder = () => {
 
   const handleChange = (event, newAlignment) => {
     setAlignment(newAlignment);
-  
+
     if (newAlignment === "Your") {
       setMainAllFolders(specificFolders);
     } else {
       const filteredData = getAllFolder?.data.filter((item) => {
         return !specificFolders.some((folder) => folder.id === item.id);
       });
-  
+
       setMainAllFolders(filteredData);
     }
   };
-  
+
   useEffect(() => {
     const fetchAllData = async () => {
       try {
         const data = await getUsersAllFolder(adminId);
-        console.log(data)
+        console.log(data);
         setSpecificFolders(data?.data);
         setMainAllFolders(data?.data);
       } catch (error) {
         console.error("Error fetching user folders:", error);
       }
     };
-  
+
     fetchAllData();
-  }, [adminId,trigger,setTrigger]);
+  }, [adminId, trigger, setTrigger]);
   return (
     <>
       <Box
@@ -628,7 +632,6 @@ const DriveFolder = () => {
                           sx={{
                             display: "flex",
                             width: "150px",
-
                             flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
@@ -869,7 +872,7 @@ const DriveFolder = () => {
             folderId={folderId}
             folderName={folderName}
             refetchAllFolder={refetchAllFolder}
-            setTriggeer = {setTrigger}
+            setTriggeer={setTrigger}
           />
         )}
         {folderVerify && (
