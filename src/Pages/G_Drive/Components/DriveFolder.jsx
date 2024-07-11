@@ -406,32 +406,66 @@ const DriveFolder = () => {
     <>
       <Box
         sx={{
-          height: "87vh",
+        display: 'flex',
+        flexDirection: 'column',
           width: "100%",
           marginTop: "10px",
           borderRadius: "10px",
           boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+      
         }}
       >
         <div
           style={{
-            height: "30%",
+           
             width: "100%",
             display: "flex",
+            flexBasis:"30%",
             flexDirection: "column",
             gap: "5px",
             padding: "10px",
+            borderBottom:"1px solid #ccc",
+         
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "start", gap: "20px" }}>
-            {alignment === "Your" && (
+          <Box sx={{ display: "flex", justifyContent: "start", gap: "20px", width:"100%" , }}>
+       
+
+            {isAdmin && (
+              <ToggleButtonGroup
+                color="warning"
+                value={alignment}
+                exclusive
+                onChange={handleChange}
+                aria-label="Platform"
+                sx={{
+                  width: "300px",
+                  height: "30px",
+                  border: "none",
+                  borderRadius: "0.2rem",
+                  padding: "0.2rem",
+                  color: "#fff",
+
+                  "& .Mui-selected": {
+                    color: "#fff !important",
+                    background: "black !important",
+                  },
+                }}
+              >
+                <ToggleButton value="Your" sx={{}}>Your Folder</ToggleButton>
+                <ToggleButton value="Users">Users Folder</ToggleButton>
+              </ToggleButtonGroup>
+            )}
+     
+
+          {alignment === "Your" && (
               <Box
                 sx={{
                   fontSize: "12px",
-                  width: "100px",
-                  padding: "3px",
+                  width: "150px",
+                  padding: "2px",
                   textAlign: "center",
-                  borderRadius: "10px",
+                  borderRadius: "5px",
                   cursor: "pointer",
                   "&:hover": {
                     backgroundColor: "black",
@@ -441,23 +475,18 @@ const DriveFolder = () => {
                 }}
                 onClick={() => handleOpenDial("addFolder")}
               >
-                <i className="fa-solid fa-plus"></i> Add Folder
+               <Box sx={{
+                display: "flex",
+                gap:"5px",
+                padding:"5px",
+                justifyContent: "center",
+                alignContent: "center",
+       
+             
+               }}> <i className="fa-solid fa-plus"></i> <span>Add Folder</span> </Box>
               </Box>
             )}
-
-            {isAdmin && (
-              <ToggleButtonGroup
-                color="warning"
-                value={alignment}
-                exclusive
-                onChange={handleChange}
-                aria-label="Platform"
-              >
-                <ToggleButton value="Your">Your Folder</ToggleButton>
-                <ToggleButton value="Users">Users Folder</ToggleButton>
-              </ToggleButtonGroup>
-            )}
-          </Box>
+                 </Box>
 
           <div
             style={{
@@ -468,6 +497,7 @@ const DriveFolder = () => {
               overflowY: "auto",
               flexWrap: "wrap",
               padding: "5px",
+              
             }}
             onClick={handleCloseMenu}
           >
@@ -481,6 +511,7 @@ const DriveFolder = () => {
                   border: "1px solid #ccc",
                   padding: "5px",
                   zIndex: 1000,
+                  
                 }}
               >
                 <ul
@@ -499,6 +530,7 @@ const DriveFolder = () => {
                         display: "flex",
                         gap: "5px",
                         padding: "2px",
+                     
                         "&:hover": {
                           backgroundColor: "rgb(1, 62, 173,0.5)",
                           color: "#fff",
@@ -548,6 +580,7 @@ const DriveFolder = () => {
                   handleClickFolder({ id: folder.id, name: folder.name })
                 }
               >
+                
                 <div
                   style={{
                     display: "flex",
@@ -588,21 +621,42 @@ const DriveFolder = () => {
             ))}
           </div>
         </div>
+  
         {/* Users folders view */}
-        <div style={{ marginTop: "20px" }}>
-          {userFolders.map((folder, i) => (
+        <div style={{ 
+        display:userFolders?.length > 0 ? "flex" : "none",
+        height:"10vh",
+        overflowX:"auto",
+        paddingBottom:"20px",
+        borderBottom:"1px solid #ccc"
+     
+           }}>
+            
+          {userFolders?.map((folder, i) => (
+            <Box sx={{
+              display:"flex",
+              flexDirection:"column",
+              width: "100%",  
+            }}>
+                <Box sx={{display:"flex",
+                  justifyContent:"center",
+                  alignContent:"center",
+                  padding:"0.5px",
+        
+                }}>  <Typography sx={{fontSize:"12px" ,color:"#d56391", fontWeight:"Bold"}}>Click on below folder to view files</Typography> </Box>
             <Box
               sx={{
                 cursor: "pointer",
                 borderRadius: "6px",
-                background: `${folder.id === singleFolderId ? "grey" : ""}`,
+                
+                background: `${folder.id === singleFolderId ? "#cccc" : ""}`,
                 border: `${folder.id === folderId ? "1px solid #276AB7" : ""}`,
                 width: "110px",
                 height: "85px",
                 padding: "2px",
                 "&:hover": {
-                  border: "1px solid #276AB7",
-                  background: "rgba(88, 160, 243,0.5)",
+                  border: "1px solid voilet",
+                  background: "rgba(88, 100, 345,0.5)",
                 },
               }}
               key={folder.id}
@@ -648,6 +702,7 @@ const DriveFolder = () => {
                 </div>
               </div>
             </Box>
+            </Box>
           ))}
         </div>
         <div
@@ -664,29 +719,36 @@ const DriveFolder = () => {
               display: "flex",
               justifyContent: "space-between",
               padding: "10px",
+           
+             
             }}
           >
             {folderId && (
-              <Box
-                sx={{
-                  fontSize: "12px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "5px",
-                  width: "100px",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  "&:hover": {
-                    backgroundColor: "black",
-                    color: "#fff",
-                  },
-                  border: "1px solid grey",
-                }}
-                onClick={() => handleOpenDial("fileUpload")}
-              >
-                <i className="fa-solid fa-plus"></i> Upload Files
-              </Box>
+             <Box
+             sx={{
+               fontSize: "12px",
+               width: "100px",
+               padding: "5px",
+               textAlign: "center",
+               borderRadius: "5px",
+               cursor: "pointer",
+               "&:hover": {
+                 backgroundColor: "black",
+                 color: "#fff",
+               },
+               border: "1px solid grey",
+             }}
+             onClick={() => handleOpenDial("fileUpload")}
+           >
+            <Box sx={{
+             display: "flex",
+             gap:"5px",
+             padding:"5px",
+             justifyContent: "center",
+             alignContent: "center",
+          
+            }}> <i className="fa-solid fa-plus"></i> <span>Upload file</span> </Box>
+           </Box>
             )}
             <span
               style={{
@@ -719,9 +781,11 @@ const DriveFolder = () => {
             style={{
               display: "flex",
               gap: "20px",
-              flexWrap: "wrap",
+              maxHeight: "55vh",
+             flexWrap: "wrap",
               padding: "0px 5px",
               overflowY: "auto",
+        
             }}
           >
             {allFiles && allFiles.length > 0 ? (
@@ -734,6 +798,7 @@ const DriveFolder = () => {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
+                     
                     }}
                   >
                     <CircularProgress />
