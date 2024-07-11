@@ -20,7 +20,7 @@ import { useUpdateClientMutation } from "../../../features/api/clientAndShipment
 import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 
-const AddSingleClientDial = ({ open, setOpen, refetch ,editedRows }) => {
+const AddSingleClientDial = ({ open, setOpen, refetch ,editedRows ,setEditedRows }) => {
   // api calling
   const [addClient, { isLoading }] = useAddClientMutation();
   const [updateClient, { isLoading: updateLoading, refetch: updateRefetch }] =
@@ -52,7 +52,7 @@ console.log(editedRows)
   });
 
   useEffect(() => {
-    if (editedRows) {
+    if (editedRows !== null) {
       const addressParts = editedRows.Address.split(",");
       const [Address, District, State, Country, Pincode] = addressParts;
          
@@ -67,6 +67,13 @@ console.log(editedRows)
       });
     }
   }, [editedRows]);
+
+
+  const handleClose = () => {
+    setEditedRows(null)
+    setOpen(false)
+
+  }
 
 
   // onchange function
@@ -186,27 +193,29 @@ console.log(editedRows)
         ],
       };
 
-      const update = {
-        id: editedRows._id,
-        data : {
-          CompanyName: form.CompanyName,
-          ContactNumber: form.Contact,
-          ContactName: form.ContactName,
-          Email: form.Email,
-          ClientType: form.ClientType,
-          PermanentAddress: {
-            Pincode: form.Pincode,
-            District: form.District,
-            State: form.State,
-            Country: form.Country,
-            Address: form.Address,
-          },
-          GSTIN: form.GST || "N/A",
-        }
-       
-       
-      }
-if(editedRows){
+ 
+if(editedRows !== null){
+
+  const update = {
+    id: editedRows._id,
+    data : {
+      CompanyName: form.CompanyName,
+      ContactNumber: form.Contact,
+      ContactName: form.ContactName,
+      Email: form.Email,
+      ClientType: form.ClientType,
+      PermanentAddress: {
+        Pincode: form.Pincode,
+        District: form.District,
+        State: form.State,
+        Country: form.Country,
+        Address: form.Address,
+      },
+      GSTIN: form.GST || "N/A",
+    }
+   
+   
+  }
 
   const result = await updateClient(update).unwrap()
   toast.success("Client updated successfully");
@@ -230,6 +239,7 @@ if(editedRows){
         helperText: "",
       });
       setOpen(false);
+      setEditedRows(null)
       setError({ ContactError: false, EmailError: false, GSTError: false });
       
     } catch (e) {
@@ -392,9 +402,9 @@ if(editedRows){
           onClick={() => handleSubmit()}
           disabled={isLoading}
         >
-          {isLoading || updateLoading ? <CircularProgress /> : editedRows ? "Update" : "ADD"}
+          {isLoading || updateLoading ? <CircularProgress /> : editedRows !== null ? "Update" : "ADD"}
         </Button>
-        <Button variant="contained" onClick={() => setOpen(false)}>
+        <Button variant="contained" onClick={handleClose}>
           Close
         </Button>
       </DialogActions>

@@ -73,7 +73,7 @@ const AddClient = () => {
   // local state
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
-  const [editedRows, setEditedRows] = useState({});
+  const [editedRows, setEditedRows] = useState(null);
 
   const [triggerDefault, setTriggerDefault] = useState(false);
   const navigate = useNavigate();
@@ -379,7 +379,7 @@ const AddClient = () => {
         />
       </Box>
       {open && (
-        <AddSingleClientDial open={open} setOpen={setOpen} refetch={refetch} editedRows ={editedRows}  />
+        <AddSingleClientDial open={open} setOpen={setOpen} refetch={refetch} editedRows ={editedRows} setEditedRows={setEditedRows}  />
       )}
       <InfoDialogBox
         infoDetails={infoDetail}
