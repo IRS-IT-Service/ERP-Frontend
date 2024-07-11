@@ -13,6 +13,7 @@ import {
   useDownloadFileMutation,
   useGetAllFilesOfSingleFolderMutation,
   useGetAllFolderQuery,
+  useGetAllUsersInDriveQuery,
   useGetFolderBySpecificUserMutation,
   useUploadFileMutation,
 } from "../../../features/api/driveApiSlice";
@@ -56,9 +57,10 @@ const DriveFolder = () => {
   const [deleteConf, setDeleteConf] = useState(false);
   const [folderVerify, setFolderVerifyOtp] = useState(false);
   const [alignment, setAlignment] = useState("Your");
-  const [mainAllFolders,setMainAllFolders] = useState([]);
-  const [specificFolders,setSpecificFolders] = useState([])
-
+  const [mainAllFolders, setMainAllFolders] = useState([]);
+  const [specificFolders, setSpecificFolders] = useState([]);
+  const [userFolders, setUserFolders] = useState([]);
+  const [singleFolderId, setSingleFolderId] = useState("");
   // getting data from redux
   const { adminId, name, isAdmin } = useSelector(
     (state) => state.auth.userInfo
@@ -84,15 +86,17 @@ const DriveFolder = () => {
     downloadFile,
     { isLoading: downloadFileLoading, refetch: downloadFileRefetch },
   ] = useDownloadFileMutation();
-  const [
-    deleteFile,
-    { isLoading: deleteFileLoading, refetch: deleteFileRefetch },
-  ] = useDeleteFileMutation();
 
   const [
     getUsersAllFolder,
     { isLoading: getAllUserFolderLoading, refetch: getAllUsersFolderRefetch },
   ] = useGetFolderBySpecificUserMutation();
+
+  const {
+    data: getAllUserInDrive,
+    isLoading: getAllUserInDriveLoading,
+    refetch: getAllUserInDriveRefetch,
+  } = useGetAllUsersInDriveQuery();
 
   // using dispatch
 
@@ -111,20 +115,39 @@ const DriveFolder = () => {
 
     setFolderId(data.id);
     setFolderName(data.name);
+    setAllFiles([]);
     // }
   };
-  ///Handle Context Menu
 
+  const handleClickFolderNested = async (data) => {
+    const folderId = data?.id;
+    setSingleFolderId(folderId);
+    try {
+      const result = await getAllfiles(folderId);
+      setAllFiles(result?.data?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  ///Handle Context Menu
   const handleContextMenu = (e, folder) => {
     e.preventDefault();
-    if (folder === folderId) {
-      console.log("context menu");
+    if (folder === folderId && alignment === "Your") {
       setShowMenu(true);
       setMenuPosition({ x: e.clientX, y: e.clientY });
     }
   };
+  const handleContextMenuNested = (e, folder) => {
+    e.preventDefault();
+    if (
+      alignment === "Your" ? folder === folderId : folder === singleFolderId
+    ) {
+      setShowMenu(true);
+      setMenuPosition({ x: e.clientX, y: e.clientY });
+    }
+  };
+
   const handleContextMenuFile = (e, folder) => {
-    console.log("handleContextMenuFile", folder);
     e.preventDefault();
     setFileName(folder);
     setShowMenuFile(true);
@@ -166,12 +189,16 @@ const DriveFolder = () => {
   const handleCreateFolder = async () => {
     if (!createFolderName) return toast.error("plz enter folder name");
     try {
-      const info = { folderName: createFolderName,userName:name,userId:adminId };
+      const info = {
+        folderName: createFolderName,
+        userName: name,
+        userId: adminId,
+      };
       const createFolder = await creatingFolder(info).unwrap();
       toast.success("Folder created successfully");
       setCreateFolder("");
       refetchAllFolder();
-      setTrigger("createFolder")
+      setTrigger("createFolder");
       setOpen(false);
     } catch (error) {
       console.log(error);
@@ -179,11 +206,16 @@ const DriveFolder = () => {
   };
 
   const handleUploadFile = async () => {
-    if (!folderId || !selectedFile)
+    if (
+      alignment === "Your"
+        ? !folderId || !selectedFile
+        : !singleFolderId || !selectedFile
+    )
       return toast.error("File and folder required");
     try {
+      const folderIds = alignment === "Your" ? folderId : singleFolderId;
       const formData = new FormData();
-      formData.append("id", folderId),
+      formData.append("id", folderIds),
         formData.append("file", selectedFile.files[0]);
       const uploadfile = await uploadFile(formData).unwrap();
       toast.success("File uploaded successfully");
@@ -225,7 +257,13 @@ const DriveFolder = () => {
       }
     };
     if (folderId) {
-      fetchAllFiles();
+      if (alignment === "Your") {
+        fetchAllFiles();
+      } else {
+        const findbyId = mainAllFolders.find((f) => f.id === folderId);
+        const folders = findbyId?.DriveFolders;
+        setUserFolders(folders);
+      }
     }
   }, [folderId, setFolderId, trigger, setTrigger]);
 
@@ -323,32 +361,47 @@ const DriveFolder = () => {
 
   const handleChange = (event, newAlignment) => {
     setAlignment(newAlignment);
-  
+
     if (newAlignment === "Your") {
       setMainAllFolders(specificFolders);
+      setUserFolders([]);
     } else {
-      const filteredData = getAllFolder?.data.filter((item) => {
-        return !specificFolders.some((folder) => folder.id === item.id);
+      // const filteredData = getAllFolder?.data.filter((item) => {
+      //   return !specificFolders.some((folder) => folder.id === item.id);
+      // });
+      setAllFiles([]);
+      const transformedData = getAllUserInDrive?.data?.map((item) => {
+        return {
+          DriveFolders: item.DriveFolders.map((folder) => {
+            return {
+              id: folder.folderId,
+              name: folder.folderName,
+            };
+          }),
+          id: item._id,
+          name: item.UserName,
+          UserId: item.UserId,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          __v: item.__v,
+        };
       });
-  
-      setMainAllFolders(filteredData);
+      setMainAllFolders(transformedData);
     }
   };
-  
+
   useEffect(() => {
     const fetchAllData = async () => {
       try {
         const data = await getUsersAllFolder(adminId);
-        console.log(data)
         setSpecificFolders(data?.data);
         setMainAllFolders(data?.data);
       } catch (error) {
         console.error("Error fetching user folders:", error);
       }
     };
-  
     fetchAllData();
-  }, [adminId,trigger,setTrigger]);
+  }, [adminId, trigger, setTrigger]);
   return (
     <>
       <Box
@@ -371,24 +424,27 @@ const DriveFolder = () => {
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "start", gap: "20px" }}>
-            <Box
-              sx={{
-                fontSize: "12px",
-                width: "100px",
-                padding: "3px",
-                textAlign: "center",
-                borderRadius: "10px",
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "black",
-                  color: "#fff",
-                },
-                border: "1px solid grey",
-              }}
-              onClick={() => handleOpenDial("addFolder")}
-            >
-              <i className="fa-solid fa-plus"></i> Add Folder
-            </Box>
+            {alignment === "Your" && (
+              <Box
+                sx={{
+                  fontSize: "12px",
+                  width: "100px",
+                  padding: "3px",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "black",
+                    color: "#fff",
+                  },
+                  border: "1px solid grey",
+                }}
+                onClick={() => handleOpenDial("addFolder")}
+              >
+                <i className="fa-solid fa-plus"></i> Add Folder
+              </Box>
+            )}
+
             {isAdmin && (
               <ToggleButtonGroup
                 color="warning"
@@ -532,6 +588,68 @@ const DriveFolder = () => {
             ))}
           </div>
         </div>
+        {/* Users folders view */}
+        <div style={{ marginTop: "20px" }}>
+          {userFolders.map((folder, i) => (
+            <Box
+              sx={{
+                cursor: "pointer",
+                borderRadius: "6px",
+                background: `${folder.id === singleFolderId ? "grey" : ""}`,
+                border: `${folder.id === folderId ? "1px solid #276AB7" : ""}`,
+                width: "110px",
+                height: "85px",
+                padding: "2px",
+                "&:hover": {
+                  border: "1px solid #276AB7",
+                  background: "rgba(88, 160, 243,0.5)",
+                },
+              }}
+              key={folder.id}
+              onContextMenu={(e) => handleContextMenuNested(e, folder.id)}
+              onClick={() =>
+                handleClickFolderNested({ id: folder.id, name: folder.name })
+              }
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "2px",
+                  padding: "10px",
+                }}
+              >
+                <img
+                  src={folderIcon}
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                  }}
+                />
+                <div
+                  style={{
+                    width: "100%",
+                    overflow: "hidden",
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {folder.name}
+                  </Typography>
+                </div>
+              </div>
+            </Box>
+          ))}
+        </div>
         <div
           style={{
             height: "70%",
@@ -603,6 +721,7 @@ const DriveFolder = () => {
               gap: "20px",
               flexWrap: "wrap",
               padding: "0px 5px",
+              overflowY: "auto",
             }}
           >
             {allFiles && allFiles.length > 0 ? (
@@ -620,15 +739,14 @@ const DriveFolder = () => {
                     <CircularProgress />
                   </Box>
                 ) : (
-                  allFiles.map((file) => (
+                  allFiles.map((file, index) => (
                     <>
                       {gridView === "preview" ? (
                         <Box
-                          key={file?.id}
+                          key={index}
                           sx={{
                             display: "flex",
                             width: "150px",
-
                             flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
@@ -866,10 +984,10 @@ const DriveFolder = () => {
           <FolderDeleteDial
             open={folderDeleteOpen}
             setOpen={setFolderDeleteOpen}
-            folderId={folderId}
+            folderId={alignment === "Your" ? folderId : singleFolderId}
             folderName={folderName}
             refetchAllFolder={refetchAllFolder}
-            setTriggeer = {setTrigger}
+            setTriggeer={setTrigger}
           />
         )}
         {folderVerify && (
