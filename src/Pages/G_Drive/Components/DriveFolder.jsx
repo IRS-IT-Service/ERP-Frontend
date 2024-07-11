@@ -621,7 +621,13 @@ const DriveFolder = () => {
             ))}
           </div>
         </div>
-  
+        <Box sx={{
+          display:userFolders?.length > 0 ? "flex" : "none",
+                  justifyContent:"center",
+                  alignContent:"center",
+                  padding:"0.5px",
+        
+                }}>  <Typography sx={{fontSize:"12px" ,color:"#d56391", fontWeight:"Bold"}}>Click on below folder to view files</Typography> </Box>
         {/* Users folders view */}
         <div style={{ 
         display:userFolders?.length > 0 ? "flex" : "none",
@@ -631,19 +637,14 @@ const DriveFolder = () => {
         borderBottom:"1px solid #ccc"
      
            }}>
-            
+                 
           {userFolders?.map((folder, i) => (
             <Box sx={{
               display:"flex",
               flexDirection:"column",
-              width: "100%",  
+           
             }}>
-                <Box sx={{display:"flex",
-                  justifyContent:"center",
-                  alignContent:"center",
-                  padding:"0.5px",
-        
-                }}>  <Typography sx={{fontSize:"12px" ,color:"#d56391", fontWeight:"Bold"}}>Click on below folder to view files</Typography> </Box>
+           
             <Box
               sx={{
                 cursor: "pointer",
