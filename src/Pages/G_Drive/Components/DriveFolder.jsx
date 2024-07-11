@@ -122,7 +122,6 @@ const DriveFolder = () => {
   const handleClickFolderNested = async (data) => {
     const folderId = data?.id;
     setSingleFolderId(folderId);
-
     try {
       const result = await getAllfiles(folderId);
       setAllFiles(result?.data?.data);
