@@ -10,17 +10,27 @@ import {
   Grid,
   CircularProgress,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAddClientMutation } from "../../../features/api/clientAndShipmentApiSlice";
 import { toast } from "react-toastify";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { useUpdateClientMutation } from "../../../features/api/clientAndShipmentApiSlice";
+import { useCreateUserHistoryMutation } from "../../../features/api/usersApiSlice";
+import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 
-const AddSingleClientDial = ({ open, setOpen, refetch }) => {
+const AddSingleClientDial = ({ open, setOpen, refetch ,editedRows ,setEditedRows }) => {
   // api calling
   const [addClient, { isLoading }] = useAddClientMutation();
+  const [updateClient, { isLoading: updateLoading, refetch: updateRefetch }] =
+  useUpdateClientMutation();
+const [createUserHistoryApi] = useCreateUserHistoryMutation();
+const [sendMessageToAdmin] = useSendMessageToAdminMutation();
   // local state
+console.log(editedRows)
+
+
   const [form, setForm] = useState({
     CompanyName: "",
     Contact: "",
@@ -40,6 +50,31 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
     EmailError: false,
     GSTError: false,
   });
+
+  useEffect(() => {
+    if (editedRows !== null) {
+      const addressParts = editedRows.Address.split(",");
+      const [Address, District, State, Country, Pincode] = addressParts;
+         
+      setForm({
+        ...editedRows,
+        Contact: editedRows.ContactNumber,
+        Address: Address.trim(),
+        District: District.trim(),
+        State: State.trim(),
+        Country: Country.trim(),
+        Pincode: +Pincode.trim(),
+      });
+    }
+  }, [editedRows]);
+
+
+  const handleClose = () => {
+    setEditedRows(null)
+    setOpen(false)
+
+  }
+
 
   // onchange function
   const handleChange = (e) => {
@@ -126,6 +161,11 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
     setForm((prev) => ({ ...prev, [name]: value, helperText }));
   };
 
+  // update
+ 
+
+
+
   // submit function
   const handleSubmit = async () => {
     if (!form.Email || !form.Contact || !form.ContactName || !form.Pincode)
@@ -135,6 +175,7 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
       const info = {
         datas: [
           {
+            id:undefined,
             CompanyName: form.CompanyName,
             ContactNumber: form.Contact,
             ContactName: form.ContactName,
@@ -152,7 +193,36 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
         ],
       };
 
-      const result = await addClient(info).unwrap();
+ 
+if(editedRows !== null){
+
+  const update = {
+    id: editedRows._id,
+    data : {
+      CompanyName: form.CompanyName,
+      ContactNumber: form.Contact,
+      ContactName: form.ContactName,
+      Email: form.Email,
+      ClientType: form.ClientType,
+      PermanentAddress: {
+        Pincode: form.Pincode,
+        District: form.District,
+        State: form.State,
+        Country: form.Country,
+        Address: form.Address,
+      },
+      GSTIN: form.GST || "N/A",
+    }
+   
+   
+  }
+
+  const result = await updateClient(update).unwrap()
+  toast.success("Client updated successfully");
+}else{
+  const result = await addClient(info).unwrap();
+  toast.success("Client added successfully");
+}
       refetch();
       setForm({
         CompanyName: "",
@@ -169,8 +239,9 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
         helperText: "",
       });
       setOpen(false);
+      setEditedRows(null)
       setError({ ContactError: false, EmailError: false, GSTError: false });
-      toast.success("Client added successfully");
+      
     } catch (e) {
       console.log(e);
     }
@@ -331,9 +402,9 @@ const AddSingleClientDial = ({ open, setOpen, refetch }) => {
           onClick={() => handleSubmit()}
           disabled={isLoading}
         >
-          {isLoading ? <CircularProgress /> : "ADD"}
+          {isLoading || updateLoading ? <CircularProgress /> : editedRows !== null ? "Update" : "ADD"}
         </Button>
-        <Button variant="contained" onClick={() => setOpen(false)}>
+        <Button variant="contained" onClick={handleClose}>
           Close
         </Button>
       </DialogActions>

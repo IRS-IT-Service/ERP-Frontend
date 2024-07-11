@@ -32,6 +32,7 @@ import {
 } from "../../../features/api/marketingApiSlice";
 import { useGetAllClientQuery } from "../../../features/api/clientAndShipmentApiSlice";
 
+
 import { toast } from "react-toastify";
 import { TypeSpecimenSharp } from "@mui/icons-material";
 
@@ -66,7 +67,7 @@ const ScheduleDial = ({ open,
 // Calling Api
         const {
           data: GroupData,
-          isLoading: useGetAllGroupQueryLoading,
+          isLoading: AllGroupQueryLoading,
           refetch: GroupRefetch,
         } = useGetAllGroupInfoQuery();
 
@@ -82,13 +83,13 @@ const ScheduleDial = ({ open,
 
           useEffect(() => {
             const receipentId = messageData?.recipient_Id;
-            console.log(receipentId);
+          
             if (GroupData?.data && clientData?.client) {
               const MergeData = [...GroupData.data, ...clientData.client];
-              console.log(MergeData);
+        
               const receipentName = MergeData.filter((item) => receipentId?.includes(item._id));
               setReceipent(receipentName)
-              console.log(receipentName);
+           
             }
           }, [GroupData, clientData]);
          
@@ -364,8 +365,28 @@ const ScheduleDial = ({ open,
         borderRadius: '8px',
         backgroundColor: '#d4fce0',
         overflow: 'auto', // Added to handle overflow
+        position: 'relative',
       }}
     >
+      {
+        clientrefetch || AllGroupQueryLoading && 
+<Box
+  sx={{
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 'auto'
+  }}
+>
+  <CircularProgress sx={{color:"black"}} /> 
+</Box>
+    }
+
       <Typography
         sx={{
           textAlign: 'center',
