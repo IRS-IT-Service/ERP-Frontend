@@ -36,7 +36,8 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
   const StyledTableCellvalue = styled(TableCell)(({ theme }) => ({
    textAlign: "center",
-    padding: 0,
+    padding: 8,
+
     }));
 
 function GroupDial({
