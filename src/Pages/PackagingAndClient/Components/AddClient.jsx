@@ -178,6 +178,11 @@ const AddClient = () => {
           ContactNumber: client.ContactNumber,
           ContactName: client.ContactName,
           Email: client.Email,
+          AddressPoint:client.PermanentAddress.Address,
+          District: client.PermanentAddress.District ,
+          State: client.PermanentAddress.State,
+          Country: client.PermanentAddress.Country,
+          Pincode: client.PermanentAddress.Pincode,
         };
       });
       setRows(response);
