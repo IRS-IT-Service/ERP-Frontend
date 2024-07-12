@@ -33,6 +33,7 @@ import {
   useUpdateNotationMutation,
   useGetAllProductV2Query,
   useProductAvailinEcwidMutation,
+  useGetAllRoboProductsNewQuery,
 } from "../../../features/api/productApiSlice";
 
 import Loading from "../../../components/Common/Loading";
@@ -53,9 +54,8 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
   let MapSKU = {};
 
   /// global state
-  const { deepSearch, checkedBrand, checkedCategory, checkedGST } = useSelector(
-    (state) => state.product
-  );
+  const { deepSearch, checkedBrand, checkedCategory, checkedGST, name, sku } =
+    useSelector((state) => state.product);
   const { isAdmin } = useSelector((state) => state.auth.userInfo);
   const { NewselectedSKU } = useSelector((state) => state.SelectedItems);
 
@@ -85,7 +85,7 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllRoboProductsNewQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
   /// handlers
@@ -186,9 +186,9 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
           GST: item.GST,
           MRP: item.MRP,
           Quantity: item.Quantity,
-          LandingCost: +(item.LandingCost).toFixed(2),
-          SalesPrice: +(item.SalesPrice).toFixed(2),
-          SellerPrice: +(item.SellerPrice).toFixed(2),
+          LandingCost: +item.LandingCost.toFixed(2),
+          SalesPrice: +item.SalesPrice.toFixed(2),
+          SellerPrice: +item.SellerPrice.toFixed(2),
           Brand: item.Brand,
           isEcwidSync: item.isEcwidSync,
           isWholeSaleActive: item.isWholeSaleActive,
@@ -235,55 +235,68 @@ const ProductStatusGrid = ({ setOpenHistory, setProductDetails }) => {
 
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
 
-    setFilterString(`${newFilterString}&page=1`);
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
-    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-    clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
-      return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
+    if (apiRef?.current) {
+      apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     }
-  }, [deepSearch]);
+
+    clearTimeout(debouncing.current);
+
+    if (!name && !sku) {
+      setFilterString("");
+      return;
+    }
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
 
   const getNoImageFunc = () => {
-    setFilterString("type=NoImage");
+    let newFilterString = filterString ? `${filterString}&` : "";
+
+    newFilterString += "type=NoImage";
+
+    // newFilterString += '&page=1';
+
+    setFilterString(newFilterString);
   };
 
   // toggle change function
   const handlechangeToShowValue = (e) => {
     setToggleValue(e.target.checked);
   };
-  console.log(toggleValue);
   //Columns*******************
   const columns = [
     {

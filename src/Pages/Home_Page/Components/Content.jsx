@@ -7,11 +7,14 @@ import {
 import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import { Grid, Box, Button, TablePagination } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
+import {
+  useGetAllProductV2Query,
+  useGetAllRoboProductsNewQuery,
+} from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import { setAllProductsV2 } from "../../../features/slice/productSlice";
 import CachedIcon from "@mui/icons-material/Cached";
-import { Tooltip } from '@mui/material';
+import { Tooltip } from "@mui/material";
 
 // for refresh data
 
@@ -23,15 +26,23 @@ const Content = ({ autoHeight, text }) => {
 
   /// global state
   const { isAdmin, productColumns } = useSelector((state) => state.auth);
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-  useSelector((state) => state.product);
+  const {
+    checkedBrand,
+    checkedCategory,
+    searchTerm,
+    checkedGST,               
+    deepSearch,
+    name,
+    sku,
+  } = useSelector((state) => state.product);
+
 
   /// local state
   const [rows, setRows] = useState([]);
   const [hiddenColumns, setHiddenColumns] = useState({});
 
   /// pagination State
-  const [filterString, setFilterString] = useState("page=1");
+  const [filterString, setFilterString] = useState("");
   const [page, setPage] = useState(1);
   const [rowPerPage, setRowPerPage] = useState(100);
   const [totalProductCount, setTotalProductCount] = useState(0);
@@ -43,7 +54,7 @@ const Content = ({ autoHeight, text }) => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllRoboProductsNewQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
 
@@ -61,15 +72,15 @@ const Content = ({ autoHeight, text }) => {
             (allProductData.data.currentPage - 1) * allProductData.data.limit,
           SKU: item.SKU,
           Name: item.Name,
-          AltName : item.AlternativeName,
+          AltName: item.AlternativeName,
           LandingCost: item.LandingCost.toFixed(2),
           SalesPrice: item.SalesPrice.toFixed(2),
           MRP: item.MRP.toFixed(2),
           GST: item.GST,
           SellerPrice: item.SellerPrice.toFixed(2),
           Brand: item.Brand,
-          Quantity: item.ActualQuantity ,
-          AssignedQuantity:item.AssignedQuantity + item.ActualQuantity,
+          Quantity: item.ActualQuantity,
+          AssignedQuantity: item.AssignedQuantity + item.ActualQuantity,
           Category: item.Category,
           isVerifiedSellerPrice: item.isVerifiedSellerPrice,
           isRejectedSellerPrice: item.isRejectedSellerPrice,
@@ -93,46 +104,67 @@ const Content = ({ autoHeight, text }) => {
 
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
 
-    setFilterString(`${newFilterString}&page=1`);
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
   }, [checkedBrand, checkedCategory, checkedGST]);
+  
+
+  // useEffect(() => {
+  //   if (filterString) {
+  //     fetchRoboProducts(filterString);
+  //   }
+  // }, [filterString]);
 
   useEffect(() => {
-    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-    clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
-      return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
+    if (apiRef?.current) {
+      apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     }
-  }, [deepSearch]);
 
+    clearTimeout(debouncing.current);
+
+    if (!name && !sku) {
+      setFilterString("");
+      return;
+    }
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
+
+  // useEffect(() => {
+  //   // Your API call with filterString
+  //   if (filterString) {
+  //     fetchRoboProducts(filterString);
+  //   }
+  // }, [filterString]);
   ///Columns*******************
   const columns = [
     {
@@ -210,9 +242,7 @@ const Content = ({ autoHeight, text }) => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => (
-        <Tooltip title={params.value}>
-          {params.value}
-        </Tooltip>
+        <Tooltip title={params.value}>{params.value}</Tooltip>
       ),
     },
     {
@@ -383,7 +413,7 @@ const Content = ({ autoHeight, text }) => {
   }
   return (
     <Box sx={{ height: "100%", wdth: "100%", overflow: "hidden" }}>
-      <FilterBarV2 apiRef={apiRef}  />
+      <FilterBarV2 apiRef={apiRef} />
 
       <Grid container>
         <Loading loading={productLoading || isFetching} />
