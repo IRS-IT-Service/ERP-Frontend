@@ -19,10 +19,7 @@ import {
   TableCell,
   tableCellClasses,
 } from "@mui/material";
-import {
-  setDeepSearch,
-  setSearchTerm,
-} from "../../features/slice/productSlice";
+import { setDeepSearch, setName, setSku } from "../../features/slice/productSlice";
 import { useEffect } from "react";
 import {
   setCheckedBrand,
@@ -62,7 +59,6 @@ const FilterBarV2 = ({
   customButton4,
   apiRef,
   count,
-
 }) => {
   /// initialize
   const dispatch = useDispatch();
@@ -76,7 +72,9 @@ const FilterBarV2 = ({
     checkedGST,
     checkedBrand,
     deepSearch,
-    condition
+    name,
+    sku,
+    condition,
   } = useSelector((state) => state.product);
   ///local state
   const [Opensortdialog, setOpensortdialog] = useState({
@@ -173,7 +171,8 @@ const FilterBarV2 = ({
     dispatch(setCheckedBrand([]));
     dispatch(setCheckedCategory([]));
     dispatch(setCheckedGST([]));
-    dispatch(setDeepSearch(""));
+    dispatch(setName(""));
+    dispatch(setSku(""))
     apiRef?.current?.setPage(0);
     apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
   };
@@ -263,7 +262,7 @@ const FilterBarV2 = ({
             {(checkedBrand && checkedBrand.length >= 1) ||
             (checkedCategory && checkedCategory.length >= 1) ||
             (checkedGST && checkedGST.length >= 1) ||
-            deepSearch ? (
+            sku || name ? (
               <StyledButton
                 onClick={() => handleClearFilters()}
                 sx={{ color: "red" }}
@@ -282,14 +281,23 @@ const FilterBarV2 = ({
                 gap: "1rem",
               }}
             >
-              <Box sx={{ flexBasis: "100%" }}>
+              <Box sx={{ display:"flex",gap:"10px" }}>
                 <TextField
                   size="small"
-                  placeholder="Enter Product Name / SKU"
+                  placeholder="Enter Product Name"
                   sx={{ minWidth: "230px" }}
-                  value={deepSearch}
+                  value={name}
                   onChange={(e) => {
-                    dispatch(setDeepSearch(e.target.value));
+                    dispatch(setName(e.target.value));
+                  }}
+                />
+                <TextField
+                  size="small"
+                  placeholder="Enter SKU"
+                  sx={{ width: "200px" }}
+                  value={sku}
+                  onChange={(e) => {
+                    dispatch(setSku(e.target.value));
                   }}
                 />
               </Box>
@@ -338,7 +346,7 @@ const FilterBarV2 = ({
             >
               {customButton4}
             </Box> */}
-            
+
             <Popover
               open={Opensortdialog.brand}
               sx={{ p: 2, width: "80vw" }}

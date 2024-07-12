@@ -1,7 +1,6 @@
 import { apiSlice } from "./apiSlice";
 import { Assets_URL } from "../../constants/ApiEndpoints";
 
-
 export const assetsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     reducerPath: "assetsApi",
@@ -11,7 +10,7 @@ export const assetsApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${Assets_URL}/create`,
           method: "POST",
-          body:data
+          body: data,
         };
       },
     }),
@@ -20,7 +19,6 @@ export const assetsApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${Assets_URL}/getAll?page=${page}`,
           method: "Get",
-       
         };
       },
     }),
@@ -30,7 +28,6 @@ export const assetsApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${Assets_URL}/getAssetsByCode/${data}`,
           method: "Get",
-       
         };
       },
     }),
@@ -39,11 +36,18 @@ export const assetsApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${Assets_URL}/deleteAssets/${data}`,
           method: "Post",
-       
         };
       },
     }),
+
+   
+    
   }),
 });
 
-export const { useCreateAssetsMutation, useGetAllAssetsQuery ,useGetSingleAssetsMutation,useDeleteSingleAssetsMutation} = assetsApiSlice;
+export const {
+  useCreateAssetsMutation,
+  useGetAllAssetsQuery,
+  useGetSingleAssetsMutation,
+  useDeleteSingleAssetsMutation,
+} = assetsApiSlice;
