@@ -156,10 +156,8 @@ const Content = ({ autoHeight, text }) => {
       setFilterString(`${newFilterString}&page=1`);
     }, 1000);
 
-    // Cleanup function to clear timeout if component unmounts or inputs change
     return () => clearTimeout(debouncing.current);
   }, [name, sku]);
-  console.log(filterString);
 
   // useEffect(() => {
   //   // Your API call with filterString
