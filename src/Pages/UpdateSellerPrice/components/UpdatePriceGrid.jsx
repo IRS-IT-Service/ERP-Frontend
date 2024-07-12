@@ -39,7 +39,7 @@ import {
   setCheckedBrand,
   setCheckedCategory,
   setCheckedGST,
-  setDeepSearch,
+  setName,setSku,
 } from "../../../features/slice/productSlice";
 
 const Content = ({
