@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -9,46 +9,65 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
-import { useCreateAssetsMutation } from "../../../features/api/assetsSlice";
+import {
+  useCreateAssetsMutation,
+} from "../../../features/api/assetsSlice";
 import { CircularProgress } from "@mui/material";
+import { formatDate, formateDateAndTime, formatsDate } from "../../../commonFunctions/commonFunctions";
 
-const AddAssetsDialog = ({ open, close, refetch }) => {
+const AddAssetsDialog = ({ open, close, data, refetch }) => {
   const [formData, setFormData] = useState({
+    id: "",
     AssetsType: "",
     AssetsName: "",
+    SerialNo: "",
     PurchasedOn: "",
     AllotedTo: "",
-    SerialNo: "",
     Expiry: "",
-    Duration: "",
   });
   const [receiptFile, setReceiptFile] = useState(null);
   const [productFile, setProductFile] = useState(null);
 
-  // calling rtk query saving the data of all assets
-  const [addAssets, { isLoading }] = useCreateAssetsMutation();
+  const [addAssets, { isLoading: isAdding }] = useCreateAssetsMutation();
 
-  // autocomplet assets options
+  console.log(data);
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        id: data.id || "",
+        AssetsType: data.AssetsType || "",
+        AssetsName: data.AssetsName || "",
+        SerialNo: data.SerialNo || "",
+        PurchasedOn: data.PurchaseDate || "",
+        AllotedTo: data.AllotedTo || "",
+        Expiry: data.Expiry || "",
+      });
+      setReceiptFile(data.Receipt ? data.Receipt.url : null);
+      setProductFile(data.Product ? data.Product.url : null);
+    }
+  }, [data]);
+
   const assetTypes = [
     "Electronics",
     "Furniture",
     "Vehicles",
     "Machinery",
     "Drones",
+    "Entertainment",
+    "Others",
   ];
 
-  // function for changing the file
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setReceiptFile(selectedFile);
   };
 
   const handleProductFileChange = (e) => {
-    const selecteFile = e.target.files[0];
-    setProductFile(selecteFile);
+    const selectedFile = e.target.files[0];
+    setProductFile(selectedFile);
   };
 
-  // fuction for changing the value of all input field
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -57,45 +76,49 @@ const AddAssetsDialog = ({ open, close, refetch }) => {
     });
   };
 
-  // function for saving the data
   const handleSave = async () => {
     if (
       !formData.AssetsType ||
       !formData.AssetsName ||
-      !formData.AllotedTo ||
+      !formData.PurchasedOn ||
       !formData.SerialNo ||
-      !formData.PurchasedOn
+      !formData.AllotedTo
     )
-      return toast.error("Plz Enter All required field");
+      return toast.error("Please enter all required fields");
 
     try {
       const formDatas = new FormData();
-
-      formDatas.append("type", formData.AssetsType);
-      formDatas.append("name", formData.AssetsName);
-      formDatas.append("expiry", formData.Duration || "");
-      formDatas.append("duration", formData.Duration || "");
+      formDatas.append("id", formData.id);
+      formDatas.append("assetsType", formData.AssetsType);
+      formDatas.append("assetsName", formData.AssetsName);
       formDatas.append("purchase", formData.PurchasedOn || "");
       formDatas.append("serialNo", formData.SerialNo);
+      formDatas.append("allotedTo", formData.AllotedTo);
+      formDatas.append("expiry", formData.Expiry || "");
 
-      if (receiptFile) {
+      if (receiptFile && typeof receiptFile !== "string") {
         formDatas.append("receiptFile", receiptFile);
       }
-      if (productFile) {
+      if (productFile && typeof productFile !== "string") {
         formDatas.append("productFile", productFile);
       }
+
       const result = await addAssets(formDatas);
-      if (result?.data?.success === true) {
-        toast.success("Assets Added Successfully");
+
+      if (result?.data?.success) {
+        toast.success(`Assets added successfully`);
         refetch();
         close();
       } else {
-        toast.error("Some Error Occurs plz try again");
+        toast.error("Some error occurred, please try again");
       }
     } catch (error) {
       toast.error(error.message);
     }
   };
+
+
+
 
   return (
     <Dialog open={open} maxWidth={"xl"}>
@@ -108,7 +131,7 @@ const AddAssetsDialog = ({ open, close, refetch }) => {
           width: "600px",
         }}
       >
-        <DialogTitle>Add-Assets</DialogTitle>
+        <DialogTitle>Add Assets</DialogTitle>
         <Button
           sx={{
             position: "absolute",
@@ -124,11 +147,7 @@ const AddAssetsDialog = ({ open, close, refetch }) => {
         </Button>
       </Box>
       <DialogContent>
-        <Box
-          sx={{
-            width: "100%",
-          }}
-        >
+        <Box sx={{ width: "100%" }}>
           <div style={{ display: "flex", gap: "25px" }}>
             <Autocomplete
               sx={{ width: "50%" }}
@@ -136,6 +155,8 @@ const AddAssetsDialog = ({ open, close, refetch }) => {
               onChange={(event, value) =>
                 handleChange({ target: { name: "AssetsType", value } })
               }
+              value={formData.AssetsType}
+              getOptionSelected={(option, value) => option === value}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -175,7 +196,7 @@ const AddAssetsDialog = ({ open, close, refetch }) => {
               sx={{ width: "50%" }}
               label="Purchase Date"
               required
-              value={formData.PurchasedOn}
+              value={formatsDate(formData.PurchasedOn)}
               onChange={handleChange}
               name="PurchasedOn"
               variant="standard"
@@ -199,8 +220,8 @@ const AddAssetsDialog = ({ open, close, refetch }) => {
               label="Warranty Duration"
               variant="standard"
               required
-              name="Duration"
-              value={formData.Duration}
+              name="Expiry"
+              value={formData.Expiry}
               onChange={handleChange}
               placeholder="Warranty Duration"
             />
@@ -244,8 +265,13 @@ const AddAssetsDialog = ({ open, close, refetch }) => {
       </DialogContent>
       <DialogActions>
         <Box sx={{ textAlign: "center", width: "100%" }}>
-          <Button onClick={handleSave} variant="contained" autoFocus disabled={isLoading}>
-            {isLoading ? <CircularProgress /> : "Save"}
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            autoFocus
+            disabled={isAdding }
+          >
+            {isAdding ? <CircularProgress /> : "Save"}
           </Button>
         </Box>
       </DialogActions>

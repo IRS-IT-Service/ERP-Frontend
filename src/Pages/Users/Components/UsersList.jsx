@@ -151,8 +151,6 @@ const UserList = ({
     }
   };
 
- 
-
   const handleUserDelete = async (adminId) => {
     try {
       const data = {
