@@ -20,7 +20,7 @@ import BulkUpdateSelectorDialog from "./components/BulkUpdateSelectorDialog";
 import {
   useUpdateProductsColumnMutation,
   useUpdateNotationMutation,
-  useGetAllProductV2Query,
+  useGetAllProductV2Query,useGetAllRoboProductsNewQuery
 } from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
 import UpdateStockDialog from "./components/UpdateStockDialog";
@@ -40,7 +40,7 @@ import {
   setCheckedBrand,
   setCheckedCategory,
   setCheckedGST,
-  setDeepSearch,
+  setDeepSearch,setName,setSku
 } from "../../features/slice/productSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -277,7 +277,7 @@ const UpdateQuantity = ({
     hiddenColumns: latestHiddenColumns,
   } = useSelector((state) => state.auth);
 
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
+  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch ,name,sku} =
     useSelector((state) => state.product);
   /// local state
   const [rows, setRows] = useState([]);
@@ -302,7 +302,7 @@ const UpdateQuantity = ({
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllRoboProductsNewQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
 
@@ -363,20 +363,30 @@ const UpdateQuantity = ({
   }, [allProductData]);
 
   // function for fetch data on latest query
+  // function for fetch data on latest query
   const fetchDataWithQuery = (query) => {
-    if (!buttonBlink) {
-      setFilterString(
-        `${
-          filterString === "page=1"
-            ? `type=${query}&page=1`
-            : filterString + `type=${query}&page=1`
-        }`
-      );
-      setButtonBlink(query);
+    const params = new URLSearchParams(filterString);
+
+    if (query === "UpdatedProduct" || query === "NewArrival") {
+      if (buttonBlink === query) {
+        params.delete("sort");
+      } else {
+        params.set("sort", query);
+        params.delete("type");
+      }
     } else {
-      setFilterString("page=1");
-      setButtonBlink();
+      if (buttonBlink === query) {
+        params.delete("type");
+      } else {
+        params.set("type", query);
+        params.delete("sort");
+      }
     }
+
+    params.set("page", "1");
+
+    setFilterString(params.toString());
+    setButtonBlink(buttonBlink === query ? null : query);
   };
 
   useEffect(() => {
@@ -403,45 +413,53 @@ const UpdateQuantity = ({
 
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
 
-    setFilterString(`${newFilterString}&page=1`);
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
-    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-    clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
-      return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
+    if (apiRef?.current) {
+      apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     }
-  }, [deepSearch]);
+
+    clearTimeout(debouncing.current);
+
+    if (!name && !sku) {
+      setFilterString("");
+      return;
+    }
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
 
   //Columns*******
   const columns = [
@@ -693,8 +711,21 @@ const UpdateQuantity = ({
   );
 
   /// Custom Footer
-  function CustomFooter(props) {
+  const CustomFooter = (props) => {
     const { status } = props;
+
+    const handlePageChange = (event, newPage) => {
+      setPage(newPage + 1);
+
+      let paramString = filterString;
+      let param = new URLSearchParams(paramString);
+      param.set("page", newPage + 1);
+      let newFilterString = param.toString();
+
+      setFilterString(newFilterString);
+      apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    };
+
     return (
       <GridToolbarContainer>
         <Box
@@ -707,80 +738,55 @@ const UpdateQuantity = ({
             <CachedIcon />
           </Button>
           <ColumnsExplainerDialog />
-
           <Box display="flex" gap="20px">
-            <Box display="flex" alignItems="center" gap="10px">
-              <span style={{ fontWeight: "bold" }}>Waiting Approval</span>
-              <Button
-                sx={{
-                  border: "0.5px solid black",
-                  width: "25px",
-                  height: "20px",
-                  borderRadius: "10px",
-                  backgroundColor: `${
-                    buttonBlink === "waitingApproval" ? "white" : "#FF7F50"
-                  }`,
-                }}
-                onClick={() => fetchDataWithQuery("waitingApproval")}
-              ></Button>
-            </Box>
-            <Box display="flex" alignItems="center" gap="10px">
-              <span style={{ fontWeight: "bold" }}>New Product</span>
-              <Button
-                sx={{
-                  border: "0.5px solid black",
-                  width: "10px",
-                  height: "20px",
-                  borderRadius: "10px",
-                  backgroundColor: `${
-                    buttonBlink === "newProduct" ? "white" : "violet"
-                  }`,
-                }}
-                onClick={() => fetchDataWithQuery("newProduct")}
-              ></Button>
-            </Box>
-            <Box display="flex" alignItems="center" gap="10px">
-              <span style={{ fontWeight: "bold" }}>Update Rejected</span>
-              <Button
-                sx={{
-                  border: "0.5px solid black",
-                  width: "25px",
-                  height: "20px",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  backgroundColor: `${
-                    buttonBlink === "update" ? "white" : "#B22222"
-                  }`,
-                  color: "#ffff",
-                  "&:hover": {
-                    backgroundColor: "#ffff",
-                    color: "#B22222",
-                  },
-                }}
-                onClick={() => fetchDataWithQuery("update")}
-              ></Button>
-            </Box>
-            <Box display="flex" alignItems="center" gap="10px">
-              <span style={{ fontWeight: "bold" }}>Updated Product</span>
-              <Button
-                sx={{
-                  border: "0.5px solid black",
-                  width: "25px",
-                  height: "20px",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                  backgroundColor: `${
-                    buttonBlink === "updatedProduct" ? "white" : "grey"
-                  }`,
-                  color: "#ffff",
-                  "&:hover": {
-                    backgroundColor: "#ffff",
-                    color: "#B22222",
-                  },
-                }}
-                onClick={() => fetchDataWithQuery("updatedProduct")}
-              ></Button>
-            </Box>
+            {[
+              {
+                label: "Waiting Approval",
+                query: "waitingApproval",
+                color: "#FF7F50",
+              },
+              { label: "New Product", query: "NewArrival", color: "violet" },
+              {
+                label: "Update Rejected",
+                query: "update",
+                color: "#B22222",
+                hoverColor: "#ffff",
+                hoverBg: "#B22222",
+              },
+              {
+                label: "Updated Product",
+                query: "UpdatedProduct",
+                color: "grey",
+                hoverColor: "#ffff",
+                hoverBg: "#B22222",
+              },
+            ].map((item) => (
+              <Box
+                key={item.query}
+                display="flex"
+                alignItems="center"
+                gap="10px"
+              >
+                <span style={{ fontWeight: "bold" }}>{item.label}</span>
+                <Button
+                  sx={{
+                    border: "0.5px solid black",
+                    width: "25px",
+                    height: "20px",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    backgroundColor:
+                      buttonBlink === item.query ? "white" : item.color,
+                    color: item.hoverColor || "inherit",
+                    "&:hover": {
+                      backgroundColor: item.hoverBg || "inherit",
+                      color: item.hoverColor || "inherit",
+                    },
+                  }}
+                  onClick={() => fetchDataWithQuery(item.query)}
+                />
+              </Box>
+            ))}
             {condition === "SalesPrice" ? (
               <Box display="flex" alignItems="center" gap="10px">
                 <span style={{ fontWeight: "bold" }}>Sales Columns</span>
@@ -792,7 +798,7 @@ const UpdateQuantity = ({
                     height: "20px",
                     borderRadius: "10px",
                   }}
-                ></Box>
+                />
               </Box>
             ) : (
               <Box display="flex" alignItems="center" gap="10px">
@@ -805,39 +811,21 @@ const UpdateQuantity = ({
                     height: "20px",
                     borderRadius: "10px",
                   }}
-                ></Box>
+                />
               </Box>
             )}
           </Box>
-
           <TablePagination
             component="div"
             count={totalProductCount}
             page={page - 1}
-            onPageChange={(event, newPage) => {
-              setPage(newPage + 1);
-
-              let paramString = filterString;
-
-              let param = new URLSearchParams(paramString);
-
-              param.set("page", newPage + 1);
-
-              let newFilterString = param.toString();
-
-              setFilterString(newFilterString);
-
-              apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-            }}
+            onPageChange={handlePageChange}
             rowsPerPage={rowPerPage}
-            // onRowsPerPageChange={(event) => {
-            //   setRowPerPage(event.target.value);
-            // }}
           />
         </Box>
       </GridToolbarContainer>
     );
-  }
+  };
 
   return (
     <Box

@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { GridToolbarContainer } from "@mui/x-data-grid";
 import SyncIcon from "@mui/icons-material/Sync";
+import { set } from "react-hook-form";
 
 const AddViewAssets = () => {
   /// global state
@@ -29,6 +30,7 @@ const AddViewAssets = () => {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [assetData, setAssetData] = useState(null);
 
   // pagination state
   const [page, setPage] = useState(1);
@@ -46,11 +48,13 @@ const AddViewAssets = () => {
     useDeleteSingleAssetsMutation();
   // this dialog function for add all input field dialog
   const handleOpen = () => {
+  
     setOpenDialog(true);
   };
 
   const handleClose = () => {
     setOpenDialog(false);
+    setAssetData(null);
   };
 
   // this dialog function for opne recipt image
@@ -75,6 +79,7 @@ const AddViewAssets = () => {
           AssetsName: item.AssetsName,
           AssetsType: item.AssetsType,
           SerialNo: item.SerialNo,
+          AllotedTo: item.AllotedTo,
           PurchaseDate: formatDate(item.PurchasedOn),
           Expiry: item.Expiry,
           Receipt: item.receipt,
@@ -124,10 +129,20 @@ const AddViewAssets = () => {
     }
   };
 
+  const handleUpdate = async (data) => {
+    try {
+      setAssetData(data);
+      setOpenDialog(true);
+    } catch (error) {
+      toast.error(
+        "Some error Occured while Update Assets Plz try after some times"
+      );
+    }
+  };
+
   const fileViewSelector = (inputLink) => {
     const lowerCaseinputLink = inputLink.toLowerCase();
     const hasPDF = lowerCaseinputLink.includes("pdf");
-    console.log(hasPDF);
     if (hasPDF) {
       return (
         <iframe
@@ -159,9 +174,8 @@ const AddViewAssets = () => {
       field: "Sno",
       headerName: "Sno",
       flex: 0.2,
-      minWidth: 20,
-      maxWidth: 50,
-      editable: true,
+      minWidth: 40,
+      maxWidth: 60,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -171,8 +185,8 @@ const AddViewAssets = () => {
       field: "AssetsType",
       headerName: "Assets Type",
       flex: 0.2,
-      width: 180,
-      editable: true,
+      minWidth: 120,
+      maxWidth: 160,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -182,8 +196,8 @@ const AddViewAssets = () => {
       field: "AssetsName",
       headerName: "Assets Name",
       flex: 0.2,
-      width: 180,
-      editable: true,
+      minWidth: 200,
+      maxWidth: 250,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -213,6 +227,16 @@ const AddViewAssets = () => {
     {
       field: "Expiry",
       headerName: "Waranty Duration",
+      flex: 0.2,
+      width: 108,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
+      field: "AllotedTo",
+      headerName: "Alloted To",
       flex: 0.2,
       width: 100,
       align: "center",
@@ -273,6 +297,37 @@ const AddViewAssets = () => {
               }}
             >
               <Visibility />
+            </Button>
+          </div>
+        );
+      },
+    },
+    {
+      field: "edit",
+      headerName: "Edit-Assets",
+      flex: 0.2,
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        return (
+          <div>
+            <Button
+              sx={{
+                cursor: "pointer",
+                "& :hover": {
+                  color: color,
+                },
+              }}
+              size="small"
+              variant="outlined"
+              onClick={() => {
+                handleUpdate(params.row);
+              }}
+            >
+              Edit
             </Button>
           </div>
         );
@@ -409,6 +464,7 @@ const AddViewAssets = () => {
       {openDialog && (
         <AddAssetsDialog
           open={openDialog}
+          data={assetData}
           close={handleClose}
           refetch={refetch}
         />
