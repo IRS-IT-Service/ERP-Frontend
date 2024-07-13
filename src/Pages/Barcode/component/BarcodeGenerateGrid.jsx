@@ -8,7 +8,6 @@ import {
 // import Nodata from "../../../assets/empty-cart.png";
 import { Grid, Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { setAllProducts } from "../../../features/slice/productSlice";
 import { useGetAllProductQuery } from "../../../features/api/productApiSlice";
 
 import {
@@ -27,14 +26,14 @@ import { toast } from "react-toastify"; // Import this to show toast messages
 import BarcodeDialogbox from "./BarcodeDialogbox";
 import Nodata from "../../../assets/error.gif";
 import CachedIcon from "@mui/icons-material/Cached";
-import { setAllProductsV2 } from "../../../features/slice/productSlice";
 import TablePagination from "@mui/material/TablePagination";
 
 import {
   setCheckedBrand,
   setCheckedCategory,
   setCheckedGST,
-  setDeepSearch,
+  setName,
+  setSku,setAllProductsV2
 } from "../../../features/slice/productSlice";
 
 // for refresh data
@@ -46,7 +45,7 @@ const BarcodeGenerateGrid = () => {
   const debouncing = useRef();
 
   /// global state
-  const { checkedBrand, checkedCategory, checkedGST, deepSearch } = useSelector(
+  const { checkedBrand, checkedCategory, checkedGST, name, sku } = useSelector(
     (state) => state.product
   );
   /// local state
@@ -226,7 +225,8 @@ const BarcodeGenerateGrid = () => {
       dispatch(setCheckedBrand([])),
         dispatch(setCheckedCategory([])),
         dispatch(setCheckedGST([])),
-        dispatch(setDeepSearch(""));
+        dispatch(setName(""));
+      dispatch(setSku(""));
       // apiRef?.current?.setPage(0),
       // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     };
@@ -235,48 +235,55 @@ const BarcodeGenerateGrid = () => {
   // BARCODE CATEGORY GST ON SELECTION FROM FILTER BAR
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
 
-    setFilterString(`${newFilterString}&page=1`);
-    setButtonBlink("");
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   // search by name and sku
+
   useEffect(() => {
-    // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    // if (apiRef?.current) {
+    //   apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    // }
+
     clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
+
+    if (!name && !sku) {
+      setFilterString("");
       return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
-      setButtonBlink("");
     }
-  }, [deepSearch]);
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
 
   const BarCodeButton = (
     <Box
@@ -518,7 +525,7 @@ const BarcodeGenerateGrid = () => {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: `${Color === "yellow" ? "Orange": Color}`,
+                backgroundColor: `${Color === "yellow" ? "Orange" : Color}`,
                 color: "#fff",
               }}
               onClick={handleonViewClick}

@@ -37,7 +37,7 @@ import {
 import { useGetAllCompetitorQuery } from "../../../features/api/productApiSlice";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
+import { useGetAllProductV2Query,useGetAllRoboProductsNewQuery} from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import CachedIcon from "@mui/icons-material/Cached";
 import { setAllProductsV2 } from "../../../features/slice/productSlice";
@@ -79,7 +79,7 @@ const CompetitorTable = () => {
 
   const [deleteCompetitor, { isLoading }] = useDeleteCompetitorMutation();
 
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
+  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch,name,sku } =
     useSelector((state) => state.product);
 
   // console.log(addCompetitor);
@@ -189,13 +189,13 @@ const CompetitorTable = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const [filterString, setFilterString] = useState("page=1");
+  const [filterString, setFilterString] = useState("");
   const {
     data: allProductData,
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllRoboProductsNewQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
 
@@ -253,45 +253,53 @@ const CompetitorTable = () => {
 
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
 
-    setFilterString(`${newFilterString}&page=1`);
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
-    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-    clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
-      return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
+    if (apiRef?.current) {
+      apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     }
-  }, [deepSearch]);
+
+    clearTimeout(debouncing.current);
+
+    if (!name && !sku) {
+      setFilterString("");
+      return;
+    }
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
 
   const columns = [
     {

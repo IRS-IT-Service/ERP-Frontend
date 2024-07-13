@@ -31,6 +31,7 @@ import {
   useGetOneProductQuery,
   useUploadSideImagesMutation,
   useSetDefaultImageMutation,
+  useGetAllRoboProductsNewQuery,
 } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import FilterBarV2 from "../../../components/Common/FilterBarV2";
@@ -57,7 +58,7 @@ const UploadImageGrid = () => {
 
   /// global state
   const { userInfo } = useSelector((state) => state.auth);
-  const { deepSearch, checkedBrand, checkedCategory } = useSelector(
+  const { deepSearch, checkedBrand, checkedCategory, name, sku,checkedGST } = useSelector(
     (state) => state.product
   );
 
@@ -86,7 +87,7 @@ const UploadImageGrid = () => {
     isLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllRoboProductsNewQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
 
@@ -236,36 +237,53 @@ const UploadImageGrid = () => {
 
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-    if (!checkedCategory.length && !checkedBrand.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
-    setFilterString(`${newFilterString}&page=1`);
-  }, [checkedBrand, checkedCategory]);
+
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
+  }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
-    apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-    clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
-      return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
+    if (apiRef?.current) {
+      apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     }
-  }, [deepSearch]);
+
+    clearTimeout(debouncing.current);
+
+    if (!name && !sku) {
+      setFilterString("");
+      return;
+    }
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
 
   /// Colums
   const columns = [
