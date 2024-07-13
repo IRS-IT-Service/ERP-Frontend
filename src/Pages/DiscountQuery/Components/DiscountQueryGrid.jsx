@@ -16,7 +16,10 @@ import {
   removeSelectedSkuQuery,
 } from "../../../features/slice/selectedItemsSlice";
 import FilterBarV2 from "../../../components/Common/FilterBarV2";
-import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
+import {
+  useGetAllProductV2Query,
+  useGetAllRoboProductsNewQuery,
+} from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import { useNavigate } from "react-router-dom";
 import DiscountCalcDialog from "./DiscountCalcDialog";
@@ -29,8 +32,15 @@ const DiscountQueryGrid = () => {
   const debouncing = useRef();
 
   /// global state
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-    useSelector((state) => state.product);
+  const {
+    checkedBrand,
+    checkedCategory,
+    searchTerm,
+    checkedGST,
+    deepSearch,
+    name,
+    sku,
+  } = useSelector((state) => state.product);
   const { createQueryItems, createQuerySku } = useSelector(
     (state) => state.SelectedItems
   );
@@ -54,10 +64,9 @@ const DiscountQueryGrid = () => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllRoboProductsNewQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
-
 
   /// handlers
 
@@ -70,12 +79,12 @@ const DiscountQueryGrid = () => {
     dispatch(setSelectedSkuQuery(selectionModel));
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     return () => {
-      dispatch(removeSelectedCreateQuery())
-      dispatch(removeSelectedSkuQuery())
-    }
-  },[])
+      dispatch(removeSelectedCreateQuery());
+      dispatch(removeSelectedSkuQuery());
+    };
+  }, []);
 
   useEffect(() => {
     if (
@@ -105,16 +114,17 @@ const DiscountQueryGrid = () => {
   const handleOpenDialog = () => {
     setOpen(true);
   };
- 
+
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
         return {
           id: item.SKU,
-          Sno: index +
-          1 +
-          (allProductData.data.currentPage - 1) * allProductData.data.limit,
+          Sno:
+            index +
+            1 +
+            (allProductData.data.currentPage - 1) * allProductData.data.limit,
           SKU: item.SKU,
           Name: item.Name,
           GST: item.GST,
@@ -141,44 +151,49 @@ const DiscountQueryGrid = () => {
 
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
 
-    setFilterString(`${newFilterString}&page=1`);
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
     clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
+
+    if (!name && !sku) {
+      setFilterString("");
       return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
     }
-  }, [deepSearch]);
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
 
   //Columns*******************
   const columns = [
@@ -330,7 +345,7 @@ const DiscountQueryGrid = () => {
         removeSelectedItems={removeSelectedItems}
         open={open}
         setOpen={setOpen}
-        dispatch= {dispatch}
+        dispatch={dispatch}
         removeSelectedCreateQuery={removeSelectedCreateQuery}
         removeSelectedSkuQuery={removeSelectedSkuQuery}
       />
