@@ -39,7 +39,8 @@ import {
   setCheckedBrand,
   setCheckedCategory,
   setCheckedGST,
-  setDeepSearch,
+  setName,
+  setSku,
 } from "../../../features/slice/productSlice";
 
 const Content = ({
@@ -449,8 +450,9 @@ const Content = ({
       dispatch(setCheckedBrand([])),
         dispatch(setCheckedCategory([])),
         dispatch(setCheckedGST([])),
-        dispatch(setDeepSearch("")),
-        apiRef?.current?.setPage(0),
+        dispatch(setName("")),
+        dispatch(setSku(""));
+      apiRef?.current?.setPage(0),
         apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
     };
   }, []);
