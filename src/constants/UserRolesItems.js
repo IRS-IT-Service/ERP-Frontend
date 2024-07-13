@@ -587,6 +587,29 @@ const userRolesData = [
   },
 
   {
+    title: 'Employee Task',
+    icon: 'fa-solid fa-list-check',
+    childrens: [
+      {
+        id: 85,
+        name: 'Add Task',
+        path: '/AddTask',
+        icon: 'fa-regular fa-calendar-plus',
+        notification: true,
+      },
+      {
+        id: 86,
+        name: 'Task Scheduled List',
+        path: '/TaskScheduledList',
+        icon: 'fa-solid fa-clipboard-list',
+        notification: true,
+      },
+
+ 
+    ],
+  },
+
+  {
     title: 'Other',
     icon: 'fa-regular fa-comment-dots',
     childrens: [
@@ -616,6 +639,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 84
+// last routes is 86
 
 export default userRolesData;
