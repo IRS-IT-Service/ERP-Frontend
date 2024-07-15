@@ -265,7 +265,7 @@ const AddshipmentDial = ({
         }
         return 0;
       });
-      const data = sorted?.map((item, index) => {
+      const data = allProductData.data?.products?.map((item, index) => {
         return {
           ...item,
           id: item.SKU,
@@ -332,7 +332,7 @@ const AddshipmentDial = ({
         if (newFilterString) newFilterString += "&";
         newFilterString += `sku=${sku}`;
       }
-      setFilterString(`${newFilterString}&page=1`);
+      setFilterString(`${newFilterString}&page=1&quantity=1`);
     }, 1000);
 
     return () => clearTimeout(debouncing.current);

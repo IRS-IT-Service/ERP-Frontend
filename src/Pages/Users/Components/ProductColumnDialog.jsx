@@ -69,7 +69,6 @@ const ProductColumnDialog = ({
 
   useEffect(() => {
     if (triggerUpdate) {
-      console.log(updateMessage);
       const data = {
         type: "product",
         body: {
