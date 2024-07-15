@@ -59,6 +59,10 @@ import {
   useGetAllClientQuery,
   useGetCustomerOrderShipmentQuery,
 } from "../../../features/api/clientAndShipmentApiSlice";
+import {
+  removedSelectedItems,
+  removeSelectedSkus,setSelectedItems,setSelectedSkus
+} from "../../../features/slice/selectedItemsSlice";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#eee",
@@ -168,7 +172,9 @@ const createOrderShipment = ({ setOpen, id }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { createQueryItems } = useSelector((state) => state.SelectedItems);
+  const { createQueryItems, selectedItems,selectedSkus } = useSelector(
+    (state) => state.SelectedItems
+  );
 
   let description = `Create order shipment`;
 
@@ -193,7 +199,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   const [companyDetails, setCompanyDetails] = useState([]);
   const [selectedData, setSelectedData] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
+  // const [selectedItems, setSelectedItems] = useState([]);
   const [FinalData, setFinalData] = useState([]);
   const [updateValue, setUpdateValue] = useState([]);
   const [editButton, setEditButton] = useState([]);
@@ -332,6 +338,13 @@ const createOrderShipment = ({ setOpen, id }) => {
     }
   }, [personType, setPersonType]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(removeSelectedSkus());
+      dispatch(removedSelectedItems());
+    };
+  }, [dispatch]);
+
   const handleToggleAddress = (event) => {
     const checked = event.target.checked;
     if (checked && selectedCustomer?.PermanentAddress) {
@@ -346,18 +359,18 @@ const createOrderShipment = ({ setOpen, id }) => {
   };
 
   const DeleteProduct = async (SKU) => {
-    if(orderId){
-    try {
-      let info = {
-        shipmentId: orderId,
-        SKU: SKU,
-      };
+    if (orderId) {
+      try {
+        let info = {
+          shipmentId: orderId,
+          SKU: SKU,
+        };
 
-      const result = await deleteProduct(info).unwrap();
-    } catch (e) {
-      console.log(e);
+        const result = await deleteProduct(info).unwrap();
+      } catch (e) {
+        console.log(e);
+      }
     }
-  }
   };
 
   const openPop = Boolean(anchorEl);
@@ -406,10 +419,12 @@ const createOrderShipment = ({ setOpen, id }) => {
     const newSelectedItems = Requireqty.filter((item) => item.SKU !== id);
     const newSelectedRowsData = FinalData.filter((item) => item.SKU !== id);
     const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id);
-    
-    DeleteProduct(id)
+
+    DeleteProduct(id);
     // setUpdateValue(NewUpdatedValue);
     setFinalData(newSelectedRowsData);
+    dispatch(setSelectedItems(id))
+    dispatch(setSelectedSkus(id))
     // setSelectedItems(newSelectedItems);
     // setRequireqty(newSelectedItems)
   };
@@ -495,8 +510,6 @@ const createOrderShipment = ({ setOpen, id }) => {
     setSelectedAddress(address);
     handleClose();
   };
-
- 
 
   const handleAddmoreAddress = async () => {
     try {
@@ -590,13 +603,15 @@ const createOrderShipment = ({ setOpen, id }) => {
         const result = await createShipment(formData).unwrap();
         toast.success("Order successfully created");
       }
-
+     dispatch(removedSelectedItems())
+     dispatch(removeSelectedSkus())
       navigate("/shipmentList");
       window.location.reload();
     } catch (e) {
       console.log("error at Discount Query create ", e);
     }
   };
+
   const handleSelectType = (e) => {
     setPersonType(e.target.value);
   };
@@ -739,42 +754,41 @@ const createOrderShipment = ({ setOpen, id }) => {
               </Box>
               {personType === "Company" && (
                 <Box>
-                { orderId ?       
-                <TextField
-                    size="small"
-                    label="Company Name"
-                    InputLabelProps={{
-                      shrink: !!selectedCustomer?.ContactName,
-                    }}
-                    variant="outlined"
-                    value={selectedCustomer?.CompanyName || ""}
-                    name="CompanyName"
-                    sx={{
-                      width: "26rem",
-                    }}
-                   
-                  /> : <Autocomplete
-                    
-                    style={{
-                      width: "26rem",
-                      backgroundColor: "rgba(255, 255, 255)",
-                    }}
-                    options={companyDetails}
-                    onChange={handleSelectedChange}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Company Name"
-                        onChange={(e) => {
-                          console.log(e.target.value);
-                        }}
-                        size="small"
-                      /> 
-                      
-                    
-                    )}
-                  /> }
-                </Box> 
+                  {orderId ? (
+                    <TextField
+                      size="small"
+                      label="Company Name"
+                      InputLabelProps={{
+                        shrink: !!selectedCustomer?.ContactName,
+                      }}
+                      variant="outlined"
+                      value={selectedCustomer?.CompanyName || ""}
+                      name="CompanyName"
+                      sx={{
+                        width: "26rem",
+                      }}
+                    />
+                  ) : (
+                    <Autocomplete
+                      style={{
+                        width: "26rem",
+                        backgroundColor: "rgba(255, 255, 255)",
+                      }}
+                      options={companyDetails}
+                      onChange={handleSelectedChange}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Company Name"
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      )}
+                    />
+                  )}
+                </Box>
               )}
               {personType === "Company" ? (
                 <Box>
@@ -798,38 +812,40 @@ const createOrderShipment = ({ setOpen, id }) => {
                 </Box>
               ) : (
                 <Box>
-                 {orderId ?   <TextField
-                    size="small"
-                    label="Contact person"
-                    InputLabelProps={{
-                      shrink: !!selectedCustomer?.ContactName,
-                    }}
-                    variant="outlined"
-                    value={selectedCustomer?.ContactName || ""}
-                    name="ContactPerson"
-                    sx={{
-                      width: "100%",
-                    }}
-                    
-                  /> :
-                  <Autocomplete
-                    style={{
-                      width: "26rem",
-                      backgroundColor: "rgba(255, 255, 255)",
-                    }}
-                    options={Clientlist}
-                    onChange={handleSelectedChange}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Client Name"
-                        onChange={(e) => {
-                          console.log(e.target.value);
-                        }}
-                        size="small"
-                      />
-                    )}
-                  /> }
+                  {orderId ? (
+                    <TextField
+                      size="small"
+                      label="Contact person"
+                      InputLabelProps={{
+                        shrink: !!selectedCustomer?.ContactName,
+                      }}
+                      variant="outlined"
+                      value={selectedCustomer?.ContactName || ""}
+                      name="ContactPerson"
+                      sx={{
+                        width: "100%",
+                      }}
+                    />
+                  ) : (
+                    <Autocomplete
+                      style={{
+                        width: "26rem",
+                        backgroundColor: "rgba(255, 255, 255)",
+                      }}
+                      options={Clientlist}
+                      onChange={handleSelectedChange}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Client Name"
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                          }}
+                          size="small"
+                        />
+                      )}
+                    />
+                  )}
                 </Box>
               )}
               <Box>
@@ -918,21 +934,18 @@ const createOrderShipment = ({ setOpen, id }) => {
                 </Box>
                 <Box
                   sx={{
-             
-              
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
                     padding: "16px",
-               
-            
                   }}
                 >
-                  <Table sx={{
+                  <Table
+                    sx={{
                       width: "30vw",
-                    overflow: "auto",
-                     
-                    }} >
+                      overflow: "auto",
+                    }}
+                  >
                     <TableBody>
                       {selectedCustomer?.PermanentAddress &&
                         Object.keys(selectedCustomer?.PermanentAddress).map(
@@ -941,13 +954,15 @@ const createOrderShipment = ({ setOpen, id }) => {
                               return null;
                             }
                             return (
-                              <TableRow key={key} sx={{ padding: 0  }}>
+                              <TableRow key={key} sx={{ padding: 0 }}>
                                 <TableCell
-                                  sx={{ padding: 0.5, fontWeight: "bold", }}
+                                  sx={{ padding: 0.5, fontWeight: "bold" }}
                                 >
                                   {key?.toUpperCase()}:
                                 </TableCell>
-                                <TableCell sx={{ padding: 0,overflow:"auto" }}>
+                                <TableCell
+                                  sx={{ padding: 0, overflow: "auto" }}
+                                >
                                   {selectedCustomer?.PermanentAddress[key]}
                                 </TableCell>
                               </TableRow>
@@ -961,7 +976,6 @@ const createOrderShipment = ({ setOpen, id }) => {
 
               <Box
                 sx={{
-               
                   display: "flex",
                   justifyContent: "center",
                   flexDirection: "column",
@@ -971,7 +985,6 @@ const createOrderShipment = ({ setOpen, id }) => {
               >
                 <Box
                   sx={{
-                
                     display: "flex",
                     gap: "10px",
                     alignItems: "center",
@@ -987,9 +1000,7 @@ const createOrderShipment = ({ setOpen, id }) => {
                     Shipping Address{" "}
                   </Typography>
                   <Box
-
                     sx={{
-                    
                       cursor: "pointer",
                       color: "blue",
                       fontSize: "20px",
@@ -1005,7 +1016,6 @@ const createOrderShipment = ({ setOpen, id }) => {
                 </Box>
                 <Box
                   sx={{
-                
                     height: "auto",
                     display: "flex",
                     flexDirection: "column",
@@ -1014,11 +1024,12 @@ const createOrderShipment = ({ setOpen, id }) => {
                   }}
                 >
                   {selectedAddress ? (
-                    <Table sx={{
-                      width: "30vw",
-                    overflow: "auto",
-                     
-                    }}>
+                    <Table
+                      sx={{
+                        width: "30vw",
+                        overflow: "auto",
+                      }}
+                    >
                       <TableBody>
                         {Object.keys(selectedAddress).map((key) => {
                           if (
@@ -1084,7 +1095,7 @@ const createOrderShipment = ({ setOpen, id }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {FinalData?.map((item, index) => {
+                {selectedItems?.map((item, index) => {
                   return (
                     <TableRow key={index}>
                       <StyleTable align="center" sx={{ fontSize: ".8rem" }}>
@@ -1452,7 +1463,7 @@ const createOrderShipment = ({ setOpen, id }) => {
         {openDialog && (
           <AddshipmentDial
             open={openDialog}
-            data={selectedData}
+            data={selectedItems}
             setOpen={setOpenDialog}
             setSelectedData={setSelectedData}
             FinalData={FinalData}

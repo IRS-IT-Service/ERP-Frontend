@@ -36,7 +36,7 @@ const ProductColumnDialog = ({
   oneUserData,
   adminId,
   refetchOneUser,
-  color
+  color,
 }) => {
   /// global state
   const { name } = useSelector((state) => state.auth.userInfo);
@@ -280,7 +280,7 @@ const ProductColumnDialog = ({
                       }}
                       checked={item.isEdit ? true : false}
                       onChange={(e) => isEditableHandler(e, item)}
-                      style={{color:color}}
+                      style={{ color: color }}
                     />
                   </div>
                 ))}
