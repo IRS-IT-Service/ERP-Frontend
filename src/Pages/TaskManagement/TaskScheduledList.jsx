@@ -656,7 +656,7 @@ useEffect(()=>{
         
 
         return (
-          <Button  disabled= {!isEligible} onClick={() => handleDeleteByid(title,id)}>
+          <Button  disabled= {isAdmin ? false : !isEligible} onClick={() => handleDeleteByid(title,id)}>
             <DeleteIcon
            
               sx={{
