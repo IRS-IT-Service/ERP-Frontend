@@ -57,11 +57,14 @@ import { useCreateRandDInventryMutation } from "../../../features/api/barcodeApi
 
 import {
   useGetAllClientQuery,
+  useGetAllPackagesQuery,
   useGetCustomerOrderShipmentQuery,
 } from "../../../features/api/clientAndShipmentApiSlice";
 import {
   removedSelectedItems,
-  removeSelectedSkus,setSelectedItems,setSelectedSkus
+  removeSelectedSkus,
+  setSelectedItems,
+  setSelectedSkus,
 } from "../../../features/slice/selectedItemsSlice";
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -74,7 +77,12 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   padding: "5px !important",
 }));
 
-import { InfoRounded, TabOutlined } from "@mui/icons-material";
+import {
+  ConnectingAirportsOutlined,
+  ConstructionOutlined,
+  InfoRounded,
+  TabOutlined,
+} from "@mui/icons-material";
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
@@ -172,7 +180,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { createQueryItems, selectedItems,selectedSkus } = useSelector(
+  const { createQueryItems, selectedItems, selectedSkus } = useSelector(
     (state) => state.SelectedItems
   );
 
@@ -184,6 +192,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [orderId, setOrderId] = useState("");
+  const [shouldFetch, setShouldFetch] = useState(false);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -252,6 +261,8 @@ const createOrderShipment = ({ setOpen, id }) => {
     useDeleteShipmentProductMutation();
 
   const { data: clientData, refetch: clientrefetch } = useGetAllClientQuery();
+  const { data: getAllShipments, refetch: getAllShipmentsRefetch } =
+    useGetAllPackagesQuery("InPackaging", { skip: !shouldFetch });
 
   const handleCloseDialog = () => {
     setOpen(false);
@@ -259,10 +270,10 @@ const createOrderShipment = ({ setOpen, id }) => {
   // setFinalData(shipment?.client?.Items)
 
   useEffect(() => {
-    if (selectedData?.length > 0) {
+    if (selectedItems?.length > 0) {
       let newData = [];
       setFinalData((prevFinalData) => {
-        const newItems = selectedData.filter(
+        const newItems = selectedItems.filter(
           (item) =>
             !prevFinalData.some((existingItem) => existingItem.SKU === item.SKU)
         );
@@ -270,7 +281,17 @@ const createOrderShipment = ({ setOpen, id }) => {
         return [...prevFinalData, ...newItems];
       });
     }
-  }, [selectedData]);
+  }, [selectedItems]);
+
+  // to call the getAllShipment
+
+  const fetchShipments = () => {
+    if (!shouldFetch) {
+      setShouldFetch(true);
+    } else {
+      getAllShipmentsRefetch();
+    }
+  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -380,7 +401,7 @@ const createOrderShipment = ({ setOpen, id }) => {
     const { value } = event.target;
     const newValue = +value;
     let error = false;
-
+    console.log(item.ActualQuantity);
     setFinalData((prev) =>
       prev.map((data) => {
         if (data.SKU === item.SKU) {
@@ -416,6 +437,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   };
 
   const removeSelectedItems = (id) => {
+    console.log(id);
     const newSelectedItems = Requireqty.filter((item) => item.SKU !== id);
     const newSelectedRowsData = FinalData.filter((item) => item.SKU !== id);
     const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id);
@@ -423,8 +445,8 @@ const createOrderShipment = ({ setOpen, id }) => {
     DeleteProduct(id);
     // setUpdateValue(NewUpdatedValue);
     setFinalData(newSelectedRowsData);
-    dispatch(setSelectedItems(id))
-    dispatch(setSelectedSkus(id))
+    dispatch(setSelectedItems(id));
+    dispatch(setSelectedSkus(id));
     // setSelectedItems(newSelectedItems);
     // setRequireqty(newSelectedItems)
   };
@@ -487,9 +509,9 @@ const createOrderShipment = ({ setOpen, id }) => {
 
   useEffect(() => {
     if (shipment?.client?.Items) {
-      setFinalData((prev) => {
-        return shipment?.client?.Items.map((item) => {
-          return {
+      shipment.client.Items.forEach((item) => {
+        dispatch(
+          setSelectedItems({
             SKU: item.SKU,
             Qty: item.Qty,
             prevQty: item.Qty,
@@ -500,11 +522,28 @@ const createOrderShipment = ({ setOpen, id }) => {
             ActualQuantity: item.ActualQuantity,
             error: false,
             isEdit: false,
-          };
-        });
+          })
+        );
+
+        dispatch(setSelectedSkus(item.SKU));
       });
+
+      const itemsData = shipment.client.Items.map((item) => ({
+        SKU: item.SKU,
+        Qty: item.Qty,
+        prevQty: item.Qty,
+        Name: item.productName,
+        updateQTY: "",
+        GST: item.GST,
+        Brand: item.Brand,
+        ActualQuantity: item.ActualQuantity,
+        error: false,
+        isEdit: false,
+      }));
+
+      setFinalData(itemsData);
     }
-  }, [shipment]);
+  }, [shipment, dispatch]);
 
   const handleSelectAddress = (address) => {
     setSelectedAddress(address);
@@ -597,15 +636,17 @@ const createOrderShipment = ({ setOpen, id }) => {
       formData.append("Items", JSON.stringify(info));
 
       if (orderId) {
+        console.log("info", info);
         const result = await updateShipment(formData).unwrap();
         toast.success("Order successfully updated");
       } else {
         const result = await createShipment(formData).unwrap();
         toast.success("Order successfully created");
       }
-     dispatch(removedSelectedItems())
-     dispatch(removeSelectedSkus())
+      dispatch(removedSelectedItems());
+      dispatch(removeSelectedSkus());
       navigate("/shipmentList");
+
       window.location.reload();
     } catch (e) {
       console.log("error at Discount Query create ", e);
@@ -1095,7 +1136,7 @@ const createOrderShipment = ({ setOpen, id }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {selectedItems?.map((item, index) => {
+                {FinalData?.map((item, index) => {
                   return (
                     <TableRow key={index}>
                       <StyleTable align="center" sx={{ fontSize: ".8rem" }}>

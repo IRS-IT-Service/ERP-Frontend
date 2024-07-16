@@ -134,6 +134,12 @@ const AddshipmentDial = ({
   /// handlers
 
   const handleSelectionChange = (selectionModel) => {
+    const prevData = selectedSkus;
+    const newSelection = selectionModel;
+
+    const deselectedSkus = prevData
+      .filter((data) => !newSelection.includes(data))
+      .join(", ");
     const lastData = selectionModel[selectionModel.length - 1];
 
     const newSelectedRowsData = rows.filter((item) =>
@@ -143,8 +149,8 @@ const AddshipmentDial = ({
     setSelectedItem(selectionModel);
 
     setSelectedItemsData(newSelectedRowsData);
-    dispatch(setSelectedItems(newfindData));
-    dispatch(setSelectedSkus(lastData));
+    dispatch(setSelectedItems(deselectedSkus ? deselectedSkus : newfindData));
+    dispatch(setSelectedSkus(deselectedSkus ? deselectedSkus : lastData));
   };
 
   const handleSetAddItem = () => {
@@ -165,7 +171,7 @@ const AddshipmentDial = ({
     }
   }, [open]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (
       selectedItemsData.length > 0 &&
       (!createQueryItems || createQueryItems.length === 0)
@@ -501,29 +507,29 @@ const AddshipmentDial = ({
                       }}
                     >
                       {Query === "SubList" ? (
-                           <DataGrid
-                           columns={columns}
-                           rows={rows}
-                           rowHeight={40}
-                           apiRef={apiRef}
-                           columnVisibilityModel={{
-                             Category: false,
-                           }}
-                           checkboxSelection
-                           disableRowSelectionOnClick
-                           isRowSelectable={(params) =>
-                             !data.includes(params.row.SKU)
-                           }
-                           onRowSelectionModelChange={handleSelectionChange}
-                           rowSelectionModel={selectedItems}
-                           keepNonExistentRowsSelected
-                           components={{
-                             Footer: CustomFooter,
-                           }}
-                           slotProps={{
-                             footer: { status: refetch },
-                           }}
-                         />
+                        <DataGrid
+                          columns={columns}
+                          rows={rows}
+                          rowHeight={40}
+                          apiRef={apiRef}
+                          columnVisibilityModel={{
+                            Category: false,
+                          }}
+                          checkboxSelection
+                          disableRowSelectionOnClick
+                          isRowSelectable={(params) =>
+                            !data.includes(params.row.SKU)
+                          }
+                          onRowSelectionModelChange={handleSelectionChange}
+                          rowSelectionModel={selectedItems}
+                          keepNonExistentRowsSelected
+                          components={{
+                            Footer: CustomFooter,
+                          }}
+                          slotProps={{
+                            footer: { status: refetch },
+                          }}
+                        />
                       ) : (
                         <DataGrid
                           columns={columns}
