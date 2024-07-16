@@ -16,7 +16,10 @@ import {
   removeSelectedSkuQuery,
 } from "../../features/slice/selectedItemsSlice";
 import FilterBarV2 from "../../components/Common/FilterBarV2";
-import { useGetAllProductV2Query,useGetAllRoboProductsNewQuery } from "../../features/api/productApiSlice";
+import {
+  useGetAllProductV2Query,
+  useGetAllRoboProductsNewQuery,
+} from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
@@ -87,8 +90,7 @@ const infoDetail = [
         width={"90%"}
       />
     ),
-    instruction:
-      " Newly added quantity in Research & Development.",
+    instruction: " Newly added quantity in Research & Development.",
   },
   {
     name: "Old Qty in R&D",
@@ -99,8 +101,7 @@ const infoDetail = [
         width={"90%"}
       />
     ),
-    instruction:
-      "Previous quantity in Research & Development",
+    instruction: "Previous quantity in Research & Development",
   },
 ];
 
@@ -145,8 +146,15 @@ const Inventory = () => {
       : `Add Parts For ${compName}`;
 
   /// global state
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch ,name,sku} =
-    useSelector((state) => state.product);
+  const {
+    checkedBrand,
+    checkedCategory,
+    searchTerm,
+    checkedGST,
+    deepSearch,
+    name,
+    sku,
+  } = useSelector((state) => state.product);
   const { createQueryItems, createQuerySku } = useSelector(
     (state) => state.SelectedItems
   );
@@ -213,7 +221,7 @@ const Inventory = () => {
       dispatch(setSelectedCreateQuery(newData));
     }
   }, [selectedItemsData]);
-  console.log(selectedItemsData.length)
+  console.log(selectedItemsData.length);
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
     const newSelectedRowsData = selectedItemsData.filter(
@@ -231,10 +239,10 @@ const Inventory = () => {
   // );
 
   const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
-const realData = Array.from(uniqueSKUs).map((sku) => 
-  createQueryItems.find((item) => item.SKU === sku)
-);
- 
+  const realData = Array.from(uniqueSKUs).map((sku) =>
+    createQueryItems.find((item) => item.SKU === sku)
+  );
+
   const handleOpenDialog = () => {
     setOpen(true);
   };
@@ -288,10 +296,10 @@ const realData = Array.from(uniqueSKUs).map((sku) =>
     }
   }, [checkedBrand, checkedCategory, checkedGST]);
 
- useEffect(() => {
-    if (apiRef?.current) {
-      apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-    }
+  useEffect(() => {
+    // if (apiRef?.current) {
+    //   apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    // }
 
     clearTimeout(debouncing.current);
 
@@ -431,7 +439,11 @@ const realData = Array.from(uniqueSKUs).map((sku) =>
             <CachedIcon />
           </Button>
           <Box>
-            <Button variant="outlined" sx={{color :`${buttonBlink ? "green":"blue"} `}} onClick={() => fetchDataWithQuery("RandDProducts")}>
+            <Button
+              variant="outlined"
+              sx={{ color: `${buttonBlink ? "green" : "blue"} ` }}
+              onClick={() => fetchDataWithQuery("RandDProducts")}
+            >
               Fetch R&D
             </Button>
           </Box>
@@ -571,7 +583,6 @@ const realData = Array.from(uniqueSKUs).map((sku) =>
                   footer: { status: refetch },
                 }}
               />
-          
             </Box>
           </Grid>
         )}
