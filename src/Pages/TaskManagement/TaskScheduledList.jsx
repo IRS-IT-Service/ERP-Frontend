@@ -276,8 +276,9 @@ useEffect(()=>{
   const RoleSelect = (params) => {
     const { id, field, value } = params;
 
-    const isEligible = params.row.userId === adminid
-    console.log(params.row.userId)
+    const isEligible = params.row.
+    assigneeBy === adminid
+
 
     const handleChange = (event) => {
       const newValue = event.target.value;
@@ -314,7 +315,7 @@ useEffect(()=>{
         IconComponent={null}
       >
         {NewColumn.map((role, index) => (
-          <MenuItem disabled={((!isEligible && !(field === "status")) || (!isEligible || (field === "userName"))) && !isAdmin} key={index} value={role.value}>
+          <MenuItem disabled={ field === "status" ? false : (!isEligible || (field === "userName") || (!isEligible && (field === "priority")))} key={index} value={role.value}>
             {field === "userName" ? (
               <>
                 <span>{role.name}</span>
@@ -650,7 +651,8 @@ useEffect(()=>{
       renderCell: (params) => {
         const id = params.row.id;
         const title = params.row.taskTitle;
-        const isEligible = params.row.userId === adminid
+        const isEligible = params.row.
+        assigneeBy === adminid
         
 
         return (
