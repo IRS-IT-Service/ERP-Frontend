@@ -197,9 +197,9 @@ const RestockGrid = () => {
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
-    if (apiRef?.current) {
-      apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
-    }
+    // if (apiRef?.current) {
+    //   apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    // }
 
     clearTimeout(debouncing.current);
 

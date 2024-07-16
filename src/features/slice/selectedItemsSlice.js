@@ -8,6 +8,8 @@ const initialState = {
   createQuerySku: [],
   NewselectedSKU: [],
   selectedOverseaseOrder: [],
+  selectedItems: [],
+  selectedSkus: [],
 };
 
 const selectedItemsSlice = createSlice({
@@ -36,10 +38,32 @@ const selectedItemsSlice = createSlice({
       state.NewselectedSKU = [];
     },
     setOverseaseSelectedOrder: (state, action) => {
-      state.selectedOverseaseOrder = action.payload
+      state.selectedOverseaseOrder = action.payload;
     },
     removeSelectedOverseaseOrder: (state) => {
       state.selectedOverseaseOrder = [];
+    },
+    setSelectedItems: (state, action) => {
+      const skuIndex = state.selectedItems.findIndex(item => item.SKU === action.payload);
+      if (skuIndex !== -1) {
+        state.selectedItems.splice(skuIndex, 1);
+      } else {
+        state.selectedItems.push(action.payload);
+      }
+    },
+    setSelectedSkus: (state, action) => {
+      const skuIndex = state.selectedSkus.indexOf(action.payload);
+      if (skuIndex !== -1) {
+        state.selectedSkus.splice(skuIndex, 1);
+      } else {
+        state.selectedSkus.push(action.payload);
+      }
+    },
+    removedSelectedItems: (state, action) => {
+      state.selectedItems = [];
+    },
+    removeSelectedSkus: (state, action) => {
+      state.selectedSkus = [];
     },
   },
 });
@@ -52,5 +76,9 @@ export const {
   removeSelectedSKU,
   setOverseaseSelectedOrder,
   removeSelectedOverseaseOrder,
+  removeSelectedSkus,
+  removedSelectedItems,
+  setSelectedSkus,
+  setSelectedItems,
 } = selectedItemsSlice.actions;
 export default selectedItemsSlice.reducer;

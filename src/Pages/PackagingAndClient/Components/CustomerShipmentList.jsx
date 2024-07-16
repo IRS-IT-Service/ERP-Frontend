@@ -778,7 +778,7 @@ const CustomerShipmentList = () => {
           initialState={{
             filter: {
               filterModel: {
-                items: ["OrderDate"],
+                items: ["_id"],
                 quickFilterExcludeHiddenColumns: true,
               },
             },
