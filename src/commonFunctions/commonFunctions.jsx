@@ -109,6 +109,14 @@ const formatDateForWhatsApp = (date) => {
   }
 };
 
+function formatsDate(dateString) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function calculateTimeLeft(targetDate) {
   const difference = new Date(targetDate) - new Date();
   let timeLeft = {};
@@ -126,22 +134,22 @@ function calculateTimeLeft(targetDate) {
 }
 
 function truncateFileName(fileName, maxLength) {
-  const dotIndex = fileName.lastIndexOf('.');
+  const dotIndex = fileName.lastIndexOf(".");
   if (dotIndex === -1) return fileName; // No extension found
 
   const name = fileName.slice(0, dotIndex);
   const extension = fileName.slice(dotIndex);
-  
+
   if (fileName.length <= maxLength) {
     return fileName;
   }
 
   const charsToShow = maxLength - extension.length - 3; // Adjust for "..." and extension
   if (charsToShow <= 0) {
-    return '...' + extension;
+    return "..." + extension;
   }
 
-  const truncatedName = name.slice(0, charsToShow) + '...';
+  const truncatedName = name.slice(0, charsToShow) + "...";
   return truncatedName + extension;
 }
 
@@ -151,6 +159,7 @@ export {
   NotificationSoundPlay,
   formatDate,
   formateDateAndTime,
+  formatsDate,
   formatTime,
   ChatNotificationPlay,
   formatDateForWhatsApp,

@@ -53,17 +53,16 @@ console.log(editedRows)
 
   useEffect(() => {
     if (editedRows !== null) {
-      const addressParts = editedRows.Address.split(",");
-      const [Address, District, State, Country, Pincode] = addressParts;
+
          
       setForm({
         ...editedRows,
         Contact: editedRows.ContactNumber,
-        Address: Address.trim(),
-        District: District.trim(),
-        State: State.trim(),
-        Country: Country.trim(),
-        Pincode: +Pincode.trim(),
+        Address: editedRows.AddressPoint,
+        District: editedRows.District,
+        State: editedRows.State,
+        Country: editedRows.Country,
+        Pincode: +editedRows.Pincode,
       });
     }
   }, [editedRows]);
