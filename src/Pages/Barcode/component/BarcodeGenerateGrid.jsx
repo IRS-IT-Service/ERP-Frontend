@@ -33,7 +33,8 @@ import {
   setCheckedCategory,
   setCheckedGST,
   setName,
-  setSku,setAllProductsV2
+  setSku,
+  setAllProductsV2,
 } from "../../../features/slice/productSlice";
 
 // for refresh data
