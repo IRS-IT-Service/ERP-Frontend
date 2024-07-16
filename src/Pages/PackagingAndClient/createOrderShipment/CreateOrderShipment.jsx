@@ -272,14 +272,15 @@ const createOrderShipment = ({ setOpen, id }) => {
   useEffect(() => {
     if (selectedItems?.length > 0) {
       let newData = [];
-      setFinalData((prevFinalData) => {
-        const newItems = selectedItems.filter(
-          (item) =>
-            !prevFinalData.some((existingItem) => existingItem.SKU === item.SKU)
-        );
+      // setFinalData((prevFinalData) => {
+      //   const newItems = selectedItems.filter(
+      //     (item) =>
+      //       !prevFinalData.some((existingItem) => existingItem.SKU === item.SKU)
+      //   );
 
-        return [...prevFinalData, ...newItems];
-      });
+      //   return [...prevFinalData, ...newItems];
+      // });
+      setFinalData(selectedItems)
     }
   }, [selectedItems]);
 
