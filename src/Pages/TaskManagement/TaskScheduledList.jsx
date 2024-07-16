@@ -315,7 +315,7 @@ useEffect(()=>{
         IconComponent={null}
       >
         {NewColumn.map((role, index) => (
-          <MenuItem disabled={ field === "status" ? false : (!isEligible || (field === "userName") || (!isEligible && (field === "priority")))} key={index} value={role.value}>
+          <MenuItem disabled={ field === "status" || isAdmin ? false : ((field === "userName") || !isEligible) || (!isEligible && field === "priority")} key={index} value={role.value}>
             {field === "userName" ? (
               <>
                 <span>{role.name}</span>
