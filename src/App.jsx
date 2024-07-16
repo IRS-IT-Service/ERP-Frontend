@@ -144,6 +144,8 @@ import { messaging } from "./firebase";
 import useVisibilityChange from "./commonFunctions/useVisibilityChange";
 import OverseasorderList from "./Pages/OverseasOrderList/Components/OverseasorderList";
 import { toastNotification } from "./commonFunctions/notificationHelpers";
+import TaskScheduledList from "./Pages/TaskManagement/TaskScheduledList";
+import AddTask from "./Pages/TaskManagement/AddTask";
 
 import SubPIList1 from "./Pages/OverseasOrderList/Components/SubPIListComponent/SubPIList1";
 import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
@@ -163,6 +165,7 @@ function App() {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
   const adminid = userInfo?.adminId;
+  console.log(isAdmin)
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
@@ -848,7 +851,26 @@ function App() {
                     </UserRole>
                   }
                 />
+
+<Route
+                  path="/AddTask"
+                  element={
+                    <UserRole name={"Add Task"}>
+                      <AddTask/>
+                    </UserRole>
+                  }
+                />
+
+<Route
+                  path="/TaskScheduledList"
+                  element={
+                    <UserRole name={"Task Scheduled List"}>
+                      <TaskScheduledList/>
+                    </UserRole>
+                  }
+                />
               </Route>
+              
           
             </Routes>
           </Suspense>
