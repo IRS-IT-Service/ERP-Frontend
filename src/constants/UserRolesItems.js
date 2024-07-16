@@ -590,13 +590,13 @@ const userRolesData = [
     title: 'Employee Task',
     icon: 'fa-solid fa-list-check',
     childrens: [
-      {
-        id: 85,
-        name: 'Add Task',
-        path: '/AddTask',
-        icon: 'fa-regular fa-calendar-plus',
-        notification: true,
-      },
+      // {
+      //   id: 85,
+      //   name: 'Add Task',
+      //   path: '/AddTask',
+      //   icon: 'fa-regular fa-calendar-plus',
+      //   notification: true,
+      // },
       {
         id: 86,
         name: 'Task Scheduled List',

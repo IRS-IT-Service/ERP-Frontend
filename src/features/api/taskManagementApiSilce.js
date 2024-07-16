@@ -44,7 +44,7 @@ export const taskManagementApiSilce = apiSlice.injectEndpoints({
       deleteTask: builder.mutation({
         query: (data) => {
           return {
-            url: `${Task_URL}/deleteTask`,
+            url: `${Task_URL}/deleteTask/${data}`,
             method: "DELETE",
      
           };
