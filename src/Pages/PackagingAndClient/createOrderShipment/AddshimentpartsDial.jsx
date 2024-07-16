@@ -1,36 +1,19 @@
 import { React, useEffect, useState, useRef } from "react";
 import {
-  Table,
-  TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Dialog,
   DialogContent,
   Button,
-  TextField,
   Box,
   Grid,
   Typography,
   CircularProgress,
   styled,
-  InputAdornment,
-  Autocomplete,
-  Popover,
-  ListItemButton,
-  ListItemIcon,
-  Checkbox,
-  ListItemText,
-  FormControlLabel,
   TablePagination,
   DialogTitle,
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
-import DeleteIcon from "@mui/icons-material/Delete";
 
-import { setAddparts } from "../../../features/slice/R&DSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllProductsV2 } from "../../../features/slice/productSlice";
 import {
@@ -38,6 +21,10 @@ import {
   setSelectedCreateQuery,
   setSelectedSkuQuery,
   removeSelectedSkuQuery,
+  setSelectedItems,
+  setSelectedSkus,
+  removeSelectedSkus,
+  removedSelectedItems,
 } from "../../../features/slice/selectedItemsSlice";
 import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import {
@@ -45,9 +32,7 @@ import {
   useGetAllRoboProductsNewQuery,
 } from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
-import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
-import AddshimentpartsDial from "./AddshimentpartsDial";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useParams } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material";
@@ -100,36 +85,28 @@ const AddshipmentDial = ({
   FinalData,
   Query,
 }) => {
+  console.log(Query);
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const debouncing = useRef();
   const [skip, setSkip] = useState(true);
   const { id } = useParams();
-  const [SelectedSKU, setSelectedSKU] = useState();
   const [updateValue, setUpdateValue] = useState([]);
-  const [buttonBlink, setButtonBlink] = useState("");
 
   /// global state
-  const {
-    checkedBrand,
-    checkedCategory,
-    searchTerm,
-    checkedGST,
-    deepSearch,
-    name,
-    sku,
-  } = useSelector((state) => state.product);
-  const { createQueryItems, createQuerySku } = useSelector(
+  const { checkedBrand, checkedCategory, checkedGST, name, sku } = useSelector(
+    (state) => state.product
+  );
+  const { createQueryItems, createQuerySku, selectedSkus } = useSelector(
     (state) => state.SelectedItems
   );
   /// local state
 
   const [openAdditem, setOpenAdditem] = useState(false);
   const [rows, setRows] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItem] = useState([]);
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [selectedDiabledItems, setSelectedDiabled] = useState([]);
-
   const [filterString, setFilterString] = useState("");
   const [page, setPage] = useState(1);
   const [rowPerPage, setRowPerPage] = useState(100);
@@ -157,12 +134,23 @@ const AddshipmentDial = ({
   /// handlers
 
   const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
+    const prevData = selectedSkus;
+    const newSelection = selectionModel;
+
+    const deselectedSkus = prevData
+      .filter((data) => !newSelection.includes(data))
+      .join(", ");
+    const lastData = selectionModel[selectionModel.length - 1];
+
     const newSelectedRowsData = rows.filter((item) =>
       selectionModel.includes(item.id)
     );
+    const newfindData = rows.find((item) => item.SKU === lastData);
+    setSelectedItem(selectionModel);
+
     setSelectedItemsData(newSelectedRowsData);
-    dispatch(setSelectedSkuQuery(selectionModel));
+    dispatch(setSelectedItems(deselectedSkus ? deselectedSkus : newfindData));
+    dispatch(setSelectedSkus(deselectedSkus ? deselectedSkus : lastData));
   };
 
   const handleSetAddItem = () => {
@@ -179,7 +167,7 @@ const AddshipmentDial = ({
   useEffect(() => {
     {
       const disabled = FinalData?.map((item) => item.SKU);
-      setSelectedDiabled(disabled);
+      setSelectedDiabled(selectedSkus);
     }
   }, [open]);
 
@@ -234,7 +222,6 @@ const AddshipmentDial = ({
           });
 
           setSelectedData(updatedData);
-          console.log(updatedData);
         }
       } catch (e) {
         console.log(e);
@@ -265,7 +252,7 @@ const AddshipmentDial = ({
         }
         return 0;
       });
-      const data = sorted?.map((item, index) => {
+      const data = allProductData.data?.products?.map((item, index) => {
         return {
           ...item,
           id: item.SKU,
@@ -332,7 +319,9 @@ const AddshipmentDial = ({
         if (newFilterString) newFilterString += "&";
         newFilterString += `sku=${sku}`;
       }
-      setFilterString(`${newFilterString}&page=1`);
+      Query !== "SubList"
+        ? setFilterString(`${newFilterString}&page=1&quantity=1`)
+        : setFilterString(`${newFilterString}&page=1`);
     }, 1000);
 
     return () => clearTimeout(debouncing.current);
@@ -443,7 +432,7 @@ const AddshipmentDial = ({
     );
   }
   const getRowClassName = (params) => {
-    return !selectedDiabledItems.includes(params.row.SKU) &&
+    return !selectedSkus.includes(params.row.SKU) &&
       params.row.ActualQuantity > 0
       ? "selected-value"
       : "disabled-value";
@@ -558,7 +547,7 @@ const AddshipmentDial = ({
                           }
                           getCellClassName={getRowClassName}
                           onRowSelectionModelChange={handleSelectionChange}
-                          rowSelectionModel={selectedItems}
+                          rowSelectionModel={selectedSkus}
                           keepNonExistentRowsSelected
                           components={{
                             Footer: CustomFooter,
