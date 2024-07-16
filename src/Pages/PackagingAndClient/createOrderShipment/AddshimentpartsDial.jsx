@@ -85,7 +85,6 @@ const AddshipmentDial = ({
   FinalData,
   Query,
 }) => {
-  console.log(Query);
   const apiRef = useGridApiRef();
   const dispatch = useDispatch();
   const debouncing = useRef();
@@ -140,6 +139,7 @@ const AddshipmentDial = ({
     const deselectedSkus = prevData
       .filter((data) => !newSelection.includes(data))
       .join(", ");
+      console.log(deselectedSkus)
     const lastData = selectionModel[selectionModel.length - 1];
 
     const newSelectedRowsData = rows.filter((item) =>
