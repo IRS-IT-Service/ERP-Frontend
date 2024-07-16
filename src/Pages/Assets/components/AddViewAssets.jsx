@@ -1,8 +1,15 @@
-import { Box, Button, Dialog, DialogContent } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  Grid,
+  Portal,
+} from "@mui/material";
 import TablePagination from "@mui/material/TablePagination";
 
 import React, { useState, useEffect } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import AddAssetsDialog from "./AddAssetsDialog";
 import {
   useDeleteSingleAssetsMutation,
@@ -48,7 +55,6 @@ const AddViewAssets = () => {
     useDeleteSingleAssetsMutation();
   // this dialog function for add all input field dialog
   const handleOpen = () => {
-  
     setOpenDialog(true);
   };
 
@@ -168,6 +174,17 @@ const AddViewAssets = () => {
       );
     }
   };
+
+  function MyCustomToolbar(prop) {
+    return (
+      <>
+        <Portal container={() => document.getElementById("filter-panel")}>
+          <GridToolbarQuickFilter />
+        </Portal>
+        {/* <GridToolbar {...prop} /> */}
+      </>
+    );
+  }
 
   const columns = [
     {
@@ -390,6 +407,7 @@ const AddViewAssets = () => {
   return (
     <Box>
       {/* buttons */}
+
       <div
         style={{
           display: "flex",
@@ -397,6 +415,9 @@ const AddViewAssets = () => {
           margin: "10px",
         }}
       >
+        <Grid item>
+          <Box id="filter-panel" />
+        </Grid>
         <Button
           variant="outlined"
           onClick={handleOpen}
@@ -435,6 +456,9 @@ const AddViewAssets = () => {
           columns={columns}
           components={{
             Footer: CustomFooter,
+          }}
+          slots={{
+            toolbar: MyCustomToolbar,
           }}
           slotProps={{
             footer: { status: refetch },
