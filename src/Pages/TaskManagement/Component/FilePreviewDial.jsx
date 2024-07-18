@@ -76,17 +76,22 @@ const priorityOptions = [
     icon: <ReportIcon />,
   },
 ];
+let fileName = ""
+const FilePreviewDial = ({ open, handleClose, details, refetch ,FindName }) => {
 
-const FilePreviewDial = ({ open, handleClose, details, refetch }) => {
-const [fileName ,setFilename] = useState("")
+const [loading, setLoading] = useState(false);
 const [formState, setFormState] = useState({
      file:null,
      fileUploaded: false,
   });
 
+
+
+
 const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
 
   function getFileExtension(filename) {
+  
     const parts = filename.split(".");
     const extension = parts[parts.length - 1];
 
@@ -133,10 +138,68 @@ const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
     }
   };
 
+  const getFilenameFromUrl = (url) => {
+   if(!url){
+    return
+   }
+
+    const pathSegments = url.split("/");
+    const lastSegment = pathSegments[pathSegments.length - 1];
+    return decodeURIComponent(lastSegment);
+  };
+
+  const DownloadButton = ({ url , setFilename }) => {
+    // Function to extract filename from URL
+    if(!url){
+      return "No file or image has been uploaded !"
+    }
+ 
+
+    // const filename = getFilenameFromUrl(url);
+    
+   const handleDownload = () => {
+      setLoading(true);
+        fetch(url)
+          .then(response => response.blob())
+          .then(blob => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            setLoading(false);
+          })
+          .catch(error => console.error('Error downloading file:', error));
+      };
+    
+      return (
+        <Button
+          variant="contained"
+          size="small"
+          sx={{
+            background:"#d51157",
+
+          }}
+          onClick={handleDownload}
+         
+        >
+             {loading ? (<CircularProgress size="25px" sx={{ color: "#fff" }} />
+            ) : (
+              "Click to download"
+            )}
+        </Button>
+      );
+    };
+
 
   const FilePreview = ({ filename, file }) => {
-    const parts = file.split(".");
-    const extension = parts[parts.length - 1];
+    if(!file){
+      return
+    }
+    const parts = file?.split(".");
+    const extension = parts[parts?.length - 1];
 
     const extensionFile = () => {
       switch (extension) {
@@ -210,7 +273,7 @@ const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
             }}
           />
           <Typography variant="body2" sx={{ mt: 2 }}>
-            {filename}
+            {getFilenameFromUrl(file)}
           </Typography>
         </Box>
       );
@@ -245,46 +308,7 @@ const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
     }
   };
 
-  const DownloadButton = ({ url }) => {
-    // Function to extract filename from URL
-    const getFilenameFromUrl = (url) => {
-      const pathSegments = url.split("/");
-      const lastSegment = pathSegments[pathSegments.length - 1];
-      return decodeURIComponent(lastSegment);
-    };
-
-    const filename = getFilenameFromUrl(url);
-    setFilename(filename)
-    const handleDownload = () => {
-        fetch(url)
-          .then(response => response.blob())
-          .then(blob => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', filename);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
-          })
-          .catch(error => console.error('Error downloading file:', error));
-      };
-    
-      return (
-        <Button
-          variant="contained"
-          size="small"
-          sx={{
-            background:"#d51157",
-
-          }}
-          onClick={handleDownload}
-         
-        >
-         Click  to Download 
-        </Button>
-      );
-    };
+ 
 
 
   return (
@@ -353,14 +377,14 @@ const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
                 }}
               >
                 {" "}
-                <FilePreview file={details.file.files.url} />
+                <FilePreview file={details?.file?.files.url} />
                 <Typography variant="body2" fontSize={"12px"}>
-                  {fileName}
+                {getFilenameFromUrl(details?.file?.files.url)}
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 2 }}>
-                  {details.file.files.filename}
+                  {details?.file?.files.filename}
                 </Typography>
-                <DownloadButton url={details.file.files.url} />
+                <DownloadButton url={details?.file?.files.url}  />
               </Box>
             </Box>
             <Box
@@ -402,7 +426,7 @@ const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
             Assignee By:
           </Typography>
           <Typography variant="body1" sx={{ fontSize: '18px' }}>
-            {details.file.assigneeBy}
+            {FindName(details.file.assigneeBy)}
           </Typography>
           </Paper>
           <Paper elevation={3} sx={{p:1,width: '100%',display: 'flex',gap:"20px", mb: 2 }}>

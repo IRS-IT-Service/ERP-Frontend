@@ -137,6 +137,8 @@ const TaskScheduledList = () => {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const adminid = userInfo?.adminId;
 
+  
+
 useEffect(()=>{
   if(AllUserData?.status){
   const UserName = AllUserData?.data.map((item) => ({
@@ -149,6 +151,12 @@ useEffect(()=>{
 
 
 },[AllUserData])
+
+const FindName = (id) =>{
+
+  const Name = UserName?.find((item) => item.adminId === id);
+   return id === adminid ? "My Self" : Name?.name
+}
 
 
   const [deleteById, { isLoading: delteLoading }] = useDeleteTaskMutation();
@@ -211,7 +219,7 @@ useEffect(()=>{
         } catch (error) {
           console.log(error);
         } finally {
-          Swal.hideLoading(); // Hide loading spinner
+          Swal.hideLoading(); 
         }
       }
     });
@@ -224,21 +232,23 @@ useEffect(()=>{
   };
 
   useEffect(() => {
-    if (allData?.status === true) {
-      const data = allData?.data?.map((item, index) => {
-        return {
-          ...item,
-          id: item._id,
-          Sno: index + 1,
-          file: item.files?.url,
-          dueDate: item.dueDate,
-          userId: item.userId,
-        };
-      });
-
+    if (allData?.status) {
+      const filteredData = isAdmin
+        ? allData.data
+        : allData.data.filter(item => item.userId === adminid);
+  
+      const data = filteredData.map((item, index) => ({
+        ...item,
+        id: item._id,
+        Sno: index + 1,
+        file: item.files?.url,
+        dueDate: item.dueDate,
+        userId: item.userId,
+      }));
+  
       setRows(data);
     }
-  }, [allData]);
+  }, [allData, isAdmin, adminid]);
 
   const CustomToolbar = (prop) => {
     /// global state
@@ -282,6 +292,7 @@ useEffect(()=>{
 
     const handleChange = (event) => {
       const newValue = event.target.value;
+   
       const Name = UserName?.find((item) => item.value === newValue);
 
       if (field === "userName") {
@@ -318,7 +329,7 @@ useEffect(()=>{
           <MenuItem disabled={ field === "status" || isAdmin ? false : ((field === "userName") || !isEligible) || (!isEligible && field === "priority")} key={index} value={role.value}>
             {field === "userName" ? (
               <>
-                <span>{role.name}</span>
+                <span>{ role.name}</span>
               </>
             ) : (
               <Box
@@ -515,7 +526,7 @@ useEffect(()=>{
       field: "taskTitle",
       headerName: "Task",
       flex: 0.1,
-      minWidth: 300,
+      minWidth: 200,
       maxWidth: 500,
       align: "center",
       headerAlign: "center",
@@ -547,7 +558,7 @@ useEffect(()=>{
     },
     {
       field: "userName",
-      headerName: "Assignee",
+      headerName: "Assignee To",
       flex: 0.1,
       minWidth: 150,
       maxWidth: 250,
@@ -558,10 +569,23 @@ useEffect(()=>{
       renderCell: (params) => <RoleSelect {...params} />,
     },
     {
+      field: "assigneeBy",
+      headerName: "Assignee By",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => FindName(params.value),
+   
+    },
+    {
       field: "dueDate",
       headerName: "Due date & time",
       flex: 0.1,
-      minWidth: 250,
+      minWidth: 220,
       maxWidth: 300,
       align: "center",
       headerAlign: "center",
@@ -607,7 +631,7 @@ useEffect(()=>{
       field: "warningTime",
       headerName: "Alarm",
       flex: 0.1,
-      minWidth: 250,
+      minWidth: 220,
       maxWidth: 300,
       align: "center",
       headerAlign: "center",
@@ -620,7 +644,8 @@ useEffect(()=>{
       field: "file",
       headerName: "File",
       flex: 0.1,
-      minWidth: 100,
+      minWidth: 50,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -740,7 +765,7 @@ useEffect(()=>{
       }
 
       {OpenFilePreview &&
-        <FilePreviewDial details={details} open ={OpenFilePreview}  handleClose={handleCloseFile} refetch={refetch} />
+        <FilePreviewDial details={details} open ={OpenFilePreview} UserName={UserName} FindName={FindName}  handleClose={handleCloseFile} refetch={refetch} />
       }
     </Box>
   );
