@@ -126,9 +126,9 @@ const TaskScheduledList = () => {
   const [rows, setRows] = useState([]);
   const [previewDialOpen, setPreviewDialOpen] = useState(false);
   const [details, setDetails] = useState({});
-  const [OpenAddTask ,setAddTask] = useState(false);
-  const [OpenFilePreview ,setFilePreview] = useState(false);
-  const [UserName , setUserName] = useState([]);
+  const [OpenAddTask, setAddTask] = useState(false);
+  const [OpenFilePreview, setFilePreview] = useState(false);
+  const [UserName, setUserName] = useState([]);
   const {
     refetch: refetchAllUser,
     data: AllUserData,
@@ -137,27 +137,48 @@ const TaskScheduledList = () => {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const adminid = userInfo?.adminId;
 
-  
+  useEffect(() => {
+    if (AllUserData?.status) {
+      const UserName = AllUserData?.data.map((item) => ({
+        name: item.name,
+        adminId: item.adminId,
+        value: item.name,
+      }));
+      setUserName(UserName);
+    }
+  }, [AllUserData]);
 
-useEffect(()=>{
-  if(AllUserData?.status){
-  const UserName = AllUserData?.data.map((item) => ({
-    name: item.name,
-    adminId: item.adminId,
-    value: item.name,
-  }))
-  setUserName(UserName)
-}
-
-
-},[AllUserData])
-
-const FindName = (id) =>{
-
-  const Name = UserName?.find((item) => item.adminId === id);
-   return id === adminid ? "My Self" : Name?.name
-}
-
+  const FindName = (id) => {
+    const Name = UserName?.find((item) => item.adminId === id);
+    return id === adminid ? (
+      <span
+        style={{
+          textAlign: "center",
+          width: "7vw",
+          fontSize: "13px",
+          fontWeight: "bold",
+      
+        }}
+      >
+        My Self
+      </span>
+    ) : (
+      <span
+        style={{
+          display: "inline-block",
+          width: "7vw",
+          fontSize: "13px",
+          textAlign: "center",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          fontWeight: "bold",
+        }}
+      >
+        {Name?.name}
+      </span>
+    );
+  };
 
   const [deleteById, { isLoading: delteLoading }] = useDeleteTaskMutation();
 
@@ -184,22 +205,19 @@ const FindName = (id) =>{
     }
   };
 
-
-  const handleOpenTask = () =>{
+  const handleOpenTask = () => {
     setAddTask(true);
-  }
+  };
 
-  const handleCloseTask = () =>{
+  const handleCloseTask = () => {
     setAddTask(false);
-  }
+  };
 
-  const handleCloseFile = () =>{
+  const handleCloseFile = () => {
     setFilePreview(false);
-  }
-
+  };
 
   const handleDeleteByid = (e, id) => {
-    
     Swal.fire({
       title: "Are you sure want to delete?",
       text: `${e}`,
@@ -215,16 +233,15 @@ const FindName = (id) =>{
         try {
           const result = await deleteById(id).unwrap();
           toast.success("Task deleted successfully");
-          refetch()
+          refetch();
         } catch (error) {
           console.log(error);
         } finally {
-          Swal.hideLoading(); 
+          Swal.hideLoading();
         }
       }
     });
   };
-
 
   const handlePreviewOpen = (details) => {
     setDetails(details);
@@ -235,8 +252,8 @@ const FindName = (id) =>{
     if (allData?.status) {
       const filteredData = isAdmin
         ? allData.data
-        : allData.data.filter(item => item.userId === adminid);
-  
+        : allData.data.filter((item) => item.userId === adminid);
+
       const data = filteredData.map((item, index) => ({
         ...item,
         id: item._id,
@@ -245,7 +262,7 @@ const FindName = (id) =>{
         dueDate: item.dueDate,
         userId: item.userId,
       }));
-  
+
       setRows(data);
     }
   }, [allData, isAdmin, adminid]);
@@ -257,8 +274,6 @@ const FindName = (id) =>{
     return (
       <>
         <Portal container={() => document.getElementById("filter-panel")}>
-     
- 
           <Box
             style={{
               display: "flex",
@@ -267,18 +282,22 @@ const FindName = (id) =>{
             }}
           >
             <GridToolbarQuickFilter style={{ paddingTop: "20px" }} />
-          <Box sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-            marginTop: "10px",
-            paddingRight:"10px"
-          }}>  
-          <Button variant="contained" size="small" onClick={handleOpenTask}>Add Task</Button> </Box>
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+                marginTop: "10px",
+                paddingRight: "10px",
+              }}
+            >
+              <Button variant="contained" size="small" onClick={handleOpenTask}>
+                Add Task
+              </Button>{" "}
+            </Box>
           </Box>
-          </Portal>
- 
+        </Portal>
       </>
     );
   };
@@ -286,13 +305,11 @@ const FindName = (id) =>{
   const RoleSelect = (params) => {
     const { id, field, value } = params;
 
-    const isEligible = params.row.
-    assigneeBy === adminid
-
+    const isEligible = params.row.assigneeBy === adminid;
 
     const handleChange = (event) => {
       const newValue = event.target.value;
-   
+
       const Name = UserName?.find((item) => item.value === newValue);
 
       if (field === "userName") {
@@ -314,7 +331,6 @@ const FindName = (id) =>{
       <Select
         value={value}
         onChange={handleChange}
-  
         sx={{
           "& .MuiOutlinedInput-notchedOutline": {
             border: "none",
@@ -326,21 +342,48 @@ const FindName = (id) =>{
         IconComponent={null}
       >
         {NewColumn.map((role, index) => (
-          <MenuItem disabled={ field === "status" || isAdmin ? false : ((field === "userName") || !isEligible) || (!isEligible && field === "priority")} key={index} value={role.value}>
+          <MenuItem
+            disabled={
+              field === "status" || isAdmin
+                ? false
+                : field === "userName" ||
+                  !isEligible ||
+                  (!isEligible && field === "priority")
+            }
+            key={index}
+            value={role.value}
+          >
             {field === "userName" ? (
               <>
-                <span>{ role.name}</span>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "7vw",
+                    fontSize: "13px",
+                    textAlign: "center",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {role.name}
+                </span>
               </>
             ) : (
               <Box
                 sx={{
                   display: "flex",
-                  width: "100%",
+                  justifyContent: "center",
                   alignItems: "center",
-                  padding: "1px 10px",
                   gap: "10px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
+                  width: "7vw",
+                  fontSize: "13px",
+                  paddingY: "2px",
+                  textAlign: "center",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
                   border: `1px solid ${role.gradient}`,
                   color: "#ffff",
                   backgroundImage: role.gradient,
@@ -422,15 +465,21 @@ const FindName = (id) =>{
             height: "50px",
             cursor: "pointer",
             textWrap: "wrap",
+          
           }}
         >
           <Typography
             style={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              width: "100%",
-              textAlign: "center",
+       
+                display: "inline-block",
+                width: "7vw",
+                fontSize: "13px",
+                textAlign: "center",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                fontWeight: "bold",
+       
             }}
           >
             {params.row[field]}
@@ -469,7 +518,8 @@ const FindName = (id) =>{
     const [anchorEl, setAnchorEl] = useState(null);
     const { id, field, value } = params;
 
-    const defaultValue = field === "dueDate" ? params.row.dueDate : params.row.warningTime
+    const defaultValue =
+      field === "dueDate" ? params.row.dueDate : params.row.warningTime;
 
     const handleOpen = (e) => {
       setAnchorEl(true);
@@ -496,11 +546,17 @@ const FindName = (id) =>{
             onClose={handleClose}
             open={anchorEl}
             sx={{
+                                    
               "& .MuiOutlinedInput-notchedOutline": {
                 border: "none",
               },
               "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                 border: "none",
+              },
+              "& .MuiInputBase-input": {
+                fontSize: "13px", // Adjust font size here
+                textAlign: "center",
+                fontWeight: "bold",
               },
             }}
           />
@@ -579,7 +635,6 @@ const FindName = (id) =>{
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => FindName(params.value),
-   
     },
     {
       field: "dueDate",
@@ -651,15 +706,9 @@ const FindName = (id) =>{
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-        const file = params.row
+        const file = params.row;
         return (
-          <Button
-            onClick={() =>
-              handlePreviewOpen({file})
-            }
-          >
-            View
-          </Button>
+          <Button onClick={() => handlePreviewOpen({ file })}>View</Button>
         );
       },
     },
@@ -676,14 +725,14 @@ const FindName = (id) =>{
       renderCell: (params) => {
         const id = params.row.id;
         const title = params.row.taskTitle;
-        const isEligible = params.row.
-        assigneeBy === adminid
-        
+        const isEligible = params.row.assigneeBy === adminid;
 
         return (
-          <Button  disabled= {isAdmin ? false : !isEligible} onClick={() => handleDeleteByid(title,id)}>
+          <Button
+            disabled={isAdmin ? false : !isEligible}
+            onClick={() => handleDeleteByid(title, id)}
+          >
             <DeleteIcon
-           
               sx={{
                 cusrsor: "poiner",
                 color: "black",
@@ -710,12 +759,12 @@ const FindName = (id) =>{
   }, []);
 
   return (
-    <Box 
+    <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
     >
       <DrawerHeader />
-      
+
       {/* <Header Name={"Proforma List"} /> */}
 
       {/* Add the DataGrid */}
@@ -760,13 +809,29 @@ const FindName = (id) =>{
         />
       )} */}
 
-      {OpenAddTask &&
-        <AddTaskDial open={OpenAddTask} handleOpenTask ={handleOpenTask} handleClose= {handleCloseTask}  UserName = {UserName} RoleSelect= {RoleSelect} refetch={refetch} isAdmin = {isAdmin} adminid={adminid} /> 
-      }
+      {OpenAddTask && (
+        <AddTaskDial
+          open={OpenAddTask}
+          handleOpenTask={handleOpenTask}
+          handleClose={handleCloseTask}
+          UserName={UserName}
+          RoleSelect={RoleSelect}
+          refetch={refetch}
+          isAdmin={isAdmin}
+          adminid={adminid}
+        />
+      )}
 
-      {OpenFilePreview &&
-        <FilePreviewDial details={details} open ={OpenFilePreview} UserName={UserName} FindName={FindName}  handleClose={handleCloseFile} refetch={refetch} />
-      }
+      {OpenFilePreview && (
+        <FilePreviewDial
+          details={details}
+          open={OpenFilePreview}
+          UserName={UserName}
+          FindName={FindName}
+          handleClose={handleCloseFile}
+          refetch={refetch}
+        />
+      )}
     </Box>
   );
 };
