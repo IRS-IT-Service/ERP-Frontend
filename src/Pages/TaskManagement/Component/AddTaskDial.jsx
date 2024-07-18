@@ -10,7 +10,7 @@ import {
   Select,
   MenuItem,
   Paper,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
 import dayjs from "dayjs";
@@ -22,10 +22,9 @@ import LowPriorityIcon from "@mui/icons-material/LowPriority";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import ReportIcon from "@mui/icons-material/Report";
 import { toast } from "react-toastify";
-import {
-
-  useCreateTaskMutation
-} from "../../../features/api/taskManagementApiSilce";
+import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
+import { useSocket } from "../../../CustomProvider/useWebSocket";
+import { useCreateTaskMutation } from "../../../features/api/taskManagementApiSilce";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -66,48 +65,82 @@ const priorityOptions = [
   },
 ];
 
-const AddTaskDial = ({ open, handleClose, UserName ,refetch ,adminid,isAdmin }) => {
+const AddTaskDial = ({
+  open,
+  handleClose,
+  UserName,
+  refetch,
+  adminid,
+  isAdmin,
+  formateDateAndTime,
+}) => {
   const [formState, setFormState] = useState({
     userName: null,
     taskTitle: "",
     description: "",
     priority: "Low",
-    file:null,
+    file: null,
     dueDate: dayjs(new Date()),
     fileUploaded: false,
   });
 
-  const [createTask, { isLoading: createTaskLoading }] = useCreateTaskMutation();
+ 
 
-const AssineeBy = UserName.find((item) =>item.adminId === adminid)
+  const [createTask, { isLoading: createTaskLoading }] =
+    useCreateTaskMutation();
+  const socket = useSocket();
 
-
+  const AssineeBy = UserName.find((item) => item.adminId === adminid);
+  const ContactNo = UserName.find((item) => item.adminId === (formState.userName?.adminId || AssineeBy.adminId));
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation();
   const handleSubmit = async () => {
     try {
       const newDate = new Date(formState.dueDate);
       newDate.setSeconds(0, 0);
-      const isoString = newDate.toISOString()
+      const isoString = newDate.toISOString();
+      let userId = formState.userName?.adminId || AssineeBy.adminId;
+      let userName = formState.userName?.name || AssineeBy.name;
 
       const formDataQuery = new FormData();
-      formDataQuery.append("userId", formState.userName?.adminId || AssineeBy.adminId);
-      formDataQuery.append("userName", formState.userName?.name || AssineeBy.name);
+      formDataQuery.append("userId", userId);
+      formDataQuery.append("userName", userName);
       formDataQuery.append("taskTitle", formState.taskTitle);
       formDataQuery.append("description", formState.description);
       formDataQuery.append("priority", formState.priority);
-      formDataQuery.append("dueDate",isoString);
+      formDataQuery.append("dueDate", isoString);
       formDataQuery.append("file", formState.file);
-      formDataQuery.append("assigneeBy",AssineeBy.adminId);
-   
+      formDataQuery.append("assigneeBy", AssineeBy.adminId);
 
       const result = await createTask(formDataQuery).unwrap();
       toast.success(`Task create successfully`);
+
+      const liveStatusData = {
+        message: `${AssineeBy.name} assigned the task "${
+          formState.taskTitle
+        }" to ${
+          formState.userName?.name || "Self"
+        } with a due date & time of ${formateDateAndTime(formState.dueDate)}.`,
+        time: new Date(),
+      };
+      socket.emit("liveStatusServer", liveStatusData);
+      const whatsappMessage = {
+        message: liveStatusData.message,
+        contact: import.meta.env.VITE_ADMIN_CONTACT,
+      };
+      const whatsappMessageUser = {
+        message: liveStatusData.message,
+        contact: +ContactNo.contact ,
+      };
+
+      await sendMessageToAdmin(whatsappMessageUser).unwrap();
+      await sendMessageToAdmin(whatsappMessage).unwrap();
+
       refetch();
-      handleClose()
+      handleClose();
     } catch (err) {
       console.log(err);
     }
   };
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -144,7 +177,7 @@ const AssineeBy = UserName.find((item) =>item.adminId === adminid)
       setFormState((prevState) => ({
         ...prevState,
         fileUploaded: true,
-        file:file,
+        file: file,
       }));
     } else {
       setFormState((prevState) => ({
@@ -154,21 +187,15 @@ const AssineeBy = UserName.find((item) =>item.adminId === adminid)
     }
   };
 
- 
-
-  const RoleSelect = ({value ,setFormState}) => {
-
-
+  const RoleSelect = ({ value, setFormState }) => {
     const handleChange = (event) => {
       const newValue = event.target.value;
       const Name = UserName?.find((item) => item.value === newValue);
       setFormState((prevState) => ({
         ...prevState,
         priority: newValue,
-      }))
+      }));
     };
-
-  
 
     return (
       <Select
@@ -180,25 +207,23 @@ const AssineeBy = UserName.find((item) =>item.adminId === adminid)
       >
         {priorityOptions.map((role, index) => (
           <MenuItem key={index} value={role.value}>
-      
-              <Box
-                sx={{
-                  display: "flex",
-                  width: "100%",
-                  alignItems: "center",
-                  padding: "1px 10px",
-                  gap: "10px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
-                  border: `1px solid ${role.gradient}`,
-                  color: "#ffff",
-                  backgroundImage: role.gradient,
-                }}
-              >
-                <span style={{ marginTop: "5px" }}>{role.icon}</span>
-                <span>{role.name}</span>
-              </Box>
-         
+            <Box
+              sx={{
+                display: "flex",
+                width: "100%",
+                alignItems: "center",
+                padding: "1px 10px",
+                gap: "10px",
+                borderRadius: "4px",
+                fontSize: "12px",
+                border: `1px solid ${role.gradient}`,
+                color: "#ffff",
+                backgroundImage: role.gradient,
+              }}
+            >
+              <span style={{ marginTop: "5px" }}>{role.icon}</span>
+              <span>{role.name}</span>
+            </Box>
           </MenuItem>
         ))}
       </Select>
@@ -253,15 +278,17 @@ const AssineeBy = UserName.find((item) =>item.adminId === adminid)
               alignItems: "center",
             }}
           >
-          { isAdmin && <Autocomplete
-              options={UserName}
-              getOptionLabel={(option) => option.name}
-              value={formState.userName}
-              onChange={handleUserNameChange}
-              renderInput={(params) => (
-                <TextField {...params} label="User Name" />
-              )}
-            /> }
+            {isAdmin && (
+              <Autocomplete
+                options={UserName}
+                getOptionLabel={(option) => option.name}
+                value={formState.userName}
+                onChange={handleUserNameChange}
+                renderInput={(params) => (
+                  <TextField {...params} label="User Name" />
+                )}
+              />
+            )}
             <TextField
               label="Task Title"
               name="taskTitle"
@@ -294,7 +321,11 @@ const AssineeBy = UserName.find((item) =>item.adminId === adminid)
                 <Typography sx={{ fontSize: "15px", fontWeight: "bold" }}>
                   Priority
                 </Typography>
-                <RoleSelect field="priority" value={formState.priority} setFormState ={setFormState} />
+                <RoleSelect
+                  field="priority"
+                  value={formState.priority}
+                  setFormState={setFormState}
+                />
               </Box>
               <Box
                 sx={{
@@ -312,6 +343,7 @@ const AssineeBy = UserName.find((item) =>item.adminId === adminid)
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileDateTimePicker
                     value={formState.dueDate}
+                    ampm={false}
                     onChange={(newValue) =>
                       setFormState((prevState) => ({
                         ...prevState,
@@ -328,61 +360,61 @@ const AssineeBy = UserName.find((item) =>item.adminId === adminid)
             </Box>
 
             <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        p: 2,
-        border: '2px dashed grey',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        backgroundColor: formState.fileUploaded ? "#e0ffe0" : "transparent", // Change background color on file upload
-        "&:hover": {
-          borderColor: "blue",
-        },
-      }}
-    >
-      <input
-        type="file"
-        accept=".pdf, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .png, .jpg, .jpeg"
-        onChange={handleFileChange}
-        style={{
-          width: '100%',
-          height: '100%',
-          cursor: 'pointer',
-          opacity: 0,
-          position: 'relative',
-        
-        }}
-      />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'absolute',
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      >
-      <Typography variant="body1" color="textSecondary">
-                  {formState.fileUploaded
-                    ? "File Uploaded"
-                    : "click to upload"}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                p: 2,
+                border: "2px dashed grey",
+                borderRadius: "8px",
+                cursor: "pointer",
+                backgroundColor: formState.fileUploaded
+                  ? "#e0ffe0"
+                  : "transparent", // Change background color on file upload
+                "&:hover": {
+                  borderColor: "blue",
+                },
+              }}
+            >
+              <input
+                type="file"
+                accept=".pdf, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, .png, .jpg, .jpeg"
+                onChange={handleFileChange}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  cursor: "pointer",
+                  opacity: 0,
+                  position: "relative",
+                }}
+              />
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  position: "absolute",
+                  zIndex: 1,
+                  pointerEvents: "none",
+                }}
+              >
+                <Typography variant="body1" color="textSecondary">
+                  {formState.fileUploaded ? "File Uploaded" : "click to upload"}
                 </Typography>
-      </Box>
-    </Box>
+              </Box>
+            </Box>
             <Button
               variant="contained"
               color="primary"
-              disabled ={createTaskLoading}
+              disabled={createTaskLoading}
               onClick={handleSubmit}
               sx={{ mt: 2 }}
             >
-               {createTaskLoading ? (<CircularProgress size="25px" sx={{ color: "#fff" }} />
-            ) : (
-              "Submit"
-            )}
+              {createTaskLoading ? (
+                <CircularProgress size="25px" sx={{ color: "#fff" }} />
+              ) : (
+                "Submit"
+              )}
             </Button>
           </Box>
         </Paper>
