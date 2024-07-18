@@ -48,7 +48,7 @@ const userRolesData = [
       },
       {
         id: 76,
-        name: 'Google Drive',
+        name: 'IRS Drive',
         path: '/googleDrive',
         icon: 'fab fa-google-drive',
         notification: true,

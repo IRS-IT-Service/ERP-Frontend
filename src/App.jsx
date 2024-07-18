@@ -165,7 +165,7 @@ function App() {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
   const adminid = userInfo?.adminId;
-  console.log(isAdmin)
+  
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
