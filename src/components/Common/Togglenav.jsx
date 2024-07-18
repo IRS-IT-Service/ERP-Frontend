@@ -47,6 +47,11 @@ import {
   useSendSingleNotificationMutation,
 } from "../../features/api/otherSlice";
 import { toast } from "react-toastify";
+import {
+  setUnApprovedCount,
+  setUnApprovedData,
+} from "../../features/slice/productSlice";
+import { Unarchive } from "@mui/icons-material";
 
 const drawerWidth = 220;
 
@@ -130,6 +135,7 @@ const ToggleNav = () => {
   const navigate = useNavigate();
   // open close sidebar
   const [toggleNavData, setToggleNavData] = useState(userRolesData);
+  // const {data:getUnapprovedCount,refetch:refetchCount} = useGetUnApprovedCountQuery('null')
 
   // This code is to change the color of the Call Icon
   const [colorStates, setColorStates] = useState(["black"]);
@@ -141,10 +147,10 @@ const ToggleNav = () => {
     (state) => state.auth
   );
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
-  const unApprovedData = useSelector(
-    (state) => state.api.queries["getUnApprovedCount(null)"]?.data?.data
-  );
 
+  const { unApprovedData: dataCount } = useSelector((state) => state.product);
+
+  //.log(unApprovedData)
   /// Local State
   const [proRoles, setProRoles] = useState([]);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -163,7 +169,8 @@ const ToggleNav = () => {
     isLoading: isLoading,
     isError,
     refetch,
-  } = useGetUnApprovedCountQuery(null, {
+  } = useGetUnApprovedCountQuery(null,{
+    refetchOnMountOrArgChange: true,
     pollingInterval: 1000 * 300,
   });
 
@@ -190,6 +197,15 @@ const ToggleNav = () => {
   /// handler
 
   const [logout] = useLogoutMutation();
+  const [unApprovedData, setunApprovedData] = useState({});
+  // console.log(unApprovedcount?.data);
+
+  useEffect(() => {
+    if (unApprovedcount?.data) {
+      setunApprovedData(unApprovedcount?.data);
+    }
+    refetch()
+  }, [dataCount, unApprovedcount]);
 
   /// handler
   const handleDrawer = () => {

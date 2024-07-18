@@ -15,7 +15,6 @@ const BulkUpdateSelectorDialog = ({ list, open, setOpen ,condition }) => {
   const handleClose = () => {
     setOpen(false);
   };
-console.log(newList);
   const handleSelected = (name) => {
     setSelectedItems((prevSelected) => {
       if (prevSelected.includes(name)) {
@@ -27,7 +26,6 @@ console.log(newList);
   };
   const handleOk = (name) => {
     const finalName = name.join("&");
-    console.log(finalName);
     navigate(`/UpdateSellerPriceBulk/${finalName}`);
   };
 
@@ -63,7 +61,6 @@ console.log(newList);
       }}>
         {newList?.map((item) => {
           if(condition === "QTY" && item.name === "Quantity"){
-            console.log(item.name)
             return (
               <Button
                 key={item.id}

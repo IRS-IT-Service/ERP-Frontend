@@ -21,6 +21,7 @@ import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { useSendMessageMutation } from "../../../features/api/whatsAppApiSlice";
 import { DataSaverOff, Visibility } from "@mui/icons-material";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
+import { setUnApprovedData } from "../../../features/slice/productSlice";
 
 // infoDialog box data
 const infoDetail = [
@@ -152,6 +153,7 @@ const ApprovalGrid = ({ setOpenHistory, setProductDetails }) => {
         socket.emit("liveStatusServer", liveStatusData);
       });
       await sendWhatsAppmessage(datas).unwrap();
+     dispatch(setUnApprovedData({message:'uproved'})) 
     } catch (error) {
       console.error(`An error occurred ${query} Approval:`, error);
     }
