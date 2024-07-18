@@ -215,7 +215,7 @@ const TaskScheduledList = () => {
         ,
         time: new Date(),
       };
-      socket.emit("liveStatusServer", liveStatusData);
+      socket.emit("TASK_ADDED", liveStatusData);
       const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
      await sendMessageToAdmin(whatsappMessage).unwrap()
       // toast.success(`${query} updated successfully`);

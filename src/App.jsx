@@ -61,6 +61,7 @@ import {
   addChatNotificationData,
   addChatMessageData,
   addChatTyping,
+  addTaskeNotification,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
 import { getToken } from "firebase/messaging";
@@ -231,6 +232,18 @@ function App() {
     pushNotification("LiveStatus", data, "/UpdateSellerPrice");
   };
 
+  // LiveTasksData
+
+  const handleTaskmanagment = (data) => {
+  
+    const userId = data.userId;
+    const currentUserId = userInfo?.adminId;
+    if (userId === currentUserId) {
+      dispatch(addTaskeNotification(data));
+      pushNotification("Task Scheduled", data, "/TaskScheduledList");
+    }
+  };
+
   // liveWholeSaleStatusClient
   const handleLiveWholeSaleStatus = (data) => {
     dispatch(addLiveWholeSaleStatus(data));
@@ -239,11 +252,10 @@ function App() {
 
   // notification bell icons
   const handleCallUnApprovedProduct = async () => {
-    console.log("triggered")
     try {
       // const productData = getUnApprovedCount?.data;
       // console.log(productData)
-      dispatch(setUnApprovedData({data:"productUpdated"}));
+      dispatch(setUnApprovedData({ data: "productUpdated" }));
     } catch (error) {
       console.log("erorr");
     }
@@ -281,8 +293,6 @@ function App() {
 
           handleLiveWholeSaleStatus(data);
         });
-
-        
       }
       socket.on("onlineUsers", (data) => {
         // console.log('Received Event onlineUsers for Admin :', data);
@@ -292,6 +302,11 @@ function App() {
       socket.on("productUpdate", () => {
         handleCallUnApprovedProduct();
       });
+
+      socket.on("TASK_ADDED", (data) => {
+        handleTaskmanagment(data);
+      });
+
       /// events for all
       // Listen for the 'logout' event
       socket.on("userLogout", (data) => {
@@ -307,7 +322,8 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
-        socket.off("productUpdate")
+        socket.off("productUpdate");
+        socket.off("TASK_ADDED");
       }
     };
   }, [socket]);
