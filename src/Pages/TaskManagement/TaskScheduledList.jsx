@@ -156,7 +156,7 @@ const TaskScheduledList = () => {
           textAlign: "center",
           width: "7vw",
           fontSize: "13px",
-          fontWeight: "bold",
+         
       
         }}
       >
@@ -172,7 +172,7 @@ const TaskScheduledList = () => {
           textOverflow: "ellipsis",
           overflow: "hidden",
           whiteSpace: "nowrap",
-          fontWeight: "bold",
+        
         }}
       >
         {Name?.name}
@@ -364,7 +364,7 @@ const TaskScheduledList = () => {
                     textOverflow: "ellipsis",
                     overflow: "hidden",
                     whiteSpace: "nowrap",
-                    fontWeight: "bold",
+                    
                   }}
                 >
                   {role.name}
@@ -478,7 +478,7 @@ const TaskScheduledList = () => {
                 textOverflow: "ellipsis",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
-                fontWeight: "bold",
+             
        
             }}
           >
@@ -556,7 +556,7 @@ const TaskScheduledList = () => {
               "& .MuiInputBase-input": {
                 fontSize: "13px", // Adjust font size here
                 textAlign: "center",
-                fontWeight: "bold",
+          
               },
             }}
           />

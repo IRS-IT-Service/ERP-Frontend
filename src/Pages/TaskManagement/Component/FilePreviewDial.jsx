@@ -396,10 +396,10 @@ const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
  <Box sx={{ p: 2 }}>
       <Paper elevation={3} sx={{p:1,width: '100%',display: 'flex',gap:"20px", mb: 2 }}>
 
-          <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '18px' }}>
+          <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '18px',flexBasis:"15%",}}>
             Task Title:
           </Typography>
-          <Typography variant="body1" sx={{ fontSize: '18px' }}>
+          <Typography variant="body1" sx={{ fontSize: '18px' ,flexBasis:"80%" }}>
             {details.file.taskTitle}
           </Typography>
    
