@@ -343,6 +343,7 @@ const AddTaskDial = ({
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileDateTimePicker
                     value={formState.dueDate}
+                    disablePast
                     ampm={false}
                     onChange={(newValue) =>
                       setFormState((prevState) => ({

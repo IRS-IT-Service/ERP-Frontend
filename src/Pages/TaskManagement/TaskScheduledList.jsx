@@ -565,6 +565,7 @@ const TaskScheduledList = () => {
             renderInput={(params) => <TextField {...params} />}
             onClose={handleClose}
             open={anchorEl}
+            disablePast
             ampm={false}
             sx={{
                                     
