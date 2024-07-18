@@ -77,7 +77,7 @@ const priorityOptions = [
   },
 ];
 let fileName = ""
-const FilePreviewDial = ({ open, handleClose, details, refetch ,FindName }) => {
+const FilePreviewDial = ({ open, handleClose, details, refetch ,UserName,adminid  }) => {
 
 const [loading, setLoading] = useState(false);
 const [formState, setFormState] = useState({
@@ -89,6 +89,21 @@ const [formState, setFormState] = useState({
 
 
 const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
+
+const FindName = (id) => {
+  const Name = UserName?.find((item) => item.adminId === id);
+  return id === adminid ? (
+    <span
+      >
+      My Self
+    </span>
+  ) : (
+    <span
+ >
+      {Name?.name}
+    </span>
+  );
+};
 
   function getFileExtension(filename) {
   

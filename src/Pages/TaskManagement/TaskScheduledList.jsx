@@ -827,9 +827,9 @@ const TaskScheduledList = () => {
           details={details}
           open={OpenFilePreview}
           UserName={UserName}
-          FindName={FindName}
           handleClose={handleCloseFile}
           refetch={refetch}
+          adminid = {adminid}
         />
       )}
     </Box>
