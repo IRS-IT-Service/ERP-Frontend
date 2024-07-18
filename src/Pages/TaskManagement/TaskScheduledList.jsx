@@ -126,9 +126,9 @@ const TaskScheduledList = () => {
   const [rows, setRows] = useState([]);
   const [previewDialOpen, setPreviewDialOpen] = useState(false);
   const [details, setDetails] = useState({});
-  const [OpenAddTask ,setAddTask] = useState(false);
-  const [OpenFilePreview ,setFilePreview] = useState(false);
-  const [UserName , setUserName] = useState([]);
+  const [OpenAddTask, setAddTask] = useState(false);
+  const [OpenFilePreview, setFilePreview] = useState(false);
+  const [UserName, setUserName] = useState([]);
   const {
     refetch: refetchAllUser,
     data: AllUserData,
@@ -137,19 +137,48 @@ const TaskScheduledList = () => {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const adminid = userInfo?.adminId;
 
-useEffect(()=>{
-  if(AllUserData?.status){
-  const UserName = AllUserData?.data.map((item) => ({
-    name: item.name,
-    adminId: item.adminId,
-    value: item.name,
-  }))
-  setUserName(UserName)
-}
+  useEffect(() => {
+    if (AllUserData?.status) {
+      const UserName = AllUserData?.data.map((item) => ({
+        name: item.name,
+        adminId: item.adminId,
+        value: item.name,
+      }));
+      setUserName(UserName);
+    }
+  }, [AllUserData]);
 
-
-},[AllUserData])
-
+  const FindName = (id) => {
+    const Name = UserName?.find((item) => item.adminId === id);
+    return id === adminid ? (
+      <span
+        style={{
+          textAlign: "center",
+          width: "7vw",
+          fontSize: "13px",
+         
+      
+        }}
+      >
+        My Self
+      </span>
+    ) : (
+      <span
+        style={{
+          display: "inline-block",
+          width: "7vw",
+          fontSize: "13px",
+          textAlign: "center",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+        
+        }}
+      >
+        {Name?.name}
+      </span>
+    );
+  };
 
   const [deleteById, { isLoading: delteLoading }] = useDeleteTaskMutation();
 
@@ -176,22 +205,19 @@ useEffect(()=>{
     }
   };
 
-
-  const handleOpenTask = () =>{
+  const handleOpenTask = () => {
     setAddTask(true);
-  }
+  };
 
-  const handleCloseTask = () =>{
+  const handleCloseTask = () => {
     setAddTask(false);
-  }
+  };
 
-  const handleCloseFile = () =>{
+  const handleCloseFile = () => {
     setFilePreview(false);
-  }
-
+  };
 
   const handleDeleteByid = (e, id) => {
-    
     Swal.fire({
       title: "Are you sure want to delete?",
       text: `${e}`,
@@ -207,16 +233,15 @@ useEffect(()=>{
         try {
           const result = await deleteById(id).unwrap();
           toast.success("Task deleted successfully");
-          refetch()
+          refetch();
         } catch (error) {
           console.log(error);
         } finally {
-          Swal.hideLoading(); // Hide loading spinner
+          Swal.hideLoading();
         }
       }
     });
   };
-
 
   const handlePreviewOpen = (details) => {
     setDetails(details);
@@ -224,21 +249,23 @@ useEffect(()=>{
   };
 
   useEffect(() => {
-    if (allData?.status === true) {
-      const data = allData?.data?.map((item, index) => {
-        return {
-          ...item,
-          id: item._id,
-          Sno: index + 1,
-          file: item.files?.url,
-          dueDate: item.dueDate,
-          userId: item.userId,
-        };
-      });
+    if (allData?.status) {
+      const filteredData = isAdmin
+        ? allData.data
+        : allData.data.filter((item) => item.userId === adminid);
+
+      const data = filteredData.map((item, index) => ({
+        ...item,
+        id: item._id,
+        Sno: index + 1,
+        file: item.files?.url,
+        dueDate: item.dueDate,
+        userId: item.userId,
+      }));
 
       setRows(data);
     }
-  }, [allData]);
+  }, [allData, isAdmin, adminid]);
 
   const CustomToolbar = (prop) => {
     /// global state
@@ -247,8 +274,6 @@ useEffect(()=>{
     return (
       <>
         <Portal container={() => document.getElementById("filter-panel")}>
-     
- 
           <Box
             style={{
               display: "flex",
@@ -257,18 +282,22 @@ useEffect(()=>{
             }}
           >
             <GridToolbarQuickFilter style={{ paddingTop: "20px" }} />
-          <Box sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-            marginTop: "10px",
-            paddingRight:"10px"
-          }}>  
-          <Button variant="contained" size="small" onClick={handleOpenTask}>Add Task</Button> </Box>
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+                marginTop: "10px",
+                paddingRight: "10px",
+              }}
+            >
+              <Button variant="contained" size="small" onClick={handleOpenTask}>
+                Add Task
+              </Button>{" "}
+            </Box>
           </Box>
-          </Portal>
- 
+        </Portal>
       </>
     );
   };
@@ -276,12 +305,11 @@ useEffect(()=>{
   const RoleSelect = (params) => {
     const { id, field, value } = params;
 
-    const isEligible = params.row.
-    assigneeBy === adminid
-
+    const isEligible = params.row.assigneeBy === adminid;
 
     const handleChange = (event) => {
       const newValue = event.target.value;
+
       const Name = UserName?.find((item) => item.value === newValue);
 
       if (field === "userName") {
@@ -303,7 +331,6 @@ useEffect(()=>{
       <Select
         value={value}
         onChange={handleChange}
-  
         sx={{
           "& .MuiOutlinedInput-notchedOutline": {
             border: "none",
@@ -315,21 +342,48 @@ useEffect(()=>{
         IconComponent={null}
       >
         {NewColumn.map((role, index) => (
-          <MenuItem disabled={ field === "status" || isAdmin ? false : ((field === "userName") || !isEligible) || (!isEligible && field === "priority")} key={index} value={role.value}>
+          <MenuItem
+            disabled={
+              field === "status" || isAdmin
+                ? false
+                : field === "userName" ||
+                  !isEligible ||
+                  (!isEligible && field === "priority")
+            }
+            key={index}
+            value={role.value}
+          >
             {field === "userName" ? (
               <>
-                <span>{role.name}</span>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "7vw",
+                    fontSize: "13px",
+                    textAlign: "center",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                    
+                  }}
+                >
+                  {role.name}
+                </span>
               </>
             ) : (
               <Box
                 sx={{
                   display: "flex",
-                  width: "100%",
+                  justifyContent: "center",
                   alignItems: "center",
-                  padding: "1px 10px",
                   gap: "10px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
+                  width: "7vw",
+                  fontSize: "13px",
+                  paddingY: "2px",
+                  textAlign: "center",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
                   border: `1px solid ${role.gradient}`,
                   color: "#ffff",
                   backgroundImage: role.gradient,
@@ -411,15 +465,21 @@ useEffect(()=>{
             height: "50px",
             cursor: "pointer",
             textWrap: "wrap",
+          
           }}
         >
           <Typography
             style={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              width: "100%",
-              textAlign: "center",
+       
+                display: "inline-block",
+                width: "7vw",
+                fontSize: "13px",
+                textAlign: "center",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+             
+       
             }}
           >
             {params.row[field]}
@@ -458,7 +518,8 @@ useEffect(()=>{
     const [anchorEl, setAnchorEl] = useState(null);
     const { id, field, value } = params;
 
-    const defaultValue = field === "dueDate" ? params.row.dueDate : params.row.warningTime
+    const defaultValue =
+      field === "dueDate" ? params.row.dueDate : params.row.warningTime;
 
     const handleOpen = (e) => {
       setAnchorEl(true);
@@ -485,11 +546,17 @@ useEffect(()=>{
             onClose={handleClose}
             open={anchorEl}
             sx={{
+                                    
               "& .MuiOutlinedInput-notchedOutline": {
                 border: "none",
               },
               "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                 border: "none",
+              },
+              "& .MuiInputBase-input": {
+                fontSize: "13px", // Adjust font size here
+                textAlign: "center",
+          
               },
             }}
           />
@@ -515,7 +582,7 @@ useEffect(()=>{
       field: "taskTitle",
       headerName: "Task",
       flex: 0.1,
-      minWidth: 300,
+      minWidth: 200,
       maxWidth: 500,
       align: "center",
       headerAlign: "center",
@@ -547,7 +614,7 @@ useEffect(()=>{
     },
     {
       field: "userName",
-      headerName: "Assignee",
+      headerName: "Assignee To",
       flex: 0.1,
       minWidth: 150,
       maxWidth: 250,
@@ -558,10 +625,22 @@ useEffect(()=>{
       renderCell: (params) => <RoleSelect {...params} />,
     },
     {
+      field: "assigneeBy",
+      headerName: "Assignee By",
+      flex: 0.1,
+      minWidth: 100,
+      maxWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => FindName(params.value),
+    },
+    {
       field: "dueDate",
       headerName: "Due date & time",
       flex: 0.1,
-      minWidth: 250,
+      minWidth: 220,
       maxWidth: 300,
       align: "center",
       headerAlign: "center",
@@ -607,7 +686,7 @@ useEffect(()=>{
       field: "warningTime",
       headerName: "Alarm",
       flex: 0.1,
-      minWidth: 250,
+      minWidth: 220,
       maxWidth: 300,
       align: "center",
       headerAlign: "center",
@@ -620,21 +699,16 @@ useEffect(()=>{
       field: "file",
       headerName: "File",
       flex: 0.1,
-      minWidth: 100,
+      minWidth: 50,
+      maxWidth: 100,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-        const file = params.row
+        const file = params.row;
         return (
-          <Button
-            onClick={() =>
-              handlePreviewOpen({file})
-            }
-          >
-            View
-          </Button>
+          <Button onClick={() => handlePreviewOpen({ file })}>View</Button>
         );
       },
     },
@@ -651,14 +725,14 @@ useEffect(()=>{
       renderCell: (params) => {
         const id = params.row.id;
         const title = params.row.taskTitle;
-        const isEligible = params.row.
-        assigneeBy === adminid
-        
+        const isEligible = params.row.assigneeBy === adminid;
 
         return (
-          <Button  disabled= {isAdmin ? false : !isEligible} onClick={() => handleDeleteByid(title,id)}>
+          <Button
+            disabled={isAdmin ? false : !isEligible}
+            onClick={() => handleDeleteByid(title, id)}
+          >
             <DeleteIcon
-           
               sx={{
                 cusrsor: "poiner",
                 color: "black",
@@ -685,12 +759,12 @@ useEffect(()=>{
   }, []);
 
   return (
-    <Box 
+    <Box
       component="main"
       sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
     >
       <DrawerHeader />
-      
+
       {/* <Header Name={"Proforma List"} /> */}
 
       {/* Add the DataGrid */}
@@ -735,13 +809,29 @@ useEffect(()=>{
         />
       )} */}
 
-      {OpenAddTask &&
-        <AddTaskDial open={OpenAddTask} handleOpenTask ={handleOpenTask} handleClose= {handleCloseTask}  UserName = {UserName} RoleSelect= {RoleSelect} refetch={refetch} isAdmin = {isAdmin} adminid={adminid} /> 
-      }
+      {OpenAddTask && (
+        <AddTaskDial
+          open={OpenAddTask}
+          handleOpenTask={handleOpenTask}
+          handleClose={handleCloseTask}
+          UserName={UserName}
+          RoleSelect={RoleSelect}
+          refetch={refetch}
+          isAdmin={isAdmin}
+          adminid={adminid}
+        />
+      )}
 
-      {OpenFilePreview &&
-        <FilePreviewDial details={details} open ={OpenFilePreview}  handleClose={handleCloseFile} refetch={refetch} />
-      }
+      {OpenFilePreview && (
+        <FilePreviewDial
+          details={details}
+          open={OpenFilePreview}
+          UserName={UserName}
+          handleClose={handleCloseFile}
+          refetch={refetch}
+          adminid = {adminid}
+        />
+      )}
     </Box>
   );
 };
