@@ -28,7 +28,7 @@ const OneRestockOrder = () => {
   /// initialize
   const { search } = useLocation();
   const apiRef = useGridApiRef();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   // const { id } = useParams();
 
   const { userInfo } = useSelector((state) => state.auth);
@@ -43,7 +43,7 @@ const OneRestockOrder = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({ SKU: "", history: [] });
-  const [openVendorDial,setOpenVendorDial] = useState(false)
+  const [openVendorDial, setOpenVendorDial] = useState(false);
 
   /// rtk query
   // const {
@@ -118,7 +118,7 @@ const OneRestockOrder = () => {
 
   const handleOpenRestockItem = () => {
     // setOpenRestockItem(!openRestockItem);
-    setOpenVendorDial(true)
+    setOpenVendorDial(true);
   };
 
   const handleSelectionChange = (ids) => {
@@ -129,7 +129,7 @@ const OneRestockOrder = () => {
     });
 
     setSelectedRows(selectedRowsData);
-    dispatch(setOverseaseSelectedOrder(selectedRowsData))
+    dispatch(setOverseaseSelectedOrder(selectedRowsData));
   };
 
   const handleRowUpdate = () => {
@@ -593,8 +593,9 @@ const OneRestockOrder = () => {
         </Grid>
       </Grid>
       {open && <ViewHistoryDial open={open} setOpen={setOpen} data={data} />}
-      {openVendorDial && <AllVendorDial open={openVendorDial} setOpen={setOpenVendorDial}/>}{" "}
-
+      {openVendorDial && (
+        <AllVendorDial open={openVendorDial} setOpen={setOpenVendorDial} />
+      )}{" "}
     </Box>
   );
 };
