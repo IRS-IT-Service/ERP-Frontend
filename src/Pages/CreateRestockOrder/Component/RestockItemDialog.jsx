@@ -96,7 +96,7 @@ const RestockItemDialog = ({
           date: Date.now(),
         },
         Threshold: item.ThresholdQty || 0,
-        SoldCount: item.SoldCount || 0,
+        SoldCount: item.soldCount || 0,
       }));
 
       const hasZeroQuantity = processedItems.some(
