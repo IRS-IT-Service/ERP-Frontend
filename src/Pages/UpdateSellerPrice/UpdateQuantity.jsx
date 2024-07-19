@@ -446,36 +446,36 @@ const UpdateQuantity = ({
   //Columns*******
   const columns = [
     {
-      field: "Sno",
-      headerName: "Sno",
+      field: 'Sno',
+      headerName: 'Sno',
       flex: 0.3,
       minWidth: 80,
-      maxWidth: 60,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      maxWidth: 100,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "SKU",
-      headerName: "SKU",
+      field: 'SKU',
+      headerName: 'SKU',
       flex: 0.3,
       minWidth: 100,
       maxWidth: 100,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       editable: true,
       renderCell: (params) => {
         return (
           <div
             style={{
-              height: "100%",
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              height: '100%',
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
             // onDoubleClick={() => {
             //   navigate(`/OneProductDetails/${params.row.SKU}`);
@@ -487,139 +487,153 @@ const UpdateQuantity = ({
       },
     },
     {
-      field: "Name",
-      headerName: "Product ",
+      field: 'Name',
+      headerName: 'Product ',
       flex: 0.3,
-      minWidth: 450,
-      // maxWidth: 290,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      minWidth: 400,
+      maxWidth: 700,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Brand",
-      headerName: "Brand",
+      field: 'Brand',
+      headerName: 'Brand',
       flex: 0.3,
-      minWidth: 90,
-      maxWidth: 110,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      minWidth: 100,
+      maxWidth: 130,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "Category",
-      headerName: "Category",
+      field: 'Category',
+      headerName: 'Category',
       flex: 0.3,
-      minWidth: 90,
-      maxWidth: 120,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      minWidth: 100,
+      maxWidth: 170,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
     },
     {
-      field: "GST",
-      headerName: "GST %",
+      field: 'GST',
+      headerName: 'GST %',
       flex: 0.3,
       minWidth: 60,
-      maxWidth: 70,
-      align: "center",
-      headerAlign: "center",
+      maxWidth: 90,
+      align: 'center',
+      headerAlign: 'center',
       editable: true,
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      type: "number",
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
+      type: 'number',
       valueFormatter: (params) => `${params.value} %`,
     },
-
     {
-      field: "ThresholdQty",
-      headerName: "Thld",
+      field: 'ThresholdQty',
+      headerName: 'THQT',
       flex: 0.3,
       minWidth: 60,
-      maxWidth: 70,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      maxWidth: 90,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       editable: true,
-      type: "number",
+      type: 'number',
       valueFormatter: (params) => `${params.value}`,
+      renderHeader: (params) => (
+        <span title='Threshold Qty'>{params.colDef.headerName}</span>
+      ),
     },
     {
-      field: "ActualQuantity",
-      headerName: "Sticked Quantity",
+      field: 'ActualQuantity',
+      headerName: 'STQT',
       flex: 0.3,
-      minWidth: 100,
-      maxWidth: 150,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      minWidth: 60,
+      maxWidth: 90,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       editable: true,
-      type: "number",
+      type: 'number',
       valueFormatter: (params) => `${params.value}`,
+      renderHeader: (params) => (
+        <span title='Sticked Quantity'>{params.colDef.headerName}</span>
+      ),
     },
     {
-      field: "AssignedQty",
-      headerName: "Quantity Assigned",
+      field: 'AssignedQty',
+      headerName: 'ASNQT',
       flex: 0.3,
-      minWidth: 100,
-      maxWidth: 150,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      minWidth: 60,
+      maxWidth: 90,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       editable: true,
-      type: "number",
+      type: 'number',
       valueFormatter: (params) => `${params.value}`,
+      renderHeader: (params) => (
+        <span title='Assigned Quantity'>{params.colDef.headerName}</span>
+      ),
     },
     {
-      field: "AwaitingScanning",
-      headerName: "Awaiting Scanning",
+      field: 'AwaitingScanning',
+      headerName: 'AWTSCN',
       flex: 0.3,
-      minWidth: 100,
-      maxWidth: 150,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
+      minWidth: 60,
+      maxWidth: 90,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
       editable: true,
-      type: "number",
+      type: 'number',
       valueFormatter: (params) => `${params.value}`,
+      renderHeader: (params) => (
+        <span title='Awaiting Scanning'>{params.colDef.headerName}</span>
+      ),
     },
     {
-      field: "Quantity",
-      headerName: "Quantity in Store",
+      field: 'Quantity',
+      headerName: 'STRQT',
       flex: 0.3,
-      minWidth: 100,
-      maxWidth: 150,
-      align: "center",
-      headerAlign: "center",
-      headerClassName: "super-app-theme--header",
-      cellClassName: "super-app-theme--cell",
-      type: "number",
+      minWidth: 60,
+      maxWidth: 90,
+      align: 'center',
+      headerAlign: 'center',
+      headerClassName: 'super-app-theme--header',
+      cellClassName: 'super-app-theme--cell',
+      type: 'number',
+      renderHeader: (params) => (
+        <span title='Quantity in Store'>{params.colDef.headerName}</span>
+      ),
       renderCell: (params) => {
         // for background
         const statusColor = params.row.isRejectedQuantity
-          ? "#B22222"
+          ? '#B22222'
           : !params.row.isVerifiedQuantity
-          ? "#FF7F50"
-          : "";
+          ? '#FF7F50'
+          : '';
         // for text color
         const textColor = params.row.isRejectedQuantity
-          ? "#fff"
+          ? '#fff'
           : !params.row.isVerifiedQuantity
-          ? "#fff"
-          : "";
+          ? '#fff'
+          : '';
         const onClick = () => {
           if (!params.row.isVerifiedQuantity) {
             return;
           }
           const product = productColumns.find(
-            (productColumn) => productColumn.name === "Quantity"
+            (productColumn) => productColumn.name === 'Quantity'
           );
 
           if (!isAdmin && !product.isEdit) {

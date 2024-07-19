@@ -92,7 +92,7 @@ import chatBg from '../../../public/ChatBackground.jpeg';
 import dscImage from '../../../public/dscImage.jpg';
 
 const BulkMessage = () => {
-  const items = Array.from({ length: 5 }).map((index) => (
+  const items = Array.from({ length: 5 }).map((_, index) => (
     <Grid item md={3} lg={1.5} key={index}>
       <Box
         sx={{
@@ -111,7 +111,7 @@ const BulkMessage = () => {
           alt='image'
         />
         <Box>
-          <h5>Group Imag</h5>
+          <h5>Group Image</h5>
           <p>Time</p>
         </Box>
       </Box>
@@ -144,7 +144,6 @@ const BulkMessage = () => {
           }}
         >
           <Box sx={{ border: '2px solid #eee', width: '20vw' }}>Send Box</Box>
-
           <Box
             sx={{
               backgroundImage: `url(${chatBg})`,
@@ -180,7 +179,7 @@ const BulkMessage = () => {
                 culpa repellendus tempora laudantium atque. lorem20
               </p>
 
-              <Box sx={{}}>
+              <Box>
                 <p
                   style={{
                     fontSize: '0.8rem',
