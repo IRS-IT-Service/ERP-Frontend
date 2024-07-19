@@ -4,6 +4,8 @@ import React from "react";
 import { Box, styled, Button } from "@mui/material";
 import ToggleNav from "../components/Common/Togglenav";
 import Dropup from "../components/Dropup/Dropup";
+
+import NotificationDrop from "../components/Common/NotificationDrop";
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "grey" : "#fff",
    
@@ -12,6 +14,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 const PrivateRoute = ({ nav }) => {
   const { userInfo, isAdmin } = useSelector((state) => state.auth);
+
 
   if (nav) {
     return userInfo ? (
@@ -26,9 +29,11 @@ const PrivateRoute = ({ nav }) => {
 
   return userInfo ? (
     <Box sx={{ display: "flex", gap: "10px",width:"100%",overflow: 'hidden', }}>
-      {isAdmin ? <Dropup /> : ""}
+      {isAdmin ?<><Dropup /><NotificationDrop /> </> :<NotificationDrop />}
+    
       <ToggleNav />
-      <Outlet />
+      
+      <Outlet  />
       </Box>
   ) : (
     <Navigate to="/login" replace />

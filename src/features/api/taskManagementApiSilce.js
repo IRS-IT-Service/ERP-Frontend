@@ -23,6 +23,14 @@ export const taskManagementApiSilce = apiSlice.injectEndpoints({
           };
         },
       }),
+      updateSeen: builder.mutation({
+        query: (data) => {
+          return {
+            url: `${Task_URL}/updateSeen/${data}`,
+            method: "PUT",
+           };
+        },
+      }),
       getTasksByEmpId: builder.query({
         query: (data) => {
           return {
@@ -60,5 +68,6 @@ export const {
   useGetTasksByEmpIdQuery,
   useGetAllTasksManagementQuery,
   useDeleteTaskMutation,
+  useUpdateSeenMutation,
 
 } = taskManagementApiSilce;
