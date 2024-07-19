@@ -206,27 +206,32 @@ const DriveFolder = () => {
   };
 
   const handleUploadFile = async () => {
-    if (
-      alignment === "Your"
-        ? !folderId || !selectedFile
-        : !singleFolderId || !selectedFile
-    )
+    if (alignment === "Your" ? !folderId || !selectedFile : !singleFolderId || !selectedFile) {
       return toast.error("File and folder required");
+    }
+  
     try {
       const folderIds = alignment === "Your" ? folderId : singleFolderId;
       const formData = new FormData();
-      formData.append("id", folderIds),
-        formData.append("file", selectedFile.files[0]);
+      
+      formData.append("id", folderIds);
+  
+      // Append each file from FileList to formData
+      for (let i = 0; i < selectedFile.files.length; i++) {
+        formData.append("files", selectedFile.files[i]);
+      }
+  
       const uploadfile = await uploadFile(formData).unwrap();
-      toast.success("File uploaded successfully");
+      toast.success("Files uploaded successfully");
       setTrigger("upload");
       setOpen(false);
       setSelectedFile(null);
     } catch (error) {
       console.log(error);
+      toast.error("Failed to upload files");
     }
   };
-
+  
   const handleDownloadFile = async (data) => {
     if (!data) return toast.error("Plase select file to download");
     try {
