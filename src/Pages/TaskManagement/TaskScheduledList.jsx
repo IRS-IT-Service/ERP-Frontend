@@ -13,6 +13,7 @@ import {
   formatDate,
   formatIndianPrice,
   formatUSDPrice,
+  formateDateAndTime
 } from "../../commonFunctions/commonFunctions";
 
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
@@ -29,6 +30,8 @@ import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import AddTaskDial from "./Component/AddTaskDial";
 import FilePreviewDial from "./Component/FilePreviewDial";
 import { useSelector, useDispatch } from "react-redux";
+import { useSendMessageToAdminMutation } from "../../features/api/whatsAppApiSlice";
+import { useSocket } from "../../CustomProvider/useWebSocket";
 
 import {
   Select,
@@ -129,6 +132,7 @@ const TaskScheduledList = () => {
   const [OpenAddTask, setAddTask] = useState(false);
   const [OpenFilePreview, setFilePreview] = useState(false);
   const [UserName, setUserName] = useState([]);
+  const socket = useSocket();
   const {
     refetch: refetchAllUser,
     data: AllUserData,
@@ -143,6 +147,9 @@ const TaskScheduledList = () => {
         name: item.name,
         adminId: item.adminId,
         value: item.name,
+        contact:item.ContactNo,
+        Email: item.email,
+
       }));
       setUserName(UserName);
     }
@@ -185,8 +192,10 @@ const TaskScheduledList = () => {
   // API
   const { data: allData, isLoading, refetch } = useGetAllTasksManagementQuery();
   const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
 
-  const handleUpdate = async (id, query, data) => {
+  const handleUpdate = async (id, query, data,taskTitle) => {
+    let changeData = data
     try {
       const formDataQuery = new FormData();
       formDataQuery.append("id", id);
@@ -198,6 +207,17 @@ const TaskScheduledList = () => {
       };
 
       const result = await updateData(info).unwrap();
+      if(query === "dueDate" || query === "warningTime"){
+         changeData = formateDateAndTime(data)
+      }
+      const liveStatusData = {
+        message: `${userInfo.name} updated ${query} to ${changeData} of Task-${taskTitle}`
+        ,
+        time: new Date(),
+      };
+      socket.emit("TASK_ADDED", liveStatusData);
+      const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
+     await sendMessageToAdmin(whatsappMessage).unwrap()
       // toast.success(`${query} updated successfully`);
       refetch();
     } catch (err) {
@@ -313,10 +333,10 @@ const TaskScheduledList = () => {
       const Name = UserName?.find((item) => item.value === newValue);
 
       if (field === "userName") {
-        handleUpdate(id, "userId", Name.adminId);
-        handleUpdate(id, "userName", Name.name);
+        handleUpdate(id, "userId", Name.adminId,params.row.taskTitle);
+        handleUpdate(id, "userName", Name.name,params.row.taskTitle);
       } else {
-        handleUpdate(id, field, newValue);
+        handleUpdate(id, field, newValue,params.row.taskTitle);
       }
     };
 
@@ -445,7 +465,7 @@ const TaskScheduledList = () => {
 
     const handleCloseText = () => {
       if (textValue !== null && textValue !== "") {
-        handleUpdate(id, field, textValue);
+        handleUpdate(id, field, textValue,params.row.taskTitle);
       }
       setAnchorEl(null);
     };
@@ -529,11 +549,11 @@ const TaskScheduledList = () => {
       setAnchorEl(false);
     };
 
-    const handleAccept = (value) => {
+    const handleAccept = (value,taskTitle) => {
       const newDate = new Date(value);
       newDate.setSeconds(0, 0);
       const isoString = newDate.toISOString();
-      handleUpdate(id, field, isoString);
+      handleUpdate(id, field, isoString,params.row.taskTitle);
     };
 
     return (
@@ -545,6 +565,8 @@ const TaskScheduledList = () => {
             renderInput={(params) => <TextField {...params} />}
             onClose={handleClose}
             open={anchorEl}
+            disablePast
+            ampm={false}
             sx={{
                                     
               "& .MuiOutlinedInput-notchedOutline": {
@@ -819,6 +841,7 @@ const TaskScheduledList = () => {
           refetch={refetch}
           isAdmin={isAdmin}
           adminid={adminid}
+          formateDateAndTime={formateDateAndTime}
         />
       )}
 

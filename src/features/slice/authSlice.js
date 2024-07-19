@@ -47,6 +47,8 @@ const initialState = {
   chatNotificationSound: JSON.parse(
     localStorage.getItem("chatNotificationSound") || "true"
   ),
+taskManagmentNotification :{}
+
 };
 
 const authSlice = createSlice({
@@ -220,6 +222,9 @@ const authSlice = createSlice({
         JSON.stringify(action.payload)
       );
     },
+    addTaskeNotification : (state, action) => {
+      state.taskManagmentNotification = action.payload;
+    }
   },
 });
 
@@ -249,6 +254,7 @@ export const {
   removeChatMessageData,
   addChatNotificationCount,
   addChatTyping,
-  AddDriveVerifyOtp
+  AddDriveVerifyOtp,
+  addTaskeNotification
 } = authSlice.actions;
 export default authSlice.reducer;

@@ -61,6 +61,7 @@ import {
   addChatNotificationData,
   addChatMessageData,
   addChatTyping,
+  addTaskeNotification,
 } from "./features/slice/authSlice";
 import { useSocket } from "./CustomProvider/useWebSocket";
 import { getToken } from "firebase/messaging";
@@ -154,6 +155,8 @@ import CreateShipment from "./Pages/OverseasOrderList/Components/CreateShipment"
 import UpdateQuantity from "./Pages/UpdateSellerPrice/UpdateQuantity";
 import AddGroupComp from "./Pages/BulkMessage/AddGroupComp";
 import Schedulemessage from "./Pages/BulkMessage/Schedulemessage";
+import { useGetUnApprovedCountQuery } from "./features/api/productApiSlice";
+import { setUnApprovedData } from "./features/slice/productSlice";
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -165,7 +168,6 @@ function App() {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
   const adminid = userInfo?.adminId;
-  console.log(isAdmin)
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
@@ -173,6 +175,7 @@ function App() {
   //rtk query api calling
   const [getReceivedMessages, { refetch }] = useGetReceivedMessagesMutation();
   const [logoutApi, { error }] = useLogoutMutation();
+  // const { data: getUnApprovedCount } = useGetUnApprovedCountQuery("null");
 
   /// Push Notification using react library
   const pushNotification = (title, data, navigateTo) => {
@@ -229,10 +232,33 @@ function App() {
     pushNotification("LiveStatus", data, "/UpdateSellerPrice");
   };
 
+  // LiveTasksData
+
+  const handleTaskmanagment = (data) => {
+  
+    const userId = data.userId;
+    const currentUserId = userInfo?.adminId;
+    if (userId === currentUserId) {
+      dispatch(addTaskeNotification(data));
+      pushNotification("Task Scheduled", data, "/TaskScheduledList");
+    }
+  };
+
   // liveWholeSaleStatusClient
   const handleLiveWholeSaleStatus = (data) => {
     dispatch(addLiveWholeSaleStatus(data));
     pushNotification("Live WholeSeller Status", data, "/UpdateSellerPrice");
+  };
+
+  // notification bell icons
+  const handleCallUnApprovedProduct = async () => {
+    try {
+      // const productData = getUnApprovedCount?.data;
+      // console.log(productData)
+      dispatch(setUnApprovedData({ data: "productUpdated" }));
+    } catch (error) {
+      console.log("erorr");
+    }
   };
 
   /// webSocket Events
@@ -273,6 +299,13 @@ function App() {
 
         handleOnlineUsers(data);
       });
+      socket.on("productUpdate", () => {
+        handleCallUnApprovedProduct();
+      });
+
+      socket.on("TASK_ADDED", (data) => {
+        handleTaskmanagment(data);
+      });
 
       /// events for all
       // Listen for the 'logout' event
@@ -289,6 +322,8 @@ function App() {
     return () => {
       if (socket) {
         socket.off("newMessage");
+        socket.off("productUpdate");
+        socket.off("TASK_ADDED");
       }
     };
   }, [socket]);
@@ -435,9 +470,9 @@ function App() {
                 path="/admin/resetPassword/:token"
                 element={<ResetPassword />}
               />
-                 <Route path="/profile" element={<PrivateRoute nav={true} />}>
-                  <Route path="/profile" element={<Profile />} />
-                </Route>
+              <Route path="/profile" element={<PrivateRoute nav={true} />}>
+                <Route path="/profile" element={<Profile />} />
+              </Route>
               {/* Home Router. */}
               <Route path="*" element={<PrivateRoute nav={true} />}>
                 {" "}
@@ -452,7 +487,7 @@ function App() {
                   path="/setDicountpricerange"
                   element={<SetDiscountPrice />}
                 />
-             
+
                 <Route
                   path="/Users"
                   element={
@@ -691,7 +726,7 @@ function App() {
                     </UserRole>
                   }
                 />
-                      <Route
+                <Route
                   path="/ScheduledMessage"
                   element={
                     <UserRole name={"Scheduled Message"}>
@@ -847,31 +882,29 @@ function App() {
                   path="/UpdateQuantity"
                   element={
                     <UserRole name={"Update Quantity"}>
-                      <UpdateQuantity/>
+                      <UpdateQuantity />
                     </UserRole>
                   }
                 />
 
-<Route
+                <Route
                   path="/AddTask"
                   element={
                     <UserRole name={"Add Task"}>
-                      <AddTask/>
+                      <AddTask />
                     </UserRole>
                   }
                 />
 
-<Route
+                <Route
                   path="/TaskScheduledList"
                   element={
                     <UserRole name={"Task Scheduled List"}>
-                      <TaskScheduledList/>
+                      <TaskScheduledList />
                     </UserRole>
                   }
                 />
               </Route>
-              
-          
             </Routes>
           </Suspense>
         </ThemeProvider>
