@@ -1081,6 +1081,7 @@ const PreviewChat = () => {
             <Box display="flex" flexDirection="column" gap={2}>
                    <MobileDateTimePicker
                 defaultValue={dayjs(Date.now())}
+                disablePast
                 onAccept={handleAccept}
                 renderInput={(params) => <TextField {...params} />}
                 onClose={handleClose}
