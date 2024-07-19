@@ -235,10 +235,10 @@ function App() {
   // LiveTasksData
 
   const handleTaskmanagment = (data) => {
-  
-    const userId = data.userId;
+
+    const UserId = data?.userId;
     const currentUserId = userInfo?.adminId;
-    if (userId === currentUserId) {
+    if (UserId === currentUserId) {
       dispatch(addTaskeNotification(data));
       pushNotification("Task Scheduled", data, "/TaskScheduledList");
     }
@@ -287,6 +287,22 @@ function App() {
 
           handleLiveStatus(data);
         });
+        socket.on("liveStatusTask", (data) => {
+      
+          // console.log('Received Event liveStatusClient for Admin :', data);
+          handleTaskmanagment(data);
+        });
+
+        socket.on("LiveWarning", (data) => {
+          console.log(data)
+          // if (isForeGround) {
+          //   toastNotification({
+          //     title: payload?.notification?.title,
+          //     description: payload?.notification?.body,
+          //     status: "info",
+          //   });
+        });
+
         // Listen for the 'liveWholeSaleStatus' event
         socket.on("WholeSaleSeller", (data) => {
           // console.log('Received Event liveWholeSaleStatus for Admin :', data);
@@ -299,13 +315,15 @@ function App() {
 
         handleOnlineUsers(data);
       });
+
+
       socket.on("productUpdate", () => {
         handleCallUnApprovedProduct();
       });
 
-      socket.on("TASK_ADDED", (data) => {
-        handleTaskmanagment(data);
-      });
+      // socket.on("TASK_ADDED", (data) => {
+      //   handleTaskmanagment(data);
+      // });
 
       /// events for all
       // Listen for the 'logout' event
@@ -324,6 +342,7 @@ function App() {
         socket.off("newMessage");
         socket.off("productUpdate");
         socket.off("TASK_ADDED");
+        socket.off("LiveWarning");
       }
     };
   }, [socket]);
@@ -900,7 +919,7 @@ function App() {
                   path="/TaskScheduledList"
                   element={
                     <UserRole name={"Task Scheduled List"}>
-                      <TaskScheduledList />
+                      <TaskScheduledList  />
                     </UserRole>
                   }
                 />

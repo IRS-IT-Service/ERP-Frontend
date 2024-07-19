@@ -80,6 +80,7 @@ let fileName = ""
 const FilePreviewDial = ({ open, handleClose, details, refetch ,UserName,adminid  }) => {
 
 const [loading, setLoading] = useState(false);
+const [preview ,setPreview] = useState(false);
 const [formState, setFormState] = useState({
      file:null,
      fileUploaded: false,
@@ -190,6 +191,12 @@ const FindName = (id) => {
       };
     
       return (
+        <Box sx={{
+          display:"flex",
+          justifyContent:"center",
+          alignItems:"center",
+          gap:"10px"
+        }}>
         <Button
           variant="contained"
           size="small"
@@ -205,6 +212,10 @@ const FindName = (id) => {
               "Click to download"
             )}
         </Button>
+          <Button size="small" variant="contained" onClick={()=>setPreview(true)}>
+          Preview
+        </Button>
+        </Box>
       );
     };
 
@@ -246,7 +257,7 @@ const FindName = (id) => {
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "fill",
+              objectFit: "contain",
               objectPosition: "center",
             }}
           />
@@ -287,9 +298,9 @@ const FindName = (id) => {
               objectPosition: "center",
             }}
           />
-          <Typography variant="body2" sx={{ mt: 2 }}>
+          {/* <Typography variant="body2" sx={{ mt: 2 }}>
             {getFilenameFromUrl(file)}
-          </Typography>
+          </Typography> */}
         </Box>
       );
     }
@@ -365,13 +376,25 @@ const FindName = (id) => {
             }}
           />
         </Box>
+        { preview ?    <Box sx={{
+                      width:"78vw",
+                      height:"78vh",
+                    }}>
+           <Button size="small" onClick={()=>setPreview(false)}>Back</Button>
+       <FilePreview file={details?.file?.files.url} />
+          
+          
+                    </Box>  :
         <Paper elevation={3} sx={{ p: 3 }}>
+           
+
           <Box
             sx={{
               display: "flex",
               gap: "5px",
               width: "70vw",
               height: "70vh",
+             
             }}
           >
             <Box
@@ -387,6 +410,7 @@ const FindName = (id) => {
                   flexDirection: "column",
                   width: "100%",
                   height: "100%",
+                   padding:"5px",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
@@ -399,7 +423,10 @@ const FindName = (id) => {
                 <Typography variant="body2" sx={{ mt: 2 }}>
                   {details?.file?.files.filename}
                 </Typography>
+             
                 <DownloadButton url={details?.file?.files.url}  />
+              
+        
               </Box>
             </Box>
             <Box
@@ -525,7 +552,9 @@ const FindName = (id) => {
 
           
           </Box>
+
         </Paper>
+        }
         <Box sx={{
             display: "flex",
             justifyContent: "center",

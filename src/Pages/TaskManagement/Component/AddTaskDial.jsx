@@ -93,6 +93,7 @@ const AddTaskDial = ({
   const AssineeBy = UserName.find((item) => item.adminId === adminid);
   const ContactNo = UserName.find((item) => item.adminId === (formState.userName?.adminId || AssineeBy.adminId));
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   const handleSubmit = async () => {
     try {
       const newDate = new Date(formState.dueDate);
@@ -111,18 +112,19 @@ const AddTaskDial = ({
       formDataQuery.append("file", formState.file);
       formDataQuery.append("assigneeBy", AssineeBy.adminId);
 
+   
       const result = await createTask(formDataQuery).unwrap();
       toast.success(`Task create successfully`);
 
       const liveStatusData = {
-        message: `${AssineeBy.name} assigned the task "${
-          formState.taskTitle
-        }" to ${
+        message: `${AssineeBy.name} assigned the task ${formState.taskTitle}
+        to ${
           formState.userName?.name || "Self"
         } with a due date & time of ${formateDateAndTime(formState.dueDate)}.`,
         time: new Date(),
+        UserID:userId,
       };
-      socket.emit("liveStatusServer", liveStatusData);
+      socket.emit("TASK_ADDED", liveStatusData);
       const whatsappMessage = {
         message: liveStatusData.message,
         contact: import.meta.env.VITE_ADMIN_CONTACT,
@@ -132,8 +134,10 @@ const AddTaskDial = ({
         contact: +ContactNo.contact ,
       };
 
-      await sendMessageToAdmin(whatsappMessageUser).unwrap();
+      
       await sendMessageToAdmin(whatsappMessage).unwrap();
+      await delay(500);
+      await sendMessageToAdmin(whatsappMessageUser).unwrap();
 
       refetch();
       handleClose();

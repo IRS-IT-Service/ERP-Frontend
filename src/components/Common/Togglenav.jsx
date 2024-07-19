@@ -53,6 +53,7 @@ import {
 } from "../../features/slice/productSlice";
 import { Unarchive } from "@mui/icons-material";
 
+
 const drawerWidth = 220;
 
 const openedMixin = (theme) => ({
@@ -146,6 +147,8 @@ const ToggleNav = () => {
   const { isAdmin, userRole, userInfo, chatNotificationData } = useSelector(
     (state) => state.auth
   );
+
+
   const { profileImage, name } = useSelector((state) => state.auth.userInfo);
 
   const { unApprovedData: dataCount } = useSelector((state) => state.product);
@@ -173,6 +176,10 @@ const ToggleNav = () => {
     refetchOnMountOrArgChange: true,
     pollingInterval: 1000 * 300,
   });
+
+
+
+
 
   const { data: unRequestcount, isLoading: isLoadingReq } =
     useGetPendingRequestCountQuery(null, {
@@ -601,6 +608,7 @@ const ToggleNav = () => {
               </Menu>
             </Box>
           </Box>
+     
         </Toolbar>
       </AppBarWrapper>
 
@@ -627,7 +635,9 @@ const ToggleNav = () => {
                 return <ToggleMenu key={index} {...item}></ToggleMenu>;
               })}
         </Box>
+   
       </DrawerWrapper>
+ 
     </Box>
   );
 };
