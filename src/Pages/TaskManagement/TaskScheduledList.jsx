@@ -207,6 +207,7 @@ const TaskScheduledList = () => {
       };
 
       const result = await updateData(info).unwrap();
+   
       if(query === "dueDate" || query === "warningTime"){
          changeData = formateDateAndTime(data)
       }
@@ -215,7 +216,7 @@ const TaskScheduledList = () => {
         ,
         time: new Date(),
       };
-      socket.emit("TASK_ADDED", liveStatusData);
+      socket.emit("liveStatusServer", liveStatusData);
       const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
      await sendMessageToAdmin(whatsappMessage).unwrap()
       // toast.success(`${query} updated successfully`);

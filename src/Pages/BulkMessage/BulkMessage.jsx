@@ -50,128 +50,40 @@ const infoDetail = [
   },
 ];
 const BulkMessage = () => {
-  const items = Array.from({ length: 5 }).map((_, index) => (
-    <Grid item md={3} lg={1.5} key={index}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          border: '2px solid grey',
-          gap: '10px',
-          padding: '5px',
-          borderRadius: '10px',
-        }}
-      >
-        <img
-          style={{ borderRadius: '50%' }}
-          src='https://placeholder.com/50'
-          alt='image'
-        />
-        <Box>
-          <h5>Group Image</h5>
-          <p>Time</p>
-        </Box>
-      </Box>
-    </Grid>
-  ));
+  // infodialog state
+  const description =
+    "This is the Customer Details & Bulk Message Section ";
+
+    const dispatch = useDispatch();
+
+    const { isInfoOpen } = useSelector((state) => state.ui);
+    const handleClose = () => {
+      dispatch(setInfo(false));
+    };
+
+    useEffect(() => {
+      dispatch(setHeader(`Bulk Message`));
+    }, []);
 
   return (
-    <>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingInline: '10px',
-          marginTop: '80px',
-          marginRight: '20px',
-          marginLeft: '10px',
-          padding: '20px',
-          borderRadius: '10px',
-          marginBottom: '50px',
-          boxShadow: '2px 2px 5px 5px #eee',
-          width: '100%',
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            gap: '20px',
-          }}
-        >
-          <Box sx={{ border: '2px solid #eee', width: '20vw' }}>Send Box</Box>
-          <Box
-            sx={{
-              backgroundImage: `url(${chatBg})`,
-              height: '60vh',
-              width: '50vw',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              border: '2px solid #eee',
-              borderRadius: '10px',
-            }}
-          >
-            <Box
-              sx={{
-                border: '2px solid #eee',
-                padding: '14px',
-                width: '350px',
-                height: '400px',
-                borderRadius: '5px',
-                backgroundColor: 'whitesmoke',
-                position: 'relative',
-              }}
-            >
-              <img
-                style={{ borderRadius: '5px', border: '1px solid #eee' }}
-                src={dscImage}
-                alt='image'
-                width='100%'
-              />
-              <p style={{ paddingBlock: '10px' }}>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ab
-                necessitatibus ut blanditiis cupiditate doloremque accusamus
-                culpa repellendus tempora laudantium atque. lorem20
-              </p>
+    <Box
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflow: "hidden" }}
+    >
+      <DrawerHeader />
+      {/* <Header Name={"Bulk Message"} info={true} customOnClick={handleOpen} /> */}
 
-              <Box>
-                <p
-                  style={{
-                    fontSize: '0.8rem',
-                    position: 'absolute',
-                    bottom: 10,
-                    right: 8,
-                    color: 'grey',
-                  }}
-                >
-                  14:14
-                </p>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
+      {/* infoDialog table */}
+      <InfoDialogBox
+        infoDetails={infoDetail}
+        description={description}
+        open={isInfoOpen}
+        close={handleClose}
+      />
+      {/* <BulkMessageTable /> */}
 
-        <Box
-          sx={{
-            flexGrow: 1,
-            marginTop: '50px',
-            // border: '2px solid grey',
-            boxShadow: '2px 1px 4px 2px grey',
-            padding: '20px',
-            borderRadius: '10px',
-            marginBottom: '20px',
-            width: '100%',
-          }}
-        >
-          <Grid container spacing={2}>
-            {items}
-          </Grid>
-        </Box>
-      </Box>
-    </>
+      <PreviewChat/>
+    </Box>
   );
 };
 
