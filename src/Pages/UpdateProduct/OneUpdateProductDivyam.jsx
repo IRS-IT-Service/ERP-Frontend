@@ -10,6 +10,7 @@ import {
   TextField,
   Autocomplete,
   CircularProgress,
+  Checkbox,
 } from "@mui/material";
 
 import React, { useState, useEffect } from "react";
@@ -28,6 +29,8 @@ import {
   useGetDynamicValueQuery,
   useAddProductMutation,
 } from "../../features/api/productApiSlice";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
   /// global state
@@ -48,6 +51,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
   });
 
   const [isEdited, setIsEdited] = useState(false);
+
   /// RTK query
   const { data, isLoading, refetch, isFetching } = useGetOneProductQuery(SKU, {
     skip: !open,
@@ -77,6 +81,8 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
 
     setForm({ ...form, subItems: currentSubitem });
   };
+
+  const [checked, setChecked] = useState(null);
   const handleAddPackageDimensions = () => {
     const currentPackageDimensions = [...form.packageDimensions];
     currentPackageDimensions.push({
@@ -203,6 +209,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
           subItems: processedSubItems,
           packageDimensions: processedPackageDimensions,
           AlternativeName: form.AlternativeName,
+          barcodeGen: checked,
         },
       };
 
@@ -218,6 +225,12 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
     }
   };
 
+  const handleChangeCheckbox = (e) => {
+    setIsEdited(true);
+    console.log(e.target.checked);
+
+    setChecked(e.target.checked);
+  };
   /// useEffects
 
   useEffect(() => {
@@ -250,6 +263,8 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
       };
 
       setForm(newForm);
+
+      setChecked(data?.data?.barcodeGenerator || true);
     }
   }, [data]);
 
@@ -271,6 +286,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
             subItems: data?.data?.subItems,
             gst: gst,
             packageDimensions: data?.data?.packageDimensions,
+            barcodeGen: checked,
           },
         ],
       };
@@ -443,6 +459,22 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                   },
                 }}
               />
+              <Box>
+                <FormControl>
+                  <FormControlLabel
+                    // value={cked}
+                    control={
+                      <Checkbox
+                        checked={checked}
+                        onChange={handleChangeCheckbox}
+                        inputProps={{ "aria-label": "controlled" }}
+                      />
+                    }
+                    label="Barcode Generator"
+                    labelPlacement="start"
+                  />
+                </FormControl>
+              </Box>
               <Button
                 variant="outlined"
                 disabled={data?.data?.GST === 5}

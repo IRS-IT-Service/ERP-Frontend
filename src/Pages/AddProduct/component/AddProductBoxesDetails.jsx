@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Typography, Autocomplete } from "@mui/material";
+import { Button, Typography, Autocomplete, Checkbox } from "@mui/material";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
@@ -12,6 +12,8 @@ import Loading from "../../../components/Common/Loading";
 import { useSendMessageToAdminMutation } from "../../../features/api/whatsAppApiSlice";
 import { useSelector } from "react-redux";
 import { useGetDynamicValueQuery } from "../../../features/api/productApiSlice";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 const AddProductBoxesDetails = () => {
   /// local state
@@ -27,6 +29,7 @@ const AddProductBoxesDetails = () => {
     subItems: [""],
     packageDimensions: [{ width: "", height: "", length: "", weight: "" }],
   });
+  const [checked, setChecked] = useState(true);
 
   /// RTK query
   const [addProductApi, { isLoading }] = useAddProductMutation();
@@ -75,6 +78,10 @@ const AddProductBoxesDetails = () => {
     }
 
     setForm({ ...form, packageDimensions: currentPackageDimensions });
+  };
+
+  const handleChangeCheckbox = (e) => {
+    setChecked(e.target.checked);
   };
 
   const handleChange = (type, value, index, name) => {
@@ -176,6 +183,7 @@ const AddProductBoxesDetails = () => {
           dimensions: productDimension,
           subItems: processedSubItems,
           packageDimensions: processedPackageDimensions,
+          barcodeGen:checked
         },
       ];
 
@@ -233,7 +241,6 @@ const AddProductBoxesDetails = () => {
             borderRadius: "8px",
             display: "flex",
             flexDirection: "column",
-          
           }}
         >
           {/* header2 */}
@@ -414,16 +421,14 @@ const AddProductBoxesDetails = () => {
                       borderRight: "1px solid #D3D3D3",
                     }}
                   >
-                   <Box
+                    <Box
                       sx={{
                         display: "flex",
                         justifyContent: "left",
                         alignItems: "center",
                         width: "14vw",
                       }}
-                    >
-
-                    </Box>
+                    ></Box>
                     <Typography
                       sx={{
                         fontSize: "0.9rem",
@@ -636,7 +641,6 @@ const AddProductBoxesDetails = () => {
                     borderTop: "1px solid #D3D3D3",
                     gap: "1%",
                     padding: "2%",
-                    
                   }}
                 >
                   <Box
@@ -644,9 +648,25 @@ const AddProductBoxesDetails = () => {
                       width: "100%",
                       backgroundColor: "white",
                       display: "flex",
-                      justifyContent: "right",
+                      justifyContent: "space-between",
                     }}
                   >
+                    <Box>
+                      <FormControl>
+                        <FormControlLabel
+                          value={checked}
+                          control={
+                            <Checkbox
+                              checked={checked}
+                              onChange={handleChangeCheckbox}
+                              inputProps={{ "aria-label": "controlled" }}
+                            />
+                          }
+                          label="Barcode Generator"
+                          labelPlacement="start"
+                        />
+                      </FormControl>
+                    </Box>
                     <Button
                       variant="outlined"
                       sx={{
