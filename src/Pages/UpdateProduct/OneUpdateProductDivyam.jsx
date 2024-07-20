@@ -264,7 +264,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
 
       setForm(newForm);
 
-      setChecked(data?.data?.barcodeGenerator || true);
+      setChecked(data?.data?.barcodeGenerator);
     }
   }, [data]);
 
