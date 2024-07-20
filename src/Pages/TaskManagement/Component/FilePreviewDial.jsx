@@ -171,7 +171,7 @@ const FindName = (id) => {
     }
  
 
-    // const filename = getFilenameFromUrl(url);
+    const filename = getFilenameFromUrl(url);
     
    const handleDownload = () => {
       setLoading(true);

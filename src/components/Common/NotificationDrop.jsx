@@ -55,7 +55,7 @@ const NotificationDrop = () => {
     }
   };
 
-  console.log(isOpen);
+
 
   useEffect(() => {
     socket?.on("Livetask", (data) => {
