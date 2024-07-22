@@ -360,7 +360,7 @@ const TaskScheduledList = () => {
             border: "none",
           },
         }}
-        IconComponent={null}
+        IconComponent={()=>null}
       >
         {NewColumn.map((role, index) => (
           <MenuItem
@@ -813,10 +813,10 @@ const TaskScheduledList = () => {
           rowsPerPageOptions={[5, 10, 20]}
           initialState={{
             filter: {
-              filterModel: {
-                items: ["Group"],
-                quickFilterExcludeHiddenColumns: true,
-              },
+              // filterModel: {
+              //   items: ["GroupList"],
+              //   quickFilterExcludeHiddenColumns: true,
+              // },
             },
           }}
           components={{

@@ -157,6 +157,7 @@ import AddGroupComp from "./Pages/BulkMessage/AddGroupComp";
 import Schedulemessage from "./Pages/BulkMessage/Schedulemessage";
 import { useGetUnApprovedCountQuery } from "./features/api/productApiSlice";
 import { setUnApprovedData } from "./features/slice/productSlice";
+import AlarmNotification from "./commonFunctions/AlarmNotification";
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -168,9 +169,11 @@ function App() {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
   const adminid = userInfo?.adminId;
+  
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
+  const [notifications, setNotifications] = useState([]);
 
   //rtk query api calling
   const [getReceivedMessages, { refetch }] = useGetReceivedMessagesMutation();
@@ -294,13 +297,12 @@ function App() {
         });
 
         socket.on("LiveWarning", (data) => {
-          console.log(data)
-          // if (isForeGround) {
-          //   toastNotification({
-          //     title: payload?.notification?.title,
-          //     description: payload?.notification?.body,
-          //     status: "info",
-          //   });
+        if (data.length > 0) {
+          const newNotifications = data?.filter(item => item.userId === adminid);
+            setNotifications(prevNotifications => [...prevNotifications, ...newNotifications]);
+          
+        }
+                       
         });
 
         // Listen for the 'liveWholeSaleStatus' event
@@ -321,11 +323,7 @@ function App() {
         handleCallUnApprovedProduct();
       });
 
-      // socket.on("TASK_ADDED", (data) => {
-      //   handleTaskmanagment(data);
-      // });
-
-      /// events for all
+       /// events for all
       // Listen for the 'logout' event
       socket.on("userLogout", (data) => {
         const userId = data.userId;
@@ -341,7 +339,6 @@ function App() {
       if (socket) {
         socket.off("newMessage");
         socket.off("productUpdate");
-        socket.off("TASK_ADDED");
         socket.off("LiveWarning");
       }
     };
@@ -474,6 +471,15 @@ function App() {
   return (
     <Box>
       <ToastContainer closeOnClick autoClose={1000} />
+      {notifications.map((item, index) => (
+        <AlarmNotification
+        id={item._id}
+          key={index}
+          title={item.taskTitle}
+          userInfo={userInfo}
+          description={item.description}
+        />
+      ))}
 
       <Box>
         <ThemeProvider theme={theme}>
