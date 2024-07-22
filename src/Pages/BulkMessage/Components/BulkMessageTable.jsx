@@ -246,7 +246,7 @@ const BulkMessageTable = () => {
             </Button>
             <Button
               variant="outlined"
-              disabled
+              
               sx={{
                 margin: "0.6rem",
                 backgroundColor: color,

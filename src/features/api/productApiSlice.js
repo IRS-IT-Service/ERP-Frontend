@@ -385,6 +385,14 @@ export const productApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getAllRoboProductsNew: builder.query({
+      query: (filter) => {
+        return {
+          url: `${PRODUCT_URL}/getAllProducts?${filter}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -432,5 +440,5 @@ export const {
   useProductAvailinEcwidMutation,
   useGetAllProductWithRandDQuery,
   useQuantityUpdateRnDMutation,
-  useAddAlternateNameMutation,
+  useAddAlternateNameMutation,useGetAllRoboProductsNewQuery
 } = productApiSlice;

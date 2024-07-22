@@ -29,8 +29,17 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import { useSendSingleNotificationMutation } from "../../../features/api/otherSlice";
-import { NotificationAdd, NotificationAddRounded, NotificationsNone } from "@mui/icons-material";
-
+import {
+  NotificationAdd,
+  NotificationAddRounded,
+  NotificationsNone,
+} from "@mui/icons-material";
+import excel from "../../../assets/DrivePNG/excel.png";
+import pdf from "../../../assets/DrivePNG/pdf.png";
+import unknown from "../../../assets/DrivePNG/unknown.png";
+import word from "../../../assets/DrivePNG/word.png";
+import txt from "../../../assets/DrivePNG/txt.jpg";
+import { useUploadFileWhatsappMutation } from "../../../features/api/driveApiSlice";
 // infoDialog box data
 const infoDetail = [
   {
@@ -170,7 +179,7 @@ const CreateChat = () => {
   const [messageData, setMessageData] = useState([]);
   const [incomingCallData, setIncomingCallData] = useState(null);
   const [callDial, setCallDial] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [isLoadingMessage, setIsLoadingMessage] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [myStream, setMyStream] = useState(null);
@@ -180,6 +189,7 @@ const CreateChat = () => {
   const [typing, setTyping] = useState("");
   const [emoji, setEmoji] = useState(false);
   const [emojiData, setEmojiData] = useState("");
+  const [fileError, setFileError] = useState("");
 
   // setting redux message which is live text data to local state
   useEffect(() => {
@@ -222,6 +232,8 @@ const CreateChat = () => {
   const [uploadFile, { isLoading }] = useUploadFileOnImageKitMutation();
   const [changeVisibility, { refetch }] = useChangeVisibilityMutation();
   const [sendNotification] = useSendSingleNotificationMutation();
+  const [uploadFileWhatsapp, { isLoading: uploadFileLoading }] =
+    useUploadFileWhatsappMutation();
 
   // getting online user from redux and showing whether they are online or offline
   const online = onLineUsers.includes(singleUserData?.adminId);
@@ -261,29 +273,48 @@ const CreateChat = () => {
     }
   };
 
-  const handleDownLoadFile = async (url) => {
+  const handleDownloadFile = async (data) => {
+    if (!data) return toast.error("Please select a file to download");
     try {
-      const urlArray = url.split("/");
-      const fileName = urlArray.pop();
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
+      const id = data?.id;
+      const name = data?.name;
+      const downloadUrl = `https://drive.google.com/uc?id=${id}&export=download`;
       const link = document.createElement("a");
-      link.href = blobUrl;
-      link.setAttribute("download", fileName);
-
+      link.href = downloadUrl;
+      link.download = name;
       document.body.appendChild(link);
       link.click();
-
       document.body.removeChild(link);
-      URL.revokeObjectURL(blobUrl);
-
       toast.success("File downloaded successfully");
     } catch (error) {
-      console.error("Error downloading file:", error);
-      toast.error("Error downloading file");
+      console.log(error);
+      toast.error("Failed to download the file");
     }
   };
+
+  // const handleDownLoadFile = async (url) => {
+  //   try {
+  //     const urlArray = url.split("/");
+  //     const fileName = urlArray.pop();
+  //     const response = await fetch(url);
+  //     const blob = await response.blob();
+  //     const blobUrl = URL.createObjectURL(blob);
+  //     const link = document.createElement("a");
+  //     link.href = blobUrl;
+  //     link.setAttribute("download", fileName);
+
+  //     document.body.appendChild(link);
+  //     link.click();
+
+  //     document.body.removeChild(link);
+  //     URL.revokeObjectURL(blobUrl);
+
+  //     toast.success("File downloaded successfully");
+  //   } catch (error) {
+  //     console.error("Error downloading file:", error);
+  //     toast.error("Error downloading file");
+  //   }
+  // };
   // for like when user comes to chat then the div scroll down to bottom
   // useEffect(() => {
   //   messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
@@ -375,21 +406,48 @@ const CreateChat = () => {
   };
 
   // function for file
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setSelectedFile(file);
+  //   }
+  // };
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "video/mp4",
+    "application/pdf",
+    "text/plain",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+  ];
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedImage(file);
+      if (allowedTypes.includes(file.type)) {
+        setSelectedFile(file);
+        setFileError("");
+      } else {
+        setFileError(
+          "Invalid file type. Please upload an image, video, PDF, text, or Excel document."
+        );
+      }
     }
   };
 
   //function for submitting file
   const handleFileSend = async () => {
-    if (!selectedImage) return;
+    if (!selectedFile) return;
     scrollToBottom();
     try {
       const formData = new FormData();
-      formData.append("file", selectedImage);
-      const uploadfiles = await uploadFile(formData).unwrap();
+      formData.append("file", selectedFile);
+      const uploadfiles = await uploadFileWhatsapp(formData).unwrap();
+
+      console.log("411", uploadfiles);
       if (!uploadfiles) return;
       const messageData = {
         _id: Math.random().toString(36).substring(2),
@@ -404,21 +462,25 @@ const CreateChat = () => {
           _id: Math.random().toString(36).substring(2),
           SenderId: adminId,
           ReceiverId: singleUserData?.adminId,
-          Content: { url: uploadfiles?.file?.url },
+          Content: {
+            url: uploadfiles?.file?.url,
+            fileId: uploadfiles?.file?.fileId,
+            fileName: uploadfiles?.file?.fileName,
+          },
           Type: "media",
           createdAt: Date.now(),
         },
       ]);
       socket.emit("newChatMessage", messageData);
-      setSelectedImage(null);
+      setSelectedFile(null);
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleClickOnDiv = () => {
-    if (emoji || selectedImage) {
-      setEmoji(false), setSelectedImage(null);
+    if (emoji || selectedFile) {
+      setEmoji(false), setSelectedFile(null);
     }
   };
 
@@ -634,6 +696,49 @@ const CreateChat = () => {
       console.log(error);
     }
   };
+
+  function getFileExtension(filename) {
+    const parts = filename.split(".");
+    const extension = parts[parts.length - 1];
+
+    switch (extension) {
+
+
+      case "csv":
+      case "xlsx":
+      case "docx":
+      case "mp4":
+      case "pdf":
+        return "200px";
+
+      case "png":
+      case "jpg":
+      case "jpeg":
+        return "350px";
+      default:
+        return "100px";
+    }
+  }
+
+  function getFileExtensionUrl(filename, url) {
+    const parts = filename.split(".");
+    const extension = parts[parts.length - 1];
+    switch (extension) {
+      case "csv":
+      case "xlsx":
+      case "docx":
+      case "mp4":
+      case "pdf":
+      case "png":
+      case "jpg":
+      case "jpeg":
+      case "txt":
+        return url;
+      case "mp3":
+      default:
+        return unknown;
+    }
+  }
 
   return (
     <Box
@@ -1001,7 +1106,9 @@ const CreateChat = () => {
                                 </span>
                               </div>
                             </div>
-                          ) : msg.Type === "media" ? (
+                          ) : msg.Type === "media" &&
+                            msg?.Content?.fileName &&
+                            msg?.Content?.fileId ? (
                             <div
                               style={{
                                 display: "flex",
@@ -1010,18 +1117,37 @@ const CreateChat = () => {
                               }}
                             >
                               <img
-                                src={msg?.Content?.url}
+                                src={getFileExtensionUrl(
+                                  msg?.Content?.fileName,
+                                  `https://drive.google.com/thumbnail?id=${msg?.Content?.fileId}`
+                                )}
                                 alt="Media"
                                 style={{
-                                  maxWidth: "250px",
+                                  width: getFileExtension(
+                                    msg?.Content?.fileName,
+                                    `https://drive.google.com/thumbnail?id=${msg?.Content?.fileId}`
+                                  ),
                                   height: "auto",
                                   display: "block",
                                   cursor: "pointer",
                                 }}
                                 onDoubleClick={() =>
-                                  handleDownLoadFile(msg?.Content?.url)
+                                  handleDownloadFile({
+                                    id: msg?.Content?.fileId,
+                                    name: msg?.Content?.fileName,
+                                  })
                                 }
                               />
+                              <span
+                                style={{
+                                  fontSize: "13px",
+                                  width: "180px",
+                                  display: "flex",
+                                  flex: "wrap",
+                                }}
+                              >
+                                {msg?.Content?.fileName}
+                              </span>
                               <div
                                 style={{
                                   marginTop: "10px",
@@ -1136,7 +1262,7 @@ const CreateChat = () => {
                   )}
                 </div>
                 <div style={{ position: "relative" }}>
-                  {selectedImage && (
+                  {selectedFile && (
                     <Box
                       sx={{
                         position: "absolute",
@@ -1162,11 +1288,14 @@ const CreateChat = () => {
                           Preview Image
                         </span>
                         <img
-                          src={URL.createObjectURL(selectedImage)}
+                          src={getFileExtensionUrl(
+                            selectedFile.name,
+                            URL.createObjectURL(selectedFile)
+                          )}
                           alt="test"
                           style={{ height: "200px", width: "200px" }}
                         ></img>
-                        {isLoading ? (
+                        {uploadFileLoading ? (
                           <CircularProgress sx={{ color: "green" }} size={20} />
                         ) : (
                           <SendIcon
@@ -1180,15 +1309,17 @@ const CreateChat = () => {
                   <label htmlFor="fileInput">
                     <AttachFileIcon
                       sx={{ cursor: "pointer", marginTop: "5px" }}
-                    />{" "}
+                    />
                     <input
                       type="file"
                       id="fileInput"
-                      accept="image/*"
+                      accept={allowedTypes.join(",")}
                       style={{ display: "none" }}
-                      onChange={(e) => handleFileChange(e)}
+                      onChange={handleFileChange}
                     />
                   </label>
+                  {fileError && <p style={{ color: "red" }}>{fileError}</p>}
+                  {selectedFile && <p>File selected: {selectedFile.name}</p>}
                 </div>
                 <input
                   placeholder="Enter Message Here"

@@ -203,7 +203,39 @@ const CustomerShipmentList = () => {
     return (
       <React.Fragment>
         <Portal container={() => document.getElementById("filter-panel")}>
-          <GridToolbarQuickFilter />
+        <Box style={{ display: "flex", justifyContent: "space-between",marginTop:"10px" }}>
+          <GridToolbarQuickFilter style={{paddingTop:"20px"}}  />
+          <Box
+        style={{
+          display: "flex",
+          justifyContent: "end",
+          gap: "20px",
+          marginTop: "5px",
+        }}
+      >
+        <Button
+          size="small"
+          variant="contained"
+          sx={{
+            background: "purple",
+          }}
+          onClick={() => navigate("/shipRocket")}
+        >
+          Shipment rate Comparision
+        </Button>
+        <ToggleButtonGroup
+          color="primary"
+          value={queryParams}
+          exclusive
+          onChange={handleChange}
+          aria-label="Platform"
+        >
+          <ToggleButton value="InPackaging">In-Packaging</ToggleButton>
+          <ToggleButton value="Dispatched">Delivered</ToggleButton>
+        </ToggleButtonGroup>
+      
+      </Box>
+      </Box>
         </Portal>
         {/* <GridToolbar {...prop} /> */}
       </React.Fragment>
@@ -698,6 +730,7 @@ const CustomerShipmentList = () => {
           <ToggleButton value="InPackaging">In-Packaging</ToggleButton>
           <ToggleButton value="Dispatched">Delivered</ToggleButton>
         </ToggleButtonGroup>
+      
       </Box>
     );
   };
@@ -708,7 +741,7 @@ const CustomerShipmentList = () => {
 
   return (
     <Box>
-      <CustomToolbar />
+
       <Grid item>
         <Box id="filter-panel" />
       </Grid>
@@ -745,7 +778,7 @@ const CustomerShipmentList = () => {
           initialState={{
             filter: {
               filterModel: {
-                items: ["OrderDate"],
+                items: ["_id"],
                 quickFilterExcludeHiddenColumns: true,
               },
             },

@@ -86,6 +86,53 @@ export const whatsAppApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+
+    sendBulkWithoutMedia: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${WhatsApp_URL}/sendBulkWithoutMedia`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    AddScheduledTaskMessage: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${WhatsApp_URL}/AddScheduledTaskMessage`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+
+    getAllScheduleMessage: builder.query({
+      query: () => {
+        return {
+          url: `${WhatsApp_URL}/getAllScheduleMessage`,
+          method: "GET",
+        };
+      },
+    }),
+    getAllScheduleMessageHistory: builder.query({
+      query: () => {
+        return {
+          url: `${WhatsApp_URL}/getAllScheduleMessagehistory`,
+          method: "GET",
+        };
+      },
+    }),
+
+    deleteScheduledTask: builder.mutation({
+      query: (id) => {
+        console.log(id)
+        return {
+          url: `${WhatsApp_URL}/deleteScheduledTask/${id}`,
+          method: "DELETE",
+      
+        };
+      },
+    }),
     
   }),
 });
@@ -99,6 +146,11 @@ export const {
   useSendMessageToAdminMutation,
   useSendBulkMessagesWithPicMutation,
   useAddCustomerNumberMutation,
-  useGetCustomerNumberQuery
+  useGetCustomerNumberQuery,
+  useSendBulkWithoutMediaMutation,
+  useAddScheduledTaskMessageMutation,
+  useGetAllScheduleMessageQuery,
+  useGetAllScheduleMessageHistoryQuery,
+  useDeleteScheduledTaskMutation,
   
 } = whatsAppApiSlice;

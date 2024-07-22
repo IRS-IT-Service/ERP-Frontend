@@ -61,96 +61,103 @@ import {
   addChatNotificationData,
   addChatMessageData,
   addChatTyping,
-} from './features/slice/authSlice';
-import { useSocket } from './CustomProvider/useWebSocket';
-import { getToken } from 'firebase/messaging';
-import { logout } from './features/slice/authSlice';
+  addTaskeNotification,
+} from "./features/slice/authSlice";
+import { useSocket } from "./CustomProvider/useWebSocket";
+import { getToken } from "firebase/messaging";
+import { logout } from "./features/slice/authSlice";
 import {
   useGetReceivedMessagesMutation,
   useLogoutMutation,
-} from './features/api/usersApiSlice';
-import AddBoxDetails from './Pages/Logistics/Components/AddBoxDetails';
-import SellerDetails from './Pages/SellerDetails/SellerDetails';
-import AddBrand from './Pages/AddBrand/AddBrand';
-import AddCustomer from './Pages/Barcode/component/AddCustomer';
-import addNotification from 'react-push-notification';
-import CalcEdit from './Pages/Calc/CalcEdit';
-import OpenBox from './Pages/OpenBox/OpenBox';
-import OpenBoxHistory from './Pages/OpenBox/OpenBoxHistory';
-import OpenBoxList from './Pages/OpenBox/OpenBoxList';
-import CreateTask from './Pages/UserTask/CreateTask';
-import ViewTask from './Pages/UserTask/ViewTask';
-import Testing from './Pages/Testing Component/Component/Testing';
-import ERPHistory from './Pages/ERPHistory/ERPHistory';
-import CreateBoxOpenApproval from './Pages/OpenBox/CreateBoxOpenApproval';
-import OpenBoxApprovalStatus from './Pages/OpenBox/OpenBoxApprovalStatus';
-import Shipment from './Pages/SellerDetails/components/Shipment';
-import ProductShipment from './Pages/Logistics/Components/ProductShipment';
-import ShipmentMain from './Pages/SellerDetails/ShipmentMain';
-import OverseasOrderBoxes from './Pages/OverseasOrderList/Components/OverseasOrderBoxes';
-import OverseasShipment from './Pages/OverseasOrderList/Components/OverseasShipment';
-import OneOverseasShipment from './Pages/OverseasOrderList/Components/OneOverseasShipment';
-import AllOverseasShipment from './Pages/OverseasOrderList/Components/AllOverseasShipment';
-import DynamicInputs from './Pages/DSC/DynamicInputs';
-import OneDynamicInput from './Pages/DSC/OneDynamicInput';
-import RepairForm from './Pages/DSC/RepairForm';
-import NewProductApproval from './Pages/AddProduct/NewProductApproval';
-import ChangeProductApproval from './Pages/AddProduct/ChangeProductApproval';
-import RemoveProductGrid from './Pages/ProductDelete/RemoveProductGrid';
-import ModelInputMain from './Pages/DSC/ModelInputMain';
-import AddCommonRepair from './Pages/DSC/AddCommonRepair';
-import DscFormView from './Pages/DSC/DscFormView';
-import DSCFormList from './Pages/DSC/DSCFormList';
-import RestockBox from './Pages/RestockOrderList/component/RestockBox';
-import SignaturePad from './Pages/DSC/Components/SignaturePadDialog';
-import CustomerForm from './Pages/DSC/Components/CustomerForm';
-import AssetsMain from './Pages/Assets/AssetsMain';
-import AddProforma from './Pages/Proforma Track/AddProforma';
-import ScanAssetsCode from './Pages/Assets/components/ScanAssetsCode';
-import ProformaList from './Pages/Proforma Track/ProformaList';
-import ProformaDetails from './Pages/Proforma Track/ProformaDetails';
-import WhatsappEvent from './Pages/WhatsApp/WhatsappEvent';
-import AddRoboProductsValue from './Pages/AddRoboProductsValue/AddRoboProductsValue';
-import BulkAddProduct from './Pages/AddProduct/BulkAddProduct';
-import RemovedProduct from './Pages/ProductDelete/RemovedProducts';
-import CompetitorComparsion from './Pages/CompetitorComparsion/CompetitorComparsion';
-import CreateReq from './Pages/R&D_NEW/CreareReq';
-import RnDInventory from './Pages/R&D_NEW/RnDInventory';
-import Project from './Pages/R&D_NEW/Project';
-import ResearchNewProject from './Pages/R&D_old/ResearchNewProject';
-import BulkMessage from './Pages/BulkMessage/BulkMessage';
-import CustomerDetails from './Pages/MarketingTool/CustomerDetails';
-import AddCustomerForMarketing from './Pages/MarketingTool/AddCustomerForMarketing';
-import UpdateProductBulk from './Pages/UpdateProduct/components/UpdateProductBulk';
-import UpdateProductMain from './Pages/UpdateProduct/UpdateProductMain';
-import MessageTemplate from './Pages/MessageTemplate/MessageTemplate';
-import SetDiscountPrice from './Pages/AllSellers/AllSellerComponent/SetDiscountPrice';
-import Studentinfo from './Pages/Other/Studentinfo';
-import ItemsApproval from './Pages/Logistics/Parts_Req/ItemsApproval';
-import PartsApproval from './Pages/R&D_NEW/PartsApproval';
-import PreOrder from './Pages/DiscountQuery/PreOrder';
-import ChatMessage from './Pages/Chat/ChatMessage';
-import Careers from './Pages/Careers/Careers';
-import Drive from './Pages/G_Drive/Drive';
-import CareerDetails from './Pages/Careers/CareerDetails';
-import Client from './Pages/PackagingAndClient/Client';
-import BulkAddClient from './Pages/PackagingAndClient/Components/BulkAddClient';
-import TestingComponent from './Pages/Testing Component/TestingComponent';
-import CreateOrderShipmentMain from './Pages/PackagingAndClient/CreateOrderShipmentMain';
-import ShipmentList from './Pages/PackagingAndClient/ShipmentList';
-import ShiproketMain from './Pages/PackagingAndClient/Shiprocket/ShiproketMain';
-import { onMessage } from 'firebase/messaging';
-import { messaging } from './firebase';
-import useVisibilityChange from './commonFunctions/useVisibilityChange';
-import OverseasorderList from './Pages/OverseasOrderList/Components/OverseasorderList';
-import { toastNotification } from './commonFunctions/notificationHelpers';
+} from "./features/api/usersApiSlice";
+import AddBoxDetails from "./Pages/Logistics/Components/AddBoxDetails";
+import SellerDetails from "./Pages/SellerDetails/SellerDetails";
+import AddBrand from "./Pages/AddBrand/AddBrand";
+import AddCustomer from "./Pages/Barcode/component/AddCustomer";
+import addNotification from "react-push-notification";
+import CalcEdit from "./Pages/Calc/CalcEdit";
+import OpenBox from "./Pages/OpenBox/OpenBox";
+import OpenBoxHistory from "./Pages/OpenBox/OpenBoxHistory";
+import OpenBoxList from "./Pages/OpenBox/OpenBoxList";
+import CreateTask from "./Pages/UserTask/CreateTask";
+import ViewTask from "./Pages/UserTask/ViewTask";
+import Testing from "./Pages/Testing Component/Component/Testing";
+import ERPHistory from "./Pages/ERPHistory/ERPHistory";
+import CreateBoxOpenApproval from "./Pages/OpenBox/CreateBoxOpenApproval";
+import OpenBoxApprovalStatus from "./Pages/OpenBox/OpenBoxApprovalStatus";
+import Shipment from "./Pages/SellerDetails/components/Shipment";
+import ProductShipment from "./Pages/Logistics/Components/ProductShipment";
+import ShipmentMain from "./Pages/SellerDetails/ShipmentMain";
+import OverseasOrderBoxes from "./Pages/OverseasOrderList/Components/OverseasOrderBoxes";
+import OverseasShipment from "./Pages/OverseasOrderList/Components/OverseasShipment";
+import OneOverseasShipment from "./Pages/OverseasOrderList/Components/OneOverseasShipment";
+import AllOverseasShipment from "./Pages/OverseasOrderList/Components/AllOverseasShipment";
+import DynamicInputs from "./Pages/DSC/DynamicInputs";
+import OneDynamicInput from "./Pages/DSC/OneDynamicInput";
+import RepairForm from "./Pages/DSC/RepairForm";
+import NewProductApproval from "./Pages/AddProduct/NewProductApproval";
+import ChangeProductApproval from "./Pages/AddProduct/ChangeProductApproval";
+import RemoveProductGrid from "./Pages/ProductDelete/RemoveProductGrid";
+import ModelInputMain from "./Pages/DSC/ModelInputMain";
+import AddCommonRepair from "./Pages/DSC/AddCommonRepair";
+import DscFormView from "./Pages/DSC/DscFormView";
+import DSCFormList from "./Pages/DSC/DSCFormList";
+import RestockBox from "./Pages/RestockOrderList/component/RestockBox";
+import SignaturePad from "./Pages/DSC/Components/SignaturePadDialog";
+import CustomerForm from "./Pages/DSC/Components/CustomerForm";
+import AssetsMain from "./Pages/Assets/AssetsMain";
+import AddProforma from "./Pages/Proforma Track/AddProforma";
+import ScanAssetsCode from "./Pages/Assets/components/ScanAssetsCode";
+import ProformaList from "./Pages/Proforma Track/ProformaList";
+import ProformaDetails from "./Pages/Proforma Track/ProformaDetails";
+import WhatsappEvent from "./Pages/WhatsApp/WhatsappEvent";
+import AddRoboProductsValue from "./Pages/AddRoboProductsValue/AddRoboProductsValue";
+import BulkAddProduct from "./Pages/AddProduct/BulkAddProduct";
+import RemovedProduct from "./Pages/ProductDelete/RemovedProducts";
+import CompetitorComparsion from "./Pages/CompetitorComparsion/CompetitorComparsion";
+import CreateReq from "./Pages/R&D_NEW/CreareReq";
+import RnDInventory from "./Pages/R&D_NEW/RnDInventory";
+import Project from "./Pages/R&D_NEW/Project";
+import ResearchNewProject from "./Pages/R&D_old/ResearchNewProject";
+import BulkMessage from "./Pages/BulkMessage/BulkMessage";
+import CustomerDetails from "./Pages/MarketingTool/CustomerDetails";
+import AddCustomerForMarketing from "./Pages/MarketingTool/AddCustomerForMarketing";
+import UpdateProductBulk from "./Pages/UpdateProduct/components/UpdateProductBulk";
+import UpdateProductMain from "./Pages/UpdateProduct/UpdateProductMain";
+import MessageTemplate from "./Pages/MessageTemplate/MessageTemplate";
+import SetDiscountPrice from "./Pages/AllSellers/AllSellerComponent/SetDiscountPrice";
+import Studentinfo from "./Pages/Other/Studentinfo";
+import ItemsApproval from "./Pages/Logistics/Parts_Req/ItemsApproval";
+import PartsApproval from "./Pages/R&D_NEW/PartsApproval";
+import PreOrder from "./Pages/DiscountQuery/PreOrder";
+import ChatMessage from "./Pages/Chat/ChatMessage";
+import Careers from "./Pages/Careers/Careers";
+import Drive from "./Pages/G_Drive/Drive";
+import CareerDetails from "./Pages/Careers/CareerDetails";
+import Client from "./Pages/PackagingAndClient/Client";
+import BulkAddClient from "./Pages/PackagingAndClient/Components/BulkAddClient";
+import TestingComponent from "./Pages/Testing Component/TestingComponent";
+import CreateOrderShipmentMain from "./Pages/PackagingAndClient/CreateOrderShipmentMain";
+import ShipmentList from "./Pages/PackagingAndClient/ShipmentList";
+import ShiproketMain from "./Pages/PackagingAndClient/Shiprocket/ShiproketMain";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "./firebase";
+import useVisibilityChange from "./commonFunctions/useVisibilityChange";
+import OverseasorderList from "./Pages/OverseasOrderList/Components/OverseasorderList";
+import { toastNotification } from "./commonFunctions/notificationHelpers";
+import TaskScheduledList from "./Pages/TaskManagement/TaskScheduledList";
+import AddTask from "./Pages/TaskManagement/AddTask";
 
-import SubPIList1 from './Pages/OverseasOrderList/Components/SubPIListComponent/SubPIList1';
-import TempOrder from './Pages/RestockOrderList/component/TempOrder';
-import PaidOverseaseOrder from './Pages/OverseasOrderList/Components/PaidOverseaseOrder';
-import CreateShipment from './Pages/OverseasOrderList/Components/CreateShipment';
-import UpdateQuantity from './Pages/UpdateSellerPrice/UpdateQuantity';
-
+import SubPIList1 from "./Pages/OverseasOrderList/Components/SubPIListComponent/SubPIList1";
+import TempOrder from "./Pages/RestockOrderList/component/TempOrder";
+import PaidOverseaseOrder from "./Pages/OverseasOrderList/Components/PaidOverseaseOrder";
+import CreateShipment from "./Pages/OverseasOrderList/Components/CreateShipment";
+import UpdateQuantity from "./Pages/UpdateSellerPrice/UpdateQuantity";
+import AddGroupComp from "./Pages/BulkMessage/AddGroupComp";
+import Schedulemessage from "./Pages/BulkMessage/Schedulemessage";
+import { useGetUnApprovedCountQuery } from "./features/api/productApiSlice";
+import { setUnApprovedData } from "./features/slice/productSlice";
+import AlarmNotification from "./commonFunctions/AlarmNotification";
 function App() {
   /// initialize
   const dispatch = useDispatch();
@@ -162,13 +169,16 @@ function App() {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
   const adminid = userInfo?.adminId;
+  
   /// local state
-  const [registrationToken, setRegistrationToken] = useState('');
-  const [mode, setMode] = useState('light');
+  const [registrationToken, setRegistrationToken] = useState("");
+  const [mode, setMode] = useState("light");
+  const [notifications, setNotifications] = useState([]);
 
   //rtk query api calling
   const [getReceivedMessages, { refetch }] = useGetReceivedMessagesMutation();
   const [logoutApi, { error }] = useLogoutMutation();
+  // const { data: getUnApprovedCount } = useGetUnApprovedCountQuery("null");
 
   /// Push Notification using react library
   const pushNotification = (title, data, navigateTo) => {
@@ -225,10 +235,33 @@ function App() {
     pushNotification('LiveStatus', data, '/UpdateSellerPrice');
   };
 
+  // LiveTasksData
+
+  const handleTaskmanagment = (data) => {
+
+    const UserId = data?.userId;
+    const currentUserId = userInfo?.adminId;
+    if (UserId === currentUserId) {
+      dispatch(addTaskeNotification(data));
+      pushNotification("Task Scheduled", data, "/TaskScheduledList");
+    }
+  };
+
   // liveWholeSaleStatusClient
   const handleLiveWholeSaleStatus = (data) => {
     dispatch(addLiveWholeSaleStatus(data));
     pushNotification('Live WholeSeller Status', data, '/UpdateSellerPrice');
+  };
+
+  // notification bell icons
+  const handleCallUnApprovedProduct = async () => {
+    try {
+      // const productData = getUnApprovedCount?.data;
+      // console.log(productData)
+      dispatch(setUnApprovedData({ data: "productUpdated" }));
+    } catch (error) {
+      console.log("erorr");
+    }
   };
 
   /// webSocket Events
@@ -257,6 +290,22 @@ function App() {
 
           handleLiveStatus(data);
         });
+        socket.on("liveStatusTask", (data) => {
+      
+          // console.log('Received Event liveStatusClient for Admin :', data);
+          handleTaskmanagment(data);
+        });
+
+        socket.on("LiveWarning", (data) => {
+         console.log(data)
+        if (data.length > 0) {
+          const newNotifications = data?.filter(item => item.userId === adminid);
+            setNotifications(prevNotifications => [...prevNotifications, ...newNotifications]);
+          
+        }
+                       
+        });
+
         // Listen for the 'liveWholeSaleStatus' event
         socket.on('WholeSaleSeller', (data) => {
           // console.log('Received Event liveWholeSaleStatus for Admin :', data);
@@ -270,7 +319,12 @@ function App() {
         handleOnlineUsers(data);
       });
 
-      /// events for all
+
+      socket.on("productUpdate", () => {
+        handleCallUnApprovedProduct();
+      });
+
+       /// events for all
       // Listen for the 'logout' event
       socket.on('userLogout', (data) => {
         const userId = data.userId;
@@ -284,7 +338,9 @@ function App() {
     // Clean up the event listener when the component unmounts
     return () => {
       if (socket) {
-        socket.off('newMessage');
+        socket.off("newMessage");
+        socket.off("productUpdate");
+        socket.off("LiveWarning");
       }
     };
   }, [socket]);
@@ -416,6 +472,15 @@ function App() {
   return (
     <Box>
       <ToastContainer closeOnClick autoClose={1000} />
+      {notifications.map((item, index) => (
+        <AlarmNotification
+        id={item._id}
+          key={index}
+          title={item.taskTitle}
+          userInfo={userInfo}
+          description={item.description}
+        />
+      ))}
 
       <Box>
         <ThemeProvider theme={theme}>
@@ -431,13 +496,13 @@ function App() {
                 path='/admin/resetPassword/:token'
                 element={<ResetPassword />}
               />
+              <Route path="/profile" element={<PrivateRoute nav={true} />}>
+                <Route path="/profile" element={<Profile />} />
+              </Route>
               {/* Home Router. */}
               <Route path='*' element={<PrivateRoute nav={true} />}>
                 {' '}
                 <Route path='*' element={<NoPageFound />} />
-              </Route>
-              <Route path='/profile' element={<PrivateRoute nav={true} />}>
-                <Route path='/profile' element={<Profile />} />
               </Route>
 
               {/* Admin Router */}
@@ -448,6 +513,7 @@ function App() {
                   path='/setDicountpricerange'
                   element={<SetDiscountPrice />}
                 />
+
                 <Route
                   path='/Users'
                   element={
@@ -611,6 +677,7 @@ function App() {
                     </UserRole>
                   }
                 />
+
                 {/* Account Router */}
                 <Route path='/OverseasOrder' element={<OverseasOrder />} />
                 <Route
@@ -686,7 +753,15 @@ function App() {
                   }
                 />
                 <Route
-                  path='/OneProductDetails/:id'
+                  path="/ScheduledMessage"
+                  element={
+                    <UserRole name={"Scheduled Message"}>
+                      <Schedulemessage />
+                    </UserRole>
+                  }
+                />
+                <Route
+                  path="/OneProductDetails/:id"
                   element={<OneProductDetails />}
                 />
                 <Route path='/salesDetails' element={<SellerDetails />} />
@@ -824,14 +899,34 @@ function App() {
                   path='/createOrderShipment'
                   element={<CreateOrderShipmentMain />}
                 />
-                <Route path='/testing' element={<TestingComponent />} />
-                <Route path='/tempOrder/:id' element={<TempOrder />} />
-                <Route path='/CreateShipment' element={<CreateShipment />} />
+                <Route path="/testing" element={<TestingComponent />} />
+                <Route path="/tempOrder/:id" element={<TempOrder />} />
+                <Route path="/CreateShipment" element={<CreateShipment />} />
+                <Route path="/AddGroupComp/:id" element={<AddGroupComp />} />
+                <Route path="/AddGroupComp" element={<AddGroupComp />} />
                 <Route
                   path='/UpdateQuantity'
                   element={
-                    <UserRole name={'Update Quantity'}>
+                    <UserRole name={"Update Quantity"}>
                       <UpdateQuantity />
+                    </UserRole>
+                  }
+                />
+
+                <Route
+                  path="/AddTask"
+                  element={
+                    <UserRole name={"Add Task"}>
+                      <AddTask />
+                    </UserRole>
+                  }
+                />
+
+                <Route
+                  path="/TaskScheduledList"
+                  element={
+                    <UserRole name={"Task Scheduled List"}>
+                      <TaskScheduledList  />
                     </UserRole>
                   }
                 />

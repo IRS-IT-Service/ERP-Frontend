@@ -71,6 +71,31 @@ export const driveApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    uploadFileWhatsapp: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${DriveUrl}/uploadFileWhatsapp`,
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    getFolderBySpecificUser: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${DriveUrl}/getSingleUserFolders/${data}`,
+          method: "GET",
+        };
+      },
+    }),
+    getAllUsersInDrive: builder.query({
+      query: (data) => {
+        return {
+          url: `${DriveUrl}/getAllUsersInDrive`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -83,4 +108,7 @@ export const {
   useDeleteFolderMutation,
   useDownloadFileMutation,
   useDeleteFileMutation,
+  useUploadFileWhatsappMutation,
+  useGetFolderBySpecificUserMutation,
+  useGetAllUsersInDriveQuery,
 } = driveApiSlice;

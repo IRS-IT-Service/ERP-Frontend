@@ -16,7 +16,10 @@ import {
   removeSelectedSkuQuery,
 } from "../../features/slice/selectedItemsSlice";
 import FilterBarV2 from "../../components/Common/FilterBarV2";
-import { useGetAllProductV2Query } from "../../features/api/productApiSlice";
+import {
+  useGetAllProductV2Query,
+  useGetAllRoboProductsNewQuery,
+} from "../../features/api/productApiSlice";
 import Loading from "../../components/Common/Loading";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
@@ -87,8 +90,7 @@ const infoDetail = [
         width={"90%"}
       />
     ),
-    instruction:
-      " Newly added quantity in Research & Development.",
+    instruction: " Newly added quantity in Research & Development.",
   },
   {
     name: "Old Qty in R&D",
@@ -99,8 +101,7 @@ const infoDetail = [
         width={"90%"}
       />
     ),
-    instruction:
-      "Previous quantity in Research & Development",
+    instruction: "Previous quantity in Research & Development",
   },
 ];
 
@@ -117,7 +118,7 @@ const Inventory = () => {
 
   const newValue = id !== "R&D" && id.split("&");
   const idValue = id !== "R&D" && newValue[0];
-  const name = id !== "R&D" && newValue[1];
+  const compName = id !== "R&D" && newValue[1];
   const { data: allData, isLoading: dataLoading } = useGetSingleProjectQuery(
     idValue,
     {
@@ -142,11 +143,18 @@ const Inventory = () => {
   let description =
     id === "R&D"
       ? `Our Inventory Management System for R&D efficiently tracks store and R&D inventory quantities, offering real-time updates, customizable alerts, and detailed reporting to streamline operations and optimize resource allocation.`
-      : `Add Parts For ${name}`;
+      : `Add Parts For ${compName}`;
 
   /// global state
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-    useSelector((state) => state.product);
+  const {
+    checkedBrand,
+    checkedCategory,
+    searchTerm,
+    checkedGST,
+    deepSearch,
+    name,
+    sku,
+  } = useSelector((state) => state.product);
   const { createQueryItems, createQuerySku } = useSelector(
     (state) => state.SelectedItems
   );
@@ -158,7 +166,7 @@ const Inventory = () => {
   const [selectedItemsData, setSelectedItemsData] = useState([]);
   const [open, setOpen] = useState(false);
 
-  const [filterString, setFilterString] = useState("page=1");
+  const [filterString, setFilterString] = useState("");
   const [page, setPage] = useState(1);
   const [rowPerPage, setRowPerPage] = useState(100);
   const [totalProductCount, setTotalProductCount] = useState(0);
@@ -176,7 +184,7 @@ const Inventory = () => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllRoboProductsNewQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
 
@@ -213,7 +221,7 @@ const Inventory = () => {
       dispatch(setSelectedCreateQuery(newData));
     }
   }, [selectedItemsData]);
-  console.log(selectedItemsData.length)
+  console.log(selectedItemsData.length);
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
     const newSelectedRowsData = selectedItemsData.filter(
@@ -231,10 +239,10 @@ const Inventory = () => {
   // );
 
   const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
-const realData = Array.from(uniqueSKUs).map((sku) => 
-  createQueryItems.find((item) => item.SKU === sku)
-);
- 
+  const realData = Array.from(uniqueSKUs).map((sku) =>
+    createQueryItems.find((item) => item.SKU === sku)
+  );
+
   const handleOpenDialog = () => {
     setOpen(true);
   };
@@ -267,44 +275,53 @@ const realData = Array.from(uniqueSKUs).map((sku) =>
 
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
 
-    setFilterString(`${newFilterString}&page=1`);
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
+    // if (apiRef?.current) {
+    //   apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    // }
+
     clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
+
+    if (!name && !sku) {
+      setFilterString("");
       return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
     }
-  }, [deepSearch]);
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
 
   // function for fetch data on latest query
   const fetchDataWithQuery = (query) => {
@@ -422,7 +439,11 @@ const realData = Array.from(uniqueSKUs).map((sku) =>
             <CachedIcon />
           </Button>
           <Box>
-            <Button variant="outlined" sx={{color :`${buttonBlink ? "green":"blue"} `}} onClick={() => fetchDataWithQuery("RandDProducts")}>
+            <Button
+              variant="outlined"
+              sx={{ color: `${buttonBlink ? "green" : "blue"} ` }}
+              onClick={() => fetchDataWithQuery("RandDProducts")}
+            >
               Fetch R&D
             </Button>
           </Box>
@@ -562,7 +583,6 @@ const realData = Array.from(uniqueSKUs).map((sku) =>
                   footer: { status: refetch },
                 }}
               />
-          
             </Box>
           </Grid>
         )}

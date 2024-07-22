@@ -309,7 +309,7 @@ const Dropup = () => {
                   })
                 ) : value === "live status" ? (
                   liveStatus.map((item, index) => {
-                    console.log(item.time)
+                    
                     return (
                       <Box
                         key={index}

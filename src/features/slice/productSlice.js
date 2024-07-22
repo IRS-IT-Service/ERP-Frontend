@@ -10,6 +10,8 @@ const initialState = {
   checkedCategory: [],
   checkedGST: [],
   deepSearch: "",
+  name: "",
+  sku: "",
   cart: {},
   orders: [],
   oneOrder: {},
@@ -17,6 +19,7 @@ const initialState = {
   customerInfo: {},
   searchTerm: null,
   forceSearch: false,
+  unApprovedData: {},
 };
 
 const productSlice = createSlice({
@@ -74,8 +77,20 @@ const productSlice = createSlice({
     setDeepSearch: (state, action) => {
       state.deepSearch = action.payload;
     },
+    setName: (state, action) => {
+      state.name = action.payload;
+    },
+    setSku: (state, action) => {
+      state.sku = action.payload;
+    },
     setSelectedItems: (state, action) => {
       state.selectedItems = action.payload;
+    },
+    setSelectedItems: (state, action) => {
+      state.unApprovedData = action.payload;
+    },
+    setUnApprovedData: (state, action) => {
+      state.unApprovedData = action.payload;
     },
   },
 });
@@ -96,6 +111,9 @@ export const {
   setCheckedBrand,
   setCheckedCategory,
   setDeepSearch,
-  setSelectedItems
+  setSelectedItems,
+  setName,
+  setSku,
+  setUnApprovedData,
 } = productSlice.actions;
 export default productSlice.reducer;

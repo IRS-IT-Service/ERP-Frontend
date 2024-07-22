@@ -214,6 +214,7 @@ const Calc = () => {
   const [description, setDescription] = useState('');
   const [isEdited, setIsEdited] = useState(false);
   const [open, setOpen] = useState(false);
+  const [hsn ,setHsn] = useState({})
 
   // weight state
   const [qty, setQty] = useState({});
@@ -334,6 +335,11 @@ const Calc = () => {
         [sku]: { ...dimensions[sku], [dimensionType]: value },
       });
     }
+    if (type === 'hsn') {
+      setHsn({
+        ...hsn, [sku]: value 
+      });
+    }
     if (type === 'unit') {
       setUnit(value);
     }
@@ -448,6 +454,7 @@ const Calc = () => {
         priceState: {
           usdPrice,
           rmbPrice,
+          hsn,
           totalUsdPrice,
           subTotalUsdPrice,
           usdPriceRatio,
@@ -739,6 +746,7 @@ const Calc = () => {
 
       // price
       setUsdPrice(oneCalcData.data.priceState.usdPrice || {});
+      setHsn(oneCalcData.data.priceState.hsn || {});
       setRMBPrice(oneCalcData.data.priceState.rmbPrice || {});
       setTotalUsdPrice(oneCalcData.data.priceState.totalUsdPrice || {});
       setSubTotalUsdPrice(oneCalcData.data.priceState.subTotalUsdPrice || null);
@@ -2113,6 +2121,37 @@ const Calc = () => {
                           >
                             {row.SKU}
                           </Typography>
+                          <Box display={'flex'}>
+                            <Typography
+                              sx={{
+                                fontSize: '.6rem',
+                                fontWeight: '600',
+                                marginTop: '3px',
+                                marginRight: '3px',
+                              }}
+                            >
+                              HSN NO
+                            </Typography>
+                            <input
+                              type='text'
+                              style={{
+                                border: '1px solid #9999ff',
+                                borderRadius: '.2rem',
+                                textIndent:"5px",
+                                boxShadow: '0px 8px 4px -4px #00000024',
+                                width: '8rem',
+                                height: '20px',
+                              }}
+                              value={hsn[row.SKU] ? hsn[row.SKU] : ''}
+                              onChange={(e) => {
+                                handleValueChange(
+                                  'hsn',
+                                  row.SKU,
+                                  e.target.value
+                                );
+                              }}
+                            />
+                          </Box>
                           <Typography
                             sx={{
                               fontSize: '.666rem',

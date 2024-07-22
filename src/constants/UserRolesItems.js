@@ -48,7 +48,7 @@ const userRolesData = [
       },
       {
         id: 76,
-        name: 'Google Drive',
+        name: 'IRS Drive',
         path: '/googleDrive',
         icon: 'fab fa-google-drive',
         notification: true,
@@ -190,18 +190,18 @@ const userRolesData = [
         path: '/PriceHistory',
         icon: 'fa-solid fa-hand-holding-dollar',
       },
-      // {
-      //   id: 56,
-      //   name: "Add Proforma",
-      //   path: "/AddProforma",
-      //   icon: "fa fa-file-text",
-      // },
-      // {
-      //   id: 57,
-      //   name: "Proforma List",
-      //   path: "/ProformaList",
-      //   icon: "fa fa-list",
-      // },
+      {
+        id: 56,
+        name: "Add Proforma",
+        path: "/AddProforma",
+        icon: "fa fa-file-text",
+      },
+      {
+        id: 57,
+        name: "Proforma List",
+        path: "/ProformaList",
+        icon: "fa fa-list",
+      },
       // {
       //   id: 58,
       //   name: "Proforma Details",
@@ -568,6 +568,14 @@ const userRolesData = [
         icon: 'fa fa-comment',
         notification: true,
       },
+   
+      {
+        id: 84,
+        name: 'Scheduled Message',
+        path: '/ScheduledMessage',
+        icon: 'fa fa-clock-rotate-left',
+        notification: true,
+      },
       {
         id: 69,
         name: 'MessageTemplate',
@@ -575,6 +583,29 @@ const userRolesData = [
         icon: 'fa fa-comment',
         notification: true,
       },
+    ],
+  },
+
+  {
+    title: 'Employee Task',
+    icon: 'fa-solid fa-list-check',
+    childrens: [
+      // {
+      //   id: 85,
+      //   name: 'Add Task',
+      //   path: '/AddTask',
+      //   icon: 'fa-regular fa-calendar-plus',
+      //   notification: true,
+      // },
+      {
+        id: 86,
+        name: 'Task Scheduled List',
+        path: '/TaskScheduledList',
+        icon: 'fa-solid fa-clipboard-list',
+        notification: true,
+      },
+
+ 
     ],
   },
 
@@ -608,6 +639,6 @@ const userRolesData = [
   },
 ];
 
-// last routes is 83
+// last routes is 86
 
 export default userRolesData;

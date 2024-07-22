@@ -1,14 +1,21 @@
 import React from "react";
-import Navbar from "../../components/Common/Navbar";
 import SellerProfile from "../../components/Profile/SellerProfile";
+import { Box ,styled} from "@mui/material";
 
+const DrawerHeader = styled("div")(({ theme }) => ({
+  ...theme.mixins.toolbar,
+}));
 
 const Profile = () => {
   return (
-    <>
-      <Navbar />
+    <Box
+      component="main"
+      sx={{flexGrow:1, p: 0, overflow: "hidden" ,width: "100%"}}
+    >
+      <DrawerHeader />
+
       <SellerProfile />
-    </>
+    </Box>
   );
 };
 

@@ -1,5 +1,5 @@
 import Checkbox from "@mui/material/Checkbox";
-import { Box, Collapse, Typography } from "@mui/material";
+import { Box, Collapse, Typography,Button } from "@mui/material";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -14,10 +14,16 @@ const UserRoleDailogBoxSubmenu = ({
   userRoleUpdateApi,
   adminId,
   loading,
-  color
+  color,
+  setChecked,
+  setNewExisting,
+  newExisting,
+  checked
 }) => {
+
+
   /// initialize
-  const { name } = useSelector((state) => state.auth.userInfo);
+  
   const handleExist = async (e, child) => {
     const newExist = {
       id: child.id,
@@ -25,37 +31,28 @@ const UserRoleDailogBoxSubmenu = ({
       icon: child.icon,
       path: child.path,
     };
-
+  
     if (e.target.checked) {
-      const newUserRights = [...userRights];
-      newUserRights.push(newExist);
+       const newUserRights = [...userRights, newExist];
+      setUserRights(newUserRights);
+      setNewExisting((prev)=>{
+        if(prev.length > 0){
+          return [...prev, newExist]
 
-      setUserRights([...newUserRights]);
-      const data = {
-        type: "userRole",
-        body: {
-          adminId: adminId,
-          role: newUserRights,
-          message: `${name} added ${child.name} rights to`,
-        },
-      };
-      const res = await userRoleUpdateApi(data);
-      refetchOneUser();
-    } else if (e.target.checked === false) {
-      const removeExist = userRights.filter((item) => item.id !== child.id);
-      const data = {
-        type: "userRole",
-        body: {
-          adminId: adminId,
-          role: removeExist,
-          message: `${name} removed ${child.name} rights from`,
-        },
-      };
-      const res = await userRoleUpdateApi(data);
-      refetchOneUser();
-      setUserRights([...removeExist]);
+        }else{
+          return [newExist]
+        }
+      })
+    } else {
+
+      const updatedUserRights = userRights.filter((item) => item.id !== child.id);
+      const newExistingRight = newExisting.filter((item) => item.id !== child.id)
+      setNewExisting(newExistingRight);
+      setUserRights(updatedUserRights);
     }
   };
+
+  
 
   return (
     <Box
@@ -117,7 +114,9 @@ const UserRoleDailogBoxSubmenu = ({
             </Box>
           );
         })}
+      
       </Box>
+     
     </Box>
   );
 };

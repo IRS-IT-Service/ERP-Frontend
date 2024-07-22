@@ -9,7 +9,10 @@ import FilterBarV2 from "../../../components/Common/FilterBarV2";
 import { Grid, Box, Button, TablePagination } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllProducts } from "../../../features/slice/productSlice";
-import { useGetAllProductV2Query } from "../../../features/api/productApiSlice";
+import {
+  useGetAllProductV2Query,
+  useGetAllRoboProductsNewQuery,
+} from "../../../features/api/productApiSlice";
 import Loading from "../../../components/Common/Loading";
 import RestockItemDialog from "./RestockItemDialog";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -30,15 +33,22 @@ const RestockGrid = () => {
 
   /// global state
 
-  const { checkedBrand, checkedCategory, searchTerm, checkedGST, deepSearch } =
-    useSelector((state) => state.product);
+  const {
+    checkedBrand,
+    checkedCategory,
+    searchTerm,
+    checkedGST,
+    deepSearch,
+    name,
+    sku,
+  } = useSelector((state) => state.product);
 
   const [rows, setRows] = useState([]);
   const [editedRows, setEditedRows] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [openRestockItem, setOpenRestockItem] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState({});
-  const [filterString, setFilterString] = useState("page=1");
+  const [filterString, setFilterString] = useState("");
   const [page, setPage] = useState(1);
   const [rowPerPage, setRowPerPage] = useState(100);
   const [totalProductCount, setTotalProductCount] = useState(0);
@@ -52,7 +62,7 @@ const RestockGrid = () => {
     isLoading: productLoading,
     refetch,
     isFetching,
-  } = useGetAllProductV2Query(filterString, {
+  } = useGetAllRoboProductsNewQuery(filterString, {
     pollingInterval: 1000 * 300,
   });
 
@@ -68,9 +78,8 @@ const RestockGrid = () => {
     // const selectedItemsDataData = ids.map((id) => {
     //   return rows.find((row) => row.SKU === id);
     // });
-    const newselectedItemsDataData = rows.filter((item) =>  
-      selectionModel.includes(item.id),
-      
+    const newselectedItemsDataData = rows.filter((item) =>
+      selectionModel.includes(item.id)
     );
     setSelectedItemsData(newselectedItemsDataData);
     dispatch(setSelectedSkuQuery(selectionModel));
@@ -139,7 +148,6 @@ const RestockGrid = () => {
       dispatch(setSelectedCreateQuery(newData));
     }
   }, [selectedItemsData]);
-  
 
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
@@ -155,60 +163,65 @@ const RestockGrid = () => {
   // const uniqueDATAs = new Set(createQueryItems);
   // const uniqueDATAsArray = Array.from(uniqueDATAs);
   // const uniqueSKUsArray = Array.from(uniqueSKUs);
- 
+
   // const realData = uniqueDATAsArray?.filter((item) =>
   //   uniqueSKUsArray.find((docs) => item.SKU === docs)
   // );
 
+  const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
+  const realData = Array.from(uniqueSKUs).map((sku) =>
+    createQueryItems.find((item) => item.SKU === sku)
+  );
 
-
-
-const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
-const realData = Array.from(uniqueSKUs).map((sku) => 
-  createQueryItems.find((item) => item.SKU === sku)
-);
- 
   useEffect(() => {
     let newFilterString = "";
-    checkedBrand.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `brand=${item}`;
-      } else {
-        newFilterString += `&brand=${item}`;
-      }
-    });
-
-    checkedCategory.forEach((item, index) => {
-      newFilterString += `&category=${item}`;
-    });
-
-    checkedGST.forEach((item, index) => {
-      if (index === 0) {
-        newFilterString += `&gst=${item}`;
-      } else {
-        newFilterString += `&gst=${item}`;
-      }
-    });
-    if (!checkedCategory.length && !checkedBrand.length && !checkedGST.length) {
-      setFilterString(`${newFilterString}page=1`);
-      return;
+    if (checkedBrand.length) {
+      newFilterString += `brands=${checkedBrand.join(",")}`;
     }
 
-    setFilterString(`${newFilterString}&page=1`);
+    if (checkedCategory.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `category=${checkedCategory.join(",")}`;
+    }
+
+    if (checkedGST.length) {
+      if (newFilterString) newFilterString += "&";
+      newFilterString += `gst=${checkedGST.join(",")}`;
+    }
+
+    if (!newFilterString) {
+      setFilterString("page=1");
+    } else {
+      setFilterString(`${newFilterString}&page=1`);
+    }
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
-    // apiRef?.current?.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    // if (apiRef?.current) {
+    //   apiRef.current.scrollToIndexes({ rowIndex: 0, colIndex: 0 });
+    // }
+
     clearTimeout(debouncing.current);
-    if (!deepSearch) {
-      setFilterString(`page=1`);
+
+    if (!name && !sku) {
+      setFilterString("");
       return;
-    } else {
-      debouncing.current = setTimeout(() => {
-        setFilterString(`deepSearch=${deepSearch}&page=1`);
-      }, 1000);
     }
-  }, [deepSearch]);
+
+    debouncing.current = setTimeout(() => {
+      let newFilterString = "";
+      if (name) {
+        newFilterString += `name=${name}`;
+      }
+      if (sku) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `sku=${sku}`;
+      }
+      setFilterString(`${newFilterString}&page=1`);
+    }, 1000);
+
+    return () => clearTimeout(debouncing.current);
+  }, [name, sku]);
 
   /// Columns
   const columns = [
