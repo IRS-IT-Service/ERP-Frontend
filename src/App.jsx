@@ -297,7 +297,6 @@ function App() {
         });
 
         socket.on("LiveWarning", (data) => {
-         console.log(data)
         if (data.length > 0) {
           const newNotifications = data?.filter(item => item.userId === adminid);
             setNotifications(prevNotifications => [...prevNotifications, ...newNotifications]);
