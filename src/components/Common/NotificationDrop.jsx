@@ -88,7 +88,7 @@ const NotificationDrop = () => {
     WebkitBackdropFilter: "blur( 1.5px )",
     borderRadius: "10px",
     top: 20,
-    right: "25rem",
+    right: "26rem",
     zIndex: 3000,
     cursor: "pointer",
   }}

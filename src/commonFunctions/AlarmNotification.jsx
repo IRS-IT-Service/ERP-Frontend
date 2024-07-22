@@ -128,8 +128,9 @@ const AlarmNotification = ({ id,title, description,userInfo }) => {
 
           const currentDateTime = new Date();
           const snoozeTime = new Date(currentDateTime.getTime() + snoozeValue * 60000);
-
-          await handleUpdate(id, 'warningTime', snoozeTime, title);
+          snoozeTime.setSeconds(0, 0);
+          const isoString = snoozeTime.toISOString();
+          await handleUpdate(id, 'warningTime', isoString, title);
 
           Swal.close();
           audio.pause();
@@ -138,8 +139,10 @@ const AlarmNotification = ({ id,title, description,userInfo }) => {
         const stopButton = Swal.getPopup().querySelector('#stopButton');
         stopButton.addEventListener('click', async () => {
           const currentDateTime = new Date();
+          currentDateTime.setSeconds(0, 0);
+          const isoString = currentDateTime.toISOString();
 
-          await handleUpdate(id, 'warningTime', currentDateTime, title);
+          await handleUpdate(id, 'warningTime', isoString, title);
 
           Swal.close();
           audio.pause();
