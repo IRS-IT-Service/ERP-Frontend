@@ -703,8 +703,6 @@ const CreateChat = () => {
     const extension = parts[parts.length - 1];
 
     switch (extension) {
-
-
       case "csv":
       case "xlsx":
       case "docx":
