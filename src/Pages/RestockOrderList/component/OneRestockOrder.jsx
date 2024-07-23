@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Grid, styled, Box, Button, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import { DataGrid, useGridApiRef,GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import {
   useDeleteRestockByIdMutation,
@@ -579,6 +579,14 @@ const OneRestockOrder = () => {
               // isRowSelectable={true}
               onRowSelectionModelChange={handleSelectionChange}
               rowSelectionModel={selectedItems}
+              disableColumnFilter
+              disableDensitySelector
+              slots={{ toolbar:  GridToolbar }}
+              slotProps={{
+                toolbar: {
+                  showQuickFilter: true,
+                },
+              }}
             />
             <Order2Vendor
               items={selectedRows}

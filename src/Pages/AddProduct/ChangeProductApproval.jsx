@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import {
   styled,
   Box,
@@ -16,46 +16,48 @@ import {
   Tooltip,
   DialogContent,
   DialogActions,
-} from '@mui/material';
+} from "@mui/material";
 import {
   useGetPendingProductQuery,
   usePendingProductApprovalMutation,
   useGetUnApprovedCountQuery,
-} from '../../features/api/productApiSlice';
-import { useState } from 'react';
-import Loading from '../../components/Common/Loading';
-import Header from '../../components/Common/Header';
-import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
-import { setHeader, setInfo } from '../../features/slice/uiSlice';
-import InfoDialogBox from '../../components/Common/InfoDialogBox';
+} from "../../features/api/productApiSlice";
+import { useState } from "react";
+import Loading from "../../components/Common/Loading";
+import Header from "../../components/Common/Header";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setUnApprovedData } from "../../features/slice/productSlice";
 
-const DrawerHeader = styled('div')(({ theme }) => ({
+
+const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
 const infoDetail = [
   {
-    name: 'Details',
+    name: "Details",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/productChangeApproval.png?updatedAt=1717400189298'
-        height={'50%'}
-        width={'50%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/productChangeApproval.png?updatedAt=1717400189298"
+        height={"50%"}
+        width={"50%"}
       />
     ),
     instruction: "Here See the product details and it's status",
   },
   {
-    name: 'Approve',
+    name: "Approve",
     screenshot: (
       <img
-        src='https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/acceptReject.png?updatedAt=1717399607866'
-        height={'50%'}
-        width={'50%'}
+        src="https://ik.imagekit.io/z7h0zeety/Admin-Portal/Info%20SS%20images/acceptReject.png?updatedAt=1717399607866"
+        height={"50%"}
+        width={"50%"}
       />
     ),
-    instruction: 'Here you can approve or reject the product',
+    instruction: "Here you can approve or reject the product",
   },
 ];
 
@@ -70,7 +72,7 @@ const ChangeProductApproval = () => {
 
   /// rtk query
   const { data, isLoading, refetch, isFetching } =
-    useGetPendingProductQuery('update');
+    useGetPendingProductQuery("update");
 
   const [approvalApi, { isLoading: approvalLoading }] =
     usePendingProductApprovalMutation();
@@ -86,16 +88,17 @@ const ChangeProductApproval = () => {
       const params = {
         SKU: [SKU],
         status,
-        type: 'changes',
+        type: "changes",
       };
 
       const res = await approvalApi(params).unwrap();
-      toast.success(`Product ${status ? 'Accepted' : 'Rejected'} successfully`);
+      toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
       refetch();
       refetchUnApprovedCount();
+      dispatch(setUnApprovedData({ message: "uproved" }));
     } catch (e) {
       console.log(e);
-      console.log('Error at New Product Appproval');
+      console.log("Error at New Product Appproval");
     }
     setSkip(true);
   };
@@ -103,20 +106,22 @@ const ChangeProductApproval = () => {
   const handleSubmitBulk = async (status) => {
     try {
       const processedSKU = data?.data?.map((item) => item.SKU);
-      if (processedSKU.length <= 0) return toast.error('No Product to Approve');
+      if (processedSKU.length <= 0) return toast.error("No Product to Approve");
       const params = {
         SKU: processedSKU,
         status,
-        type: 'changes',
+        type: "changes",
       };
 
       const res = await approvalApi(params).unwrap();
-      toast.success(`Product ${status ? 'Accepted' : 'Rejected'} successfully`);
+      toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
+      dispatch(setUnApprovedData({ message: "uproved" }));
+
       refetch();
       refetchUnApprovedCount();
     } catch (e) {
       console.log(e);
-      console.log('Error at New Product Appproval');
+      console.log("Error at New Product Appproval");
     }
   };
 
@@ -167,8 +172,8 @@ const ChangeProductApproval = () => {
 
   return (
     <Box
-      component='main'
-      sx={{ flexGrow: 1, p: 0, width: '100%', overflowY: 'hidden' }}
+      component="main"
+      sx={{ flexGrow: 1, p: 0, width: "100%", overflowY: "hidden" }}
     >
       <DrawerHeader />
       <Loading loading={isLoading || isFetching || approvalLoading} />
@@ -176,28 +181,28 @@ const ChangeProductApproval = () => {
 
       <Box
         sx={{
-          height: '86vh',
+          height: "86vh",
         }}
       >
         <TableContainer
           component={Paper}
           sx={{
-            maxHeight: '97%',
-            height: '95%',
+            maxHeight: "97%",
+            height: "95%",
 
-            maxWidth: '99%',
+            maxWidth: "99%",
           }}
         >
           <Table>
             <TableHead
               sx={{
                 backgroundColor: themeColor.sideBarColor1,
-                fontSize: '1px',
-                position: 'sticky',
+                fontSize: "1px",
+                position: "sticky",
                 top: 0,
-                zIndex: '100',
-                maxHeight: '30px',
-                overflowY: 'auto',
+                zIndex: "100",
+                maxHeight: "30px",
+                overflowY: "auto",
               }}
             >
               <TableRow>
@@ -209,6 +214,7 @@ const ChangeProductApproval = () => {
                 <TableCell>Brand</TableCell>
                 <TableCell>Category</TableCell>
                 <TableCell>SubCategory</TableCell>
+                <TableCell>Gen Barcode</TableCell>
                 <TableCell>Subitems</TableCell>
                 <TableCell>Box Dimension</TableCell>
               </TableRow>
@@ -229,9 +235,12 @@ const ChangeProductApproval = () => {
                       <TableCell>{item?.Category}</TableCell>
                       <TableCell>{item?.SubCategory}</TableCell>
                       <TableCell>
+                        {item?.barcodeGenerator === true ? "Yes" : "No"}
+                      </TableCell>
+                      <TableCell>
                         <Tooltip
-                          title={item?.subItems?.join('<>') || 'None'}
-                          placement='top-start'
+                          title={item?.subItems?.join("<>") || "None"}
+                          placement="top-start"
                         >
                           <Button>View</Button>
                         </Tooltip>
@@ -258,12 +267,12 @@ const ChangeProductApproval = () => {
                         </Button>
                       </TableCell> */}
                       <TableCell>
-                        {' '}
+                        {" "}
                         <Button
-                          variant='contained'
+                          variant="contained"
                           sx={{
-                            backgroundColor: '#00563B',
-                            marginRight: '16px',
+                            backgroundColor: "#00563B",
+                            marginRight: "16px",
                           }}
                           onClick={() => {
                             handleSubmit(item?.SKU, true);
@@ -272,8 +281,8 @@ const ChangeProductApproval = () => {
                           Accept
                         </Button>
                         <Button
-                          variant='contained'
-                          sx={{ backgroundColor: '#AA0000' }}
+                          variant="contained"
+                          sx={{ backgroundColor: "#AA0000" }}
                           onClick={() => {
                             handleSubmit(item?.SKU, false);
                           }}
@@ -281,67 +290,77 @@ const ChangeProductApproval = () => {
                           Reject
                         </Button>
                       </TableCell>
-                      <TableCell sx={{ color: '#AA0000' }}>
+                      <TableCell sx={{ color: "#AA0000" }}>
                         {checkChange(item?.Name, item?.changedValues?.Name)
                           ? item?.changedValues?.Name
-                          : ''}
+                          : ""}
                       </TableCell>
-                      <TableCell sx={{ color: '#AA0000' }}>
+                      <TableCell sx={{ color: "#AA0000" }}>
                         {checkChange(
                           item?.AlternativeName,
                           item?.changedValues?.AlternativeName
                         )
                           ? item?.changedValues?.AlternativeName
-                          : ''}
+                          : ""}
                       </TableCell>
-                      <TableCell sx={{ color: '#AA0000' }}>
+                      <TableCell sx={{ color: "#AA0000" }}>
                         {checkChange(item?.Weight, item?.changedValues?.Weight)
                           ? item?.changedValues?.Weight
-                          : ''}
+                          : ""}
                       </TableCell>
-                      <TableCell sx={{ color: '#AA0000' }}>
+                      <TableCell sx={{ color: "#AA0000" }}>
                         {checkChange(
                           dimensionToString(item?.Dimensions),
                           dimensionToString(item?.changedValues?.Dimensions)
                         )
                           ? dimensionToString(item?.changedValues?.Dimensions)
-                          : ''}
+                          : ""}
                       </TableCell>
-                      <TableCell sx={{ color: '#AA0000' }}>
+                      <TableCell sx={{ color: "#AA0000" }}>
                         {checkChange(item?.Brand, item?.changedValues?.Brand)
                           ? item?.changedValues?.Brand
-                          : ''}
+                          : ""}
                       </TableCell>
-                      <TableCell sx={{ color: '#AA0000' }}>
+                      <TableCell sx={{ color: "#AA0000" }}>
                         {checkChange(
                           item?.Category,
                           item?.changedValues?.Category
                         )
                           ? item?.changedValues?.Category
-                          : ''}
+                          : ""}
                       </TableCell>
-                      <TableCell sx={{ color: '#AA0000' }}>
+                      <TableCell sx={{ color: "#AA0000" }}>
                         {checkChange(
                           item?.SubCategory,
                           item?.changedValues?.SubCategory
                         )
                           ? item?.changedValues?.SubCategory
-                          : ''}
+                          : ""}
                       </TableCell>
-                      <TableCell sx={{ color: '#AA0000' }}>
-                        {' '}
+                      <TableCell sx={{ color: "#AA0000" }}>
+                        {checkChange(
+                          item?.barcodeGenerator,
+                          item?.changedValues?.barcodeGenerator
+                        )
+                          ? item?.changedValues?.barcodeGenerator
+                            ? "yes"
+                            : "No"
+                          : ""}
+                      </TableCell>
+                      <TableCell sx={{ color: "#AA0000" }}>
+                        {" "}
                         {!compareArrays(
                           item?.subItems,
                           item?.changedValues?.subItems
                         ) ? (
                           <Tooltip
-                            title={item?.changedValues?.subItems?.join('<>')}
-                            placement='top-start'
+                            title={item?.changedValues?.subItems?.join("<>")}
+                            placement="top-start"
                           >
-                            <Button sx={{ color: '#AA0000' }}>View</Button>
+                            <Button sx={{ color: "#AA0000" }}>View</Button>
                           </Tooltip>
                         ) : (
-                          ''
+                          ""
                         )}
                       </TableCell>
                     </TableRow>
@@ -353,17 +372,17 @@ const ChangeProductApproval = () => {
         </TableContainer>
         <Box
           sx={{
-            paddingTop: '5px',
-            display: 'flex',
-            gap: '5px',
-            marginBottom: '5px',
+            paddingTop: "5px",
+            display: "flex",
+            gap: "5px",
+            marginBottom: "5px",
           }}
         >
           <Button
-            variant='contained'
+            variant="contained"
             sx={{
-              marginBottom: '5px',
-              backgroundColor: '#166534',
+              marginBottom: "5px",
+              backgroundColor: "#166534",
             }}
             onClick={() => {
               handleSubmitBulk(true);
@@ -373,10 +392,10 @@ const ChangeProductApproval = () => {
           </Button>
           <Button
             sx={{
-              marginBottom: '5px',
-              backgroundColor: '#dc2626',
+              marginBottom: "5px",
+              backgroundColor: "#dc2626",
             }}
-            variant='contained'
+            variant="contained"
             onClick={() => {
               handleSubmitBulk(false);
             }}
@@ -385,47 +404,47 @@ const ChangeProductApproval = () => {
           </Button>
         </Box>
       </Box>
-      <Dialog open={false} maxWidth='xl'>
+      <Dialog open={false} maxWidth="xl">
         <DialogTitle
           sx={{
             backgroundColor: themeColor.sideBarColor1,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           Box Dimensions
         </DialogTitle>
         <DialogContent
           sx={{
-            display: 'flex',
-            width: '800px',
+            display: "flex",
+            width: "800px",
           }}
         >
           <Box
             sx={{
-              width: '50%',
+              width: "50%",
             }}
           >
             <Typography
               sx={{
-                width: '100%',
-                textAlign: 'center',
-                fontWeight: 'bold',
+                width: "100%",
+                textAlign: "center",
+                fontWeight: "bold",
               }}
             >
               Current Box Dimensions
             </Typography>
-            <Box sx={{ display: 'flex', width: '100%' }}>
+            <Box sx={{ display: "flex", width: "100%" }}>
               <TableContainer component={Paper}>
-                <Table aria-label='simple table'>
+                <Table aria-label="simple table">
                   <TableHead
                     sx={{
-                      display: 'flex',
-                      gap: '10px',
-                      justifyContent: 'space-between',
+                      display: "flex",
+                      gap: "10px",
+                      justifyContent: "space-between",
                       backgroundColor: themeColor.sideBarColor1,
-                      padding: '3px',
+                      padding: "3px",
                     }}
                   >
                     <TableRow>Box No</TableRow>
@@ -440,14 +459,14 @@ const ChangeProductApproval = () => {
           </Box>
           <Box
             sx={{
-              width: '50%',
+              width: "50%",
             }}
           >
             <Typography
               sx={{
-                width: '100%',
-                textAlign: 'center',
-                fontWeight: 'bold',
+                width: "100%",
+                textAlign: "center",
+                fontWeight: "bold",
               }}
             >
               New Box Dimensions
@@ -456,14 +475,14 @@ const ChangeProductApproval = () => {
         </DialogContent>
         <DialogActions
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
+            display: "flex",
+            justifyContent: "space-between",
           }}
         >
           <Button
             sx={{
               backgroundColor: themeColor.sideBarColor1,
-              color: 'white',
+              color: "white",
             }}
           >
             Accept
@@ -471,7 +490,7 @@ const ChangeProductApproval = () => {
           <Button
             sx={{
               backgroundColor: themeColor.sideBarColor1,
-              color: 'white',
+              color: "white",
             }}
           >
             Reject
@@ -479,7 +498,7 @@ const ChangeProductApproval = () => {
           <Button
             sx={{
               backgroundColor: themeColor.sideBarColor1,
-              color: 'white',
+              color: "white",
             }}
           >
             Close

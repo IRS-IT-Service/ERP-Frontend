@@ -402,7 +402,7 @@ const createOrderShipment = ({ setOpen, id }) => {
     const { value } = event.target;
     const newValue = +value;
     let error = false;
-    console.log(item.ActualQuantity);
+
     setFinalData((prev) =>
       prev.map((data) => {
         if (data.SKU === item.SKU) {
@@ -598,12 +598,14 @@ const createOrderShipment = ({ setOpen, id }) => {
             SKU: item.SKU,
             Qty: item.Qty,
             productName: item.Name,
+            barcodeGenerator:item.barcodeGenerator,
           };
         } else {
           return {
             SKU: item.SKU,
             Qty: item.Qty,
             productName: item.Name,
+            barcodeGenerator:item.barcodeGenerator,
           };
         }
       });
