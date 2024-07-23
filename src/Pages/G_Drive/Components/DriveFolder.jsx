@@ -361,7 +361,7 @@ const DriveFolder = () => {
   };
 
   useEffect(() => {
-    dispatch(setHeader(`Google Drive`));
+    dispatch(setHeader(`IRS Drive`));
   }, []);
 
   const handleChange = (event, newAlignment) => {
