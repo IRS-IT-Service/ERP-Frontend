@@ -1006,7 +1006,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
                             </StyleCellData>
                             <StyleCellData>{row.SKU}</StyleCellData>
 
-                            <StyleCellData>{row.serialNumber}</StyleCellData>
+                            <StyleCellData>{row.serialNumber || "N/A"}</StyleCellData>
                             <StyleCellData>{row.Name}</StyleCellData>
                             <StyleCellData>{row.Brand}</StyleCellData>
 
