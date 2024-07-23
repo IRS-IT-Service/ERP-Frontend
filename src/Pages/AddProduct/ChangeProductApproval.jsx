@@ -29,6 +29,8 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
 import InfoDialogBox from "../../components/Common/InfoDialogBox";
+import { setUnApprovedData } from "../../features/slice/productSlice";
+
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -93,6 +95,7 @@ const ChangeProductApproval = () => {
       toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
       refetch();
       refetchUnApprovedCount();
+      dispatch(setUnApprovedData({ message: "uproved" }));
     } catch (e) {
       console.log(e);
       console.log("Error at New Product Appproval");
@@ -112,6 +115,8 @@ const ChangeProductApproval = () => {
 
       const res = await approvalApi(params).unwrap();
       toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
+      dispatch(setUnApprovedData({ message: "uproved" }));
+
       refetch();
       refetchUnApprovedCount();
     } catch (e) {
@@ -337,7 +342,9 @@ const ChangeProductApproval = () => {
                           item?.barcodeGenerator,
                           item?.changedValues?.barcodeGenerator
                         )
-                          ? item?.changedValues?.barcodeGenerator ? "yes" : "No"
+                          ? item?.changedValues?.barcodeGenerator
+                            ? "yes"
+                            : "No"
                           : ""}
                       </TableCell>
                       <TableCell sx={{ color: "#AA0000" }}>

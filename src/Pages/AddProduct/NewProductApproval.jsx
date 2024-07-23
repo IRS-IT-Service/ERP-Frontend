@@ -17,6 +17,8 @@ import InfoDialogBox from "../../components/Common/InfoDialogBox";
 import { useSendMessageMutation } from "../../features/api/whatsAppApiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
+import { setUnApprovedData } from "../../features/slice/productSlice";
+
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -118,10 +120,13 @@ const NewProductApproval = () => {
         approvalName: "New Product Approval",
       };
       const res = await approvalApi(params).unwrap();
+      dispatch(setUnApprovedData({message:'uproved'})) 
+
       toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
       await sendWhatsAppmessage(datas).unwrap();
       refetch();
       refetchUnApprovedCount();
+
     } catch (e) {
       console.log(e);
       console.log("Error at New Product Appproval");
@@ -155,11 +160,14 @@ const NewProductApproval = () => {
       };
 
       const res = await approvalApi(params).unwrap();
+      dispatch(setUnApprovedData({message:'uproved'})) 
 
       toast.success(`Product ${status ? "Accepted" : "Rejected"} successfully`);
       await sendWhatsAppmessage(datas).unwrap();
+
       refetch();
       refetchUnApprovedCount();
+
     } catch (e) {
       console.log(e);
       console.log("Error at New Product Appproval");
