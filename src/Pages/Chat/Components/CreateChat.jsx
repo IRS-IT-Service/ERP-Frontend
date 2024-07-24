@@ -398,6 +398,7 @@ const CreateChat = () => {
           createdAt: Date.now(),
         },
       ]);
+      // console.log("emitting message: " + message)
       socket.emit("newChatMessage", messageData);
       setMessage("");
     } catch (error) {
@@ -447,7 +448,7 @@ const CreateChat = () => {
       formData.append("file", selectedFile);
       const uploadfiles = await uploadFileWhatsapp(formData).unwrap();
 
-      console.log("411", uploadfiles);
+      // console.log("411", uploadfiles);
       if (!uploadfiles) return;
       const messageData = {
         _id: Math.random().toString(36).substring(2),
@@ -702,8 +703,6 @@ const CreateChat = () => {
     const extension = parts[parts.length - 1];
 
     switch (extension) {
-
-
       case "csv":
       case "xlsx":
       case "docx":

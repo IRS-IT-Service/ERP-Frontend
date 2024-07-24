@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 import { Grid, Button, Typography, Box } from '@mui/material';
 import BarcodeHistoryDialog from './BarcodeHistoryDialog';
@@ -62,7 +62,7 @@ const BarcodeHistory = () => {
 
   /// initialize
   const [search, setSearch] = useState('');
-  const apiRef = useGridApiRef();
+  // const apiRef = useGridApiRef();
   // const [filterData,setFilterData] = useState([]);
 
   const handleOnchange = (e) => {
@@ -214,11 +214,7 @@ const BarcodeHistory = () => {
         return (
           <>
             <Button onClick={handleViewClick}>view</Button>
-            <BarcodeHistoryDialog
-              open={openHistory}
-              onClose={handleopenHistory}
-              serialData={serialData}
-            />
+       
           </>
         );
       },
@@ -276,18 +272,26 @@ const BarcodeHistory = () => {
           value={search}
         />
         <StyledBox>
-          <Grid item xs={12} sx={{ mt: '5px' }}>
-            <Loading loading={DisptachLoading || ReturnLoading} />
-            <CartGrid
+          <Grid item xs={12} sx={{ mt: '7px' }}>
+            <Box sx={{height:"84vh"}}>
+            <DataGrid
               columns={columns}
-              apiRef={apiRef}
+              // apiRef={apiRef}
               rows={filteredData?.length > 0 ? rowss(filteredData) : []}
-              rowHeight={40}
-              Height={'74vh'}
-              hiddenColumns={hiddenColumns}
-              setHiddenColumns={setHiddenColumns}
+              // rowHeight={40}
+              // Height={'74vh'}
+              // hiddenColumns={hiddenColumns}
+              // setHiddenColumns={setHiddenColumns}
             />
+            </Box>
+            <Loading loading={DisptachLoading || ReturnLoading} />
+          
           </Grid>
+          <BarcodeHistoryDialog
+              open={openHistory}
+              onClose={handleopenHistory}
+              serialData={serialData}
+            />
         </StyledBox>
       </Box>
     </Box>

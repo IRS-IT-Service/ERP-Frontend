@@ -185,19 +185,24 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   useEffect(() => {
     if (allProductData?.status) {
       const newData = allProductData.data?.map((item, index) => {
+      
         return {
           ...item,
           id: item._id,
           Sno: index + 1,
-        };
+          
+          };
       });
+ 
       setRows(newData);
+      console.log(newData)
     }
   }, [allProductData]);
 
   useEffect(() => {
     if (clientData?.status) {
       const newData = clientData.client.Items?.map((item, index) => {
+ 
         return {
           ...item,
           id: item._id,
@@ -205,11 +210,16 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           Count: item.Qty,
           Name: item.productName,
           Isdone: false,
+          barcodeGenerator: item.barcodeGenerator
+          
         };
       });
+     
       setRows(newData);
+    
     }
   }, [clientData]);
+
 
   const isBarcodeAlreadyExists = (rows, serialNumber) => {
     return rows.some((row) => row.serialNumber === serialNumber);
@@ -218,23 +228,29 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   const countSKUs = (products, rows, newSku) => {
     const skuCounts = {};
     const reqCount = {};
+    const barcodeGenerator ={}
     for (const product of products) {
       const sku = product.SKU;
       skuCounts[sku] = (skuCounts[sku] || 0) + 1;
+      barcodeGenerator[sku] = !product.barcodeGenerator
     }
     for (const sku of rows) {
       const skuRow = sku.SKU;
       reqCount[skuRow] = sku.Count;
+    
     }
 
     if (skuCounts.hasOwnProperty(newSku)) {
-      if (reqCount[newSku] === skuCounts[newSku]) {
+      if (reqCount[newSku] === skuCounts[newSku] || barcodeGenerator[newSku]) {
+     
         setRows((prev) => {
           return prev.map((item) => {
-            if (item.SKU === newSku) {
+              if (item.SKU === newSku ) {
               return {
                 ...item,
                 Isdone: "done",
+                Qty: reqCount[newSku] , 
+           
               };
             }
             return item;
@@ -267,6 +283,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     return rows.some((row) => row.SKU === SKU);
   };
 
+
   /// handlers
   useEffect(() => {
     dispatch(setHeader(`Parts requirement`));
@@ -274,15 +291,21 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
   // for barcode
   function groupBySKU(products) {
+
     const skuMap = {};
 
     products.forEach((product) => {
-      const { SKU, serialNumber } = product;
-
+    
+      const { SKU, serialNumber,Qty } = product;
       if (skuMap[SKU]) {
         skuMap[SKU].Sno.push(serialNumber);
       } else {
-        skuMap[SKU] = { SKU, Sno: [serialNumber] };
+        if(Qty){
+          skuMap[SKU] = { SKU, Sno: [null] ,Qty:Qty };
+
+        }else{
+          skuMap[SKU] = { SKU, Sno: [serialNumber]};
+        }
       }
     });
 
@@ -298,6 +321,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
     try {
       const data = groupBySKU(barcodeRow);
+    
       const allDone = rows.every((row) => row.Isdone === "done");
       let params = null;
       if (id) {
@@ -322,6 +346,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           barcodes: data,
         };
       }
+
 
       const res = await dispatchBarcodeApi(params).unwrap();
 
@@ -377,10 +402,23 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     }
   };
 
+  const AlreadyExistSKU = (sku,data) =>{
+    console.log(data)
+    console.log(sku)
+    return data.some((row) => row.SKU === sku);
+  }
+
   useEffect(() => {
     if (!countSKUs(finalBarcodeRow, rows, latestSKU.SKU)) {
-      const latestValue = finalBarcodeRow.slice();
-
+      const updateData = rows.filter((row) => finalBarcodeRow.some(item => (item.SKU === row.SKU) && !item.barcodeGenerator ));
+    const latestValue = finalBarcodeRow.map(item => {
+      const matchingRow = updateData.find(row => row.SKU === item.SKU);
+      if (matchingRow) {
+        return { ...item,Qty: matchingRow.Qty };
+      }
+      return item;
+    });
+      
       setBarcoderow(latestValue);
     } else if (finalBarcodeRow.length > 0) {
       already.play();
@@ -395,17 +433,19 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     }
   }, [finalBarcodeRow, setFinalBarcodeRow]);
 
+ 
   const handleChangeBarcode = async (e) => {
     setBarcode(e.target.value);
+    let newRow = null
     let isDispatchError = null;
-    if (e.target.value.length === 16) {
+    if (e.target.value.length === 16 || e.target.value.length === 13) {
       try {
         const params = { Sno: e.target.value };
         const isExist = barcodeRow.some(
           (item) => item.serialNumber === params.Sno
         );
 
-        if (isExist) {
+        if (isExist || AlreadyExistSKU(params.Sno,finalBarcodeRow)) {
           alreadyExst.play();
           toast.error("Product already exists");
           setBarcode("");
@@ -417,17 +457,21 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
         if (res.status === "success") {
           const { barcode, product } = res.data;
+          
           setImage(product.mainImage?.lowUrl);
-          const newRow = { ...barcode, ...product };
+          if(barcode === undefined ){
+             newRow = {...product};
+          }else{
+           newRow = { ...barcode, ...product };
+          }
           setBarcode("");
-
-          if (!isBarcodeInRequest(rows, newRow.SKU)) {
+           if (!isBarcodeInRequest(rows, newRow.SKU)) {
             NotinReq.play();
             toast.error("Product is not in the requested");
             return;
           }
 
-          if (!isBarcodeAlreadyExists(finalBarcodeRow, newRow.serialNumber)) {
+          if (!isBarcodeAlreadyExists(finalBarcodeRow, newRow.serialNumber) || (barcode === undefined ) ) {
             success.play();
             setFinalBarcodeRow((prevRows) => [...prevRows, newRow]);
             setBarcode("");
@@ -549,17 +593,26 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
     },
-    // {
-    //   field: "Brand",
-    //   headerName: "Brand",
-    //   flex: 0.3,
-    //   minWidth: 120,
-    //   maxWidth: 150,
-    //   align: "center",
-    //   headerAlign: "center",
-    //   headerClassName: "super-app-theme--header",
-    //   cellClassName: "super-app-theme--cell",
-    // },
+    {
+      field: "Type",
+      headerName: "Barcode",
+      flex: 0.3,
+      minWidth: 50,
+      maxWidth: 90,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+          return params.row.barcodeGenerator ? (
+          <span style={{ color: "green", fontSize: "20px" }}>
+            <i className="fa-solid fa-check"></i>
+          </span>
+        ) : (
+          <span style={{ color: "red", fontSize: "20px" }}><i class="fa-solid fa-xmark"></i></span>
+        )
+      }
+    },
     // {
     //   field: "GST",
     //   headerName: "GST",
@@ -599,6 +652,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       headerClassName: "super-app-theme--header--Pending",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
+       
         return (
           <div
             style={{
@@ -612,7 +666,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
             {params.row.Isdone === "done" ? (
               <span style={{ color: "green", fontSize: "20px" }}>
                 {" "}
-                <i className="fa-solid fa-check"></i>{" "}
+                <i class="fa-solid fa-thumbs-up"></i>
               </span>
             ) : (
               params.row.Isdone
@@ -976,7 +1030,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
                             </StyleCellData>
                             <StyleCellData>{row.SKU}</StyleCellData>
 
-                            <StyleCellData>{row.serialNumber}</StyleCellData>
+                            <StyleCellData>{row.serialNumber || "N/A"}</StyleCellData>
                             <StyleCellData>{row.Name}</StyleCellData>
                             <StyleCellData>{row.Brand}</StyleCellData>
 
