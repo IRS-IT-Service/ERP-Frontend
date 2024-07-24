@@ -63,7 +63,7 @@ const BarcodeHistoryDialog = ({ open, onClose, serialData }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      // sx={{ backdropFilter: "blur(5px)" }}
+      sx={{ backdropFilter: "blur(5px)" }}
       fullWidth
       maxWidth="xl"
     >

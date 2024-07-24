@@ -214,11 +214,7 @@ const BarcodeHistory = () => {
         return (
           <>
             <Button onClick={handleViewClick}>view</Button>
-            <BarcodeHistoryDialog
-              open={openHistory}
-              onClose={handleopenHistory}
-              serialData={serialData}
-            />
+       
           </>
         );
       },
@@ -291,6 +287,11 @@ const BarcodeHistory = () => {
             <Loading loading={DisptachLoading || ReturnLoading} />
           
           </Grid>
+          <BarcodeHistoryDialog
+              open={openHistory}
+              onClose={handleopenHistory}
+              serialData={serialData}
+            />
         </StyledBox>
       </Box>
     </Box>
