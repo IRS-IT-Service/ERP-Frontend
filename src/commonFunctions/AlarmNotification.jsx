@@ -65,7 +65,7 @@ const AlarmNotification = ({ id,title, description,userInfo }) => {
     const Tone = "https://ik.imagekit.io/z7h0zeety/Admin-Portal/hello/mixkit-happy-bells-notification-937.wav?updatedAt=1721460292798";
 
     Swal.fire({
-      title: `Task Reminders !`,
+      title: `Task Remainders !`,
       html: `
       <div id="default" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
           <h5>You have "<span style="color:red">${title}</span>" pending task</h5>

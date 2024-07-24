@@ -185,20 +185,24 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
   useEffect(() => {
     if (allProductData?.status) {
       const newData = allProductData.data?.map((item, index) => {
+      
         return {
           ...item,
           id: item._id,
           Sno: index + 1,
-        };
+          
+          };
       });
+ 
       setRows(newData);
+      console.log(newData)
     }
   }, [allProductData]);
 
   useEffect(() => {
     if (clientData?.status) {
       const newData = clientData.client.Items?.map((item, index) => {
-    
+ 
         return {
           ...item,
           id: item._id,
@@ -210,9 +214,12 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           
         };
       });
+     
       setRows(newData);
+    
     }
   }, [clientData]);
+
 
   const isBarcodeAlreadyExists = (rows, serialNumber) => {
     return rows.some((row) => row.serialNumber === serialNumber);
@@ -230,10 +237,12 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     for (const sku of rows) {
       const skuRow = sku.SKU;
       reqCount[skuRow] = sku.Count;
+    
     }
 
     if (skuCounts.hasOwnProperty(newSku)) {
       if (reqCount[newSku] === skuCounts[newSku] || barcodeGenerator[newSku]) {
+     
         setRows((prev) => {
           return prev.map((item) => {
               if (item.SKU === newSku ) {
@@ -241,6 +250,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
                 ...item,
                 Isdone: "done",
                 Qty: reqCount[newSku] , 
+           
               };
             }
             return item;
@@ -273,6 +283,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     return rows.some((row) => row.SKU === SKU);
   };
 
+
   /// handlers
   useEffect(() => {
     dispatch(setHeader(`Parts requirement`));
@@ -280,11 +291,12 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
   // for barcode
   function groupBySKU(products) {
+
     const skuMap = {};
 
     products.forEach((product) => {
+    
       const { SKU, serialNumber,Qty } = product;
-
       if (skuMap[SKU]) {
         skuMap[SKU].Sno.push(serialNumber);
       } else {
@@ -309,6 +321,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
     try {
       const data = groupBySKU(barcodeRow);
+    
       const allDone = rows.every((row) => row.Isdone === "done");
       let params = null;
       if (id) {
@@ -333,6 +346,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           barcodes: data,
         };
       }
+
 
       const res = await dispatchBarcodeApi(params).unwrap();
 
@@ -388,6 +402,12 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
     }
   };
 
+  const AlreadyExistSKU = (sku,data) =>{
+    console.log(data)
+    console.log(sku)
+    return data.some((row) => row.SKU === sku);
+  }
+
   useEffect(() => {
     if (!countSKUs(finalBarcodeRow, rows, latestSKU.SKU)) {
       const updateData = rows.filter((row) => finalBarcodeRow.some(item => (item.SKU === row.SKU) && !item.barcodeGenerator ));
@@ -416,6 +436,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
  
   const handleChangeBarcode = async (e) => {
     setBarcode(e.target.value);
+    let newRow = null
     let isDispatchError = null;
     if (e.target.value.length === 16 || e.target.value.length === 13) {
       try {
@@ -424,7 +445,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
           (item) => item.serialNumber === params.Sno
         );
 
-        if (isExist) {
+        if (isExist || AlreadyExistSKU(params.Sno,finalBarcodeRow)) {
           alreadyExst.play();
           toast.error("Product already exists");
           setBarcode("");
@@ -436,17 +457,21 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
 
         if (res.status === "success") {
           const { barcode, product } = res.data;
+          
           setImage(product.mainImage?.lowUrl);
-           const newRow = { ...barcode, ...product };
+          if(barcode === undefined ){
+             newRow = {...product};
+          }else{
+           newRow = { ...barcode, ...product };
+          }
           setBarcode("");
-
-          if (!isBarcodeInRequest(rows, newRow.SKU)) {
+           if (!isBarcodeInRequest(rows, newRow.SKU)) {
             NotinReq.play();
             toast.error("Product is not in the requested");
             return;
           }
 
-          if (!isBarcodeAlreadyExists(finalBarcodeRow, newRow.serialNumber)) {
+          if (!isBarcodeAlreadyExists(finalBarcodeRow, newRow.serialNumber) || (barcode === undefined ) ) {
             success.play();
             setFinalBarcodeRow((prevRows) => [...prevRows, newRow]);
             setBarcode("");
@@ -579,8 +604,7 @@ const ItemsApproval = ({ setOpenHistory, setProductDetails }) => {
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
       renderCell: (params) => {
-        console.log(params.row.barcodeGenerator);
-        return params.row.barcodeGenerator ? (
+          return params.row.barcodeGenerator ? (
           <span style={{ color: "green", fontSize: "20px" }}>
             <i className="fa-solid fa-check"></i>
           </span>

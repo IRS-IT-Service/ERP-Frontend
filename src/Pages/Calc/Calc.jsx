@@ -193,6 +193,7 @@ const Calc = () => {
     setGstPer({ ...gstPer, [item.SKU]: item.GST });
   };
   const handleDeleteTextField = (rowIndex) => {
+    setIsEdited(true);
     const updatedRows = [...rows];
     updatedRows.splice(rowIndex, 1);
     setRows(updatedRows);
@@ -427,6 +428,7 @@ const Calc = () => {
   // handlers to save data
 
   const handleSaveCalcData = async (isToast) => {
+   
     try {
       const params = {
         CalcId: calcId,
@@ -534,6 +536,7 @@ const Calc = () => {
           toast.success('no Changes detected');
           return;
         }
+     
         const res = await updateCalcApi({ id: id, data: { data: params } });
 
         if (isToast) {
