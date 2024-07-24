@@ -27,6 +27,8 @@ import { useSelector } from "react-redux";
 import { GridToolbarContainer } from "@mui/x-data-grid";
 import SyncIcon from "@mui/icons-material/Sync";
 import { set } from "react-hook-form";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css"
 
 const AddViewAssets = () => {
   /// global state
@@ -123,17 +125,42 @@ const AddViewAssets = () => {
     }
   };
 
-  const handleDelete = async (code) => {
-    try {
-      const result = await deleteAssets(code);
-      toast.success("Assets Deleted Succefully");
-      refetch();
-    } catch (error) {
-      toast.error(
-        "Some error Occured while Deletin Assets Plz try after some times"
-      );
-    }
+  // const handleDelete = async (code) => {
+    
+  //   try {
+  //     const result = await deleteAssets(code);
+  //     toast.success("Assets Deleted Succefully");
+  //     refetch();
+  //   } catch (error) {
+  //     toast.error(
+  //       "Some error Occured while Deletin Assets Plz try after some times"
+  //     );
+  //   }
+  // };
+
+  const handleDelete = async ( code) => {
+  
+    Swal.fire({
+      title: "Are you sure you want to delete?",
+      text: "Assets", 
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d11e06",
+      cancelButtonColor: "black",
+      confirmButtonText: "Delete",
+      showLoaderOnConfirm: true, 
+      preConfirm: async () => {
+        try {
+          const result = await deleteAssets(code).unwrap();
+          toast.success("Task deleted successfully");
+          refetch();
+        } catch (error) {
+          Swal.showValidationMessage(`Request failed: ${error}`); 
+        }
+      },
+    });
   };
+  
 
   const handleUpdate = async (data) => {
     try {
