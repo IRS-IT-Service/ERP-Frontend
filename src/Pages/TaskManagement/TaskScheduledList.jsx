@@ -13,7 +13,7 @@ import {
   formatDate,
   formatIndianPrice,
   formatUSDPrice,
-  formateDateAndTime
+  formateDateAndTime,
 } from "../../commonFunctions/commonFunctions";
 
 import { setHeader, setInfo } from "../../features/slice/uiSlice";
@@ -32,6 +32,8 @@ import FilePreviewDial from "./Component/FilePreviewDial";
 import { useSelector, useDispatch } from "react-redux";
 import { useSendMessageToAdminMutation } from "../../features/api/whatsAppApiSlice";
 import { useSocket } from "../../CustomProvider/useWebSocket";
+import AlarmAddIcon from "@mui/icons-material/AlarmAdd";
+
 
 import {
   Select,
@@ -147,9 +149,8 @@ const TaskScheduledList = () => {
         name: item.name,
         adminId: item.adminId,
         value: item.name,
-        contact:item.ContactNo,
+        contact: item.ContactNo,
         Email: item.email,
-
       }));
       setUserName(UserName);
     }
@@ -163,8 +164,6 @@ const TaskScheduledList = () => {
           textAlign: "center",
           width: "7vw",
           fontSize: "13px",
-         
-      
         }}
       >
         My Self
@@ -179,7 +178,6 @@ const TaskScheduledList = () => {
           textOverflow: "ellipsis",
           overflow: "hidden",
           whiteSpace: "nowrap",
-        
         }}
       >
         {Name?.name}
@@ -192,10 +190,10 @@ const TaskScheduledList = () => {
   // API
   const { data: allData, isLoading, refetch } = useGetAllTasksManagementQuery();
   const [updateData, { isLoading: UpdateLoading }] = useUpdateTaskMutation();
-  const [sendMessageToAdmin] = useSendMessageToAdminMutation()
+  const [sendMessageToAdmin] = useSendMessageToAdminMutation();
 
-  const handleUpdate = async (id, query, data,taskTitle) => {
-    let changeData = data
+  const handleUpdate = async (id, query, data, taskTitle) => {
+    let changeData = data;
     try {
       const formDataQuery = new FormData();
       formDataQuery.append("id", id);
@@ -207,18 +205,20 @@ const TaskScheduledList = () => {
       };
 
       const result = await updateData(info).unwrap();
-   
-      if(query === "dueDate" || query === "warningTime"){
-         changeData = formateDateAndTime(data)
+
+      if (query === "dueDate" || query === "warningTime") {
+        changeData = formateDateAndTime(data);
       }
       const liveStatusData = {
-        message: `${userInfo.name} updated ${query} to ${changeData} of Task-${taskTitle}`
-        ,
+        message: `${userInfo.name} updated ${query} to ${changeData} of Task-${taskTitle}`,
         time: new Date(),
       };
       socket.emit("liveStatusServer", liveStatusData);
-      const whatsappMessage = { message:liveStatusData.message,contact:import.meta.env.VITE_ADMIN_CONTACT}
-     await sendMessageToAdmin(whatsappMessage).unwrap()
+      const whatsappMessage = {
+        message: liveStatusData.message,
+        contact: import.meta.env.VITE_ADMIN_CONTACT,
+      };
+      await sendMessageToAdmin(whatsappMessage).unwrap();
       // toast.success(`${query} updated successfully`);
       refetch();
     } catch (err) {
@@ -334,10 +334,10 @@ const TaskScheduledList = () => {
       const Name = UserName?.find((item) => item.value === newValue);
 
       if (field === "userName") {
-        handleUpdate(id, "userId", Name.adminId,params.row.taskTitle);
-        handleUpdate(id, "userName", Name.name,params.row.taskTitle);
+        handleUpdate(id, "userId", Name.adminId, params.row.taskTitle);
+        handleUpdate(id, "userName", Name.name, params.row.taskTitle);
       } else {
-        handleUpdate(id, field, newValue,params.row.taskTitle);
+        handleUpdate(id, field, newValue, params.row.taskTitle);
       }
     };
 
@@ -360,7 +360,7 @@ const TaskScheduledList = () => {
             border: "none",
           },
         }}
-        IconComponent={()=>null}
+        IconComponent={() => null}
       >
         {NewColumn.map((role, index) => (
           <MenuItem
@@ -385,7 +385,6 @@ const TaskScheduledList = () => {
                     textOverflow: "ellipsis",
                     overflow: "hidden",
                     whiteSpace: "nowrap",
-                    
                   }}
                 >
                   {role.name}
@@ -466,7 +465,7 @@ const TaskScheduledList = () => {
 
     const handleCloseText = () => {
       if (textValue !== null && textValue !== "") {
-        handleUpdate(id, field, textValue,params.row.taskTitle);
+        handleUpdate(id, field, textValue, params.row.taskTitle);
       }
       setAnchorEl(null);
     };
@@ -486,21 +485,17 @@ const TaskScheduledList = () => {
             height: "50px",
             cursor: "pointer",
             textWrap: "wrap",
-          
           }}
         >
           <Typography
             style={{
-       
-                display: "inline-block",
-                width: "7vw",
-                fontSize: "13px",
-                textAlign: "center",
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-             
-       
+              display: "inline-block",
+              width: "7vw",
+              fontSize: "13px",
+              textAlign: "center",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
             }}
           >
             {params.row[field]}
@@ -550,17 +545,18 @@ const TaskScheduledList = () => {
       setAnchorEl(false);
     };
 
-    const handleAccept = (value,taskTitle) => {
+    const handleAccept = (value, taskTitle) => {
       const newDate = new Date(value);
       newDate.setSeconds(0, 0);
       const isoString = newDate.toISOString();
-      handleUpdate(id, field, isoString,params.row.taskTitle);
+      handleUpdate(id, field, isoString, params.row.taskTitle);
     };
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs} onClick={handleOpen}>
-        <Box display="flex" flexDirection="column" gap={2}>
-          <MobileDateTimePicker
+
+        <Box display="flex" flexDirection="column"  gap={2}>
+            <MobileDateTimePicker
             defaultValue={dayjs(defaultValue)}
             onAccept={handleAccept}
             renderInput={(params) => <TextField {...params} />}
@@ -569,7 +565,6 @@ const TaskScheduledList = () => {
             disablePast
             ampm={false}
             sx={{
-                                    
               "& .MuiOutlinedInput-notchedOutline": {
                 border: "none",
               },
@@ -579,8 +574,8 @@ const TaskScheduledList = () => {
               "& .MuiInputBase-input": {
                 fontSize: "13px", // Adjust font size here
                 textAlign: "center",
-          
               },
+                
             }}
           />
         </Box>
@@ -707,7 +702,7 @@ const TaskScheduledList = () => {
     },
     {
       field: "warningTime",
-      headerName: "Alarm",
+      headerName: "Task Reminder",
       flex: 0.1,
       minWidth: 220,
       maxWidth: 300,
@@ -853,7 +848,7 @@ const TaskScheduledList = () => {
           UserName={UserName}
           handleClose={handleCloseFile}
           refetch={refetch}
-          adminid = {adminid}
+          adminid={adminid}
         />
       )}
     </Box>
