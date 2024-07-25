@@ -209,7 +209,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
           subItems: processedSubItems,
           packageDimensions: processedPackageDimensions,
           AlternativeName: form.AlternativeName,
-          barcodeGen: checked,
+          // barcodeGen: checked,
         },
       };
 
@@ -227,9 +227,9 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
 
   const handleChangeCheckbox = (e) => {
     setIsEdited(true);
-    console.log(e.target.checked);
+    // console.log(e.target.checked);
 
-    setChecked(e.target.checked);
+    // setChecked(e.target.checked);
   };
   /// useEffects
 
@@ -286,7 +286,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
             subItems: data?.data?.subItems,
             gst: gst,
             packageDimensions: data?.data?.packageDimensions,
-            barcodeGen: checked,
+            // barcodeGen: checked,
           },
         ],
       };
@@ -459,7 +459,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                   },
                 }}
               />
-              <Box>
+              {/* <Box>
                 <FormControl>
                   <FormControlLabel
                     // value={cked}
@@ -474,7 +474,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                     labelPlacement="start"
                   />
                 </FormControl>
-              </Box>
+              </Box> */}
               <Button
                 variant="outlined"
                 disabled={data?.data?.GST === 5}
