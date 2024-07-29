@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Box, styled } from '@mui/material';
 import Testing from './Component/Testing';
+import Testing3 from './Component/Testing3';
 
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -21,7 +22,7 @@ const TestingComponent = () => {
     >
       <DrawerHeader />
       {/* <Testing /> */}
-      <Testing/>
+      <Testing3/>
     </Box>
   );
 };
