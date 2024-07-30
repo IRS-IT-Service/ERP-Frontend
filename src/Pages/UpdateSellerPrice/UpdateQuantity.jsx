@@ -466,7 +466,7 @@ const UpdateQuantity = ({
     {
       field: 'Sno',
       headerName: 'Sno',
-      flex: 0.3,
+      flex: 1,
       minWidth: 80,
       maxWidth: 100,
       align: 'center',
@@ -477,7 +477,7 @@ const UpdateQuantity = ({
     {
       field: 'SKU',
       headerName: 'SKU',
-      flex: 0.3,
+      flex: 1,
       minWidth: 100,
       maxWidth: 100,
       align: 'center',
@@ -507,7 +507,7 @@ const UpdateQuantity = ({
     {
       field: 'Name',
       headerName: 'Product ',
-      flex: 0.3,
+      flex: 1,
       minWidth: 400,
       maxWidth: 700,
       align: 'center',
@@ -518,7 +518,7 @@ const UpdateQuantity = ({
     {
       field: 'Brand',
       headerName: 'Brand',
-      flex: 0.3,
+      flex: 1,
       minWidth: 100,
       maxWidth: 130,
       align: 'center',
@@ -529,7 +529,7 @@ const UpdateQuantity = ({
     {
       field: 'Category',
       headerName: 'Category',
-      flex: 0.3,
+      flex: 1,
       minWidth: 100,
       maxWidth: 170,
       align: 'center',
@@ -540,7 +540,7 @@ const UpdateQuantity = ({
     {
       field: 'GST',
       headerName: 'GST %',
-      flex: 0.3,
+      flex: 1,
       minWidth: 60,
       maxWidth: 90,
       align: 'center',
@@ -554,7 +554,7 @@ const UpdateQuantity = ({
     {
       field: 'ThresholdQty',
       headerName: 'THQT',
-      flex: 0.3,
+      flex: 1,
       minWidth: 60,
       maxWidth: 90,
       align: 'center',
@@ -571,7 +571,7 @@ const UpdateQuantity = ({
     {
       field: 'ActualQuantity',
       headerName: 'STQT',
-      flex: 0.3,
+      flex: 1,
       minWidth: 60,
       maxWidth: 90,
       align: 'center',
@@ -588,7 +588,7 @@ const UpdateQuantity = ({
     {
       field: 'AssignedQty',
       headerName: 'ASNQT',
-      flex: 0.3,
+      flex: 1,
       minWidth: 60,
       maxWidth: 90,
       align: 'center',
@@ -605,7 +605,7 @@ const UpdateQuantity = ({
     {
       field: 'AwaitingScanning',
       headerName: 'AWTSCN',
-      flex: 0.3,
+      flex: 1,
       minWidth: 60,
       maxWidth: 90,
       align: 'center',
@@ -622,7 +622,7 @@ const UpdateQuantity = ({
     {
       field: 'Quantity',
       headerName: 'STRQT',
-      flex: 0.3,
+      flex: 1,
       minWidth: 60,
       maxWidth: 90,
       align: 'center',
