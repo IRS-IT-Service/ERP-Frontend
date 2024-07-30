@@ -346,6 +346,8 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
               marginTop: "6px",
               flexDirection: "column",
               gap: "4px",
+              padding:"10px",
+           
             }}
           >
             <Box
@@ -503,22 +505,24 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
           <Box
             sx={{
               width: "100%",
-              height: "70vh",
+              height: "69vh",
               borderRadius: "8px",
               display: "flex",
+              marginTop:"10px",
               justifyContent: "start",
               gap: "1%",
+         
             }}
           >
             <Box
               sx={{
                 width: "40%",
-                height: "98%",
                 boxShadow: 3,
                 borderRadius: "8px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
+               
               }}
             >
               <Box
@@ -530,6 +534,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                   alignItems: "center",
                   boxShadow: 1,
                   paddingY: "2.4%",
+                  
                 }}
               >
                 <Typography
@@ -897,7 +902,7 @@ const OneUpdateProductDivyam = ({ open, onClose, SKU, refetchAllProduct }) => {
                       sx={{
                         backgroundColor: "#b5e6f5",
                         marginTop: "1%",
-                        paddingX: "8%",
+                      
                       }}
                       disabled={!isEdited}
                       onClick={() => handleSubmit()}
