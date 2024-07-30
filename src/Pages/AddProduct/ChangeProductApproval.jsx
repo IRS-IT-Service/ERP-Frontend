@@ -214,7 +214,7 @@ const ChangeProductApproval = () => {
                 <TableCell>Brand</TableCell>
                 <TableCell>Category</TableCell>
                 <TableCell>SubCategory</TableCell>
-                <TableCell>Gen Barcode</TableCell>
+                {/* <TableCell>Gen Barcode</TableCell> */}
                 <TableCell>Subitems</TableCell>
                 <TableCell>Box Dimension</TableCell>
               </TableRow>
@@ -234,9 +234,9 @@ const ChangeProductApproval = () => {
                       <TableCell>{item?.Brand}</TableCell>
                       <TableCell>{item?.Category}</TableCell>
                       <TableCell>{item?.SubCategory}</TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         {item?.barcodeGenerator === true ? "Yes" : "No"}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <Tooltip
                           title={item?.subItems?.join("<>") || "None"}
