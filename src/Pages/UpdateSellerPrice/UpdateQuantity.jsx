@@ -524,7 +524,7 @@ const UpdateQuantity = ({
     },
     {
       field:alignment === "productName" ? 'Name' : 'AlternativeName',
-      headerName: alignment === "productName" ? 'Product Name ' : 'Alternative Name',
+      headerName: alignment === "productName" ? 'Product Name ' : 'Alternate Name',
       flex: 1,
       minWidth: 400,
       maxWidth: 700,
@@ -775,7 +775,7 @@ const UpdateQuantity = ({
         fontSize: "0.6rem",
       }}
     >
-      Alternative name
+      Alternate name
     </ToggleButton>
   </ToggleButtonGroup>
   );
