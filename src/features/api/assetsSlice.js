@@ -31,6 +31,15 @@ export const assetsApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    updateIsStick: builder.mutation({
+      query: (data) => {
+        return {
+          url: `${Assets_URL}/updateIsStick`,
+          method: "Put",
+          body: data,
+        };
+      },
+    }),
     deleteSingleAssets: builder.mutation({
       query: (data) => {
         return {
@@ -50,4 +59,5 @@ export const {
   useGetAllAssetsQuery,
   useGetSingleAssetsMutation,
   useDeleteSingleAssetsMutation,
+  useUpdateIsStickMutation
 } = assetsApiSlice;

@@ -176,6 +176,7 @@ const ScanAssetsCode = () => {
           Waranty: apiData.data?.Expiry,
           Purchase: apiData.data?.PurchasedOn,
           SerialNo: apiData.data?.SerialNo,
+         AllotedTo: apiData.data?.AllotedTo,
           product: productImage,
           receiptImage: receipt,
         };
@@ -187,7 +188,7 @@ const ScanAssetsCode = () => {
 
   // Reverse the rows array to display the latest data on top
   const reversedRows = [...rows].reverse();
-  console.log(reversedRows);
+
 
   return (
     <Box
@@ -315,6 +316,7 @@ const ScanAssetsCode = () => {
                 <StyleCell>Sno.</StyleCell>
                 <StyleCell>AssetsType</StyleCell>
                 <StyleCell>AssetName</StyleCell>
+                <StyleCell>Alloted To</StyleCell>
                 <StyleCell>Serial Number</StyleCell>
                 <StyleCell>Purchase Date</StyleCell>
                 <StyleCell>Waranty Duration</StyleCell>
@@ -328,6 +330,7 @@ const ScanAssetsCode = () => {
                     <StyleTableCell>{row.sno}</StyleTableCell>
                     <StyleTableCell>{row.AssetsType}</StyleTableCell>
                     <StyleTableCell>{row.AssetsName}</StyleTableCell>
+                    <StyleTableCell>{row.AllotedTo || "N/a"}</StyleTableCell>
                     <StyleTableCell>{row.SerialNo}</StyleTableCell>
                     <StyleTableCell>{formatDate(row.Purchase)}</StyleTableCell>
                     <StyleTableCell>{row.Waranty}</StyleTableCell>

@@ -10,9 +10,7 @@ import {
   GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
 import {
-  formatDate,
-  formatIndianPrice,
-  formatUSDPrice,
+  formatDateAndTime24format,
   formateDateAndTime,
 } from "../../commonFunctions/commonFunctions";
 
@@ -134,6 +132,7 @@ const TaskScheduledList = () => {
   const [OpenAddTask, setAddTask] = useState(false);
   const [OpenFilePreview, setFilePreview] = useState(false);
   const [UserName, setUserName] = useState([]);
+  const[isEdited ,setIsedited] = useState(false);
   const socket = useSocket();
   const {
     refetch: refetchAllUser,
@@ -194,6 +193,11 @@ const TaskScheduledList = () => {
 
   const handleUpdate = async (id, query, data, taskTitle) => {
     let changeData = data;
+    if (query === "taskTitle" || query === "description") {
+      console.log("hiii")
+      if(!isEdited) return 
+    }
+
     try {
       const formDataQuery = new FormData();
       formDataQuery.append("id", id);
@@ -205,6 +209,7 @@ const TaskScheduledList = () => {
       };
 
       const result = await updateData(info).unwrap();
+      setIsedited(false)
 
       if (query === "dueDate" || query === "warningTime") {
         changeData = formateDateAndTime(data);
@@ -237,6 +242,9 @@ const TaskScheduledList = () => {
   const handleCloseFile = () => {
     setFilePreview(false);
   };
+
+
+  
 
   const handleDeleteByid = (e, id) => {
     Swal.fire({
@@ -455,6 +463,7 @@ const TaskScheduledList = () => {
     const { id, field, value } = params;
 
     const handleChangeText = (event) => {
+      setIsedited(true)
       setTextValue(event.target.value);
     };
 
@@ -535,7 +544,7 @@ const TaskScheduledList = () => {
     const { id, field, value } = params;
 
     const defaultValue =
-      field === "dueDate" ? params.row.dueDate : params.row.warningTime;
+      field === "dueDate" ? params.row.dueDate  : params.row.warningTime;
 
     const handleOpen = (e) => {
       setAnchorEl(true);
@@ -622,8 +631,8 @@ const TaskScheduledList = () => {
       field: "status",
       headerName: "Status",
       flex: 0.1,
-      minWidth: 100,
-      maxWidth: 200,
+      minWidth: 200,
+      maxWidth: 220,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -655,16 +664,28 @@ const TaskScheduledList = () => {
       renderCell: (params) => FindName(params.value),
     },
     {
-      field: "dueDate",
-      headerName: "Due date & time",
+      field: "createdAt",
+      headerName: "Assignee date & time",
       flex: 0.1,
-      minWidth: 220,
-      maxWidth: 300,
+      minWidth: 200,
+      maxWidth: 220,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       cellClassName: "super-app-theme--cell",
-      renderCell: (params) => <MobileTimePicker {...params} />,
+      renderCell: (params) => formatDateAndTime24format(params.value),
+    },
+    {
+      field: "dueDate",
+      headerName: "Due date & time",
+      flex: 0.1,
+      minWidth: 200,
+      maxWidth: 220,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) =><MobileTimePicker {...params} />,
     },
     {
       field: "priority",
@@ -704,8 +725,8 @@ const TaskScheduledList = () => {
       field: "warningTime",
       headerName: "Task Reminder",
       flex: 0.1,
-      minWidth: 220,
-      maxWidth: 300,
+      minWidth: 200,
+      maxWidth: 220,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -718,7 +739,7 @@ const TaskScheduledList = () => {
       headerName: "File",
       flex: 0.1,
       minWidth: 50,
-      maxWidth: 100,
+      maxWidth: 80,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -735,7 +756,8 @@ const TaskScheduledList = () => {
       field: "action",
       headerName: "Action",
       flex: 0.1,
-      minWidth: 100,
+      minWidth: 50,
+      maxWidth: 80,
       align: "center",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",

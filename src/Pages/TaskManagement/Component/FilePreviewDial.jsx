@@ -463,6 +463,14 @@ const FindName = (id) => {
           </Typography>
           </Paper>
           <Paper elevation={3} sx={{p:1,width: '100%',display: 'flex',gap:"20px", mb: 2 }}>
+          <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '18px' }}>
+            Assignee date & time:
+          </Typography>
+          <Typography variant="body1" sx={{ fontSize: '18px' }}>
+            {formateDateAndTime(details.file.createdAt)}
+          </Typography>
+          </Paper>
+          <Paper elevation={3} sx={{p:1,width: '100%',display: 'flex',gap:"20px", mb: 2 }}>
   
           <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '18px' }}>
             Assignee By:
@@ -479,6 +487,7 @@ const FindName = (id) => {
             {details.file.userName}
           </Typography>
           </Paper>
+     
           <Paper elevation={3} sx={{p:1,width: '100%',display: 'flex',gap:"20px", mb: 2 }}>
           <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '18px' }}>
             Status:

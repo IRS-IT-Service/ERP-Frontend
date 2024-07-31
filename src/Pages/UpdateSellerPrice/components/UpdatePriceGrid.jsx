@@ -111,41 +111,72 @@ const Content = ({
   const [createUserHistoryApi] = useCreateUserHistoryMutation();
   const [sendMessageToAdmin] = useSendMessageToAdminMutation();
 
+
+  function getUniqueItems(arr1, arr2, key) {
+    // Combine both arrays
+    const combinedArray = arr1.concat(arr2);
+
+    // Use a Set to track unique items based on the specified key
+    const uniqueItemsSet = new Set();
+
+    // Filter the combined array to get unique items
+    const uniqueItems = combinedArray.filter((item) => {
+      const keyValue = item[key];
+      if (!uniqueItemsSet.has(keyValue)) {
+        uniqueItemsSet.add(keyValue);
+        return true;
+      }
+      return false;
+    });
+
+    return uniqueItems;
+  }
+
   /// handlers
-  // const handleSelectionChange = (selectionModel) => {
-  //   setSelectedItems(selectionModel);
-
-  //   if (selectionModel.length > selectedItems.length) {
-  //     const newSelectedRowsData = rows.filter((item) =>
-  //       selectionModel.includes(item.id)
-  //     );
-
-  //     const newSelectedData = getUniqueItems(
-  //       newSelectedRowsData,
-  //       selectedItemsData,
-  //       "SKU"
-  //     );
-
-  //     setSelectedItemsData(newSelectedData);
-
-  //   } else {
-  //     const deletedItem = findUniqueElements(selectedItems, selectionModel);
-  //     setSelectedItemsData((prev) => {
-  //       return prev.filter((item) => item.SKU !== deletedItem);
-  //     });
-  //   }
-  // };
-
   const handleSelectionChange = (selectionModel) => {
-    const uniqueArray = [...new Set(selectionModel)];
-    setSelectedItems(uniqueArray);
+    setSelectedItems(selectionModel);
 
-    const newSelectedRowsData = rows.filter((item) =>
-      uniqueArray.includes(item.id)
-    );
+    if (selectionModel.length > selectedItems.length) {
+      const newSelectedRowsData = rows.filter((item) =>
+        selectionModel.includes(item.id)
+      );
 
-    setSelectedItemsData(newSelectedRowsData);
+      const newSelectedData = getUniqueItems(
+        newSelectedRowsData,
+        selectedItemsData,
+        "SKU"
+      );
+
+      setSelectedItemsData(newSelectedData);
+
+    } else {
+      const deletedItem = findUniqueElements(selectedItems, selectionModel);
+      setSelectedItemsData((prev) => {
+        return prev.filter((item) => item.SKU !== deletedItem);
+      });
+    }
   };
+
+  function findUniqueElements(arr1, arr2) {
+    // Create a set for the second array
+    const set2 = new Set(arr2);
+
+    // Filter the first array to get elements that are unique to it
+    const uniqueElements = arr1.filter((item) => !set2.has(item));
+
+    return uniqueElements[0];
+  }
+
+  // const handleSelectionChange = (selectionModel) => {
+  //   const uniqueArray = [...new Set(selectionModel)];
+  //   setSelectedItems(uniqueArray);
+
+  //   const newSelectedRowsData = rows.filter((item) =>
+  //     uniqueArray.includes(item.id)
+  //   );
+
+  //   setSelectedItemsData(newSelectedRowsData);
+  // };
 
   // const removeSelectedItems = (id) => {
   //     const newSelectedItems = selectedItems.filter((item) => item !== id);
