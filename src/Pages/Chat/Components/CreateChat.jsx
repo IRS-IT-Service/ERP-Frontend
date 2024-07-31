@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress ,TextField ,InputAdornment } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import {
   useChangeVisibilityMutation,
@@ -24,6 +24,7 @@ import whatsImage from "../../../../public/ChatBackground.jpeg";
 import frontImage from "../../../../public/FrontChat.png";
 import MoodIcon from "@mui/icons-material/Mood";
 import EmojiPicker from "emoji-picker-react";
+import SearchIcon from '@mui/icons-material/Search';
 // import ToolbarItem from '@mui/material/ToolbarItem';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InfoDialogBox from "../../../components/Common/InfoDialogBox";
@@ -232,6 +233,8 @@ const CreateChat = () => {
   const [uploadFile, { isLoading }] = useUploadFileOnImageKitMutation();
   const [changeVisibility, { refetch }] = useChangeVisibilityMutation();
   const [sendNotification] = useSendSingleNotificationMutation();
+  const [filterData , setFilterData] = useState([])
+  const [search ,setSearch] = useState("")
   const [uploadFileWhatsapp, { isLoading: uploadFileLoading }] =
     useUploadFileWhatsappMutation();
 
@@ -291,6 +294,25 @@ const CreateChat = () => {
       toast.error("Failed to download the file");
     }
   };
+
+
+  useEffect(() => {
+    if (allUsers?.data) {
+      let filteredData = [...allUsers.data];
+  
+      if (search) {
+        const lowerCaseSearch = search.toLowerCase();
+        filteredData = allUsers.data.filter(user => 
+          user.name.toLowerCase().includes(lowerCaseSearch) ||
+          String(user.ContactNo).toLowerCase().includes(lowerCaseSearch)
+        );
+      }
+  
+      setFilterData(filteredData);
+    }
+  }, [search, allUsers?.data]);
+
+ 
 
   // const handleDownLoadFile = async (url) => {
   //   try {
@@ -788,6 +810,7 @@ const CreateChat = () => {
         {/* {myStream && <audio controls autoPlay srcObject={myStream}></audio>} */}
         {singleUserData && (
           <div>
+      
             <div style={{ display: "flex", gap: "10px" }}>
               <div
                 style={{
@@ -835,6 +858,7 @@ const CreateChat = () => {
 
       {/* to show the users */}
       <Box sx={{ display: "flex", height: "93%" }}>
+        
         <Box
           sx={{
             height: "100%",
@@ -847,8 +871,23 @@ const CreateChat = () => {
             },
           }}
         >
-          {Array.isArray(allUsers?.data) &&
-            allUsers?.data.map((docs, i) => {
+             <TextField
+      variant="standard"
+      fullWidth
+      placeholder="Search"
+     
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon />
+          </InputAdornment>
+        ),
+      }}
+     
+      onChange ={(e)=> setSearch(e.target.value)}
+    />   
+          {Array.isArray(filterData) &&
+            filterData.map((docs, i) => {
               const isAdminUser = docs.adminId === adminId;
               const userName = isAdminUser ? "You" : docs.name;
               const onlineUser = onLineUsers.includes(docs.adminId);
@@ -870,6 +909,7 @@ const CreateChat = () => {
                   key={i}
                   onClick={() => handleOnClickUser(docs)}
                 >
+                  
                   <img
                     src={docs?.profileImage?.url || noImage}
                     style={{

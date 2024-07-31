@@ -12,7 +12,7 @@ import {
   GridToolbarContainer,
 } from "@mui/x-data-grid";
 import FilterBarV2 from "../../components/Common/FilterBarV2";
-import { Grid, Box, Button, styled } from "@mui/material";
+import { Grid, Box, Button, styled ,ToggleButtonGroup ,ToggleButton  } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { setAllProductsV2 } from "../../features/slice/productSlice";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -288,6 +288,7 @@ const UpdateQuantity = ({
   const [hiddenColumns, setHiddenColumns] = useState({});
   const [openBulkUpdateSelector, setOpenBulkUpdateSelector] = useState(false);
   const [buttonBlink, setButtonBlink] = useState("");
+  const [alignment, setAlignment] = useState('productName');
 
   /// pagination State
   const [filterString, setFilterString] = useState("page=1");
@@ -323,10 +324,20 @@ const UpdateQuantity = ({
   };
 
 
+
+
+  const handleToggle = (event, newAlignment) => {
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
+  };
+
+
   /// useEffect
   useEffect(() => {
     if (allProductData?.success) {
       const data = allProductData?.data?.products?.map((item, index) => {
+        console.log(item)
         return {
           id: item.SKU,
           Sno:
@@ -340,6 +351,7 @@ const UpdateQuantity = ({
           ThresholdQty: item.ThresholdQty,
           Mqr: item.Mqr || 0,
           Quantity: item.Quantity,
+          AlternativeName : item?.AlternativeName || 'N/A',
           ActualQuantity: item.ActualQuantity,
           AssignedQty: item.AssignedQuantity,
           AwaitingScanning:
@@ -432,6 +444,8 @@ const UpdateQuantity = ({
     } else {
       setFilterString(`${newFilterString}&page=1`);
     }
+  
+
   }, [checkedBrand, checkedCategory, checkedGST]);
 
   useEffect(() => {
@@ -454,6 +468,10 @@ const UpdateQuantity = ({
       if (sku) {
         if (newFilterString) newFilterString += "&";
         newFilterString += `sku=${sku}`;
+      }
+      if (alignment) {
+        if (newFilterString) newFilterString += "&";
+        newFilterString += `alternate=${alignment}`;
       }
       setFilterString(`${newFilterString}&page=1`);
     }, 1000);
@@ -505,8 +523,8 @@ const UpdateQuantity = ({
       },
     },
     {
-      field: 'Name',
-      headerName: 'Product ',
+      field:alignment === "productName" ? 'Name' : 'AlternativeName',
+      headerName: alignment === "productName" ? 'Product Name ' : 'Alternative Name',
       flex: 1,
       minWidth: 400,
       maxWidth: 700,
@@ -514,6 +532,7 @@ const UpdateQuantity = ({
       headerAlign: 'center',
       headerClassName: 'super-app-theme--header',
       cellClassName: 'super-app-theme--cell',
+      // renderCell: (params) =>console.log(params.row),
     },
     {
       field: 'Brand',
@@ -718,6 +737,49 @@ const UpdateQuantity = ({
     </Button>
   );
 
+  const toggleProductName = (
+    <ToggleButtonGroup
+    value={alignment}
+    exclusive
+    sx={{
+      width: "250px",
+      height: "40px",
+      border: "none",
+      borderRadius: "0.2rem",
+      padding: "0.2rem",
+      color: "#fff",
+
+      "& .Mui-selected": {
+        color: "#fff !important",
+        background: "black !important",
+      },
+    }}
+    onChange={handleToggle}
+    aria-label="Platform"
+  >
+    <ToggleButton
+      value="productName"
+      sx={{
+        color: "black",
+        border: "0.5px solid black",
+        fontSize: "0.6rem",
+      }}
+    >
+      Product Name
+    </ToggleButton>
+    <ToggleButton
+      value="alternativeName"
+      sx={{
+        color: "black",
+        border: "0.5px solid black",
+        fontSize: "0.6rem",
+      }}
+    >
+      Alternative name
+    </ToggleButton>
+  </ToggleButtonGroup>
+  );
+
   const hiddenColumnCustomButton = (
     <HideColumnsDialog
       columns={getModifiedColumns(isAdmin, productColumns, columns)}
@@ -864,7 +926,7 @@ const UpdateQuantity = ({
         condition={"QTY"}
       />
 
-      <FilterBarV2 customButton1={bulkUpdateCustomButton} apiRef={apiRef} />
+      <FilterBarV2  customButton1={toggleProductName} customButton2={bulkUpdateCustomButton} apiRef={apiRef} />
 
       <Grid container>
         <Loading

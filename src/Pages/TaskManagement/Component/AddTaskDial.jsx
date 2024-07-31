@@ -134,13 +134,15 @@ const AddTaskDial = ({
         contact: +ContactNo.contact ,
       };
 
+    
       
       await sendMessageToAdmin(whatsappMessage).unwrap();
+      refetch();
+      handleClose();
       await delay(500);
       await sendMessageToAdmin(whatsappMessageUser).unwrap();
 
-      refetch();
-      handleClose();
+     
     } catch (err) {
       console.log(err);
     }
