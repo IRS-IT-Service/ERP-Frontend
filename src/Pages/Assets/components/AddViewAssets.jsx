@@ -5,6 +5,7 @@ import {
   DialogContent,
   Grid,
   Portal,
+  Checkbox 
 } from "@mui/material";
 import TablePagination from "@mui/material/TablePagination";
 
@@ -14,9 +15,10 @@ import AddAssetsDialog from "./AddAssetsDialog";
 import {
   useDeleteSingleAssetsMutation,
   useGetAllAssetsQuery,
+  useUpdateIsStickMutation
 } from "../../../features/api/assetsSlice";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
-import { TrySharp, Visibility } from "@mui/icons-material";
+import { CheckBox, TrySharp, Visibility } from "@mui/icons-material";
 import Loading from "../../../components/Common/Loading";
 import BASEURL from "../../../constants/BaseApi";
 import { Assets_URL } from "../../../constants/ApiEndpoints";
@@ -45,6 +47,7 @@ const AddViewAssets = () => {
   const [page, setPage] = useState(1);
   const [itemCount, setItemCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [checked, setChecked] = useState(true);
 
   // rtk query call
   const {
@@ -55,6 +58,9 @@ const AddViewAssets = () => {
   } = useGetAllAssetsQuery(page);
   const [deleteAssets, { isLoading: loadingAssets }] =
     useDeleteSingleAssetsMutation();
+
+    const [update, { isLoading: updateLoading }] =
+    useUpdateIsStickMutation();
   // this dialog function for add all input field dialog
   const handleOpen = () => {
     setOpenDialog(true);
@@ -64,6 +70,15 @@ const AddViewAssets = () => {
     setOpenDialog(false);
     setAssetData(null);
   };
+
+  const handleUpdateStick= async(event ,id) => {
+ const info ={
+  id,
+  value:event.target.checked
+}    
+const updated = await update(info).unwrap()
+refetch()
+};
 
   // this dialog function for opne recipt image
   const handleOpenDialog = (receipt) => {
@@ -80,6 +95,7 @@ const AddViewAssets = () => {
   useEffect(() => {
     if (allAssets?.status === true) {
       const data = allAssets?.data.map((item, index) => {
+        console.log(item)
         return {
           id: item._id,
           Sno: index + 1 + (page - 1) * allAssets?.itemsPerPage,
@@ -87,11 +103,12 @@ const AddViewAssets = () => {
           AssetsName: item.AssetsName,
           AssetsType: item.AssetsType,
           SerialNo: item.SerialNo,
-          AllotedTo: item.AllotedTo,
+          AllotedTo: item.AllotedTo || "N/A",
           PurchaseDate: formatDate(item.PurchasedOn),
           Expiry: item.Expiry,
           Receipt: item.receipt,
           Product: item.product,
+          isStick: item.isStick
         };
       });
 
@@ -213,6 +230,8 @@ const AddViewAssets = () => {
     );
   }
 
+
+
   const columns = [
     {
       field: "Sno",
@@ -289,6 +308,16 @@ const AddViewAssets = () => {
       cellClassName: "super-app-theme--cell",
     },
     {
+      field: "AssetsCode",
+      headerName: "Assets Code",
+      flex: 0.2,
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+    },
+    {
       field: "receipt",
       headerName: "Receipt",
       flex: 0.2,
@@ -313,6 +342,25 @@ const AddViewAssets = () => {
             >
               <Visibility />
             </Button>
+          </div>
+        );
+      },
+    },
+    {
+      field: "isStick",
+      headerName: "Is Stick",
+      flex: 0.2,
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
+      cellClassName: "super-app-theme--cell",
+      renderCell: (params) => {
+        console.log(params.value)
+        return (
+          <div>
+<Checkbox checked={params.row.isStick}
+      onChange={(e)=>handleUpdateStick(e,params.row.id)} color="secondary" />
           </div>
         );
       },
