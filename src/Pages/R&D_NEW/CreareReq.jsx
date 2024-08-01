@@ -28,6 +28,12 @@ import CreateReqDial from "../R&D_NEW/Dialogues/CreateReqDial";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useParams } from "react-router-dom";
 import AddRnDQtyDial from "./Dialogues/AddRnDQtyDial";
+import {
+  setSelectedItemsRandD,
+  setSelectedSkusRandD,
+  removeSelectedSkusRandD,
+  removedSelectedItemsRandD,
+} from "../../features/slice/R&DSlice";
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
@@ -158,6 +164,9 @@ const Inventory = () => {
   const { createQueryItems, createQuerySku } = useSelector(
     (state) => state.SelectedItems
   );
+  const { selectedItemsRandD, selectedSkusRandD } = useSelector(
+    (state) => state.RAndDForm
+  );
   /// local state
 
   const [openAdditem, setOpenAdditem] = useState(false);
@@ -191,12 +200,23 @@ const Inventory = () => {
   /// handlers
 
   const handleSelectionChange = (selectionModel) => {
-    setSelectedItems(selectionModel);
-    const newSelectedRowsData = rows.filter((item) =>
+    const prevData = selectedSkusRandD;
+    const newSelection = selectionModel;
+    const deselectedSkus = prevData
+      .filter((data) => !newSelection.includes(data))
+      .join(", ");
+    const lastData = selectionModel[selectionModel.length - 1];
+    const newSelectedRowData = rows.filter((item) =>
       selectionModel.includes(item.id)
     );
-    setSelectedItemsData(newSelectedRowsData);
-    dispatch(setSelectedSkuQuery(selectionModel));
+    const newFindData = rows.find((item) => item.SKU === lastData);
+    setSelectedItems(selectionModel);
+
+    setSelectedItemsData(newSelectedRowData);
+    dispatch(
+      setSelectedItemsRandD(deselectedSkus ? deselectedSkus : newFindData)
+    );
+    dispatch(setSelectedSkusRandD(deselectedSkus ? deselectedSkus : lastData));
   };
 
   const handleSetAddItem = () => {
@@ -205,8 +225,8 @@ const Inventory = () => {
 
   useEffect(() => {
     return () => {
-      dispatch(removeSelectedCreateQuery());
-      dispatch(removeSelectedSkuQuery());
+      dispatch(removedSelectedItemsRandD());
+      dispatch(removeSelectedSkusRandD());
     };
   }, []);
 
@@ -232,11 +252,6 @@ const Inventory = () => {
     setSelectedItemsData(newSelectedRowsData);
     setSelectedItems(newSelectedItems);
   };
-  // const uniqueSKUs = new Set(createQueryItems || [].map((item) => item.SKU));
-  // const uniqueSKUsArray = Array.from(uniqueSKUs);
-  // const realData = uniqueSKUsArray?.filter((item) =>
-  //   selectedItems.find((docs) => item.SKU === docs)
-  // );
 
   const uniqueSKUs = new Set(createQueryItems.map((item) => item.SKU));
   const realData = Array.from(uniqueSKUs).map((sku) =>
@@ -488,7 +503,7 @@ const Inventory = () => {
       />
       {open && (
         <CreateReqDial
-          data={realData}
+          data={selectedItemsRandD}
           apiRef={apiRef}
           removeSelectedItems={removeSelectedItems}
           open={open}
@@ -506,23 +521,12 @@ const Inventory = () => {
 
       {openAdditem && (
         <AddRnDQtyDial
-          data={realData}
-          apiRef={apiRef}
-          removeSelectedItems={removeSelectedItems}
+          data={selectedItemsRandD}
           open={openAdditem}
           setOpen={setOpenAdditem}
-          dispatch={dispatch}
           id={idValue}
           name={name}
-          removeSelectedCreateQuery={removeSelectedCreateQuery}
-          removeSelectedSkuQuery={removeSelectedSkuQuery}
-          setSelectedItemsData={setSelectedItemsData}
-          selectedItemsData={selectedItemsData}
           refetch={refetch}
-          setSelectedItems={setSelectedItems}
-          selectedItems={selectedItems}
-          updateValue={updateValue}
-          setUpdateValue={setUpdateValue}
         />
       )}
 
@@ -574,7 +578,7 @@ const Inventory = () => {
                   !SelectedSKU.includes(params.row.SKU)
                 }
                 onRowSelectionModelChange={handleSelectionChange}
-                rowSelectionModel={selectedItems}
+                rowSelectionModel={selectedSkusRandD}
                 keepNonExistentRowsSelected
                 components={{
                   Footer: CustomFooter,
