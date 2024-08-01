@@ -241,7 +241,6 @@ const Inventory = () => {
       dispatch(setSelectedCreateQuery(newData));
     }
   }, [selectedItemsData]);
-  console.log(selectedItemsData.length);
   const removeSelectedItems = (id) => {
     const newSelectedItems = selectedItems.filter((item) => item !== id);
     const newSelectedRowsData = selectedItemsData.filter(
