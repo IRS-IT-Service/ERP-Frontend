@@ -19,7 +19,10 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { useDeleteRandDProductMutation, useUpdateProjectMutation } from "../../../features/api/RnDSlice";
+import {
+  useDeleteRandDProductMutation,
+  useUpdateProjectMutation,
+} from "../../../features/api/RnDSlice";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { formatDate } from "../../../commonFunctions/commonFunctions";
@@ -48,26 +51,26 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
   const { userInfo } = useSelector((state) => state.auth);
   const [projectItems, setProjectItems] = useState(data?.projectItem);
   const [deleteInfo, setDeleteInfo] = useState({});
-
+  console.log(projectItems);
   /// local state
   const [updatedData, setUpdatedData] = useState([]);
 
   // api calling from rtk query
   const [updateProjectItems, { isLoading, refetch: addRefetch }] =
     useUpdateProjectMutation();
-   const [deleteProduct,{isLoading:deleteLoading}] = useDeleteRandDProductMutation() 
+  const [deleteProduct, { isLoading: deleteLoading }] =
+    useDeleteRandDProductMutation();
 
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleClick = async(event, item) => {
-    try{
-      const info = { id: data?.projectId,SKU:item.SKU}
+  const handleClick = async (event, item) => {
+    try {
+      const info = { id: data?.projectId, SKU: item.SKU };
       const result = await deleteProduct(info).unwrap();
-      toast.success("Product deleted successfully")
-      refetch()
-      close()
-    }catch(error){
-    }
+      toast.success("Product deleted successfully");
+      refetch();
+      close();
+    } catch (error) {}
   };
 
   const handleClose = () => {
@@ -86,47 +89,26 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
     setOpen(false);
   };
 
-  const handleQuantityChange = (item, value, name) => {
+  const handleQuantityChange = (item, value, field) => {
+    const newValue = isNaN(value) ? 0 : Math.max(0, value);
+  
+    const updatedItems = projectItems.map(projectItem =>
+      projectItem._id === item._id ? { ...projectItem, [field]: newValue } : projectItem
+    );
+  
+    setProjectItems(updatedItems);
+  };
+  
+  
+  const handleSubmit = async () => {
     if (data.status === "Closed") {
+      toast.error("")
       return;
     }
-
-    const updatedItem = {
-      ...item,
-      [name]: value < 0 ? 0 : value,
-    };
-
-    setProjectItems((prevItems) =>
-      prevItems.map((prevItem) =>
-        prevItem.SKU === item.SKU ? updatedItem : prevItem
-      )
-    );
-    if (updatedItem[name] !== item[name]) {
-      setUpdatedData((prevData) => {
-        const existingIndex = prevData.findIndex(
-          (dataItem) => dataItem.SKU === item.SKU
-        );
-        if (existingIndex !== -1) {
-          return prevData.map((dataItem, idx) =>
-            idx === existingIndex
-              ? { ...updatedItem, Name: item.Name }
-              : dataItem
-          );
-        } else {
-          return [
-            ...prevData,
-            { SKU: item.SKU, Name: item.Name, [name]: updatedItem[name] },
-          ];
-        }
-      });
-    }
-  };
-
-  const handleSubmit = async () => {
     try {
       const info = {
         id: data?.projectId,
-        items: updatedData,
+        items: projectItems,
       };
       const result = await updateProjectItems(info).unwrap();
       toast.success("Quantity updated successfully");
@@ -141,7 +123,8 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
     { field: "Sno", headerName: "S.No" },
     { field: "SKU", headerName: "SKU" },
     { field: "Name", headerName: "Name" },
-    { field: "InStock", headerName: "New Qty" },
+    { field: "StoreQty", headerName: "Store Qty" },
+    { field: "InStock", headerName: " R & D New Qty" },
     { field: "OldQty", headerName: "Old Qty" },
     { field: "TotalQty", headerName: "Total Qty" },
     { field: "Status", headerName: "Received" },
@@ -266,21 +249,8 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                         <StyleTable sx={{ fontSize: ".8rem" }}>
                           {item.Name}
                         </StyleTable>
-
-                        <StyleTable
-                          sx={{
-                            fontSize: ".8rem",
-                            display: "flex",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Box
-                            width="7rem"
-                            sx={{
-                              display: "flex",
-                              gap: 1,
-                            }}
-                          >
+                        <StyleTable sx={{ fontSize: ".8rem" }}>
+                          <Box width="7rem" sx={{ display: "flex", gap: 1 }}>
                             <RemoveCircleOutlineIcon
                               sx={{
                                 "&:hover": { color: "green" },
@@ -289,16 +259,11 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                               onClick={() =>
                                 handleQuantityChange(
                                   item,
-                                  item.RequireQty
-                                    ? item.RequireQty - 1
-                                    : (+item.Quantity || 0) +
-                                        (+item.Newqty || 0) -
-                                        1,
-                                  "RequireQty"
+                                  item.Quantity - 1,
+                                  "Quantity"
                                 )
                               }
                             />
-
                             <input
                               style={{
                                 width: "100%",
@@ -307,17 +272,13 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                                 padding: 4,
                               }}
                               type="number"
-                              name="RequireQty"
-                              value={
-                                item.RequireQty
-                                  ? item.RequireQty
-                                  : (+item.Quantity || 0) + (+item.Newqty || 0)
-                              }
+                              name="Quantity"
+                              value={item.Quantity || 0}
                               onChange={(e) =>
                                 handleQuantityChange(
                                   item,
                                   parseInt(e.target.value),
-                                  "RequireQty"
+                                  "Quantity"
                                 )
                               }
                             />
@@ -329,30 +290,72 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                               onClick={() =>
                                 handleQuantityChange(
                                   item,
-                                  item.RequireQty
-                                    ? item.RequireQty + 1
-                                    : (+item.Quantity || 0) +
-                                        (+item.Newqty || 0) +
-                                        1,
-                                  "RequireQty"
+                                  item.Quantity + 1,
+                                  "Quantity"
                                 )
                               }
                             />
                           </Box>
                         </StyleTable>
+
                         <StyleTable
                           sx={{
                             fontSize: ".8rem",
+                            display: "flex",
+                            justifyContent: "center",
                           }}
                         >
-                          {item.OldQty !== null && (
-                            <Box
-                              width="7rem"
+                          <Box width="7rem" sx={{ display: "flex", gap: 1 }}>
+                            <RemoveCircleOutlineIcon
                               sx={{
-                                display: "flex",
-                                gap: 1,
+                                "&:hover": { color: "green" },
+                                cursor: "pointer",
                               }}
-                            >
+                              onClick={() =>
+                                handleQuantityChange(
+                                  item,
+                                  item.Newqty - 1,
+                                  "Newqty"
+                                )
+                              }
+                            />
+                            <input
+                              style={{
+                                width: "100%",
+                                borderRadius: "0.5rem",
+                                textAlign: "center",
+                                padding: 4,
+                              }}
+                              type="number"
+                              name="Newqty"
+                              value={item.Newqty || 0}
+                              onChange={(e) =>
+                                handleQuantityChange(
+                                  item,
+                                  parseInt(e.target.value),
+                                  "Newqty"
+                                )
+                              }
+                            />
+                            <AddCircleOutlineIcon
+                              sx={{
+                                "&:hover": { color: "green" },
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                handleQuantityChange(
+                                  item,
+                                  item.Newqty + 1,
+                                  "Newqty"
+                                )
+                              }
+                            />
+                          </Box>
+                        </StyleTable>
+
+                        <StyleTable sx={{ fontSize: ".8rem" }}>
+                          {item.OldQty !== null && (
+                            <Box width="7rem" sx={{ display: "flex", gap: 1 }}>
                               <RemoveCircleOutlineIcon
                                 sx={{
                                   "&:hover": { color: "green" },
@@ -366,7 +369,6 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                                   )
                                 }
                               />
-
                               <input
                                 style={{
                                   width: "100%",
@@ -376,7 +378,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                                 }}
                                 type="number"
                                 name="OldQty"
-                                value={+item.OldQty}
+                                value={item.OldQty || 0}
                                 onChange={(e) =>
                                   handleQuantityChange(
                                     item,
@@ -431,7 +433,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                                 height: "13px",
                                 borderRadius: "100%",
                                 backgroundColor: `${
-                                  (item.Quantity === item.RandDReceived)
+                                  item.Quantity === item.RandDReceived
                                     ? "rgba(5, 134, 15, 0.8)"
                                     : "rgba(207, 0, 0, 0.8)"
                                 }`,
