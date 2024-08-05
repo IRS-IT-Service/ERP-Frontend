@@ -6,6 +6,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Paper,
   Dialog,
   DialogContent,
   Button,
@@ -14,10 +15,14 @@ import {
   Typography,
   CircularProgress,
   styled,
+  InputAdornment,
+  Autocomplete,
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useDispatch } from "react-redux";
+
+import { setAddparts } from "../../../features/slice/R&DSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 const columns = [
@@ -29,25 +34,15 @@ const columns = [
   { field: "InStock", headerName: "In Store" },
   { field: "R&DStock", headerName: "New Parts" },
   { field: "Old", headerName: "Old Parts" },
-  { field: "Require QTY", headerName: "Require QTY" },
+  { field: "Require QTY", headerName: "Use New Parts" },
   { field: "UseOld", headerName: "Use Old Parts" },
-  { field: "NewQty", headerName: "New Qty" },
+  { field: "FromStore", headerName: "From Store" },
+  { field: "TotalReq", headerName: "Total Requirement" },
   { field: "Delete", headerName: "Remove" },
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
 import { useCreateRandDInventryMutation } from "../../../features/api/barcodeApiSlice";
-import {
-  removedSelectedItemsRandD,
-  removeSelectedSkusRandD,
-  setSelectedItemsRandD,
-  setSelectedSkusRandD,
-} from "../../../features/slice/R&DSlice";
-import {
-  useAddProjectItemMutation,
-} from "../../../features/api/RnDSlice";
-import { useNavigate } from "react-router-dom";
 
-// styling for mui grid
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#eee",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
@@ -59,17 +54,28 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
+import { InfoRounded, TabOutlined } from "@mui/icons-material";
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
   textAlign: "center",
 }));
-
+import {
+  useAddProjectItemMutation,
+  useGetSingleProjectQuery,
+} from "../../../features/api/RnDSlice";
+import { useNavigate } from "react-router-dom";
+import SliderValueLabel from "@mui/material/Slider/SliderValueLabel";
 const CreateReqDial = ({
   data,
+  removeSelectedItems,
   open,
   setOpen,
-
+  handleOpenDialog,
+  removeSelectedCreateQuery,
+  removeSelectedSkuQuery,
+  setSelectedItemsData,
+  selectedItemsData,
   id,
   name,
   refetch,
@@ -79,30 +85,19 @@ const CreateReqDial = ({
   const navigate = useNavigate();
 
   /// global state
-
+  const { userInfo } = useSelector((state) => state.auth);
+  const { Addparts } = useSelector((state) => state.RAndDForm);
 
   /// local state
 
-  const [localData, setLocalData] = useState([]);
+  const [Requireqty, setRequireqty] = useState([]);
+  const [StoreQty, setStoreQty] = useState({});
+  const [OldQty, setOldQty] = useState({});
+  const [Error, setError] = useState(false);
+  const [NewQty, setNewQty] = useState({});
+  const [updatedreq , setUpdatedreq] = useState ([])
 
-  useEffect(() => {
-    const initializedData = data.map((item) => ({
-      SKU: item.SKU,
-      Name: item.Name,
-      Brand: item.Brand,
-      GST: item.GST,
-      Quantity: item.ActualQuantity,
-      OldQty: item.OldQty,
-      NewQty: item.NewQty,
-      ReqQty: 0,
-      StoreQty: 0,
-      RestockQty: 0,
-      NewOldQty: 0,
-    }));
-    setLocalData(initializedData);
-  }, [data]);
-
-  const [errors, setErrors] = useState({});
+  /// rtk query
 
   const [createQueryApi, { isLoading }] = useCreateRandDInventryMutation();
 
@@ -115,105 +110,288 @@ const CreateReqDial = ({
   const handleCloseDialog = () => {
     setOpen(false);
   };
+  useEffect(() => {
+    let newData = [];
+    newData = data.map((data) => {
+
+     
+      return {
+      Name: data.Name,
+      SKU: data.SKU,
+      Brand: data.Brand,
+      GST: data.GST,
+      ActualQuantity: data.ActualQuantity,
+      Newqty : data.NewQty,
+      Oldqty : data.OldQty,
+
+     
+    
+           };
+    });
+    setUpdatedreq(newData);
+  }, [setOpen, open]);
+
+
+  useEffect(() => {
+    dispatch(setAddparts(Requireqty));
+  }, [setStoreQty, setOldQty, setNewQty, OldQty , NewQty, StoreQty]);
+
+  //Reset value after delete elements
+  // useEffect(() => {
+  //   const matchingArray = [];
+  //   selectedItemsData.forEach((item) => {
+  //     const match = Addparts.find((items) => item.SKU === items.SKU);
+  //     console.log(match);
+  //     if (match) {
+  //       matchingArray.push(match);
+  //     }
+  //   });
+
+  //   if (matchingArray.length > 0) {
+  //     setRequireqty(matchingArray);
+  //   }
+  // }, [selectedItemsData, setSelectedItemsData]);
+
+
+
+  // const handleQuantityChange = (event, item) => {
+  //   console.log(item)
+  //   const { value, name } = event.target;
+  //   let error = ''; 
+  //   let InStore = '';
+  //   let Restock = '';
+  //   let SubTotal = "";
+  //   let NewQty = "";
+
+  
+  //   if (name === "reqQTY") {
+  //     setNewqty({...Newqty,[item.SKU]: value})
+  //     NewQty = +item.NewQty
+  //     InStore = +item.ActualQuantity
+  //     SubTotal = +item.NewQty + +InStore
+  //     Restock = +SubTotal - +value < 0 ? +value - +SubTotal  : 0
+  //     setRestock({...restock,[item.SKU]: Restock})
+  //     } else if (name === "Oldparts") {
+  //     if (value > item.OldQty) {
+  //       error = 'Enter a value less than or equal to Old Qty';
+  //     } else {
+  //       setOldqty({ ...Oldqty, [item.SKU]: value });
+  //     }
+
+  //   }
+
+  
+  // };
+
+
+
+
+  // const handleQuantityChange = (event, item) => {
+  //   const { value, name } = event.target;
+
+
+  //   let error = ''; 
+  //   let InStore = '';
+  //   let Restock = '';
+  //   let SubTotal = '';
+  //   let NewQty = '';
+  //   let OldQty = '';
+  //   let RequireQty = ''
+  
+  //   if (name === "reqQTY") {
+  //     NewQty = +item.NewQty;
+  //     InStore = +item.ActualQuantity;
+     
+  //     SubTotal = NewQty + InStore;
+  //     if(value > SubTotal) {
+  //       Restock = SubTotal - +value < 0 ? +value - SubTotal : 0;
+  //     }else {
+  //       if(value <= +item.NewQty) {
+  //         NewQty = +item.NewQty - value
+  //         InStore = 0
+  //       }else {
+  //         InStore = +value - +item.NewQty
+  //         SubTotal = NewQty + InStore;
+  //         Restock =  Math.abs(+value - SubTotal)  ;
+  //       }
+       
+  //     }
+    
+  //     RequireQty = +value
+  //     setNewqty({ [item.SKU]: value });
+  //   } else if (name === "Oldparts") {
+  //     if (value > item.OldQty) {
+  //       error = 'Enter a value less than or equal to Old Qty';
+  //       console.error(error); // Or handle the error as needed
+  //     } else {
+
+  //       // if(value > SubTotal) {
+  //       //   Restock = SubTotal - +value < 0 ? +value - SubTotal : 0;
+  //       // }else {
+          
+  //       //   InStore = +item.ActualQuantity - +item.NewQty
+  //       //   SubTotal = NewQty + InStore;
+  //       //   Restock = +value - SubTotal  ;
+  //       // }
+  //       // NewQty = +item.NewQty;
+  //       InStore = +item.ActualQuantity 
+  //       // SubTotal = NewQty + InStore;
+  //       OldQty = +value
+  //     }
+  //   }
+  
+  //   const result = Requireqty.map((doc) => {
+  //     if (doc.SKU === item.SKU) {
+  //       return {
+  //         ...doc,
+  //         NewQty: item.NewQty,
+  //         Restock: name === "Oldparts" ? OldQty ? doc.Restock - OldQty : doc.Restock + doc.OldQty : Restock || 0 ,
+  //         InStore: InStore,
+  //         OldQty : OldQty || 0,
+  //         RequireQty: RequireQty || doc.RequireQty,
+  //         error: error,
+  //       };
+  //     }
+  //     return doc;
+  //   });
+  
+  //   setRequireqty(result);
+  // };
+
+
+//   const handleQuantityChange = (event, item) => {
+//   const { value, name } = event.target;
+// if(name === "NewQty"){
+//   if(value > item.NewQty){
+//     setError({...Error ,[item.SKU]:"Enter a value less than or equal to New Parts Qty"})
+//   }else{
+//     setError({...Error ,[item.SKU]:""})
+//     setNewQty({...NewQty ,[item.SKU]:+value})
+//   }
+
+// }else if(name === "OldQty"){
+//   if(value > item.OldQty){
+//     setError({...Error ,[item.SKU]:"Enter a value less than or equal to Old Parts Qty"})
+//   }else{
+//     setError({...Error ,[item.SKU]:""})
+//     setOldQty({...Oldqty,[item.SKU]:+value})
+//   }
+
+// }else if(name === "StoreQty"){
+//   if(value > item.InStock){
+//     setError({...Error ,[item.SKU]:"Enter a value less than or equal to In Store Qty"})
+//   }else{
+//     setError({...Error ,[item.SKU]:""})
+//     setStoreQty({...StoreQty,[item.SKU]:+value})
+//   }
+
+// }
+
+
+//   }
+
+const handleQuantityChange = (event, item) => { 
+  const { value, name } = event.target;
+
+  setUpdatedreq((prev) => prev.map((req) => {
+    if (req.id === item.id) { // Ensure you update the correct item
+      let newReq = { ...req };
+
+      if (name === "NewQty") {
+        if (value > item.Newqty) {
+          newReq.NewQtyError = "Enter valid New Parts Qty";
+          setError(true)
+        } else {
+          newReq[name] = +value;
+          newReq.NewQtyError = "";
+          setError(false)
+        }
+      } else if (name === "OldQty") {
+        if (value > item.Oldqty) {
+          newReq.OldQtyError = "Enter valid Old Parts Qty";
+          setError(true)
+        } else {
+          newReq[name] = +value;
+          newReq.OldQtyError = "";
+          setError(false)
+        }
+      } else if (name === "StoreQty") {
+        if (value > item.ActualQuantity) {
+          newReq.StoreQtyError = "Enter valid In Store Qty";
+          setError(true)
+        } else {
+          newReq[name] = +value;
+          newReq.StoreQtyError = "";
+          setError(false)
+        }
+      }
+
+  
+      newReq.Total = (newReq.NewQty || 0) + (newReq.OldQty || 0) + (newReq.StoreQty || 0);
+
+      return newReq;
+    }
+    return req;
+  }));
+};
+
+
+
+
+
+
+// useEffect(()=>{
+// let result = Requireqty.map((doc)=>{
+
+  
+// return{
+// SKU:doc.SKU,
+// ReqQTY,
+// OldQTY,
+// error,
+// useRNDNewparts,
+// useRNDOldparts,
+// fromStore,
+// }
+
+
+// },
+// )
+// setUpdatedreq(result)
+// }, [setStoreQty, setOldQty, setNewQty, OldQty , NewQty, StoreQty]); 
   
 
-  const handleDelete = (sku) => {
-    const filterData = localData.filter((data) => data.SKU !== sku);
-    setLocalData(filterData);
-    dispatch(setSelectedItemsRandD(sku));
-    dispatch(setSelectedSkusRandD(sku));
-  };
 
-  
+
+  useEffect(() => {
+    return () => {
+      removeSelectedItems([]);
+      setUpdatedreq([]);
+    };
+  }, [setOpen]);
 
   // handling send query
   const handleSubmit = async () => {
     try {
-      const sendingData = localData.map((data) => ({
-        SKU: data.SKU,
-        RequireQty: Number(data.ReqQty),
-        Brand: data.Brand,
-        GST: data.GST,
-        OldQty: Number(data.NewOldQty),
-        Name: data.Name,
-      }));
 
+   
       let info = {
         id: id,
-        items: sendingData,
+        items: updatedreq,
       };
-      // console.log(info);
-
+      console.log(info)
+      if (Error) return toast.error("Missing Require Quantiy");
       const result = await addProjectItems(info).unwrap();
 
       toast.success("Parts add successfully");
-      dispatch(removeSelectedSkusRandD());
-      dispatch(removedSelectedItemsRandD());
+      dispatch(removeSelectedCreateQuery());
+      dispatch(removeSelectedSkuQuery());
+      removeSelectedItems([]);
       refetch();
       handleCloseDialog();
       navigate("/Project");
     } catch (e) {
       console.log("error at Discount Query create ", e);
-    }
-  };
-
-  const handleChange = (e, item) => {
-    const { name, value } = e.target;
-    const qty = Number(item.Quantity);
-    const newqty = item.NewQty;
-    const oldqty = item.OldQty;
-    let storeQty = "";
-    let newRdQty = "";
-    let restockQty = "";
-
-    if (name === "ReqQty") {
-      if (value > qty) {
-        restockQty = Number(value) - qty;
-      } else if (newqty > 0) {
-        storeQty = value - Number(newqty) - Number(restockQty);
-        newRdQty = newqty;
-      }
-      setLocalData((prevData) =>
-        prevData.map((i) =>
-          i.SKU === item.SKU
-            ? {
-                ...i,
-                [name]: value,
-                RestockQty: restockQty,
-                StoreQty: storeQty,
-                NewRdQty: newRdQty,
-              }
-            : i
-        )
-      );
-    } else if (name === "NewOldQty") {
-      if (Number(value) > oldqty) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [item.SKU]: "OldQty cannot be greater than Quantity",
-        }));
-      } else {
-        setErrors((prevErrors) => ({ ...prevErrors, [item.SKU]: "" }));
-        storeQty = qty > value ? qty - value : qty;
-        newRdQty = newqty;
-        setLocalData((prevData) =>
-          prevData.map((i) =>
-            i.SKU === item.SKU
-              ? { ...i, [name]: value, StoreQty: storeQty, NewRdQty: newRdQty }
-              : i
-          )
-        );
-      }
-    } else {
-      storeQty = qty;
-      newRdQty = newqty;
-      setLocalData((prevData) =>
-        prevData.map((i) =>
-          i.SKU === item.SKU
-            ? { ...i, [name]: value, StoreQty: storeQty, NewRdQty: newRdQty }
-            : i
-        )
-      );
     }
   };
 
@@ -280,112 +458,140 @@ const CreateReqDial = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {localData.length > 0 &&
-                  localData.map((item, index) => {
-                    return (
-                      <TableRow key={index}>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
-                          {index + 1}
-                        </StyleTable>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
-                          {item.SKU}
-                        </StyleTable>
-                        <StyleTable
-                          sx={{ fontSize: ".8rem", minWidth: "150px" }}
-                        >
-                          {item.Name}
-                        </StyleTable>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
-                          {item.Brand}
-                        </StyleTable>
+                {updatedreq.map((item, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <StyleTable sx={{ fontSize: ".8rem" }}>
+                        {index + 1}
+                      </StyleTable>
+                      <StyleTable sx={{ fontSize: ".8rem" }}>
+                        {item.SKU}
+                      </StyleTable>
+                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "150px" }}>
+                        {item.Name}
+                      </StyleTable>
+                      <StyleTable sx={{ fontSize: ".8rem" }}>
+                        {item.Brand}
+                      </StyleTable>
 
-                        <StyleTable
-                          sx={{ fontSize: ".8rem", minWidth: "80px" }}
-                        >
-                          {item.GST} %
-                        </StyleTable>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
-                          {item.Quantity}
-                        </StyleTable>
-                        <StyleTable
-                          sx={{ fontSize: ".8rem", minWidth: "99px" }}
-                        >
-                          {item.NewQty}
-                        </StyleTable>
-                        <StyleTable
-                          sx={{ fontSize: ".8rem", minWidth: "99px" }}
-                        >
-                          {item.OldQty}
-                        </StyleTable>
-                        <StyleTable>
-                          <TextField
-                            autocomplete={false}
-                            size="small"
-                            sx={{
-                              "& input": {
-                                height: "10px",
-                                maxWidth: "30px",
-                              },
-                            }}
-                            name="ReqQty"
-                            value={item.ReqQty}
-                            type="number"
-                            onChange={(event) => {
-                              handleChange(event, item);
-                            }}
-                          />
-                        </StyleTable>
-                        <StyleTable>
-                          <TextField
-                            autocomplete={false}
-                            size="small"
-                            sx={{
-                              "& input": {
-                                height: "10px",
-                                maxWidth: "30px",
-                              },
-                            }}
-                            name="NewOldQty"
-                            disabled={item.OldQty == "" || item.OldQty <= 0}
-                            value={item.NewOldQty}
-                            type="number"
-                            onChange={(event) => {
-                              handleChange(event, item);
-                            }}
-                            error={!!errors[item.SKU]}
-                            helperText={
-                              errors[item.SKU] ? (
-                                <span style={{ fontSize: "4px" }}>
-                                  {errors[item.SKU]}
-                                </span>
-                              ) : (
-                                ""
-                              )
-                            }
-                          />
-                        </StyleTable>
-                        <StyleTable
-                          sx={{ fontSize: ".8rem", minWidth: "99px" }}
-                        >
-                          {Number(item.ReqQty || 0) - Number(item.NewOldQty || 0)}
-                          </StyleTable>
-
-                        <StyleTable>
-                          <DeleteIcon
-                            sx={{
-                              "&:hover": {
-                                color: "red",
-                              },
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              handleDelete(item.SKU);
-                            }}
-                          />
-                        </StyleTable>
-                      </TableRow>
-                    );
-                  })}
+                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "80px" }}>
+                        {item.GST} %
+                      </StyleTable>
+                      <StyleTable sx={{ fontSize: ".8rem" }}>
+                        {item.ActualQuantity}
+                      </StyleTable>
+                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
+                        {item.Newqty}
+                      </StyleTable>
+                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
+                        {item.Oldqty}
+                      </StyleTable>
+                      <StyleTable>
+                        <TextField
+                          autocomplete={false}
+                          size="small"
+                          sx={{
+                            "& input": {
+                              height: "10px",
+                              maxWidth: "30px",
+                            },
+                          }}
+                          name="NewQty"
+                          value={item.NewQty}
+                          type="number"
+                          onChange={(event) => {
+                            handleQuantityChange(event, item);
+                          }}
+                          error={item.NewQtyError}
+                          helperText={
+                           item.NewQtyError ? (
+                              <span style={{ fontSize: "9px" }}>
+                                Enter valid Qty!
+                              </span>
+                            ) : (
+                              ""
+                            )
+                          }
+                        />
+                      </StyleTable>
+                      <StyleTable>
+                        <TextField
+                          autocomplete={false}
+                          size="small"
+                          sx={{
+                            "& input": {
+                              height: "10px",
+                              maxWidth: "30px",
+                            },
+                          }}
+                          name="OldQty"
+                          disabled = {item.Oldqty == "" || item.Oldqty < 0}
+                          value={item.OldQty}
+                           type="number"
+                          onChange={(event) => {
+                            handleQuantityChange(event, item);
+                          }}
+                          error={item.OldQtyError}
+                          helperText={
+                            item.OldQtyError ? (
+                              <span style={{ fontSize: "9px" }}>
+                                Enter valid Qty!
+                              </span>
+                            ) : (
+                              ""
+                            )
+                          }
+                        />
+                      </StyleTable>
+                      <StyleTable>
+                        <TextField
+                          autocomplete={false}
+                          size="small"
+                          sx={{
+                            "& input": {
+                              height: "10px",
+                              maxWidth: "30px",
+                            },
+                          }}
+                          name="StoreQty"
+                          value={item.StoreQty}
+                         type="number"
+                          onChange={(event) => {
+                            handleQuantityChange(event, item);
+                          }}
+                          error={item.StoreQtyError}
+                          helperText={
+                            item.StoreQtyError ? (
+                              <span style={{ fontSize: "9px" }}>
+                                Enter valid Qty!
+                              </span>
+                            ) : (
+                              ""
+                            )
+                          }
+                        />
+                      </StyleTable>
+                     
+                      <StyleTable sx={{ fontSize: ".8rem", minWidth: "99px" }}>
+                        {item.Total}
+                      </StyleTable>
+               
+                      <StyleTable>
+                        <DeleteIcon
+                          sx={{
+                            "&:hover": {
+                              color: "red",
+                            },
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            removeSelectedItems(item.SKU);
+                          }}
+                        />
+                      </StyleTable>
+                    </TableRow>
+                  );
+                })}
 
                 <TableRow></TableRow>
               </TableBody>

@@ -234,7 +234,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
           </Box>
         </DialogTitle>
         <DialogContent>
-          <TableContainer sx={{ maxHeight: "60vh", width: "50vw" }}>
+          <TableContainer sx={{ maxHeight: "60vh", width: "70vw" }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
