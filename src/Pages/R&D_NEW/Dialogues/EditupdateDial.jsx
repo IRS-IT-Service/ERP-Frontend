@@ -39,11 +39,22 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   fontSize: ".777rem",
   padding: "5px",
   textAlign: "center",
+
+
+}));
+
+const StyleBox = styled(Box)(({ theme }) => ({
+width:"100%",
+display: "flex",
+justifyContent: "center",
+alignItems: "center"
+
 }));
 
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
+  
   textAlign: "center",
 }));
 
@@ -249,7 +260,8 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                         <StyleTable sx={{ fontSize: ".8rem" }}>
                           {item.Name}
                         </StyleTable>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
+                        <StyleTable sx={{ fontSize: ".8rem"  }}>
+                          <StyleBox>
                           <Box width="7rem" sx={{ display: "flex", gap: 1 }}>
                             <RemoveCircleOutlineIcon
                               sx={{
@@ -296,6 +308,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                               }
                             />
                           </Box>
+                          </StyleBox>
                         </StyleTable>
 
                         <StyleTable
@@ -305,6 +318,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                             justifyContent: "center",
                           }}
                         >
+                          <StyleBox>
                           <Box width="7rem" sx={{ display: "flex", gap: 1 }}>
                             <RemoveCircleOutlineIcon
                               sx={{
@@ -351,11 +365,13 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                               }
                             />
                           </Box>
+                          </StyleBox>
                         </StyleTable>
 
                         <StyleTable sx={{ fontSize: ".8rem" }}>
+                        <StyleBox>
                           {item.OldQty !== null && (
-                            <Box width="7rem" sx={{ display: "flex", gap: 1 }}>
+                            <Box width="7rem" sx={{ display: "flex", gap: 1 ,border:"1px" }}>
                               <RemoveCircleOutlineIcon
                                 sx={{
                                   "&:hover": { color: "green" },
@@ -401,10 +417,13 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                                 }
                               />
                             </Box>
+                       
                           )}
+                               </StyleBox>
                         </StyleTable>
 
                         <StyleTable sx={{ fontSize: ".8rem" }}>
+                        <StyleBox>
                           <Box
                             sx={{
                               width: "100%",
@@ -418,6 +437,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                                 (+item.OldQty || 0)}
                             </div>
                           </Box>
+                          </StyleBox>
                         </StyleTable>
                         <StyleTable sx={{ fontSize: ".8rem" }}>
                           <Box
