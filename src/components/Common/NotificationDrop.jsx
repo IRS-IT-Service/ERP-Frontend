@@ -48,8 +48,7 @@ const NotificationDrop = () => {
   const handleOpen = (event) => {
     event.stopPropagation()
     if (isAdmin) {
-      console.log("hiii");
-      setIsopen(!isOpen);
+       setIsopen(!isOpen);
     } else {
       navigate("/TaskScheduledList");
     }
@@ -88,7 +87,7 @@ const NotificationDrop = () => {
     WebkitBackdropFilter: "blur( 1.5px )",
     borderRadius: "10px",
     top: 20,
-    right: "26rem",
+    right: "28rem",
     zIndex: 3000,
     cursor: "pointer",
   }}
