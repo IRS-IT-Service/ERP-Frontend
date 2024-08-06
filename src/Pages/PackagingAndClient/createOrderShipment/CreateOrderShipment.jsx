@@ -631,6 +631,7 @@ const createOrderShipment = ({ setOpen, id }) => {
       formData.append("Contact", selectedCustomer.ContactNumber);
       formData.append("CompanyName", selectedCustomer.CompanyName);
       formData.append("AlternateNumber", selectedCustomer.AlternateNumber);
+      formData.append("ContactName",selectedCustomer.ContactName)
       formData.append("Items", JSON.stringify(info));
 
       if (orderId) {

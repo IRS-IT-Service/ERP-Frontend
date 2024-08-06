@@ -73,6 +73,7 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
     formData.append("ContactPerson", getClientByName?.client?.ContactName);
     formData.append("Contact", getClientByName?.client?.ContactNumber);
     formData.append("CompanyName", getClientByName?.client?.CompanyName);
+    formData.append("ContactName", getClientByName?.client?.ContactName);
     formData.append(
       "ShippingAddress",
       JSON.stringify(getClientByName?.client?.PermanentAddress)
@@ -258,7 +259,7 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody sx={{ overflowY: "auto" }}>
-                  {rows.map((row, index) => (
+                  {rows.length > 0 ? rows.map((row, index) => (
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell sx={{ width: "20%", textAlign: "center" }}>
@@ -288,7 +289,7 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
                         />
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )): <TableRow ><TableCell sx={{width:"100%"}} ><Typography sx={{textAlign:"center"}}>No Itemes Requested</Typography></TableCell></TableRow>}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -302,7 +303,7 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
           alignItems: "center",
         }}
       >
-        <Button variant="contained" onClick={() => handleSubmitShipment()}>
+        <Button variant="contained" onClick={() => handleSubmitShipment()} disabled = {rows.length === 0}>
           {createShipmentLoading ? <CircularProgress /> : "Create Shipment"}
         </Button>
         <Button sx={{ color: "red" }} onClick={handleClose}>
