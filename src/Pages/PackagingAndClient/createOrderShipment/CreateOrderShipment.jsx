@@ -6,17 +6,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Dialog,
-  DialogContent,
   Button,
   TextField,
   Box,
-  Grid,
   Typography,
   CircularProgress,
   styled,
-  InputAdornment,
   Autocomplete,
   Popover,
   ListItemButton,
@@ -26,19 +21,13 @@ import {
   FormControlLabel,
   Select,
   MenuItem,
-  InputLabel,
-  OutlinedInput,
-  Chip,
+  Badge,
 } from "@mui/material";
-import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-import { setAddparts } from "../../../features/slice/R&DSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import EditIcon from "@mui/icons-material/Edit";
-
 import axios from "axios";
 const columns = [
   { field: "Sno", headerName: "S.No" },
@@ -49,12 +38,9 @@ const columns = [
   { field: "InStock", headerName: "In Store" },
   { field: "Assigned QTY", headerName: "Assigned QTY" },
   { field: "QTY", headerName: "QTY" },
-
   { field: "Delete", headerName: "Remove" },
 ];
 import { useSocket } from "../../../CustomProvider/useWebSocket";
-import { useCreateRandDInventryMutation } from "../../../features/api/barcodeApiSlice";
-
 import {
   useGetAllClientQuery,
   useGetAllPackagesQuery,
@@ -99,6 +85,8 @@ import { setHeader, setInfo } from "../../../features/slice/uiSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { tableCellClasses } from "@mui/material/TableCell";
 import AddshipmentDial from "./AddshimentpartsDial";
+import RandDShipmentDial from "./RandDShipmentDial";
+import { useGetPendingRequestQuery } from "../../../features/api/barcodeApiSlice";
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
@@ -212,6 +200,7 @@ const createOrderShipment = ({ setOpen, id }) => {
   const [FinalData, setFinalData] = useState([]);
   const [updateValue, setUpdateValue] = useState([]);
   const [editButton, setEditButton] = useState([]);
+  const [RandDShipmentDialog, setRandDShipmentDialog] = useState(false);
 
   const [Clientlist, setClientlist] = useState([]);
   const [form, setForm] = useState({
@@ -251,6 +240,13 @@ const createOrderShipment = ({ setOpen, id }) => {
       skip: !orderId,
     });
 
+  const {
+    data: allProductData,
+    isLoading: productLoading,
+    isFetching,
+    refetchProduct,
+  } = useGetPendingRequestQuery();
+
   const [personType, setPersonType] = useState("Company");
   const [
     addmoreaddress,
@@ -280,7 +276,7 @@ const createOrderShipment = ({ setOpen, id }) => {
 
       //   return [...prevFinalData, ...newItems];
       // });
-      setFinalData(selectedItems)
+      setFinalData(selectedItems);
     }
   }, [selectedItems]);
 
@@ -438,7 +434,6 @@ const createOrderShipment = ({ setOpen, id }) => {
   };
 
   const removeSelectedItems = (id) => {
-    console.log(id);
     const newSelectedItems = Requireqty.filter((item) => item.SKU !== id);
     const newSelectedRowsData = FinalData.filter((item) => item.SKU !== id);
     const NewUpdatedValue = updateValue.filter((item) => item.SKU !== id);
@@ -598,14 +593,14 @@ const createOrderShipment = ({ setOpen, id }) => {
             SKU: item.SKU,
             Qty: item.Qty,
             productName: item.Name,
-            barcodeGenerator:item.barcodeGenerator,
+            barcodeGenerator: item.barcodeGenerator,
           };
         } else {
           return {
             SKU: item.SKU,
             Qty: item.Qty,
             productName: item.Name,
-            barcodeGenerator:item.barcodeGenerator,
+            barcodeGenerator: item.barcodeGenerator,
           };
         }
       });
@@ -743,6 +738,12 @@ const createOrderShipment = ({ setOpen, id }) => {
         fetchPincodeDetails(value);
       }
     }
+  };
+
+  // for handling r and d shipment request in saperate precess
+
+  const handleOpenRandDial = () => {
+    setRandDShipmentDialog(true);
   };
 
   return (
@@ -1032,30 +1033,59 @@ const createOrderShipment = ({ setOpen, id }) => {
                     display: "flex",
                     gap: "10px",
                     alignItems: "center",
-                    borderRadius: "25px",
-                    padding: "5px",
                   }}
                 >
-                  <Typography
-                    variant="span"
-                    fontWeight="bold"
-                    fontSize={"12px"}
-                  >
-                    Shipping Address{" "}
-                  </Typography>
                   <Box
                     sx={{
-                      cursor: "pointer",
-                      color: "blue",
-                      fontSize: "20px",
-                      "&:hover": {
-                        color: "red",
-                      },
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "center",
+                      padding: "5px",
+                      borderRadius: "25px",
                     }}
-                    onClick={handleClick}
                   >
-                    {" "}
-                    <i className="fa-solid fa-plus"></i>{" "}
+                    <Typography
+                      variant="span"
+                      fontWeight="bold"
+                      fontSize={"12px"}
+                    >
+                      Shipping Address{" "}
+                    </Typography>
+                    <Box
+                      sx={{
+                        cursor: "pointer",
+                        color: "blue",
+                        fontSize: "20px",
+                        "&:hover": {
+                          color: "red",
+                        },
+                      }}
+                      onClick={handleClick}
+                    >
+                      {" "}
+                      <i className="fa-solid fa-plus"></i>{" "}
+                    </Box>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      background: "#eee",
+                      padding: "5px",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    <Badge
+                      badgeContent={allProductData?.data.length}
+                      color="primary"
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => {
+                        handleOpenRandDial();
+                      }}
+                    >
+                      <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                        R and D Req
+                      </span>
+                    </Badge>
                   </Box>
                 </Box>
                 <Box
@@ -1511,6 +1541,15 @@ const createOrderShipment = ({ setOpen, id }) => {
             setOpen={setOpenDialog}
             setSelectedData={setSelectedData}
             FinalData={FinalData}
+          />
+        )}
+
+        {RandDShipmentDialog && (
+          <RandDShipmentDial
+            open={RandDShipmentDialog}
+            setOpen={setRandDShipmentDialog}
+            productData={allProductData?.data}
+            refetchProduct = {refetchProduct}
           />
         )}
       </Box>
