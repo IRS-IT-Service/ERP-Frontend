@@ -169,7 +169,7 @@ function App() {
   const { isAdmin, userInfo } = useSelector((state) => state.auth);
   const Mode = useSelector((state) => state.ui.Mode);
   const adminid = userInfo?.adminId;
-  
+
   /// local state
   const [registrationToken, setRegistrationToken] = useState("");
   const [mode, setMode] = useState("light");
@@ -238,7 +238,6 @@ function App() {
   // LiveTasksData
 
   const handleTaskmanagment = (data) => {
-
     const UserId = data?.userId;
     const currentUserId = userInfo?.adminId;
     if (UserId === currentUserId) {
@@ -291,18 +290,20 @@ function App() {
           handleLiveStatus(data);
         });
         socket.on("liveStatusTask", (data) => {
-      
           // console.log('Received Event liveStatusClient for Admin :', data);
           handleTaskmanagment(data);
         });
 
         socket.on("LiveWarning", (data) => {
-        if (data.length > 0) {
-          const newNotifications = data?.filter(item => item.userId === adminid);
-            setNotifications(prevNotifications => [...prevNotifications, ...newNotifications]);
-          
-        }
-                       
+          if (data.length > 0) {
+            const newNotifications = data?.filter(
+              (item) => item.userId === adminid
+            );
+            setNotifications((prevNotifications) => [
+              ...prevNotifications,
+              ...newNotifications,
+            ]);
+          }
         });
 
         // Listen for the 'liveWholeSaleStatus' event
@@ -318,12 +319,11 @@ function App() {
         handleOnlineUsers(data);
       });
 
-
       socket.on("productUpdate", () => {
         handleCallUnApprovedProduct();
       });
 
-       /// events for all
+      /// events for all
       // Listen for the 'logout' event
       socket.on("userLogout", (data) => {
         const userId = data.userId;
@@ -473,7 +473,7 @@ function App() {
       <ToastContainer closeOnClick autoClose={1000} />
       {notifications.map((item, index) => (
         <AlarmNotification
-        id={item._id}
+          id={item._id}
           key={index}
           title={item.taskTitle}
           userInfo={userInfo}
@@ -925,7 +925,7 @@ function App() {
                   path="/TaskScheduledList"
                   element={
                     <UserRole name={"Task Scheduled List"}>
-                      <TaskScheduledList  />
+                      <TaskScheduledList />
                     </UserRole>
                   }
                 />

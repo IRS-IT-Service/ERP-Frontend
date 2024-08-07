@@ -28,7 +28,6 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${clientAndShipmentApi}/deleteClient/${data}`,
           method: "DELETE",
-     
         };
       },
     }),
@@ -142,7 +141,15 @@ export const clientAndShipmentApiSlice = apiSlice.injectEndpoints({
         return {
           url: `${clientAndShipmentApi}/deleteSingleShipment`,
           method: "DELETE",
-          body:data
+          body: data,
+        };
+      },
+    }),
+    getClientByName: builder.query({
+      query: (data) => {
+        return {
+          url: `${clientAndShipmentApi}/getClientByName?name=${data}`,
+          method: "GET",
         };
       },
     }),
@@ -166,4 +173,5 @@ export const {
   useUpdateClientMutation,
   useDeleteShipmentProductMutation,
   useDeleteClientMutation,
+  useGetClientByNameQuery,
 } = clientAndShipmentApiSlice;
