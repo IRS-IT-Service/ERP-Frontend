@@ -136,8 +136,7 @@ const CreateReqDial = ({
     // setLocalData([filterData]);
     dispatch(setSelectedItemsRandD(sku));
     dispatch(setSelectedSkusRandD(sku));
-    setUpdatedreq([])
-
+    setUpdatedreq([]);
   };
 
   useEffect(() => {
@@ -615,7 +614,7 @@ const CreateReqDial = ({
               }}
             >
               {isLoading ? (
-                <CircularProgress size={24} color="inherit" />
+                <CircularProgress size={24} color="#fff" />
               ) : (
                 "Add Parts"
               )}

@@ -290,7 +290,7 @@ backgroundColor: "#50124f",
                           {row.GST}
                         </StyledCellvalue>
                         <StyledCellvalue sx={{ textAlign: "center" }}>
-                          {row.ActualQuantity}
+                          {row.barcodeGenerator ? row.Quantity : row.ActualQuantity}
                         </StyledCellvalue>
                         <StyledCellvalue sx={{ textAlign: "center" }}>
                           <TextField
