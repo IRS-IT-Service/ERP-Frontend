@@ -62,7 +62,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
   const { userInfo } = useSelector((state) => state.auth);
   const [projectItems, setProjectItems] = useState(data?.projectItem);
   const [deleteInfo, setDeleteInfo] = useState({});
-  console.log(projectItems);
+
   /// local state
   const [updatedData, setUpdatedData] = useState([]);
 
@@ -138,7 +138,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
     { field: "InStock", headerName: " R & D New Qty" },
     { field: "OldQty", headerName: "Old Qty" },
     { field: "TotalQty", headerName: "Total Qty" },
-    { field: "Status", headerName: "Received" },
+    // { field: "Status", headerName: "Received" },
     { field: "Delete", headerName: "Delete" },
   ];
 
@@ -439,7 +439,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                           </Box>
                           </StyleBox>
                         </StyleTable>
-                        <StyleTable sx={{ fontSize: ".8rem" }}>
+                        {/* <StyleTable sx={{ fontSize: ".8rem" }}>
                           <Box
                             sx={{
                               width: "100%",
@@ -461,7 +461,7 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                               }}
                             ></div>
                           </Box>
-                        </StyleTable>
+                        </StyleTable> */}
 
                         <StyleTable sx={{ fontSize: ".8rem" }}>
                           <DeleteIcon

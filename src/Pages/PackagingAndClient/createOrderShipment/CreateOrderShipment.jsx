@@ -244,7 +244,7 @@ const createOrderShipment = ({ setOpen, id }) => {
     data: allProductData,
     isLoading: productLoading,
     isFetching,
-    refetchProduct,
+    refetch:refetchProduct,
   } = useGetPendingRequestQuery();
 
   const [personType, setPersonType] = useState("Company");
@@ -631,7 +631,7 @@ const createOrderShipment = ({ setOpen, id }) => {
       formData.append("Contact", selectedCustomer.ContactNumber);
       formData.append("CompanyName", selectedCustomer.CompanyName);
       formData.append("AlternateNumber", selectedCustomer.AlternateNumber);
-      formData.append("ContactName",selectedCustomer.ContactName)
+      formData.append("ContactName", selectedCustomer.ContactName);
       formData.append("Items", JSON.stringify(info));
 
       if (orderId) {
@@ -1073,6 +1073,14 @@ const createOrderShipment = ({ setOpen, id }) => {
                       background: "#eee",
                       padding: "5px",
                       borderRadius: "6px",
+                      background: allProductData?.data.length
+                        ? "green"
+                        : "#eee",
+                      color: "#fff",
+
+                      "&:hover": {
+                        background: "#04361e",
+                      },
                     }}
                   >
                     <Badge
@@ -1080,7 +1088,7 @@ const createOrderShipment = ({ setOpen, id }) => {
                       color="primary"
                       sx={{ cursor: "pointer" }}
                       onClick={() => {
-                        handleOpenRandDial();
+                        allProductData?.data.length && handleOpenRandDial();
                       }}
                     >
                       <span style={{ fontSize: "13px", fontWeight: "bold" }}>
@@ -1550,7 +1558,7 @@ const createOrderShipment = ({ setOpen, id }) => {
             open={RandDShipmentDialog}
             setOpen={setRandDShipmentDialog}
             productData={allProductData?.data}
-            refetchProduct = {refetchProduct}
+            refetchProduct={refetchProduct}
           />
         )}
       </Box>

@@ -211,6 +211,7 @@ const Inventory = () => {
     );
     const newFindData = rows.find((item) => item.SKU === lastData);
     setSelectedItems(selectionModel);
+    
 
     setSelectedItemsData(newSelectedRowData);
     dispatch(
@@ -241,7 +242,9 @@ const Inventory = () => {
       dispatch(setSelectedCreateQuery(newData));
     }
   }, [selectedItemsData]);
+
   const removeSelectedItems = (id) => {
+    
     const newSelectedItems = selectedItems.filter((item) => item !== id);
     const newSelectedRowsData = selectedItemsData.filter(
       (item) => item.SKU !== id
@@ -257,6 +260,8 @@ const Inventory = () => {
     createQueryItems.find((item) => item.SKU === sku)
   );
 
+
+  
   const handleOpenDialog = () => {
     setOpen(true);
   };

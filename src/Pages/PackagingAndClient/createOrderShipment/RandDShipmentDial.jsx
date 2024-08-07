@@ -15,7 +15,7 @@ import {
   TableContainer,
   Paper,
   Button,
-  style,
+  styled,
   CircularProgress,
 } from "@mui/material";
 import {
@@ -47,6 +47,18 @@ const RandDShipmentDial = ({ open, setOpen, productData, refetchProduct }) => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const StyledCell = styled(TableCell)(({ theme }) => ({
+ textAlign: "center",
+ padding: 1,
+backgroundColor: "#50124f",
+ color: "#fff",
+  }));
+
+  const StyledCellvalue = styled(TableCell)(({ theme }) => ({
+    textAlign: "center",
+    padding: 1,
+      }));
 
   const handleQtyChange = (item, e) => {
     const { value } = e.target;
@@ -223,99 +235,64 @@ const RandDShipmentDial = ({ open, setOpen, productData, refetchProduct }) => {
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        padding: 1,
-                        height: "20px",
-                        backgroundColor: "#50124f",
-                        color: "#fff",
-                      }}
+                    <StyledCell
+                  
                     >
                       S.No
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        padding: 1,
-                        height: "20px",
-                        backgroundColor: "#50124f",
-                        color: "#fff",
-                      }}
+                    </StyledCell>
+                    <StyledCell
+                    
                     >
                       SKU
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        padding: 1,
-                        height: "20px",
-                        backgroundColor: "#50124f",
-                        color: "#fff",
-                      }}
+                    </StyledCell>
+                    <StyledCell
+                  
                     >
                       Name
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        padding: 1,
-                        height: "20px",
-                        backgroundColor: "#50124f",
-                        color: "#fff",
-                      }}
+                    </StyledCell>
+                    <StyledCell
+                 
                     >
                       Brand
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        padding: 1,
-                        height: "20px",
-                        backgroundColor: "#50124f",
-                        color: "#fff",
-                      }}
+                    </StyledCell>
+                    <StyledCell
+                 
                     >
                       GST
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        padding: 1,
-                        height: "20px",
-                        backgroundColor: "#50124f",
-                        color: "#fff",
-                      }}
+                    </StyledCell>
+                    <StyledCell
+                 
                     >
                       Actual Qty
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        padding: 1,
-                        height: "20px",
-                        backgroundColor: "#50124f",
-                        color: "#fff",
-                      }}
+                    </StyledCell>
+                    <StyledCell
+                 
                     >
                       Requested Qty
-                    </TableCell>
+                    </StyledCell>
                   </TableRow>
                 </TableHead>
                 <TableBody sx={{ overflowY: "auto" }}>
                   {rows.length > 0 ? (
                     rows.map((row, index) => (
                       <TableRow key={index}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell sx={{ width: "20%", textAlign: "center" }}>
+                        <StyledCellvalue>{index + 1}</StyledCellvalue>
+                        <StyledCellvalue sx={{ width: "20%", textAlign: "center" }}>
                           {row.SKU}
-                        </TableCell>
-                        <TableCell sx={{ width: "25%", textAlign: "center" }}>
+                        </StyledCellvalue>
+                        <StyledCellvalue sx={{ width: "25%", textAlign: "center" }}>
                           {row.Name}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
+                        </StyledCellvalue>
+                        <StyledCellvalue sx={{ textAlign: "center" }}>
                           {row.Brand}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
+                        </StyledCellvalue>
+                        <StyledCellvalue sx={{ textAlign: "center" }}>
                           {row.GST}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
+                        </StyledCellvalue>
+                        <StyledCellvalue sx={{ textAlign: "center" }}>
                           {row.ActualQuantity}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
+                        </StyledCellvalue>
+                        <StyledCellvalue sx={{ textAlign: "center" }}>
                           <TextField
                             sx={{ width: "90px" }}
                             type="number"
@@ -325,16 +302,16 @@ const RandDShipmentDial = ({ open, setOpen, productData, refetchProduct }) => {
                             variant="outlined"
                             size="small"
                           />
-                        </TableCell>
+                        </StyledCellvalue>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell sx={{ width: "100%" }}>
+                      <StyledCellvalue sx={{ width: "100%" }}>
                         <Typography sx={{ textAlign: "center" }}>
                           No Itemes Requested
                         </Typography>
-                      </TableCell>
+                      </StyledCellvalue>
                     </TableRow>
                   )}
                 </TableBody>
