@@ -346,11 +346,14 @@ const Project = () => {
         const id = params.row.projectId;
         const name = params.row.Name;
         const item = params.row.projectItem;
+        const isClosed  = params.row.status !== "Closed";
+
+      
 
         return item?.length > 0 ? (
           <AddTaskIcon
             onClick={() => {
-              Navigate(`/CreateReq/${id}&${name}`);
+              isClosed && Navigate(`/CreateReq/${id}&${name}`);
             }}
             sx={{
               "&:hover": { color: "red" },
@@ -361,7 +364,7 @@ const Project = () => {
         ) : (
           <Add
             onClick={() => {
-              Navigate(`/CreateReq/${id}&${name}`);
+              isClosed && Navigate(`/CreateReq/${id}&${name}`);
             }}
             sx={{ "&:hover": { color: "red" }, cursor: "pointer" }}
           />

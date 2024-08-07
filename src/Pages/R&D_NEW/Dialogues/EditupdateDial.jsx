@@ -466,12 +466,13 @@ const EditUpdateDial = ({ data, open, setOpen, refetch, close }) => {
                         <StyleTable sx={{ fontSize: ".8rem" }}>
                           <DeleteIcon
                             sx={{
+                              color: data.status !== "Closed" ? "black" : "#eee" ,
                               "&:hover": {
-                                color: "red",
+                                color: data.status !== "Closed" ? "red" : "#eee" ,
                               },
-                              cursor: "pointer",
+                              cursor:data.status !== "Closed" ? "pointer" : "" ,
                             }}
-                            onClick={(e) => handleClick(e, item)}
+                            onClick={(e) => data.status !== "Closed" && handleClick(e, item)}
                           />
                         </StyleTable>
                       </TableRow>
