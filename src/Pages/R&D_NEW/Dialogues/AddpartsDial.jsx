@@ -444,10 +444,11 @@ const AddpartsDial = ({ open, close, refetch, data }) => {
                       <TableCell sx={{ textAlign: "center" }}>
                         <DeleteIcon
                           sx={{
+                            color: data.status !== "Closed" ? "black" : "#eee" ,
                             "&:hover": { color: "red" },
                             cursor: "pointer",
                           }}
-                          onClick={() => handleDelete(data.id)}
+                          onClick={() => data.status !== "Closed" && handleDelete(data.id)}
                         />
                       </TableCell>
                     </TableRow>

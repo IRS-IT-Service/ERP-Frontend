@@ -173,7 +173,7 @@ const OneProductDetails = () => {
                     style={{ textDecoration: "line-through" }}
                   >
                     {" "}
-                    ${oneProductData?.data?.SalesPrice}
+                    ₹{oneProductData?.data?.SalesPrice}
                   </Typography>
                 </Typography>
               </Grid>
@@ -186,7 +186,7 @@ const OneProductDetails = () => {
                     style={{ fontSize: "20px" }}
                   >
                     {" "}
-                    ${oneProductData?.data?.SellerPrice}
+                    ₹{oneProductData?.data?.SellerPrice}
                   </Typography>
                 </Typography>
               </Grid>

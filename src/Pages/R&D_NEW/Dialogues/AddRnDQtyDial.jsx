@@ -6,7 +6,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Dialog,
   DialogContent,
   Button,
@@ -15,14 +14,15 @@ import {
   Typography,
   CircularProgress,
   styled,
-  InputAdornment,
-  Autocomplete,
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { setAddparts } from "../../../features/slice/R&DSlice";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  removedSelectedItemsRandD,
+  removeSelectedSkusRandD,
+} from "../../../features/slice/R&DSlice";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 const columns = [
@@ -37,8 +37,11 @@ const columns = [
 
   { field: "Delete", headerName: "Remove" },
 ];
-import { useSocket } from "../../../CustomProvider/useWebSocket";
 import { useQuantityUpdateRnDMutation } from "../../../features/api/productApiSlice";
+import {
+  setSelectedItemsRandD,
+  setSelectedSkusRandD,
+} from "../../../features/slice/R&DSlice";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#eee",
@@ -51,175 +54,67 @@ const StyleTable = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
-import { TabOutlined } from "@mui/icons-material";
 const StyledCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "	 #0d0d0d" : "#80bfff",
   color: theme.palette.mode === "dark" ? "#fff" : "black",
   textAlign: "center",
 }));
-import {
-  useAddProjectItemMutation,
-  useGetSingleProjectQuery,
-} from "../../../features/api/RnDSlice";
-import { useNavigate } from "react-router-dom";
+
 const AddRnDQtyDial = ({
   data,
-  removeSelectedItems,
   open,
   setOpen,
-  handleOpenDialog,
-  removeSelectedCreateQuery,
-  removeSelectedSkuQuery,
-  setSelectedItemsData,
-  selectedItemsData,
-  selectedItems,
-  id,
-  name,
-  setSelectedItems,
   refetch,
-  updateValue ,
-  setUpdateValue
 }) => {
-  /// initialize
-  const socket = useSocket();
-  const navigate = useNavigate();
-
-  /// global state
-  const { userInfo } = useSelector((state) => state.auth);
-  const { Addparts } = useSelector((state) => state.RAndDForm);
 
   /// local state
+  const [localData, setLocalData] = useState(data);
 
-  const [NewQty, setNewQty] = useState({});
-  const [OldQty, setOldQty] = useState({});
-  
-
-  /// rtk query
-
+  /// rtk query calling
   const [updateQty, { isLoading }] = useQuantityUpdateRnDMutation();
 
-  useEffect(() => {
-    if (open) {
-      return;
-    }
-    return () => {
-      setSelectedItems([]);
-      setSelectedItemsData([]);
-    };
-  }, []);
-
+  // functions 
   const dispatch = useDispatch();
-  // handlers
-  // const [
-  //   addProjectItems,
-  //   { isLoading: addProjectLoading, refetch: addRefetch },
-  // ] = useAddProjectItemMutation();
-  // const handleCloseDialog = () => {
-  //   setOpen(false);
-  // };
 
-  useEffect(() => {
-    let newData = [];
-    newData = data?.map((data) => {
-  
-      return {
-        SKU: data.SKU,
-        NewQty: data.NewQty,
-        OldQty: data.OldQty,
-      };
-      
-    });
-    setUpdateValue(newData);
-  }, [setOpen,open]);
-
-  // useEffect (()=>{
-  // for(const products of data){
-  //   setNewQty({
-  //     SKU: products.SKU,
-  //     NewQty: products.NewQty,
- 
-  //   });
-  //   setOldQty({
-  //     SKU: products.SKU,
-  //     OldQty: products.OldQty,
- 
-  //   });
-  // }
-
-  // },[data])
-
- 
-
-  useEffect(() => {
-    dispatch(setAddparts(updateValue));
-  }, [setSelectedItems, selectedItems]);
-  //Reset value after delete elements
-  useEffect(() => {
-    const matchingArray = [];
-    selectedItemsData.forEach((item) => {
-      const match = Addparts.find((items) => item.SKU === items.SKU);
-      if (match) {
-        matchingArray.push(match);
-      }
-    });
-
-    if (matchingArray.length > 0) {
-      setUpdateValue(matchingArray);
-    }
-  }, [setUpdateValue]);
-
-  console.log(updateValue);
-
-  const handleQuantityChange = (event, item) => {
-    const { value, name } = event.target;
-
-    setUpdateValue((prev) => {
-      return prev.map((data) => {
-        if (data.SKU === item.SKU) {
-          if (name === "NewQty") {
-            setNewQty((prevOldQty) => ({
-              ...prevOldQty,
-              [item.SKU]: +value,
-            }));
-            return {
-              ...data,
-              NewQty: +value,
-            };
-          } else {
-            setOldQty((prevOldQty) => ({
-              ...prevOldQty,
-              [item.SKU]: +value,
-            }));
-            return {
-              ...data,
-              OldQty: +value,
-            };
-          }
-        } else {
-          return data;
-        }
-      });
-    });
+  const handleDelete = (sku) => {
+    // deleted the sku from local and redux both
+    const filterData = localData.filter((data) => data.SKU !== sku);
+    setLocalData(filterData);
+    dispatch(setSelectedItemsRandD(sku));
+    dispatch(setSelectedSkusRandD(sku));
+    
   };
 
-  // handling send query
+  useEffect(() => {
+    if (localData.length === 0) {
+      setOpen(false);
+    }
+  }, [localData]);
+
+
+  // updating quantity on changes
+  const handleQuantityChange = (event, item) => {
+    const { name, value } = event.target;
+    setLocalData((prevData) =>
+      prevData.map((i) => (i.SKU === item.SKU ? { ...i, [name]: value } : i))
+    );
+  };
+
+  // handling quantity update and calling update api
   const handleSubmit = async () => {
+    const updatedValues = localData.map((item) => ({
+      SKU: item.SKU,
+      NewQty: Number(item.NewQty),
+      OldQty: Number(item.OldQty),
+    }));
     try {
       let info = {
-        items: updateValue,
+        items: updatedValues,
       };
-
       const result = await updateQty(info).unwrap();
-
       toast.success("Quantity add successfully");
-      dispatch(removeSelectedCreateQuery());
-      dispatch(removeSelectedSkuQuery());
-      removeSelectedItems([]);
-      setNewQty({});
-      setOldQty({});
-      setUpdateValue([]);
-      setSelectedItems([]);
-      setSelectedItemsData([]);
+      dispatch(removedSelectedItemsRandD());
+      dispatch(removeSelectedSkusRandD());
       refetch();
       setOpen(false);
     } catch (e) {
@@ -276,7 +171,7 @@ const AddRnDQtyDial = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.map((item, index) => {
+                {localData?.map((item, index) => {
                   return (
                     <TableRow key={index}>
                       <StyleTable sx={{ fontSize: ".8rem" }}>
@@ -307,8 +202,7 @@ const AddRnDQtyDial = ({
                             },
                           }}
                           name="NewQty"
-                          value={updateValue[index]?.NewQty}
-                     
+                          value={item.NewQty || ""}
                           type="number"
                           onChange={(event) => {
                             handleQuantityChange(event, item);
@@ -325,8 +219,7 @@ const AddRnDQtyDial = ({
                             },
                           }}
                           name="OldQty"
-                          value={updateValue[index]?.OldQty}
-                   
+                          value={item.OldQty || ""}
                           type="number"
                           onChange={(event) => {
                             handleQuantityChange(event, item);
@@ -342,7 +235,7 @@ const AddRnDQtyDial = ({
                             cursor: "pointer",
                           }}
                           onClick={() => {
-                            removeSelectedItems(item.SKU);
+                            handleDelete(item.SKU);
                           }}
                         />
                       </StyleTable>

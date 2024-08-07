@@ -114,7 +114,7 @@ const PartsApproval = () => {
         items: selectedItems,
       };
       const res = await allAprovalSKU(data).unwrap();
-      toast.success(`Accepted Items ${selectedItems} successfully`);
+      toast.success(`Accepted Items successfully`);
       setSelectedItems([]);
       refetch();
     } catch (error) {
@@ -141,8 +141,13 @@ const PartsApproval = () => {
 
   const handleSelectionChange = (selection) => {
     const selectedRowsWithSendQty = rows.filter(row => selection.includes(row.id));
-    setSelectedItems(selectedRowsWithSendQty)
-    console.log(selectedRowsWithSendQty);
+    const UpdatedValue = selectedRowsWithSendQty.map((row)=>{
+      return {...row, received: row.Sendqty }
+    })
+
+
+    setSelectedItems(UpdatedValue)
+    
   };
 
   //Columns*******************
