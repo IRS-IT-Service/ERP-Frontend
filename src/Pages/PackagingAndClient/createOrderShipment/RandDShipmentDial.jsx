@@ -15,6 +15,7 @@ import {
   TableContainer,
   Paper,
   Button,
+  style,
   CircularProgress,
 } from "@mui/material";
 import {
@@ -29,6 +30,8 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
   const [name, setName] = useState("IRS R&D");
 
   const [rows, setRows] = useState(productData);
+
+
 
   // rtk query api callings
   const {
@@ -115,6 +118,7 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
             size="small"
             label="Individual"
             sx={{}}
+            InputLabelProps={{shrink:true}}
             value={getClientByName?.client?.ClientType}
           ></TextField>
           <TextField
@@ -122,11 +126,15 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
             label="Client Name"
             sx={{}}
             value={getClientByName?.client?.ContactName}
+            InputLabelProps={{shrink:true}}
+
           ></TextField>
           <TextField
             size="small"
             label="Contact No"
             sx={{}}
+            InputLabelProps={{shrink:true}}
+
             value={getClientByName?.client?.ContactNumber}
           ></TextField>
           <TextField
@@ -134,6 +142,8 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
             label="Alternate No"
             sx={{}}
             value={"N/A"}
+            InputLabelProps={{shrink:true}}
+
           ></TextField>
         </Box>
 
@@ -211,49 +221,29 @@ const RandDShipmentDial = ({ open, setOpen, productData,refetchProduct }) => {
             <ArrowDownwardIcon sx={{ color: "blue" }} />
           </span>
           <Box>
-            <TableContainer component={Paper} sx={{ maxHeight: "400px" }}>
+            <TableContainer component={Paper} sx={{ maxHeight: "400px",width:"60vw" }}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ height: "20px", backgroundColor: "blue" }}>
+                    <TableCell sx={{padding:1, height: "20px", backgroundColor: "#50124f" ,color:"#fff" }}>
                       S.No
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        backgroundColor: "blue",
-                        width: "20%",
-                        textAlign: "center",
-                      }}
-                    >
+                    <TableCell sx={{padding:1, height: "20px", backgroundColor: "#50124f" ,color:"#fff" }}>
                       SKU
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        backgroundColor: "blue",
-                        width: "25%",
-                        textAlign: "center",
-                      }}
-                    >
+                    <TableCell sx={{padding:1, height: "20px", backgroundColor: "#50124f" ,color:"#fff" }}>
                       Name
                     </TableCell>
-                    <TableCell
-                      sx={{ backgroundColor: "blue", textAlign: "center" }}
-                    >
+                    <TableCell sx={{padding:1, height: "20px", backgroundColor: "#50124f" ,color:"#fff" }}>
                       Brand
                     </TableCell>
-                    <TableCell
-                      sx={{ backgroundColor: "blue", textAlign: "center" }}
-                    >
+                    <TableCell sx={{padding:1, height: "20px", backgroundColor: "#50124f" ,color:"#fff" }}>
                       GST
                     </TableCell>
-                    <TableCell
-                      sx={{ backgroundColor: "blue", textAlign: "center" }}
-                    >
+                    <TableCell sx={{padding:1, height: "20px", backgroundColor: "#50124f" ,color:"#fff" }}>
                       Actual Qty
                     </TableCell>
-                    <TableCell
-                      sx={{ backgroundColor: "blue", textAlign: "center" }}
-                    >
+                    <TableCell sx={{padding:1, height: "20px", backgroundColor: "#50124f" ,color:"#fff" }}>
                       Requested Qty
                     </TableCell>
                   </TableRow>
