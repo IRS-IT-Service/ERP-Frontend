@@ -303,13 +303,13 @@ const userRolesData = [
         path: '/discountquery',
         icon: 'fa-solid fa-tag',
       },
-      {
-        id: 74,
-        name: 'Pre Order',
-        path: '/PreOrder',
-        icon: 'fa-solid fa-file-powerpoint',
-        notification: true,
-      },
+      // {
+      //   id: 74,
+      //   name: 'Pre Order',
+      //   path: '/PreOrder',
+      //   icon: 'fa-solid fa-file-powerpoint',
+      //   notification: true,
+      // },
       {
         id: 23,
         name: 'View Query',
@@ -486,13 +486,13 @@ const userRolesData = [
         icon: 'fa-solid fa-cart-flatbed',
         notification: true,
       },
-      {
-        id: 73,
-        name: 'R & D Parts Requirement',
-        path: '/ItemsAprroval',
-        icon: 'fa-solid fa-check-double',
-        notification: true,
-      },
+      // {
+      //   id: 73,
+      //   name: 'R & D Parts Requirement',
+      //   path: '/ItemsAprroval',
+      //   icon: 'fa-solid fa-check-double',
+      //   notification: true,
+      // },
     ],
   },
   {
